@@ -36,7 +36,7 @@ def prem_density(r):
 
 def slant_depth(angle, depth, step=5000):
     """Returns the  material thickness (g/cm^2) for a chord cutting through
-    earth at Nadir angle and starting at depth (m)"""
+    earth at Nadir angle and starting at depth (m)."""
     p = np.array((0.0, EARTH_RADIUS - depth), 'd')
     d = np.array((np.sin(angle), -np.cos(angle)), 'd')
     t = 0.0
