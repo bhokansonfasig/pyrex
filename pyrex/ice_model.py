@@ -11,12 +11,12 @@ class AntarcticIce:
 
     @classmethod
     def gradient(cls, z):
-        """Returns the gradient of the index of refraction at depth z (m)"""
+        """Returns the gradient of the index of refraction at depth z (m)."""
         return np.array([0.0, -cls.k * cls.a * np.exp(cls.a * z)])
 
     @classmethod
     def index(cls, z):
-        """Returns the medium's index of refraction, n, at depth z (m)"""
+        """Returns the medium's index of refraction, n, at depth z (m)."""
         if z>0:
             return 1
         else:
@@ -31,7 +31,7 @@ class AntarcticIce:
     @classmethod
     def attenuation_length_MN(cls, z, f):
         """Returns the attenuation length at depth z (m) and frequency f (MHz)
-        by Matt Newcomb's fit (DOESN'T CURRENTLY WORK - USE BOGORODSKY)"""
+        by Matt Newcomb's fit (DOESN'T CURRENTLY WORK - USE BOGORODSKY)."""
         temp = cls.temperature(z)
         a = 5.03097 * np.exp(0.134806 * temp)
         b = 0.172082 + temp + 10.629
@@ -40,7 +40,7 @@ class AntarcticIce:
 
     @classmethod
     def attenuation_length(cls, z, f):
-        """Returns the attenuation length at depth z (m) and frequency f (MHz)"""
+        """Returns the attenuation length at depth z (m) and frequency f (MHz)."""
         w = np.log(f*0.001)
         w0 = np.log(1e-4)
         w1 = 0
