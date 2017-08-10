@@ -58,3 +58,7 @@ class Antenna:
         self.signals.clear()
         self._waveforms_generated = 0
         self._noises.clear()
+
+    def receive(self):
+        """Process incoming signal and store it in antenna's signals"""
+        pass
