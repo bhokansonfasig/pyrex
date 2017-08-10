@@ -1,0 +1,11 @@
+# git will ignore the following files:
+
+# Mac hidden files
+.DS_store
+
+# pycache files
+*.pyc
+__pycache__/
+
+#pytest cache
+.cache/
