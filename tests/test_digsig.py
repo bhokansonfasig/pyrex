@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrex.digsig import Signal
+from pyrex.digsig import Signal, EmptySignal, FunctionSignal
 
 import numpy as np
 
@@ -85,3 +85,20 @@ class TestSignal:
         for i in range(3):
             assert signal.times[i] == expected.times[i]
             assert signal.values[i] == pytest.approx(expected.values[i])
+
+
+def test_empty_signal():
+    """Test that an empty signal truly is empty"""
+    ts = [0,1,2,3,4]
+    signal = EmptySignal(ts)
+    for i in range(5):
+        assert signal.values[i] == 0
+
+
+@pytest.mark.parametrize("func", [lambda x: x==1, np.cos])
+def test_function_signal(func):
+    """Test that function signal works appropriately"""
+    ts = [0,1,2,3,4]
+    signal = FunctionSignal(ts, func)
+    for i in range(5):
+        assert signal.values[i] == pytest.approx(func(ts[i]))
