@@ -5,7 +5,6 @@ nadir angle."""
 import numpy as np
 
 EARTH_RADIUS = 6371e3
-# AVOGADRO_NUMBER = 6.02e23
 
 def prem_density(r):
     """Returns the earth's density (g/cm^3) for a given radius r (m).
