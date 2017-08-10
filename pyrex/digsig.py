@@ -74,3 +74,12 @@ class FunctionSignal(Signal):
         for t in times:
             values.append(self.function(t))
         super().__init__(times, values)
+
+
+
+
+class GaussianNoise(FunctionSignal):
+    """Gaussian noise signal with standard deviation sigma"""
+    def __init__(self, times, sigma):
+        self.sigma = sigma
+        super().__init__(times, lambda t: np.random.normal(0,self.sigma))
