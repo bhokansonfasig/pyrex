@@ -4,6 +4,7 @@ methods for easy swapping of models."""
 import numpy as np
 
 class AntarcticIce:
+    """Class containing characteristics of ice at the south pole."""
     k = 0.438
     a = 0.0132
     n0 = 1.32
@@ -24,7 +25,7 @@ class AntarcticIce:
 
     @staticmethod
     def temperature(z):
-        """Returns the temperature of the ice at depth z (m)"""
+        """Returns the temperature (C) of the ice at depth z (m)"""
         km = -0.001 * z
         return -51.07 + km*(2.677 + km*(-0.01591 + km*1.83415))
 
