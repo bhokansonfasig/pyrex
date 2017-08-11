@@ -54,6 +54,7 @@ class ShadowGenerator:
         self.n = 0
 
     def create_particle(self):
+        """Creates a particle with random vertex in cube and random direction."""
         vtx = np.random.uniform(low=(-self.dx/2, -self.dy/2, -self.dz),
                                 high=(self.dx/2, self.dy/2, 0))
         u = next_direction()
@@ -62,11 +63,11 @@ class ShadowGenerator:
         E = self.egen()
         t = earth_model.slant_depth(nadir, depth)
         # FIXME: Add other interactions
-        ilen = CC_NU.interaction_length(E)
-        x = t / ilen
+        inter_length = CC_NU.interaction_length(E)
+        x = t / inter_length
         self.n += 1
-        expRV = np.random.exponential()
-        if expRV > x:
+        rand_exponential = np.random.exponential()
+        if rand_exponential > x:
             return Particle(vtx, u, E)
         else:
             return self.create_particle()
