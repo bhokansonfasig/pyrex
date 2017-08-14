@@ -55,5 +55,5 @@ class AntarcticIce:
             b = (b1 - b0) / (w1 - w0)
         else:
             a = (b2 * w1 - b1 * w2) / (w1 - w2)
-            b = (b2 - b1) / (w2 - 1)
+            b = (b2 - b1) / (w2 - w1)
         return np.exp(-(a + b * w))
