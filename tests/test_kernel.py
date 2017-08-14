@@ -21,8 +21,8 @@ def bad_path():
 
 path_attenuations = [(1e-3, 0.99937), (1e-2, 0.99859), (1e-1, 0.99687),
                      (1,    0.99305), (10,   0.98460), (100,  0.96605),
-                     (1e3,  0.92601)]
-# TODO: Test frequencies above 1 GHz
+                     (1e3,  0.92601), (1e4,  2.627e-4)]
+# TODO: Confirm sharp drop-off above 1 GHz
 
 class TestPathFinder:
     """Tests for PathFinder class"""
