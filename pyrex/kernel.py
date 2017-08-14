@@ -37,7 +37,7 @@ class PathFinder:
 
     def propagate_ray(self, f, n_step=10):
         """Returns the attenuation factor and time of flight (ns) for a signal
-        of frequency f traveling along the path."""
+        of frequency f (MHz) traveling along the path."""
         atten = 1
         tof = 0
         z0 = self.from_point[2]
