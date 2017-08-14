@@ -77,6 +77,13 @@ class FunctionSignal(Signal):
 
 
 
+class AskaryanSignal(Signal):
+    """Askaryan pulse skeleton class."""
+    def __init__(self, times, theta, energy, n=1.78, t0=0):
+        super().__init__(times, np.zeros(len(times)))
+
+
+
 
 class GaussianNoise(FunctionSignal):
     """Gaussian noise signal with standard deviation sigma"""
