@@ -68,7 +68,7 @@ def pulse_at_antenna(energy, angle, path, n_ice=1.78):
     tmax = 250e-9
     times = np.linspace(0,tmax,2048,endpoint=False)
     try:
-        pulse = AskaryanSignal(times=times, theta=angle, energy=energy*1e-3,
+        pulse = AskaryanSignal(times=times, energy=energy*1e-3, theta=angle,
                                n=n_ice, t0=t0)
     except ValueError:
         raise

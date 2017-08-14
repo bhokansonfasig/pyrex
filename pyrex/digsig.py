@@ -78,9 +78,94 @@ class FunctionSignal(Signal):
 
 
 class AskaryanSignal(Signal):
-    """Askaryan pulse skeleton class."""
-    def __init__(self, times, theta, energy, n=1.78, t0=0):
-        super().__init__(times, np.zeros(len(times)))
+    """Askaryan pulse binned to times from neutrino with given energy (TeV)
+    observed at angle theta (radians). Optional parameters are the index of
+    refraction n, and pulse offset to start time t0 (s).\n
+    Note that the amplitude of the pulse goes as 1/R, where R is the distance
+    from source to observer. R is assumed to be 1 meter so that dividing by a
+    different value produces the proper result."""
+    def __init__(self, times, energy, theta, n=1.78, t0=0):
+        self.energy = energy
+        values = np.zeros(len(times))
+
+        # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
+        # Vector potential is given by:
+        #   A(theta,t) = integral(Q(z) * RAC(t-z(1-n*cos(theta))/c))
+        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
+
+        # Conversion factor for z in RAC
+        z_to_t = (1 - n*np.cos(theta))/3e8
+
+        # Integrals of z go from 0 to z_max with n_z steps
+        z_max = 2*self.max_length()
+        n_z = 100
+        z_vals, dz = np.linspace(0, z_max, n_z, endpoint=False, retstep=True)
+
+        # Q(z) is the same for every time
+        Q = np.zeros(n_z)
+        for i, z in enumerate(z_vals):
+            Q[i] = self.charge_profile(z)
+        
+        # Calculate RAC and integral(Q*RAC) at each time
+        for i, t in enumerate(times):
+            RA_C = np.zeros(n_z)
+            for j, z in enumerate(z_vals):
+                RA_C[j] = self.RAC(t - t0 - z*z_to_t)
+            values[i] = np.trapz(Q*RA_C, dx=dz)
+
+        # Calculate LQ_tot (the excess longitudinal charge along the shower)
+        LQ_tot = np.trapz(Q, dx=dz)
+
+        # Calculate sin(theta_c) = sqrt(1-cos^2(theta_c)) = sqrt(1-1/n^2)
+        sin_theta_c = np.sqrt(1 - 1/n**2)
+
+        # Scale the integral by the necessary factors
+        values *= np.sin(theta) / sin_theta_c / LQ_tot
+
+        super().__init__(times, values)
+
+
+    def RAC(self, time):
+        """Calculates R * vector potential at the Cherenkov angle in Vs
+        at the given time (s)."""
+        # Get absolute value of time in nanoseconds
+        ta = np.abs(time) * 1e9
+        if time>=0:
+            return (-4.5e-14 * self.energy
+                    * (np.exp(-ta/0.057) + (1+2.87*ta)**-3))
+        else:
+            return (-4.5e-14 * self.energy
+                    * (np.exp(-ta/0.030) + (1+3.05*ta)**-3.5))
+
+    def charge_profile(self, z, density=0.92, crit_energy=7.86e-5,
+                       rad_length=36.08):
+        """Calculates the charge in the EM shower at distance z (m)
+        with parameters for the density (g/cm^3), critical energy (TeV), and
+        electron radiation length (g/cm^2) in ice."""
+        if z<=0 or self.energy<=crit_energy:
+            return 0
+
+        # Depth calculated by "integrating" the density along the shower path
+        # (in g/cm^2)
+        x = 0.01 * z * density
+        x_ratio = x / rad_length
+        e_ratio = self.energy / crit_energy
+
+        # Shower age
+        s = 3 * x_ratio / (x_ratio + 2*np.log(e_ratio))
+
+        return (0.31 * np.exp(x_ratio * (1 - 1.5*np.log(s)))
+                / np.sqrt(np.log(e_ratio)))
+
+    def max_length(self, density=0.92, crit_energy=7.86e-5, rad_length=36.08):
+        """Calculates the maximum length (m) of an EM shower
+        with parameters for the density (g/cm^3), critical energy (TeV), and
+        electron radiation length (g/cm^2) in ice."""
+        # Maximum depth in g/cm^2
+        x_max = rad_length * np.log(self.energy / crit_energy) / np.log(2)
+
+        return 100 * x_max / density
+
 
 
 

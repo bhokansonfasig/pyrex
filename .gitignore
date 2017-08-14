@@ -9,3 +9,6 @@ __pycache__/
 
 #pytest cache
 .cache/
+
+# IPython notebook helper files
+.ipynb_checkpoints/
