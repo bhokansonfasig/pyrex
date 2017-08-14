@@ -14,20 +14,22 @@ class NeutrinoInteraction:
         self.p = p
 
     def cross_section(self, E):
-        """Return the cross section at a given energy E."""
+        """Return the cross section at a given energy E (GeV)."""
         return (self.c * E)**self.p
 
     def interaction_length(self, E):
-        """Return the interaction length at a given energy E."""
+        """Return the interaction length at a given energy E (GeV)."""
         return 1 / (AVOGADRO_NUMBER * self.cross_section(E))
 
 CC_NU = NeutrinoInteraction(2.69E-36, 0.402)
 # FIXME: add other interactions
 
+# Can be made into a class later if any functions or mutability are needed
+# Note: energy is in GeV
 Particle = namedtuple('Particle', ['vertex','direction','energy'])
 
-def next_direction():
-    """Generate an arbitrary 3D unit vector"""
+def random_direction():
+    """Generate an arbitrary 3D unit vector."""
     cos_theta = np.random.random_sample()*2-1
     sin_theta = np.sqrt(1 - cos_theta**2)
     phi = np.random.random_sample() * 2*np.pi
@@ -43,29 +45,33 @@ def next_direction():
 
 class ShadowGenerator:
     """Class to generate UHE neutrino vertices in (relatively) shallow
-    detectors. Takes into accout Earth shadowing (sort of)."""
+    detectors. Takes into accout Earth shadowing (sort of).
+    energy_generator should be a function that returns a particle energy
+    in GeV."""
     # TODO: Properly account for NC and anti-neutrino interactions
     # Currently the cross section is just the CC cross section
-    def __init__(self, dx, dy, dz, egen):
+    def __init__(self, dx, dy, dz, energy_generator):
         self.dx = dx
         self.dy = dy
         self.dz = dz
-        self.egen = egen
-        self.n = 0
+        if not callable(energy_generator):
+            raise ValueError("energy_generator must be a function")
+        self.egen = energy_generator
+        self.count = 0
 
     def create_particle(self):
         """Creates a particle with random vertex in cube and random direction."""
         vtx = np.random.uniform(low=(-self.dx/2, -self.dy/2, -self.dz),
                                 high=(self.dx/2, self.dy/2, 0))
-        u = next_direction()
+        u = random_direction()
         nadir = np.arccos(u[2])
         depth = -vtx[2]
-        E = self.egen()
         t = earth_model.slant_depth(nadir, depth)
+        E = self.egen()
         # FIXME: Add other interactions
         inter_length = CC_NU.interaction_length(E)
         x = t / inter_length
-        self.n += 1
+        self.count += 1
         rand_exponential = np.random.exponential()
         if rand_exponential > x:
             return Particle(vtx, u, E)

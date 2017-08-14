@@ -59,10 +59,10 @@ class PathFinder:
 
 def pulse_at_antenna(energy, angle, path, n_ice=1.78):
     """Function to propagate Askaryan pulse from particle with given energy
-    along the path (at specified angle from particle direction).
+    (GeV) along the path (at specified angle from particle direction).
     Takes dispersion of ice into account based on n_ice."""
     if not(path.exists()):
-        raise ValueError("Path does not exist")
+        raise ValueError("Path to antenna does not exist")
 
     t0 = 75e-9
     tmax = 250e-9
@@ -85,7 +85,8 @@ def pulse_at_antenna(energy, angle, path, n_ice=1.78):
         elif f>0:
             atten, tof = path.propagateRay(f*1e-6)
         else:
-            # Special case when n is even, the halfway point doesn't have a match
+            # Special case when n is even, the frequency at the halfway point
+            # doesn't have a match
             if i==n_fft/2:
                 atten, tof = path.propagateRay(-f*1e-6)
                 famps[i] *= atten
