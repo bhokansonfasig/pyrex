@@ -2,9 +2,9 @@
 
 import pytest
 
-from pyrex.particle import CC_NU, ShadowGenerator
+from pyrex.particle import CC_NU #, Particle, ShadowGenerator
 
-import numpy as np
+# import numpy as np
 
 
 CC_NU_cross_sections = [(1,   5.021e-15), (10,  1.267e-14), (100, 3.197e-14),
