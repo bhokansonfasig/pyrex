@@ -86,13 +86,12 @@ class SlowAskaryanSignal(Signal):
     from source to observer. R is assumed to be 1 meter so that dividing by a
     different value produces the proper result."""
     def __init__(self, times, energy, theta, n=1.78, t0=0):
-        self.energy = energy
-        self.vector_potential = np.zeros(len(times))
-
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
         #   A(theta,t) = integral(Q(z) * RAC(t-z(1-n*cos(theta))/c))
         #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
+        self.energy = energy
+        self.vector_potential = np.zeros(len(times))
 
         # Conversion factor for z in RAC
         z_to_t = (1 - n*np.cos(theta))/3e8
@@ -185,14 +184,13 @@ class FastAskaryanSignal(Signal):
     from source to observer. R is assumed to be 1 meter so that dividing by a
     different value produces the proper result."""
     def __init__(self, times, energy, theta, n=1.78, t0=0):
-        self.energy = energy
-
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
         #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
         #                            RAC(z(1-n*cos(theta))/c))
         #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
         #                * c / (1-n*cos(theta))
+        self.energy = energy
 
         # Conversion factor from z to t for RAC:
         # (1-n*cos(theta)) / c
@@ -324,6 +322,9 @@ class ThermalNoise(Signal):
     of given times array). Returned signal values are voltages (V)."""
     def __init__(self, times, temperature, resistance, f_band,
                  f_amplitude=1, n_freqs=0):
+        # Calculation based on Rician (Rayleigh) noise model for ANITA:
+        # https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps
+
         self.f_min, self.f_max = f_band
         # If number of frequencies is unspecified (or invalid),
         # determine based on the FFT bin size of the times array
