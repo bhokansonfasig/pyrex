@@ -24,7 +24,7 @@ class Signal:
                             +str(type(other))+" to a signal")
         if not(np.array_equal(self.times, other.times)):
             raise ValueError("Can't add signals with different times")
-        
+
         return Signal(self.times,self.values+other.values)
 
     def __radd__(self, other):
@@ -86,7 +86,7 @@ class SlowAskaryanSignal(Signal):
     different value produces the proper result."""
     def __init__(self, times, energy, theta, n=1.78, t0=0):
         self.energy = energy
-        self.vec_pot = np.zeros(len(times))
+        self.vector_potential = np.zeros(len(times))
 
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
@@ -106,13 +106,13 @@ class SlowAskaryanSignal(Signal):
         Q = np.zeros(n_z)
         for i, z in enumerate(z_vals):
             Q[i] = self.charge_profile(z)
-        
+
         # Calculate RAC and integral(Q*RAC) at each time
         for i, t in enumerate(times):
             RA_C = np.zeros(n_z)
             for j, z in enumerate(z_vals):
                 RA_C[j] = self.RAC(t - t0 - z*z_to_t)
-            self.vec_pot[i] = np.trapz(Q*RA_C, dx=dz)
+            self.vector_potential[i] = np.trapz(Q*RA_C, dx=dz)
 
         # Calculate LQ_tot (the excess longitudinal charge along the shower)
         LQ_tot = np.trapz(Q, dx=dz)
@@ -121,13 +121,11 @@ class SlowAskaryanSignal(Signal):
         sin_theta_c = np.sqrt(1 - 1/n**2)
 
         # Scale the integral by the necessary factors
-        self.vec_pot *= np.sin(theta) / sin_theta_c / LQ_tot
+        self.vector_potential *= np.sin(theta) / sin_theta_c / LQ_tot
 
         # Calculate electric field by taking derivative of vector potential
         dt = times[1] - times[0]
-        values = -np.diff(self.vec_pot) / dt
-        # values = -np.diff(self.vec_pot)) / np.sqrt(dt)
-        # preserves pulse size for changes in dt
+        values = -np.diff(self.vector_potential) / dt
 
         super().__init__(times, values)
 
@@ -189,32 +187,38 @@ class FastAskaryanSignal(Signal):
 
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
-        #   A(theta,t) = convolve(Q(z(1-n*cos(theta))/c)),RAC(z(1-n*cos(theta))/c))
-        #                * sin(theta) / sin(theta_c) / R / integral(Q(z)) * c / (1-n*cos(theta))
+        #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
+        #                            RAC(z(1-n*cos(theta))/c))
+        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
+        #                * c / (1-n*cos(theta))
 
-        # Conversion factor for z in RAC
+        # Conversion factor from z to t for RAC:
+        # (1-n*cos(theta)) / c
         z_to_t = (1 - n*np.cos(theta))/3e8
 
+        # Calculate the time step and the corresponding z-step
         dt = times[1] - times[0]
         dz = np.abs(dt / z_to_t)
 
+        # Create the charge-profile array up to 2.5 times the nominal
+        # maximum shower length (to reduce errors)
         z_max = 2.5*self.max_length()
         n_Q = int(z_max/dz)
-        z_Q_vals = np.arange(n_Q)
-        z_Q_vals = z_Q_vals * dz
+        z_Q_vals = np.arange(n_Q) * dz
         Q = np.zeros(n_Q)
         for i, z in enumerate(z_Q_vals):
             Q[i] = self.charge_profile(z)
 
+        # Calculate RAC at a specific number of z values (n_RAC) determined so
+        # that the full convolution will have the same size as the times array
         n_RAC = len(times) + 1 - n_Q
-        z_RAC_vals = np.arange(n_RAC)
-        z_RAC_vals = z_RAC_vals * dz
+        z_RAC_vals = np.arange(n_RAC) * dz
         RA_C = np.zeros(n_RAC)
         for i, z in enumerate(z_RAC_vals):
             RA_C[i] = self.RAC(t0 + z*z_to_t)
 
-        # Convolve Q and RAC
-        self.vec_pot = scipy.signal.convolve(Q, RA_C, mode='full')
+        # Convolve Q and RAC to get (unnormalized) vector potential A
+        A = scipy.signal.convolve(Q, RA_C, mode='full')
 
         # Calculate LQ_tot (the excess longitudinal charge along the shower)
         LQ_tot = np.trapz(Q, dx=dz)
@@ -223,22 +227,33 @@ class FastAskaryanSignal(Signal):
         sin_theta_c = np.sqrt(1 - 1/n**2)
 
         # Scale the integral by the necessary factors
-        self.vec_pot *= np.sin(theta) / sin_theta_c / LQ_tot / z_to_t
+        A *= np.sin(theta) / sin_theta_c / LQ_tot / z_to_t
+
+        # Not sure why, but multiplying A by -dt is necessary to fix
+        # normalization and dependence of amplitude on time spacing.
+        # Since E = -dA/dt = np.diff(A) / -dt, we can skip multiplying
+        # and later dividing by dt to save a little computational effort
+        # (at the risk of more cognitive effort when deciphering the code)
+        # So, to clarify, the above statement should have "* -dt" at the end
+        # to be the true value of A, and the below would then have "/ -dt"
 
         # Calculate electric field by taking derivative of vector potential
-        values = -np.diff(self.vec_pot) / dt
-        # values = -np.diff(self.vec_pot)) / np.sqrt(dt)
-        # preserves pulse size for changes in dt
+        values = np.diff(A)
 
-        print(len(times))
-        print(len(self.vec_pot))
-        print(len(values))
-
+        # Note that although len(values) = len(times)-1 (because of np.diff),
+        # the Signal class is desinged to handle this by zero-padding the values
         super().__init__(times, values)
 
 
+    @property
+    def vector_potential(self):
+        """Recover the vector_potential from the electric field.
+        Mostly just for testing purposes."""
+        return np.cumsum(np.concatenate(([0],self.values)))[:-1] * -self.dt
+
+
     def RAC(self, time):
-        """Calculates R * vector potential at the Cherenkov angle in Vs
+        """Calculates R * vector potential (A) at the Cherenkov angle in Vs
         at the given time (s)."""
         # Get absolute value of time in nanoseconds
         ta = np.abs(time) * 1e9
@@ -282,9 +297,12 @@ class FastAskaryanSignal(Signal):
         return 0.01 * x_max / density
 
 
-# Use the slow version of the askaryan signal for now until kinks are worked
-# out of fast version
-AskaryanSignal = SlowAskaryanSignal
+# FastAskaryanSignal result now matches SlowAskaryanSignal.
+# In fact, FastAskaryanSignal performs much better:
+#   Runs about 1000x faster
+#   Causal, whereas SlowAskaryanSignal pulse seems to be backwards in time
+#   Smooth pulse; no artifacts from integration errors
+AskaryanSignal = FastAskaryanSignal
 
 
 
