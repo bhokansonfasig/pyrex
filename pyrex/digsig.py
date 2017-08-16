@@ -80,7 +80,8 @@ class FunctionSignal(Signal):
 class SlowAskaryanSignal(Signal):
     """Askaryan pulse binned to times from neutrino with given energy (TeV)
     observed at angle theta (radians). Optional parameters are the index of
-    refraction n, and pulse offset to start time t0 (s).\n
+    refraction n, and pulse offset to start time t0 (s). Returned signal
+    values are electric fields (V/m).\n
     Note that the amplitude of the pulse goes as 1/R, where R is the distance
     from source to observer. R is assumed to be 1 meter so that dividing by a
     different value produces the proper result."""
@@ -178,7 +179,8 @@ class SlowAskaryanSignal(Signal):
 class FastAskaryanSignal(Signal):
     """Askaryan pulse binned to times from neutrino with given energy (TeV)
     observed at angle theta (radians). Optional parameters are the index of
-    refraction n, and pulse offset to start time t0 (s).\n
+    refraction n, and pulse offset to start time t0 (s). Returned signal
+    values are electric fields (V/m).\n
     Note that the amplitude of the pulse goes as 1/R, where R is the distance
     from source to observer. R is assumed to be 1 meter so that dividing by a
     different value produces the proper result."""
@@ -311,3 +313,54 @@ class GaussianNoise(FunctionSignal):
     def __init__(self, times, sigma):
         self.sigma = sigma
         super().__init__(times, lambda t: np.random.normal(0,self.sigma))
+
+
+class ThermalNoise(Signal):
+    """Thermal Rayleigh noise at a given temperature (K) and resistance (ohms)
+    in the frequency band f_band=[f_min,f_max] (Hz). Optional parameters are
+    f_amplitude (default 1) which can be a number or a function designating the
+    amplitudes at each frequency, and n_freqs which is the number of frequencies
+    to use (in f_band) for the calculation (default is based on the FFT bin size
+    of given times array). Returned signal values are voltages (V)."""
+    def __init__(self, times, temperature, resistance, f_band,
+                 f_amplitude=1, n_freqs=0):
+        self.f_min, self.f_max = f_band
+        # If number of frequencies is unspecified (or invalid),
+        # determine based on the FFT bin size of the times array
+        if n_freqs<1:
+            n_freqs = (self.f_max - self.f_min) * (times[-1] - times[0])
+            # Broken out into steps to ease understanding:
+            #   duration = times[-1] - times[0]
+            #   f_bin_size = 1 / duration
+            #   n_freqs = (self.f_max - self.f_min) / f_bin_size
+
+        self.freqs = np.linspace(self.f_min, self.f_max, n_freqs,
+                                 endpoint=False)
+
+        # Allow f_amplitude to be either a function or a single value
+        if callable(f_amplitude):
+            self.amps = [f_amplitude(f) for f in self.freqs]
+        else:
+            self.amps = np.full(len(self.freqs), f_amplitude, dtype="float64")
+
+        self.phases = np.random.rand(len(self.freqs)) * 2*np.pi
+
+        # Set the time-domain signal by adding sinusoidal signals of each
+        # frequency with the corresponding phase
+        values = np.zeros(len(times))
+        for freq, amp, phase in zip(self.freqs, self.amps, self.phases):
+            # Skip zero-frequency component if it exists
+            if freq==0:
+                continue
+            values += amp * np.cos(2*np.pi*freq * times + phase)
+
+        # Normalization calculated by guess-and-check, but seems to work fine
+        # normalization = np.sqrt(2/len(self.freqs))
+        values *= np.sqrt(2/len(self.freqs))
+
+        # So far, the units of the values are V/V_rms, so multiply by the
+        # rms voltage: sqrt(4 * kB * T * R * bandwidth)
+        values *= np.sqrt(4 * 1.38e-23 * temperature * resistance
+                          * (self.f_max - self.f_min))
+
+        super().__init__(times, values)
