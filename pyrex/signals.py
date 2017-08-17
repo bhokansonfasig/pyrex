@@ -3,6 +3,7 @@
 
 import numpy as np
 import scipy.signal
+import scipy.fftpack
 
 class Signal:
     """Base class for signals. Takes arrays of times and values
@@ -51,12 +52,30 @@ class Signal:
         return np.abs(analytic_signal)
 
     def resample(self, n):
-        """Resamples the signal into n points in the same time range"""
+        """Resamples the signal into n points in the same time range."""
         if n==len(self.times):
             return
 
         self.times = np.linspace(self.times[0], self.times[-1], n)
         self.values = scipy.signal.resample(self.values, n)
+
+
+    @property
+    def spectrum(self):
+        """Returns the FFT spectrum of the signal."""
+        return scipy.fftpack.fft(self.values)
+
+    @property
+    def frequencies(self):
+        """Returns the FFT frequencies of the signal."""
+        return scipy.fftpack.fftfreq(n=len(self.values), d=self.dt)
+
+    def filter_frequencies(self, freq_response):
+        """Applies the given frequency response function to the signal."""
+        filtered_spectrum = self.spectrum
+        for i, f in enumerate(self.frequencies):
+            filtered_spectrum[i] *= freq_response(f)
+        self.values = scipy.fftpack.ifft(filtered_spectrum)
 
 
 
