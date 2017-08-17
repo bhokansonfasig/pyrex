@@ -37,11 +37,11 @@ class TestSignal:
         assert np.array_equal(signal_sum.times, expected.times)
         assert np.array_equal(signal_sum.values, expected.values)
 
-    def test_zero_addition(self, signals):
-        """Test that signal can be added to zero"""
-        signal_sum = 0 + signals
+    def test_signal_summation(self, signals):
+        """Test that sum() can be used with signals"""
+        signal_sum = sum([signals, signals])
         assert np.array_equal(signals.times, signal_sum.times)
-        assert np.array_equal(signals.values, signal_sum.values)
+        assert np.array_equal(signals.values+signals.values, signal_sum.values)
 
     def test_uniqueness(self, signals):
         """Test that a new signal made from the values of the old one are not connected"""
