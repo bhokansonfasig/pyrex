@@ -1,5 +1,6 @@
 """Module containing ice model. AntarcticIce class contains static and class
-methods for easy swapping of models."""
+methods for easy swapping of models. IceModel class is set to the preferred
+ice model."""
 
 import numpy as np
 
@@ -30,16 +31,6 @@ class AntarcticIce:
         return -51.07 + km*(2.677 + km*(-0.01591 + km*1.83415))
 
     @classmethod
-    def attenuation_length_MN(cls, z, f):
-        """Returns the attenuation length at depth z (m) and frequency f (MHz)
-        by Matt Newcomb's fit (DOESN'T CURRENTLY WORK - USE BOGORODSKY)."""
-        temp = cls.temperature(z)
-        a = 5.03097 * np.exp(0.134806 * temp)
-        b = 0.172082 + temp + 10.629
-        c = -0.00199175 * temp - 0.703323
-        return 1701 / (a + b * (0.001*f)**(c+1))
-
-    @classmethod
     def attenuation_length(cls, z, f):
         """Returns the attenuation length at depth z (m) and frequency f (MHz)."""
         w = np.log(f*0.001)
@@ -57,3 +48,22 @@ class AntarcticIce:
             a = (b2 * w1 - b1 * w2) / (w1 - w2)
             b = (b2 - b1) / (w2 - w1)
         return np.exp(-(a + b * w))
+
+
+class NewcombIce(AntarcticIce):
+    """Class inheriting from AntarcticIce, with new attenuation_length function
+    based on Matt Newcomb's fit (DOESN'T CURRENTLY WORK - USE ANTARCTICICE)."""
+    @classmethod
+    def attenuation_length(cls, z, f):
+        """Returns the attenuation length at depth z (m) and frequency f (MHz)
+        by Matt Newcomb's fit (DOESN'T CURRENTLY WORK - USE BOGORODSKY)."""
+        temp = cls.temperature(z)
+        a = 5.03097 * np.exp(0.134806 * temp)
+        b = 0.172082 + temp + 10.629
+        c = -0.00199175 * temp - 0.703323
+        return 1701 / (a + b * (0.001*f)**(c+1))
+
+
+
+# Preferred ice model:
+IceModel = AntarcticIce
