@@ -32,9 +32,14 @@ class TestAntenna:
 
     def test_is_hit(self, antenna):
         """Test that is_hit is true when there is a signal and false otherwise"""
-        assert not(antenna.is_hit())
+        assert not(antenna.is_hit)
         antenna.signals.append(Signal([0],[0]))
-        assert antenna.is_hit()
+        assert antenna.is_hit
+
+    def test_is_hit_not_writable(self, antenna):
+        """Test that is_hit cannot be assigned to"""
+        with pytest.raises(AttributeError):
+            antenna.is_hit = True
 
     def test_clear(self, antenna):
         """Test that clear emptys signals list"""

@@ -335,6 +335,11 @@ class ThermalNoise(Signal):
             #   f_bin_size = 1 / duration
             #   n_freqs = (self.f_max - self.f_min) / f_bin_size
 
+        # If number of frequencies is still zero (e.g. len(times)==1),
+        # force it to 1
+        if n_freqs<1:
+            n_freqs = 1
+
         self.freqs = np.linspace(self.f_min, self.f_max, n_freqs,
                                  endpoint=False)
 
