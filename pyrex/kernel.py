@@ -3,7 +3,7 @@ ray tracking (no raytracing yet), and hit generation."""
 
 import numpy as np
 import scipy.fftpack
-from pyrex.digsig import Signal, AskaryanSignal
+from pyrex.signals import Signal, AskaryanSignal
 
 class PathFinder:
     """Class for ray tracking."""

@@ -2,7 +2,7 @@
 
 import warnings
 import numpy as np
-from pyrex.digsig import ThermalNoise
+from pyrex.signals import ThermalNoise
 
 class Antenna:
     """Antenna with a given name, position (m), center frequency (MHz),

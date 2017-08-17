@@ -3,7 +3,7 @@
 import pytest
 
 from pyrex.antenna import Antenna
-from pyrex.digsig import Signal
+from pyrex.signals import Signal
 
 import numpy as np
 
@@ -31,7 +31,7 @@ class TestAntenna:
         assert antenna.f_high == pytest.approx(2*np.pi*300*1e6)
 
     def test_is_hit(self, antenna):
-        """Test that is_hit returns true when there is a signal and false otherwise"""
+        """Test that is_hit is true when there is a signal and false otherwise"""
         assert not(antenna.is_hit())
         antenna.signals.append(Signal([0],[0]))
         assert antenna.is_hit()

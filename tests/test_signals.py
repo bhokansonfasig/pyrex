@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrex.digsig import Signal, EmptySignal, FunctionSignal
+from pyrex.signals import Signal, EmptySignal, FunctionSignal
 
 import numpy as np
 
