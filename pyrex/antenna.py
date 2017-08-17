@@ -2,7 +2,7 @@
 
 import warnings
 import numpy as np
-from pyrex.digsig import GaussianNoise
+from pyrex.digsig import ThermalNoise
 
 class Antenna:
     """Antenna with a given name, position (m), center frequency (MHz),
@@ -26,7 +26,7 @@ class Antenna:
         # Get critical frequencies in rad/s
         self.f_low = 2*np.pi * (self.center_frequency - self.bandwidth/2)*1e6
         self.f_high = 2*np.pi * (self.center_frequency + self.bandwidth/2)*1e6
-        
+
         self.clear()
 
     @property
@@ -37,28 +37,37 @@ class Antenna:
 
         if self._waveforms_generated!=len(self.signals):
             new_signal = self.signals[-1]
-            new_noise = GaussianNoise(new_signal.times, max(new_signal.values)/5)
-            # new_noise = ThermalNoise(signal.times, [self.f_low, self.f_high])
+            new_noise = ThermalNoise(new_signal.times,
+                                     temperature=300, resistance=1,
+                                     f_band=(self.f_low, self.f_high))
             self._noises.append(new_noise)
 
         return [s+n for s,n in zip(self.signals, self._noises)]
 
+    @property
     def is_hit(self):
         """Test for whether the antenna has received a signal."""
         return len(self.signals)>0
 
     def isHit(self):
-        """Deprecated. Replaced by is_hit."""
+        """Deprecated. Replaced by is_hit property."""
         warnings.warn("Antenna.isHit has been replaced by Antenna.is_hit",
                       DeprecationWarning, stacklevel=2)
         return self.is_hit()
 
     def clear(self):
-        """Reset the antenna to having received no signals."""
+        """Reset the antenna to a state of having received no signals."""
         self.signals.clear()
         self._waveforms_generated = 0
         self._noises.clear()
 
-    def receive(self):
-        """Process incoming signal and store it in antenna's signals"""
-        pass
+    def receive(self, signal, hit_time, polarization):
+        """Process incoming signal and store it in antenna's signals."""
+        # Apply antenna polarization effect
+        signal *= self.effective_height * np.abs(polarization[2])
+
+        # Pass signal through antenna's filter (TODO)
+        filtered_signal = signal
+
+        # Append signal to self.signals
+        self.signals.append(filtered_signal)
