@@ -12,23 +12,26 @@ import numpy as np
 @pytest.fixture
 def antenna():
     """Fixture for forming basic Antenna object"""
-    return Antenna("ant", [0,0,-250], 250, 100, 1.0, 5E-6)
+    return Antenna(position=[0,0,-250], temperature=300,
+                   freq_range=[500e6, 750e6], resistance=1000)
+
+@pytest.fixture
+def dipole():
+    """Fixture for forming basic DipoleAntenna object"""
+    return Antenna(name="ant", position=[0,0,-250], center_frequency=250,
+                   bandwidth=100, resistance=1000, effective_height=1.0,
+                   threshold=5E-6)
 
 
 class TestAntenna:
     """Tests for Antenna class"""
     def test_creation(self, antenna):
         """Test that the antenna's creation goes as expected"""
-        assert antenna.name == "ant"
-        assert np.array_equal(antenna.pos, [0,0,-250])
-        assert antenna.center_frequency == 250
-        assert antenna.bandwidth == 100
-        assert antenna.effective_height == 1
-        assert antenna.threshold == pytest.approx(5e-6)
+        assert np.array_equal(antenna.position, [0,0,-250])
+        assert antenna.temperature == 300
+        assert np.array_equal(antenna.freq_range, [500e6, 750e6])
+        assert antenna.resistance == 1000
         assert antenna.noisy
-        assert antenna.signals == []
-        assert antenna.f_low == pytest.approx(2*np.pi*200*1e6)
-        assert antenna.f_high == pytest.approx(2*np.pi*300*1e6)
 
     def test_is_hit(self, antenna):
         """Test that is_hit is true when there is a signal and false otherwise"""
@@ -65,4 +68,3 @@ class TestAntenna:
         waveforms2 = antenna.waveforms
         noises2 = antenna._noises
         assert noises1 == noises2
-
