@@ -4,57 +4,7 @@ ray tracking (no raytracing yet), and hit generation."""
 import numpy as np
 import scipy.fftpack
 from pyrex.signals import Signal, AskaryanSignal
-
-class PathFinder:
-    """Class for ray tracking."""
-    def __init__(self, ice_model, from_point, to_point):
-        self.from_point = np.array(from_point)
-        self.to_point = np.array(to_point)
-        self.ice = ice_model
-
-    @property
-    def exists(self):
-        """Boolean of whether path exists."""
-        ni = self.ice.index(self.from_point[2])
-        nf = self.ice.index(self.to_point[2])
-        nr = nf / ni
-        if nr > 1:
-            return True
-        tir = np.sqrt(1 - nr**2)
-        return self.emitted_ray[2] > tir
-
-    @property
-    def emitted_ray(self):
-        """Direction in which ray is emitted."""
-        r = self.to_point - self.from_point
-        return r / np.linalg.norm(r)
-
-    @property
-    def path_length(self):
-        """Length of the path (m)."""
-        r = self.to_point - self.from_point
-        return np.linalg.norm(r)
-
-    def propagate_ray(self, f, n_step=10):
-        """Returns the attenuation factor and time of flight (ns) for a signal
-        of frequency f (MHz) traveling along the path."""
-        atten = 1
-        tof = 0
-        z0 = self.from_point[2]
-        z1 = self.to_point[2]
-        u = self.to_point - self.from_point
-        rho = np.sqrt(u[0]**2 + u[1]**2)
-        dz = z1 - z0
-        drdz = rho / dz
-        dz /= n_step
-        for i in range(n_step):
-            z = z0 + (i+0.5)*dz
-            dr = drdz * dz
-            p = np.sqrt(dr**2 + dz**2)
-            alen = self.ice.attenuation_length(z, f)
-            atten *= np.exp(-p/alen)
-            tof += p / .3 / self.ice.index(z)
-        return atten, tof
+from pyrex.ray_tracing import PathFinder
 
 
 def pulse_at_antenna(energy, angle, path, n_ice=1.78):
@@ -125,11 +75,11 @@ class EventKernel:
             # p.direction and k should both be unit vectors
             psi = np.arccos(np.vdot(p.direction, k))
 
-            try:
-                askaryan_pulse, hit_time = pulse_at_antenna(p.energy, psi, pf, n)
-            except ValueError:
-                pass
-            else:
-                ant.receive(askaryan_pulse, hit_time, epol)
-        return p
+            times = np.linspace(-10e-9, 40e-9, 2048, endpoint=False)
+            pulse = AskaryanSignal(times=times, energy=p.energy, theta=psi, n=n)
 
+            pf.propagate(pulse)
+
+            ant.receive(pulse, epol)
+
+        return p
