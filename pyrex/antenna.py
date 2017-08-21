@@ -65,7 +65,8 @@ class Antenna:
 
     def receive(self, signal, polarization=[0,0,1]):
         """Process incoming signal according to the filter function and
-        store it to the signals list."""
+        store it to the signals list. Subclasses may extend this fuction,
+        but should end with super().receive(signal)."""
         signal.filter_frequencies(self.response)
 
         if self.noisy:
