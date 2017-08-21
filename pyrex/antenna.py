@@ -3,14 +3,15 @@
 import warnings
 import numpy as np
 import scipy.fftpack
+import scipy.signal
 from pyrex.signals import ThermalNoise
 from pyrex.ice_model import IceModel
 
 
 class Antenna:
     """Base class for an antenna with a given position (m), temperature (K),
-    allowable frequency range, total resistance (ohm) used for Johnson noise,
-    and whether or not to include noise in the antenna's waveforms.
+    allowable frequency range (Hz), total resistance (ohm) used for Johnson
+    noise, and whether or not to include noise in the antenna's waveforms.
     Defines default trigger, frequency response, and signal reception functions
     that can be overwritten in base classes to customize the antenna."""
     def __init__(self, position, temperature, freq_range,
@@ -24,7 +25,6 @@ class Antenna:
         self.noisy = noisy
 
         self.signals = []
-        self._waveforms_generated = 0
         self._noises = []
 
     @property
@@ -41,7 +41,6 @@ class Antenna:
     def clear(self):
         """Reset the antenna to a state of having received no signals."""
         self.signals.clear()
-        self._waveforms_generated = 0
         self._noises.clear()
 
     @property
@@ -49,36 +48,37 @@ class Antenna:
         """Signal + (optional) noise at each antenna hit."""
         if not(self.noisy):
             return self.signals
-
-        if self._waveforms_generated!=len(self.signals):
-            new_signal = self.signals[-1]
-            new_noise = ThermalNoise(new_signal.times,
-                                     temperature=self.temperature,
-                                     resistance=self.resistance,
-                                     f_band=self.freq_range)
-            self._noises.append(new_noise)
-
-        return [s+n for s,n in zip(self.signals, self._noises)]
+        else:
+            return [s+n for s,n in zip(self.signals, self._noises)]
 
     def trigger(self, signal):
         """Function to determine whether or not the antenna is triggered by
         the given Signal object."""
         return True
 
-    def response(self, frequency):
+    def response(self, frequencies):
         """Function to return the frequency response of the antenna at the
-        given frequency (Hz). This function should return the amplitude
-        response as well as the phase response."""
-        # TODO: Figure out how to deal with phase response as well
-        return 1
+        given frequencies (Hz). This function should return the response as
+        imaginary numbers, where the real part is the amplitude response and
+        the imaginary part is the phase response."""
+        return np.ones(len(frequencies))
 
-    def receive(self, signal):
+    def receive(self, signal, polarization=[0,0,1]):
         """Process incoming signal according to the filter function and
         store it to the signals list."""
         signal.filter_frequencies(self.response)
-        # TODO: Figure out where to apply trigger, since noise should be
-        # included in the trigger. Maybe noise should be generated here
-        self.signals.append(signal)
+
+        if self.noisy:
+            noise = ThermalNoise(signal.times,
+                                 temperature=self.temperature,
+                                 resistance=self.resistance,
+                                 f_band=self.freq_range)
+            if self.trigger(signal + noise):
+                self.signals.append(signal)
+                self._noises.append(noise)
+        else:
+            if self.trigger(signal):
+                self.signals.append(signal)
 
 
 
@@ -99,19 +99,26 @@ class DipoleAntenna(Antenna):
         self.effective_height = effective_height
         self.threshold = threshold
 
+        # Build scipy butterworth filter to speed up response function
+        b, a  = scipy.signal.butter(1, 2*np.pi*np.array(self.freq_range),
+                                    btype='bandpass', analog=True)
+        self.filter_coeffs = (b, a)
+
 
     def trigger(self, signal):
+        """Trigger on the signal if the maximum signal value is above the
+        given threshold."""
         return max(signal.values) > self.threshold
 
-    def response(self, frequency):
-        if self.freq_range[0] < frequency < self.freq_range[1]:
-            return 1
-        else:
-            return 0
+    def response(self, frequencies):
+        """Butterworth filter response for the antenna's frequency range."""
+        angular_freqs = np.array(frequencies) * 2*np.pi
+        w, h = scipy.signal.freqs(self.filter_coeffs[0], self.filter_coeffs[1],
+                                  angular_freqs)
+        return h
 
-    def receive(self, signal, polarization):
-        # Apply antenna polarization effect
+    def receive(self, signal, polarization=[0,0,1]):
+        """Apply polarization effect to signal, then proceed with usual
+        antenna reception."""
         signal *= self.effective_height * np.abs(polarization[2])
-
-        # Pass polarized signal to base class's receive function
         super().receive(signal)
