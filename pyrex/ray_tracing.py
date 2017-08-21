@@ -53,7 +53,7 @@ class PathFinder:
             z = z0 + (i+0.5)*dz
             dr = drdz * dz
             p = np.sqrt(dr**2 + dz**2)
-            t += p / .3 / self.ice.index(z)
+            t += p / 3e8 * self.ice.index(z)
         return t
 
     def attenuation(self, f, n_steps=10):
