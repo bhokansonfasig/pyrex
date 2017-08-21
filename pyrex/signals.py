@@ -73,8 +73,17 @@ class Signal:
     def filter_frequencies(self, freq_response):
         """Applies the given frequency response function to the signal."""
         filtered_spectrum = self.spectrum
-        for i, f in enumerate(self.frequencies):
-            filtered_spectrum[i] *= freq_response(f)
+
+        # Attempt to evaluate all responses in one function call
+        try:
+            responses = np.array(freq_response(self.frequencies))
+        # Otherwise evaluate responses one at a time
+        except ValueError:
+            responses = np.zeros(len(filtered_spectrum))
+            for i, f in enumerate(self.frequencies):
+                responses[i] = freq_response(f)
+
+        filtered_spectrum *= responses
         self.values = scipy.fftpack.ifft(filtered_spectrum)
 
 
