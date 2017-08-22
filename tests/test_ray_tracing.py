@@ -37,12 +37,12 @@ class TestPathFinder:
         """Test that the exists parameter works as expected"""
         assert path_finder.exists
         assert not bad_path.exists
-    
+
     def test_exists_not_writable(self, path_finder):
         """Test that the exists parameter is not assignable"""
         with pytest.raises(AttributeError):
             path_finder.exists = False
-        
+
     def test_emitted_ray(self, path_finder):
         """Test that the emitted_ray property works as expected"""
         assert np.array_equal(path_finder.emitted_ray, [0,0,-1])
@@ -80,5 +80,5 @@ class TestPathFinder:
     @pytest.mark.parametrize("frequency,attenuation", path_attenuations)
     def test_attenuation(self, path_finder, frequency, attenuation):
         """Test that propagate_ray returns the expected values within 1%"""
-        assert (path_finder.attenuation(frequency) 
+        assert (path_finder.attenuation(frequency)
                 == pytest.approx(attenuation, rel=0.01))
