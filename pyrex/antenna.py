@@ -26,11 +26,12 @@ class Antenna:
 
         self.signals = []
         self._noises = []
+        self.triggers = []
 
     @property
     def is_hit(self):
         """Test for whether the antenna has received a signal."""
-        return len(self.signals)>0
+        return len(self.waveforms)>0
 
     def isHit(self):
         """Deprecated. Replaced by is_hit property."""
@@ -45,11 +46,34 @@ class Antenna:
 
     @property
     def waveforms(self):
-        """Signal + (optional) noise at each antenna hit."""
+        """Signal + noise (if noisy) at each triggered antenna hit."""
+        # Process any unprocessed triggers
+        all_waves = self.all_waveforms
+        while len(self.triggers)<len(all_waves):
+            waveform = all_waves[len(self.triggers)]
+            self.triggers.append(self.trigger(waveform))
+
+        return [wave for wave, triggered in zip(all_waves, self.triggers)
+                if triggered]
+
+    @property
+    def all_waveforms(self):
+        """Signal + noise (if noisy) at all antenna hits, even those that
+        didn't trigger."""
         if not(self.noisy):
             return self.signals
-        else:
-            return [s+n for s,n in zip(self.signals, self._noises)]
+
+        # Generate noise as necessary
+        while len(self._noises)<len(self.signals):
+            self._noises.append(
+                ThermalNoise(self.signals[len(self._noises)].times,
+                             temperature=self.temperature,
+                             resistance=self.resistance,
+                             f_band=self.freq_range)
+            )
+
+        return [s + n for s, n in zip(self.signals, self._noises)]
+
 
     def trigger(self, signal):
         """Function to determine whether or not the antenna is triggered by
@@ -68,18 +92,7 @@ class Antenna:
         store it to the signals list. Subclasses may extend this fuction,
         but should end with super().receive(signal)."""
         signal.filter_frequencies(self.response)
-
-        if self.noisy:
-            noise = ThermalNoise(signal.times,
-                                 temperature=self.temperature,
-                                 resistance=self.resistance,
-                                 f_band=self.freq_range)
-            if self.trigger(signal + noise):
-                self.signals.append(signal)
-                self._noises.append(noise)
-        else:
-            if self.trigger(signal):
-                self.signals.append(signal)
+        self.signals.append(signal)
 
 
 

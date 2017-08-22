@@ -62,7 +62,6 @@ class TestAntenna:
         """Test that the antenna properly receives signals"""
         antenna.receive(Signal([0,1e-9,2e-9], [0,1,0]))
         assert len(antenna.signals) > 0
-        assert len(antenna._noises) == len(antenna.signals)
 
     def test_no_waveforms(self, antenna):
         """Test that waveforms returns an empty list if there are no signals"""
@@ -73,6 +72,15 @@ class TestAntenna:
         antenna.receive(Signal([0,1e-9,2e-9],[0,1,0]))
         assert antenna.waveforms != []
         assert isinstance(antenna.waveforms[0], Signal)
+        assert antenna._noises != []
+        assert antenna.triggers == [True]
+
+    def test_delay_noise_calculation(self, antenna):
+        """Test that antenna noise isn't calculated until it is needed"""
+        antenna.receive(Signal([0,1e-9,2e-9],[0,1,0]))
+        assert antenna._noises == []
+        antenna.waveforms
+        assert antenna._noises != []
 
     def test_noises_not_recalculated(self, antenna):
         """Test that noise signals aren't recalculated every time"""
@@ -82,6 +90,15 @@ class TestAntenna:
         waveforms2 = antenna.waveforms
         noises2 = antenna._noises
         assert noises1 == noises2
+
+    def test_no_trigger_no_waveform(self, antenna):
+        """Test that signals which don't trigger don't appear in waveforms,
+        but do appear in all_waveforms"""
+        antenna.trigger = lambda signal: False
+        antenna.signals.append(Signal([0],[1]))
+        assert antenna.is_hit == False
+        assert antenna.waveforms == []
+        assert antenna.all_waveforms != []
 
 
 
