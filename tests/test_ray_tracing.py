@@ -19,9 +19,9 @@ def bad_path():
     return PathFinder(AntarcticIce, [100,0,-200], [0,0,-200])
 
 
-path_attenuations = [(1e-3, 0.99937), (1e-2, 0.99859), (1e-1, 0.99687),
-                     (1,    0.99305), (10,   0.98460), (100,  0.96605),
-                     (1e3,  0.92601), (1e4,  2.627e-4)]
+path_attenuations = [(1e3, 0.99937), (1e4, 0.99859), (1e5, 0.99687),
+                     (1e6, 0.99305), (1e7, 0.98460), (1e8, 0.96605),
+                     (1e9, 0.92601), (1e10, 2.627e-4)]
 # TODO: Confirm sharp drop-off above 1 GHz
 
 class TestPathFinder:
