@@ -84,7 +84,7 @@ class Signal:
                 responses[i] = freq_response(f)
 
         filtered_spectrum *= responses
-        self.values = scipy.fftpack.ifft(filtered_spectrum)
+        self.values = np.real(scipy.fftpack.ifft(filtered_spectrum))
 
 
 
