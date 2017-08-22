@@ -1,8 +1,8 @@
-"""File containing tests of pyrex kernel module"""
+"""File containing tests of pyrex ray_tracing module"""
 
 import pytest
 
-from pyrex.kernel import PathFinder
+from pyrex.ray_tracing import PathFinder
 from pyrex.ice_model import AntarcticIce
 
 import numpy as np
@@ -60,11 +60,25 @@ class TestPathFinder:
         """Test that the emitted_ray parameter is not assignable"""
         with pytest.raises(AttributeError):
             path_finder.path_length = 0
-    
-    @pytest.mark.parametrize("frequency,attenuation", path_attenuations)
-    def test_propagate_ray(self, path_finder, frequency, attenuation):
-        """Test that propagate_ray returns the expected values within 1%"""
-        atten, tof = path_finder.propagate_ray(frequency)
-        assert atten == pytest.approx(attenuation, rel=0.01)
-        
 
+    def test_time_of_flight(self, path_finder):
+        """Test that the detailed time of flight gives the expected value
+        within 0.1%"""
+        assert (path_finder.time_of_flight(1000)
+                == pytest.approx(5.643462e-7, rel=0.001))
+
+    def test_tof(self, path_finder):
+        """Test that the tof parameter gives the correct time of flight
+        within 1%"""
+        assert path_finder.tof == pytest.approx(5.643462e-7, rel=0.01)
+
+    def test_tof_not_writable(self, path_finder):
+        """Test that the tof parameter is not assignable"""
+        with pytest.raises(AttributeError):
+            path_finder.tof = 0
+
+    @pytest.mark.parametrize("frequency,attenuation", path_attenuations)
+    def test_attenuation(self, path_finder, frequency, attenuation):
+        """Test that propagate_ray returns the expected values within 1%"""
+        assert (path_finder.attenuation(frequency) 
+                == pytest.approx(attenuation, rel=0.01))
