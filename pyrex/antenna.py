@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 import scipy.fftpack
 import scipy.signal
-from pyrex.signals import ThermalNoise
+from pyrex.signals import Signal, ThermalNoise
 from pyrex.ice_model import IceModel
 
 
@@ -91,8 +91,9 @@ class Antenna:
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
         but should end with super().receive(signal)."""
-        signal.filter_frequencies(self.response)
-        self.signals.append(signal)
+        copy = Signal(signal.times, signal.values)
+        copy.filter_frequencies(self.response)
+        self.signals.append(copy)
 
 
 
@@ -134,5 +135,6 @@ class DipoleAntenna(Antenna):
     def receive(self, signal, polarization=[0,0,1]):
         """Apply polarization effect to signal, then proceed with usual
         antenna reception."""
-        signal.values *= self.effective_height * np.abs(polarization[2])
-        super().receive(signal)
+        scaled_values = (signal.values * self.effective_height
+                         * np.abs(polarization[2]))
+        super().receive(Signal(signal.times, scaled_values))
