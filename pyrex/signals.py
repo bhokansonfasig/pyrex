@@ -218,6 +218,9 @@ class FastAskaryanSignal(Signal):
         #                            RAC(z(1-n*cos(theta))/c))
         #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
         #                * c / (1-n*cos(theta))
+        if theta > np.pi/2:
+            raise ValueError("Angles greater than 90 degrees not supported")
+
         self.energy = energy
 
         # Conversion factor from z to t for RAC:
@@ -236,6 +239,10 @@ class FastAskaryanSignal(Signal):
         Q = np.zeros(n_Q)
         for i, z in enumerate(z_Q_vals):
             Q[i] = self.charge_profile(z)
+
+        print("theta =",theta * 180 / np.pi)
+        print(z_max, dz)
+        print(n_Q, len(times), len(times)+1-n_Q)
 
         # Calculate RAC at a specific number of z values (n_RAC) determined so
         # that the full convolution will have the same size as the times array

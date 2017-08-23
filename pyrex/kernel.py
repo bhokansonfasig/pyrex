@@ -21,7 +21,7 @@ class EventKernel:
         p = self.gen.create_particle()
         n = self.ice.index(p.vertex[2])
         for ant in self.ant_array:
-            pf = PathFinder(self.ice, p.vertex, ant.pos)
+            pf = PathFinder(self.ice, p.vertex, ant.position)
             if not(pf.exists):
                 continue
             k = pf.emitted_ray
@@ -29,6 +29,10 @@ class EventKernel:
             epol = epol / np.linalg.norm(epol)
             # p.direction and k should both be unit vectors
             psi = np.arccos(np.vdot(p.direction, k))
+
+            # TODO: Support angles larger than pi/2
+            if psi>np.pi/2:
+                continue
 
             times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False)
             pulse = AskaryanSignal(times=times, energy=p.energy*1e-3,
