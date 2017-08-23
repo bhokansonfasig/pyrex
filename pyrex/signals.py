@@ -240,10 +240,6 @@ class FastAskaryanSignal(Signal):
         for i, z in enumerate(z_Q_vals):
             Q[i] = self.charge_profile(z)
 
-        print("theta =",theta * 180 / np.pi)
-        print(z_max, dz)
-        print(n_Q, len(times), len(times)+1-n_Q)
-
         # Calculate RAC at a specific number of z values (n_RAC) determined so
         # that the full convolution will have the same size as the times array
         n_RAC = len(times) + 1 - n_Q
