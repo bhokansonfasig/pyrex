@@ -122,7 +122,7 @@ class DipoleAntenna(Antenna):
     def trigger(self, signal):
         """Trigger on the signal if the maximum signal value is above the
         given threshold."""
-        return max(signal.values) > self.threshold
+        return max(np.abs(signal.values)) > self.threshold
 
     def response(self, frequencies):
         """Butterworth filter response for the antenna's frequency range."""
@@ -134,5 +134,5 @@ class DipoleAntenna(Antenna):
     def receive(self, signal, polarization=[0,0,1]):
         """Apply polarization effect to signal, then proceed with usual
         antenna reception."""
-        signal *= self.effective_height * np.abs(polarization[2])
+        signal.values *= self.effective_height * np.abs(polarization[2])
         super().receive(signal)
