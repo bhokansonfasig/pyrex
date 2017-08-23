@@ -15,7 +15,7 @@ class NeutrinoInteraction:
 
     def cross_section(self, E):
         """Return the cross section at a given energy E (GeV)."""
-        return (self.c * E)**self.p
+        return self.c * E**self.p
 
     def interaction_length(self, E):
         """Return the interaction length at a given energy E (GeV)."""
