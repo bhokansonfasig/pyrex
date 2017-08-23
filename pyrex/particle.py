@@ -27,6 +27,8 @@ CC_NU = NeutrinoInteraction(2.69E-36, 0.402)
 # Can be made into a class later if any functions or mutability are needed
 # Note: energy is in GeV
 Particle = namedtuple('Particle', ['vertex','direction','energy'])
+Particle.__doc__ = """Named tuple for containing particle attributes.
+Consists of a 3-D vertex (m), 3-D direction vector, and an energy (GeV)."""
 
 def random_direction():
     """Generate an arbitrary 3D unit vector."""
