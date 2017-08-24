@@ -246,7 +246,7 @@ class FastAskaryanSignal(Signal):
         z_RAC_vals = np.arange(n_RAC) * dz
         RA_C = np.zeros(n_RAC)
         for i, z in enumerate(z_RAC_vals):
-            RA_C[i] = self.RAC(t0 + z*z_to_t)
+            RA_C[i] = self.RAC(t0 - times[0] + z*z_to_t)
 
         # Convolve Q and RAC to get (unnormalized) vector potential A
         A = scipy.signal.convolve(Q, RA_C, mode='full')
