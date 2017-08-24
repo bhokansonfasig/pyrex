@@ -26,7 +26,7 @@ class Antenna:
 
         self.signals = []
         self._noises = []
-        self.triggers = []
+        self._triggers = []
 
     @property
     def is_hit(self):
@@ -43,18 +43,18 @@ class Antenna:
         """Reset the antenna to a state of having received no signals."""
         self.signals.clear()
         self._noises.clear()
-        self.triggers.clear()
+        self._triggers.clear()
 
     @property
     def waveforms(self):
         """Signal + noise (if noisy) at each triggered antenna hit."""
         # Process any unprocessed triggers
         all_waves = self.all_waveforms
-        while len(self.triggers)<len(all_waves):
-            waveform = all_waves[len(self.triggers)]
-            self.triggers.append(self.trigger(waveform))
+        while len(self._triggers)<len(all_waves):
+            waveform = all_waves[len(self._triggers)]
+            self._triggers.append(self.trigger(waveform))
 
-        return [wave for wave, triggered in zip(all_waves, self.triggers)
+        return [wave for wave, triggered in zip(all_waves, self._triggers)
                 if triggered]
 
     @property
