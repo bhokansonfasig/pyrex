@@ -100,10 +100,11 @@ class Antenna:
 
 class DipoleAntenna(Antenna):
     """Antenna with a given name, position (m), center frequency (MHz),
-    bandwidth (MHz), resistance (ohm), effective height (m)
-    and trigger threshold (V)."""
+    bandwidth (MHz), resistance (ohm), effective height (m), polarization
+    direction, and trigger threshold (V)."""
     def __init__(self, name, position, center_frequency, bandwidth, resistance,
-                 effective_height, threshold, noisy=True):
+                 effective_height, polarization=[0,0,1],
+                 trigger_threshold=0, noisy=True):
         # Get the critical frequencies in Hz
         f_low = (center_frequency - bandwidth/2) * 1e6
         f_high = (center_frequency + bandwidth/2) * 1e6
@@ -113,7 +114,9 @@ class DipoleAntenna(Antenna):
         # induced signal strength [V]
         self.name = name
         self.effective_height = effective_height
-        self.threshold = threshold
+        self.polarization = (np.array(polarization)
+                             / np.linalg.norm(polarization))
+        self.threshold = trigger_threshold
 
         # Build scipy butterworth filter to speed up response function
         b, a  = scipy.signal.butter(1, 2*np.pi*np.array(self.freq_range),
@@ -137,5 +140,5 @@ class DipoleAntenna(Antenna):
         """Apply polarization effect to signal, then proceed with usual
         antenna reception."""
         scaled_values = (signal.values * self.effective_height
-                         * np.abs(polarization[2]))
+                         * np.abs(np.vdot(self.polarization, polarization)))
         super().receive(Signal(signal.times, scaled_values))
