@@ -43,6 +43,7 @@ class Antenna:
         """Reset the antenna to a state of having received no signals."""
         self.signals.clear()
         self._noises.clear()
+        self.triggers.clear()
 
     @property
     def waveforms(self):
