@@ -7,8 +7,11 @@
 *.pyc
 __pycache__/
 
-#pytest cache
+# pytest cache
 .cache/
 
 # IPython notebook helper files
 .ipynb_checkpoints/
+
+# Sphinx documentation build directory
+docs/_build/
