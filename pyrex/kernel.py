@@ -34,9 +34,9 @@ class EventKernel:
             if psi>np.pi/2:
                 continue
 
-            times = np.linspace(0, 100e-9, 2048, endpoint=False)
+            times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False)
             pulse = AskaryanSignal(times=times, energy=p.energy*1e-3,
-                                   theta=psi, n=n, t0=20e-9)
+                                   theta=psi, n=n)
 
             pf.propagate(pulse)
 
