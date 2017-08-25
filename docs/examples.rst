@@ -9,7 +9,9 @@ The following code examples assume these imports::
 
 All of the following examples can also be found (and quickly run) in the Code Examples python notebook.
 
-Working with Signal objects
+
+
+Working with Signal Objects
 ---------------------------
 
 The base ``Signal`` class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The ``times`` array is assumed to be in units of seconds, but there are no general units for the ``values`` array (though it is commonly assumed to be in volts or volts per meter). It is worth noting that the Singal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the ``Signal`` object. ::
@@ -106,6 +108,122 @@ A number of classes which inherit from the Signal class are included in PyREx: `
                                resistance=system_resistance,
                                f_band=frequency_range)
     plt.plot(noise.times, noise.values)
+
+
+
+Antenna Class and Subclasses
+----------------------------
+
+The base ``Antenna`` class provided by PyREx is designed to be inherited from to match the needs of each project. At its core, an ``Antenna`` object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance for noise calculations and a boolean dictating whether or not noise should be added to the antenna's signals (note that if noise is to be added, a resistance must be specified). ::
+
+    position = (0, 0, -100) # m
+    temperature = 300 # K
+    resistance = 1 # ohm
+    frequency_range = (0, 1e3) # Hz
+    basic_antenna = pyrex.Antenna(position=position, temperature=temperature,
+                                  resistance=resistance,
+                                  freq_range=frequency_range)
+    noiseless_antenna = pyrex.Antenna(position=position, noisy=False)
+
+The basic properties of an ``Antenna`` object are ``is_hit`` and ``waveforms``. ``is_hit`` specifies whether or not the antenna has been triggered by an event. ``waveforms`` is a list of all the waveforms which have triggered the antenna. The antenna also defines ``signals``, which is a list of all signals the antenna has received, and ``all_waveforms`` which is a list of all waveforms (signal plus noise) the antenna has received including those which didn't trigger. ::
+
+    basic_antenna.is_hit == False
+    basic_antenna.waveforms == []
+
+The ``Antenna`` class defines three methods which are expected to be overwritten: ``trigger``, ``response``, and ``receive``. ``trigger`` takes a ``Signal`` object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns ``True``). ``response`` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). ::
+
+    basic_antenna.trigger(pyrex.Signal([0],[0])) == True
+    freqs = [1, 2, 3, 4, 5]
+    basic_antenna.response(freqs) == [1, 1, 1, 1, 1]
+
+The ``receive`` method is a bit different in that it contains some default functionality::
+
+    def receive(self, signal):
+        copy = Signal(signal.times, signal.values)
+        copy.filter_frequencies(self.response)
+        self.signals.append(copy)
+
+In this sense, the ``receive`` function is intended to be extended instead of overwritten. In derived classes, it is recommended that a newly defined ``receive`` function call ``super().receive(signal)``. For example, if a polarization is to be applied, the following ``receive`` function could be implemented::
+
+    def receive(self, signal, signal_polarization):
+        polarization_factor = np.vdot(self.polariztion, signal_polarization)
+        polarized_signal = Signal(signal.times,
+                                  signal.values * polarization_factor)
+        super().receive(polarized_signal)
+
+To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest::
+
+    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin)
+    basic_antenna.receive(incoming_singal)
+    basic_antenna.is_hit == True
+    for wave in basic_antenna.waveforms:
+        plt.figure()
+        plt.plot(wave.times, wave.values)
+        plt.show()
+    for pure_signal in basic_antenna.signals:
+        plt.figure()
+        plt.plot(pure_signal.times, pure_signal.values)
+        plt.show()
+
+The ``Antenna`` class also defines a ``clear`` method which will reset the antenna to a state of having received no signals::
+
+    basic_antenna.clear()
+    basic_antenna.is_hit == False
+    len(basic_antenna.waveforms) == 0
+
+
+To create a custom antenna, simply inherit from the ``Antenna`` class::
+
+    class NoiselessThresholdAntenna(pyrex.Antenna):
+        def __init__(self, position, threshold):
+            super().__init__(position=position, noisy=False)
+            self.threshold = threshold
+
+        def trigger(self, signal):
+            if max(np.abs(signal.values)) > self.threshold:
+                return True
+            else:
+                return False
+
+Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude of a signal exceeds its threshold value::
+
+    my_antenna = NoiselessThresholdAntenna(position=(0, 0, 0), threshold=2)
+
+    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin)
+    my_antenna.receive(incoming_singal)
+    my_antenna.is_hit == False
+    len(my_antenna.waveforms) == 0
+    len(my_antenna.all_waveforms) == 1
+
+    incoming_singal = pyrex.Signal(incoming_singal.times,
+                                   5*incoming_singal.values)
+    my_antenna.receive(incoming_singal)
+    my_antenna.is_hit == True
+    len(my_antenna.waveforms) == 1
+    len(my_antenna.all_waveforms) == 2
+
+    for wave in my_antenna.waveforms:
+        plt.figure()
+        plt.plot(wave.times, wave.values)
+        plt.show()
+
+
+PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provides a basic threshold trigger, a basic bandpass filter, and a polarization effect on the reception of a signal. A ``DipoleAntenna`` object is created as follows::
+
+    antenna_identifier = "antenna 1"
+    position = (0, 0, -100)
+    center_frequency = 250 # MHz
+    bandwidth = 200 # MHz
+    resistance = 1000 # ohm
+    antenna_length = 1 # m
+    polarization_direction = (0, 0, 1)
+    trigger_threshold = 1e-5 # V
+    dipole = pyrex.DipoleAntenna(name=antenna_identifier,position=position,
+                                 center_frequency=center_frequency,
+                                 bandwidth=bandwidth, resistance=resistance,
+                                 effective_height=antenna_length,
+                                 polarization=polarization_direction,
+                                 trigger_threshold=trigger_threshold)
 
 
 
