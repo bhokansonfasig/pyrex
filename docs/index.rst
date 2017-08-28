@@ -16,4 +16,4 @@ Welcome to PyREx's documentation!
 
    pyrex
 
-
+   versions
