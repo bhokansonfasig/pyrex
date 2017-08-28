@@ -227,6 +227,33 @@ PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provid
 
 
 
+Ice and Earth Models
+--------------------
+
+PyREx provides a class ``IceModel``, which is an alias for whichever south pole ice model class is the preferred (currently just the basic ``AntarcticIce``). The ``IceModel`` class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below::
+
+    depth = -1000 # m
+    pyrex.IceModel.temperature(depth)
+    pyrex.IceModel.index(depth)
+    pyrex.IceModel.gradient(depth)
+    frequency = 100 # MHz
+    pyrex.IceModel.attenuation_length(depth, frequency)
+
+PyREx also provides two functions realted to its earth model: ``prem_density`` and ``slant_depth``. ``prem_density`` calculates the density in grams per cubic centimeter of the earth at a given radius::
+
+    radius = 6360000 # m
+    pyrex.prem_density(radius)
+
+``slant_depth`` calculates the material thickness in grams per square centimeter of a chord cutting through the earth at a given nadir angle, starting from a given depth::
+
+    nadir_angle = 60 * np.pi/180 # radians
+    depth = 1000 # m
+    pyrex.slant_depth(nadir_angle, depth)
+
+
+
+
+
 More Examples
 -------------
 
