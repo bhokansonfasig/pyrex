@@ -315,6 +315,43 @@ Finally, ``PathFinder.propagate()`` propagates a ``Signal`` object from ``from_p
 
 
 
+Full Simulation
+---------------
+
+PyREx provides the ``EventKernel`` class to control a basic simulation including the creation of neutrinos, the propagation of their pulses to the antennas, and the triggering of the antennas::
+
+    particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
+                                               energy_generator=lambda: 1e8)
+    detector = []
+    for i, z in enumerate([-100, -150, -200, -250]):
+        detector.append(
+            pyrex.DipoleAntenna(name="antenna_"+str(i), position=(0, 0, z),
+                                center_frequency=500, bandwidth=500,
+                                resistance=0, effective_height=1,
+                                trigger_threshold=0, noisy=False)
+        )
+    kernel = pyrex.EventKernel(generator=particle_generator,
+                               ice_model=pyrex.IceModel,
+                               antennas=detector)
+
+    triggered = False
+    while not triggered:
+        kernel.event()
+        for antenna in detector:
+            if antenna.is_hit:
+                triggered = True
+                break
+    
+    for antenna in detector:
+        for i, wave in enumerate(antenna.waveforms):
+            plt.plot(wave.times * 1e9, wave.values)
+            plt.xlabel("Time (ns)")
+            plt.ylabel("Voltage (V)")
+            plt.title(antenna.name + " - waveform "+str(i))
+
+
+
+
 More Examples
 -------------
 
