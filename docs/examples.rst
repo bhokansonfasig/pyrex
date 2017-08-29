@@ -252,6 +252,27 @@ PyREx also provides two functions realted to its earth model: ``prem_density`` a
 
 
 
+Particle Generation
+-------------------
+
+PyREx includes ``Particle`` as a container for information about neutrinos which are generated to produce Askaryan pulses. ``Particle`` contains three attributes: ``vertex``, ``direction``, and ``energy``::
+
+    initial_position = (0,0,0) # m
+    direction_vector = (0,0,-1)
+    particle_energy = 1e8 # GeV
+    pyrex.Particle(vertex=initial_position, direction=direction_vector,
+                   energy=particle_energy)
+
+PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos, taking into account some Earth shadowing. The neutrinos are generated in a box of given size, and with an energy given by an energy generation function::
+
+    box_width = 1000 # m
+    box_depth = 500 # m
+    const_energy_generator = lambda: 1e8 # GeV
+    my_generator = pyrex.ShadowGenerator(dx=box_width, dy=box_width,
+                                         dz=box_depth,
+                                         energy_generator=const_energy_generator)
+    my_generator.create_particle()
+
 
 
 More Examples
