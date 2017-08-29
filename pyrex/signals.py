@@ -229,27 +229,65 @@ class FastAskaryanSignal(Signal):
 
         # Calculate the time step and the corresponding z-step
         dt = times[1] - times[0]
-        dz = np.abs(dt / z_to_t)
+        dz = dt / z_to_t
+
+        # If the z-step is too large compared to the expected maximum shower
+        # length, then the result will be bad. Divide dz until it is adequately
+        # small compared to max_length
+        dt_divider = 1
+        while np.abs(dz/self.max_length()) > 0.1:
+            dt_divider *= 2
+            dz = dt / dt_divider / z_to_t
 
         # Create the charge-profile array up to 2.5 times the nominal
         # maximum shower length (to reduce errors)
         z_max = 2.5*self.max_length()
-        n_Q = int(z_max/dz)
-        z_Q_vals = np.arange(n_Q) * dz
+        n_Q = int(np.abs(z_max/dz))
+        z_Q_vals = np.arange(n_Q) * np.abs(dz)
         Q = np.zeros(n_Q)
         for i, z in enumerate(z_Q_vals):
             Q[i] = self.charge_profile(z)
 
-        # Calculate RAC at a specific number of z values (n_RAC) determined so
-        # that the full convolution will have the same size as the times array
-        n_RAC = len(times) + 1 - n_Q
-        z_RAC_vals = np.arange(n_RAC) * dz
+        # Calculate RAC at a specific number of t values (n_RAC) determined so
+        # that the full convolution will have the same size as the times array,
+        # when appropriately rescaled by dt_divider.
+        # If t_RAC_vals does not include a reasonable range around zero
+        # (typically because n_RAC is too small), errors occur. In that case
+        # extra points are added at the beginning and/or end of RAC
+        t_min = 0
+        t_max = 0
+        n_extra_beginning = 0
+        n_extra_end = 0
+        t_tolerance = 1e-9
+        while t_min >= -t_tolerance or t_max <= t_tolerance:
+            n_RAC = (len(times)*dt_divider + 1 - n_Q
+                     + n_extra_beginning + n_extra_end)
+            t_min = times[0] - t0 - n_extra_beginning * dz * z_to_t
+            t_max = (n_RAC-1) * dz * z_to_t + t_min
+            if t_min >= -t_tolerance:
+                n_extra_beginning += n_Q
+            if t_max <= t_tolerance:
+                n_extra_end += n_Q
+        t_RAC_vals = np.arange(n_RAC) * dz * z_to_t + t_min
         RA_C = np.zeros(n_RAC)
-        for i, z in enumerate(z_RAC_vals):
-            RA_C[i] = self.RAC(t0 - times[0] + z*z_to_t)
+        for i, t in enumerate(t_RAC_vals):
+            RA_C[i] = self.RAC(t)
 
-        # Convolve Q and RAC to get (unnormalized) vector potential A
-        A = scipy.signal.convolve(Q, RA_C, mode='full')
+        # Convolve Q and RAC to get unnormalized vector potential
+        convolution = scipy.signal.convolve(Q, RA_C, mode='full')
+
+        # Reduce the number of values in the convolution based on the dt_divider
+        # so that the number of values matches the length of the times array.
+        # It's possible that this should be using scipy.signal.resample instead
+        # TODO: Figure that out
+        convolution = convolution[::dt_divider]
+
+        # Remove any extra values in the convolution as a result of adding
+        # extra values to the beginning and/or end of RAC
+        if n_extra_end!=0:
+            convolution = convolution[n_extra_beginning:n_extra_end]
+        else:
+            convolution = convolution[n_extra_beginning:]
 
         # Calculate LQ_tot (the excess longitudinal charge along the shower)
         LQ_tot = np.trapz(Q, dx=dz)
@@ -257,8 +295,12 @@ class FastAskaryanSignal(Signal):
         # Calculate sin(theta_c) = sqrt(1-cos^2(theta_c)) = sqrt(1-1/n^2)
         sin_theta_c = np.sqrt(1 - 1/n**2)
 
-        # Scale the integral by the necessary factors
-        A *= np.sin(theta) / sin_theta_c / LQ_tot / z_to_t
+        # Scale the convolution by the necessary factors to get the true
+        # vector potential A
+        # z_to_t and dt_divider are divided out of trial and error to correct
+        # the normalization. They are not proven nicely like the other factors
+        A = (convolution * -1 * np.sin(theta) / sin_theta_c / LQ_tot
+             / z_to_t / dt_divider)
 
         # Not sure why, but multiplying A by -dt is necessary to fix
         # normalization and dependence of amplitude on time spacing.
