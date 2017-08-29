@@ -1,6 +1,12 @@
 Version History
 ===============
 
+Version 1.0.1
+-------------
+
+* Fixed bugs in ``AskaryanSignal`` that caused the convolution to fail
+
+
 
 Version 1.0.0
 -------------
