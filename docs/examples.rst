@@ -275,6 +275,46 @@ PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos,
 
 
 
+Ray Tracing
+-----------
+
+While PyREx does not currently support full ray tracing, it does provide a ``PathFinder`` class which implements some basic ray analysis by Snell's law. ``PathFinder`` takes an ice model and two points as arguments and provides a number of properties and methods regarding the path between the points. ::
+
+    start = (0, 0, -100) # m
+    finish = (0, 0, -250) # m
+    my_path = pyrex.PathFinder(ice_model=pyrex.IceModel,
+                               from_point=start, to_point=finish)
+
+``PathFinder.exists`` is a boolean value of whether or not the path between the points is traversable according to the indices of refraction. ``PathFinder.emitted_ray`` is a unit vector giving the direction from ``from_point`` to ``to_point``. ``PathFinder.path_length`` is the length in meters of the straight line path between the two points. ::
+
+    my_path.exists
+    my_path.emitted_ray
+    my_path.path_length
+
+``PathFinder.time_of_flight()`` calculates the time it takes for light to traverse the path, with an optional parameter ``n_steps`` defining the precision used. ``PathFinder.tof`` is a convenience property set to the time of flight using the default value of ``n_steps``. ::
+
+    my_path.time_of_flight(n_steps=100)
+    my_path.time_of_flight() == my_path.tof
+
+``PathFinder.attenuation()`` calculates the attenuation factor along the path for a signal of given frequency. Here again there is an optional parameter ``n_steps`` defining the precision used. ::
+
+    frequency = 1000 # Hz
+    my_path.attenuation(f=frequency, n_steps=100)
+
+Finally, ``PathFinder.propagate()`` propagates a ``Signal`` object from ``from_point`` to ``to_point`` by applying a ``1/PathFinder.path_length`` factor, applying the frequency attenuation of ``PathFinder.attenuation()``, and shifting the signal times by ``PathFinder.tof``::
+
+    time_array = np.linspace(0, 0.05, 1001)
+    my_signal = (pyrex.FunctionSignal(time_array, lambda t: np.sin(100*2*np.pi*t))
+                + pyrex.FunctionSignal(time_array, lambda t: np.sin(1000*2*np.pi*t)))
+    plt.plot(my_signal.times, my_signal.values)
+    plt.show()
+
+    my_path.propagate(my_signal)
+    plt.plot(my_signal.times, my_signal.values)
+    plt.show()
+
+
+
 More Examples
 -------------
 
