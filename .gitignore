@@ -13,6 +13,10 @@ __pycache__/
 # IPython notebook helper files
 .ipynb_checkpoints/
 
+# Bug testing items
+Bug*
+bug*
+
 # Sphinx documentation build directory, except final pdf
 docs/_build/*
 !docs/_build/latex/
