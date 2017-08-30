@@ -20,7 +20,7 @@ def dipole():
     """Fixture for forming basic DipoleAntenna object"""
     return DipoleAntenna(name="ant", position=[0,0,-250], center_frequency=250,
                          bandwidth=100, resistance=1000, effective_height=1.0,
-                         threshold=5E-6)
+                         trigger_threshold=5E-6)
 
 
 class TestAntenna:
@@ -73,7 +73,7 @@ class TestAntenna:
         assert antenna.waveforms != []
         assert isinstance(antenna.waveforms[0], Signal)
         assert antenna._noises != []
-        assert antenna.triggers == [True]
+        assert antenna._triggers == [True]
 
     def test_delay_noise_calculation(self, antenna):
         """Test that antenna noise isn't calculated until it is needed"""

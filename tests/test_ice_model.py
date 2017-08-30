@@ -88,7 +88,7 @@ class TestAntarcticIce:
         """Tests the temperature in the ice at different depths
         (within 3%) according to Kurt Woschnagg's data here:
         http://icecube.wisc.edu/~mnewcomb/radio/temp/"""
-        assert AntarcticIce.temperature(depth) == pytest.approx(temp, rel=0.03)
+        assert AntarcticIce.temperature(depth) == pytest.approx(temp+273.15, rel=0.03)
 
     @pytest.mark.parametrize("depth", list(-1*np.linspace(100,1000,10)))
     @pytest.mark.parametrize("freq", list(np.logspace(-3,6,4)))
