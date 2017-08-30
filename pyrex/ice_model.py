@@ -38,7 +38,7 @@ class AntarcticIce:
         w0 = np.log(1e-4)
         w1 = 0
         w2 = np.log(3.16)
-        t = cls.temperature(z)
+        t = cls.temperature(z) - 273.15
         b0 = -6.7489 + t * (0.026709 - 8.84e-4 * t)
         b1 = -6.2212 - t * (0.070927 + 1.77e-3 * t)
         b2 = -4.0947 - t * (0.002213 + 3.32e-4 * t)
