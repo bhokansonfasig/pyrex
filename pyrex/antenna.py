@@ -14,13 +14,15 @@ class Antenna:
     noise, and whether or not to include noise in the antenna's waveforms.
     Defines default trigger, frequency response, and signal reception functions
     that can be overwritten in base classes to customize the antenna."""
-    def __init__(self, position, temperature, freq_range,
+    def __init__(self, position, temperature=None, freq_range=None,
                  resistance=None, noisy=True):
         self.position = position
+        if (noisy and (temperature is None or freq_range is None
+                       or resistance is None)):
+            raise ValueError("A temperature, frequency range, and resistance"
+                             + "are required to generate antenna noise")
         self.temperature = temperature
         self.freq_range = freq_range
-        if noisy and resistance is None:
-            raise ValueError("A resistance is required to generate antenna noise")
         self.resistance = resistance
         self.noisy = noisy
 
@@ -108,8 +110,10 @@ class DipoleAntenna(Antenna):
         # Get the critical frequencies in Hz
         f_low = (center_frequency - bandwidth/2) * 1e6
         f_high = (center_frequency + bandwidth/2) * 1e6
-        super().__init__(position, IceModel.temperature(position[2]),
-                         (f_low, f_high), resistance, noisy)
+        super().__init__(position=position,
+                         temperature=IceModel.temperature(position[2]),
+                         freq_range=(f_low, f_high), resistance=resistance,
+                         noisy=noisy)
         # gets the time of the hit [ns]
         # induced signal strength [V]
         self.name = name
