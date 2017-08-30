@@ -8,6 +8,8 @@ Version 1.0.1
 
 * Changed ``Antenna`` not require a temperature and frequency range if no noise is produced
 
+* Fixed bugs resulting from converting ``IceModel.temperature()`` from Celsius to Kelvin
+
 
 
 Version 1.0.0
