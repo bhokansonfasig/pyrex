@@ -6,6 +6,8 @@ Version 1.0.1
 
 * Fixed bugs in ``AskaryanSignal`` that caused the convolution to fail
 
+* Changed ``Antenna`` not require a temperature and frequency range if no noise is produced
+
 
 
 Version 1.0.0
