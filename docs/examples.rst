@@ -298,14 +298,14 @@ While PyREx does not currently support full ray tracing, it does provide a ``Pat
 
 ``PathFinder.attenuation()`` calculates the attenuation factor along the path for a signal of given frequency. Here again there is an optional parameter ``n_steps`` defining the precision used. ::
 
-    frequency = 1000 # Hz
+    frequency = 1e9 # Hz
     my_path.attenuation(f=frequency, n_steps=100)
 
 Finally, ``PathFinder.propagate()`` propagates a ``Signal`` object from ``from_point`` to ``to_point`` by applying a ``1/PathFinder.path_length`` factor, applying the frequency attenuation of ``PathFinder.attenuation()``, and shifting the signal times by ``PathFinder.tof``::
 
-    time_array = np.linspace(0, 0.05, 1001)
-    my_signal = (pyrex.FunctionSignal(time_array, lambda t: np.sin(100*2*np.pi*t))
-                + pyrex.FunctionSignal(time_array, lambda t: np.sin(1000*2*np.pi*t)))
+    time_array = np.linspace(0, 5e-9, 1001)
+    my_signal = (pyrex.FunctionSignal(time_array, lambda t: np.sin(1e9*2*np.pi*t))
+                + pyrex.FunctionSignal(time_array, lambda t: np.sin(1e10*2*np.pi*t)))
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
