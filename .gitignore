@@ -14,8 +14,8 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Bug testing items
-Bug*
-bug*
+tests/Bug*
+tests/bug*
 
 # Sphinx documentation build directory, except final pdf
 docs/_build/*
