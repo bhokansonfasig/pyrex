@@ -1,69 +1,78 @@
 Version History
 ===============
 
+Version 1.0.2
+-------------
+
+* Performance improvements:
+
+    * Allow for ``IceModel`` to calculate many attenuation lengths at once. Improves speed of ``PathFinder.propagate()``.
+
 Version 1.0.1
 -------------
 
-* Fixed bugs in ``AskaryanSignal`` that caused the convolution to fail
+* Fixed bugs in ``AskaryanSignal`` that caused the convolution to fail.
 
-* Changed ``Antenna`` not require a temperature and frequency range if no noise is produced
+* Changed ``Antenna`` not require a temperature and frequency range if no noise is produced.
 
-* Fixed bugs resulting from converting ``IceModel.temperature()`` from Celsius to Kelvin
+* Fixed bugs resulting from converting ``IceModel.temperature()`` from Celsius to Kelvin.
 
 
 
 Version 1.0.0
 -------------
 
-* Created PyREx package based on original notebook
+* Created PyREx package based on original notebook.
 
-* Added all signal classes to produce full-waveform Askaryan pulses and thermal noise
+* Added all signal classes to produce full-waveform Askaryan pulses and thermal noise.
 
-* Changed ``Antenna`` class to ``DipoleAntenna`` to allow ``Antenna`` to be a base class
+* Changed ``Antenna`` class to ``DipoleAntenna`` to allow ``Antenna`` to be a base class.
 
-* Changed ``Antenna.isHit()`` method to ``Antenna.is_hit`` property
+* Changed ``Antenna.isHit()`` method to ``Antenna.is_hit`` property.
 
-* Introduced ``IceModel`` alias for ``AntarcticIce`` (or any future preferred ice model)
+* Introduced ``IceModel`` alias for ``AntarcticIce`` (or any future preferred ice model).
 
-* Moved ``AntarcticIce.attenuationLengthMN`` to its own ``NewcombIce`` class inheriting from ``AntarcticIce``
+* Moved ``AntarcticIce.attenuationLengthMN`` to its own ``NewcombIce`` class inheriting from ``AntarcticIce``.
 
-* Added ``PathFinder.propagate()`` to propagate a ``Signal`` object in a customizable way
+* Added ``PathFinder.propagate()`` to propagate a ``Signal`` object in a customizable way.
 
 * Changed naming conventions to be more consistent, verbose, and "pythonic":
 
-    * ``AntarcticIce.attenuationLength()`` becomes ``AntarcticIce.attenuation_length()``
+    * ``AntarcticIce.attenuationLength()`` becomes ``AntarcticIce.attenuation_length()``.
 
-    * In ``pyrex.earth_model``, ``RE`` becomes ``EARTH_RADIUS``
+    * In ``pyrex.earth_model``, ``RE`` becomes ``EARTH_RADIUS``.
 
-    * In ``pyrex.particle``, ``neutrino_interaction`` becomes ``NeutrinoInteraction``
+    * In ``pyrex.particle``, ``neutrino_interaction`` becomes ``NeutrinoInteraction``.
 
-    * In ``pyrex.particle``, ``NA`` becomes ``AVOGADRO_NUMBER``
+    * In ``pyrex.particle``, ``NA`` becomes ``AVOGADRO_NUMBER``.
 
-    * ``particle`` class becomes ``Particle`` namedtuple
+    * ``particle`` class becomes ``Particle`` namedtuple.
 
-        * ``Particle.vtx`` becomes ``Particle.vertex``
+        * ``Particle.vtx`` becomes ``Particle.vertex``.
 
-        * ``Particle.dir`` becomes ``Particle.direction``
+        * ``Particle.dir`` becomes ``Particle.direction``.
 
-        * ``Particle.E`` becomes ``Particle.energy``
+        * ``Particle.E`` becomes ``Particle.energy``.
 
-    * In ``pyrex.particle``, ``next_direction()`` becomes ``random_direction()``
+    * In ``pyrex.particle``, ``next_direction()`` becomes ``random_direction()``.
 
-    * ``shadow_generator`` becomes ``ShadowGenerator``
+    * ``shadow_generator`` becomes ``ShadowGenerator``.
 
     * ``PathFinder`` methods become properties where reasonable:
 
-        * ``PathFinder.exists()`` becomes ``PathFinder.exists``
+        * ``PathFinder.exists()`` becomes ``PathFinder.exists``.
 
-        * ``PathFinder.getEmittedRay()`` becomes ``PathFinder.emitted_ray``
+        * ``PathFinder.getEmittedRay()`` becomes ``PathFinder.emitted_ray``.
 
-        * ``PathFinder.getPathLength()`` becomes ``PathFinder.path_length``
+        * ``PathFinder.getPathLength()`` becomes ``PathFinder.path_length``.
 
-    * ``PathFinder.propagateRay()`` split into ``PathFinder.time_of_flight()`` (with corresponding ``PathFinder.tof`` property) and ``PathFinder.attenuation()``
+    * ``PathFinder.propagateRay()`` split into ``PathFinder.time_of_flight()`` (with corresponding ``PathFinder.tof`` property) and ``PathFinder.attenuation()``.
 
 
 
 Version 0.0.0
 -------------
 
-Original PyREx python notebook written by Kael Hanson
+Original PyREx python notebook written by Kael Hanson:
+
+https://gist.github.com/physkael/898a64e6fbf5f0917584c6d31edf7940
