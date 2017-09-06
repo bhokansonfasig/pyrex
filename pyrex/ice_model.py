@@ -33,8 +33,11 @@ class AntarcticIce:
 
     @classmethod
     def attenuation_length(cls, z, f):
-        """Returns the attenuation length at depth z (m) and frequency f (MHz)."""
-        w = np.log(f*0.001)
+        """Returns the attenuation length at depth z (m) and frequency f (MHz).
+        Supports passing a list of frequencies with a single depth."""
+        # Suppress RuntimeWarnings when f==0 temporarily
+        with np.errstate(divide='ignore'):
+            w = np.log(f*0.001)
         w0 = np.log(1e-4)
         w1 = 0
         w2 = np.log(3.16)
@@ -42,13 +45,26 @@ class AntarcticIce:
         b0 = -6.7489 + t * (0.026709 - 8.84e-4 * t)
         b1 = -6.2212 - t * (0.070927 + 1.77e-3 * t)
         b2 = -4.0947 - t * (0.002213 + 3.32e-4 * t)
-        if f < 1000.0:
-            a = (b1 * w0 - b0 * w1) / (w0 - w1)
-            b = (b1 - b0) / (w1 - w0)
-        else:
-            a = (b2 * w1 - b1 * w2) / (w1 - w2)
-            b = (b2 - b1) / (w2 - w1)
-        return np.exp(-(a + b * w))
+        a_small = (b1 * w0 - b0 * w1) / (w0 - w1)
+        b_small = (b1 - b0) / (w1 - w0)
+        a_large = (b2 * w1 - b1 * w2) / (w1 - w2)
+        b_large = (b2 - b1) / (w2 - w1)
+
+        try:
+            a_lens = np.zeros(len(f))
+        except TypeError:
+            # f is a scalar, so just return one value
+            if f < 1000:
+                return np.exp(-(a_small + b_small * w))
+            else:
+                return np.exp(-(a_large + b_large * w))
+
+        for i, freq in enumerate(f):
+            if freq < 1000:
+                a_lens[i] = np.exp(-(a_small + b_small * w[i]))
+            else:
+                a_lens[i] = np.exp(-(a_large + b_large * w[i]))
+        return a_lens
 
 
 class NewcombIce(AntarcticIce):

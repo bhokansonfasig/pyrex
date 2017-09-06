@@ -58,11 +58,8 @@ class PathFinder:
 
     def attenuation(self, f, n_steps=10):
         """Returns the attenuation factor for a signal of frequency f (Hz)
-        traveling along the path."""
-        if f==0:
-            return 0
-        elif f<0:
-            f = -f
+        traveling along the path. Supports passing a list of frequencies."""
+        fa = np.abs(f)
         atten = 1
         z0 = self.from_point[2]
         z1 = self.to_point[2]
@@ -75,14 +72,15 @@ class PathFinder:
             z = z0 + (i+0.5)*dz
             dr = drdz * dz
             p = np.sqrt(dr**2 + dz**2)
-            alen = self.ice.attenuation_length(z, f*1e-6)
+            alen = self.ice.attenuation_length(z, fa*1e-6)
             atten *= np.exp(-p/alen)
         return atten
 
     def propagate(self, signal):
         """Applies attenuation to the signal along the path."""
         if not self.exists:
-            return
+            raise RuntimeError("Cannot propagate signal along a path that "+
+                               "doesn't exist")
         signal.values *= 1 / self.path_length
         signal.filter_frequencies(self.attenuation)
         signal.times += self.tof
