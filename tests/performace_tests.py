@@ -181,12 +181,66 @@ def test_PathFinder_propagate():
                                 "signal = pyrex.Signal(pulse.times, pulse.values)",
                           use_globals={"pf": pf, "pulse": pulse})
 
-    print("Total time:", round(t,3), "seconds per signal")
+    print("Total time:", round(t*1000, 1), "milliseconds per signal")
 
+
+
+def test_filter_attenuation():
+    # filtered_spectrum = self.spectrum
+    # responses = np.array(freq_response(self.frequencies))
+    # filtered_spectrum *= responses
+    # self.values = np.real(scipy.fftpack.ifft(filtered_spectrum))
+
+    # freq_response = pf.attenuation
+    # self = AskaryanSignal(times=np.linspace(-20e-9, 80e-9, 2048, endpoint=False),
+    #                       energy=p.energy*1e-3, theta=psi, n=n)
+    t = 0
+
+    pf = pyrex.PathFinder(pyrex.IceModel(), (0,0,-2800), (5000,5000,-200))
+    while not(pf.exists):
+        z = np.random.random()*-2800
+        pf = pyrex.PathFinder(pyrex.IceModel(), (0,0,z), (5000,5000,-200))
+
+    p = pyrex.Particle(vertex=pf.from_point,
+                       direction=(1/np.sqrt(2),1/np.sqrt(2),0), energy=1e6)
+
+    k = pf.emitted_ray
+    epol = np.vdot(k, p.direction) * k - p.direction
+    epol = epol / np.linalg.norm(epol)
+    psi = np.arccos(np.vdot(p.direction, k))
+    n = pyrex.IceModel.index(p.vertex[2])
+
+    pulse = pyrex.AskaryanSignal(times=np.linspace(-20e-9, 80e-9, 2048, endpoint=False),
+                                 energy=p.energy*1e-3, theta=psi, n=n)
+
+    t += performance_test("filtered_spectrum = pulse.spectrum", number=1000,
+                          use_globals={"pulse": pulse})
+
+    t += performance_test("fs = pulse.frequencies", number=1000,
+                          use_globals={"pulse": pulse})
+
+    fs = pulse.frequencies
+
+    t += performance_test("responses = freq_response(fs)", number=100,
+                          use_globals={"freq_response": pf.attenuation, "fs": fs})
+
+    # t += performance_test("responses = np.array(freq_response(pulse.frequencies))",
+    #                       number = 100, setup="import numpy as np",
+    #                       use_globals={"freq_response": pf.attenuation,
+    #                                    "pulse": pulse})
+
+    filtered_spectrum = pulse.spectrum * np.array(pf.attenuation(pulse.frequencies))
+
+    t += performance_test("np.real(scipy.fftpack.ifft(filtered_spectrum))",
+                          number=1000, setup="import numpy as np; import scipy.fftpack",
+                          use_globals={"filtered_spectrum": filtered_spectrum})
+
+    print("Total time:", round(t*1000, 1), "milliseconds per signal")
 
 
 
 if __name__ == '__main__':
-    test_EventKernel_event(1e6)
+    # test_EventKernel_event(1e6)
     # test_PathFinder_propagate()
+    test_filter_attenuation()
     
