@@ -138,8 +138,55 @@ def test_EventKernel_event(energy=1e6):
     print("  * ~1000 antennas")
 
 
-    print("Total time: ", round(t+t_loop*800,1), "seconds per event on average")
+    print("Total time:", round(t+t_loop*800,1), "seconds per event on average")
+
+
+
+def test_PathFinder_propagate():
+    t = 0
+
+    pf = pyrex.PathFinder(pyrex.IceModel(), (0,0,-2800), (5000,5000,-200))
+    while not(pf.exists):
+        z = np.random.random()*-2800
+        pf = pyrex.PathFinder(pyrex.IceModel(), (0,0,z), (5000,5000,-200))
+
+    p = pyrex.Particle(vertex=pf.from_point,
+                       direction=(1/np.sqrt(2),1/np.sqrt(2),0), energy=1e6)
+
+    k = pf.emitted_ray
+    epol = np.vdot(k, p.direction) * k - p.direction
+    epol = epol / np.linalg.norm(epol)
+    psi = np.arccos(np.vdot(p.direction, k))
+    n = pyrex.IceModel.index(p.vertex[2])
+
+    pulse = pyrex.AskaryanSignal(times=np.linspace(-20e-9, 80e-9, 2048, endpoint=False),
+                                 energy=p.energy*1e-3, theta=psi, n=n)
+
+    t += performance_test("signal.values *= 1 / pf.path_length", repeats=100,
+                          setup="import pyrex;"+
+                                "signal = pyrex.Signal(pulse.times, pulse.values)",
+                          use_globals={"pf": pf, "pulse": pulse})
+
+    pulse.values *= 1 / pf.path_length
+
+    t += performance_test("signal.filter_frequencies(pf.attenuation)", repeats=100,
+                          setup="import pyrex;"+
+                                "signal = pyrex.Signal(pulse.times, pulse.values)",
+                          use_globals={"pf": pf, "pulse": pulse})
+
+    # pulse.filter_frequencies(pf.attenuation)
+
+    t += performance_test("signal.times += pf.tof", repeats=100,
+                          setup="import pyrex;"+
+                                "signal = pyrex.Signal(pulse.times, pulse.values)",
+                          use_globals={"pf": pf, "pulse": pulse})
+
+    print("Total time:", round(t,3), "seconds per signal")
+
+
+
 
 if __name__ == '__main__':
     test_EventKernel_event(1e6)
+    # test_PathFinder_propagate()
     
