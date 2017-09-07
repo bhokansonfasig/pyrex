@@ -4,9 +4,15 @@ Version History
 Version 1.0.2
 -------------
 
+* Allow passing of numpy arrays of depths and frequencies into most ``IceModel`` methods.
+
+    * ``IceModel.gradient()`` must still be calculated at individual depths.
+
 * Performance improvements:
 
-    * Allow for ``IceModel`` to calculate many attenuation lengths at once. Improves speed of ``PathFinder.propagate()``.
+    * Allowing for ``IceModel`` to calculate many attenuation lengths at once improves speed of ``PathFinder.propagate()``.
+
+    * Improved speed of ``PathFinder.time_of_flight()`` and ``PathFinder.attenuation()`` (and improved accuracy to boot).
 
 Version 1.0.1
 -------------
