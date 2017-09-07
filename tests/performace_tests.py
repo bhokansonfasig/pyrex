@@ -221,6 +221,9 @@ def test_filter_attenuation():
 
     fs = pulse.frequencies
 
+    # performance_test("alen = ice.attenuation_length(-1000, fa*1e-6)", number=100,
+    #                  use_globals={"ice": pyrex.IceModel(), "fa": np.abs(fs)})
+
     t += performance_test("responses = freq_response(fs)", number=100,
                           use_globals={"freq_response": pf.attenuation, "fs": fs})
 
@@ -235,12 +238,161 @@ def test_filter_attenuation():
                           number=1000, setup="import numpy as np; import scipy.fftpack",
                           use_globals={"filtered_spectrum": filtered_spectrum})
 
-    print("Total time:", round(t*1000, 1), "milliseconds per signal")
+    print("Total time:", round(t*1000, 1), "milliseconds for", len(fs), "frequencies")
+    print("           ", round(t*1e6/len(fs), 1), "microseconds per frequency")
 
+
+
+def test_tof_methods():
+    from_pt = np.array((-5000,-5000,0))
+    to_pt = np.array((5000,5000,-2800))
+    def step_method(from_point, to_point, ice, n_steps):
+        t = 0
+        z0 = from_point[2]
+        z1 = to_point[2]
+        u = to_point - from_point
+        rho = np.sqrt(u[0]**2 + u[1]**2)
+        dz = z1 - z0
+        drdz = rho / dz
+        dz /= n_steps
+        for i in range(n_steps):
+            z = z0 + (i+0.5)*dz
+            dr = drdz * dz
+            p = np.sqrt(dr**2 + dz**2)
+            t += p / 3e8 * ice.index(z)
+        return t
+
+    performance_test("tof(from_pt, to_pt, IceModel(), n_steps=10)", number=1000,
+                     setup="from pyrex import IceModel",
+                     use_globals={"tof": step_method,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", step_method(from_pt, to_pt, pyrex.IceModel(), n_steps=10))
+
+    performance_test("tof(from_pt, to_pt, IceModel(), n_steps=1000)", number=100,
+                     setup="from pyrex import IceModel",
+                     use_globals={"tof": step_method,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", step_method(from_pt, to_pt, pyrex.IceModel(), n_steps=1000))
+
+    def trapz_method(from_point, to_point, ice, n_steps):
+        z0 = from_point[2]
+        z1 = to_point[2]
+        zs = np.linspace(z0, z1, n_steps, endpoint=True)
+        u = to_point - from_point
+        rho = np.sqrt(u[0]**2 + u[1]**2)
+        integrand = ice.index(zs)
+        t = np.trapz(integrand, zs) / 3e8 * np.sqrt(1 + (rho / (z1 - z0))**2)
+        return np.abs(t)
+
+    performance_test("tof(from_pt, to_pt, IceModel(), n_steps=10)", number=1000,
+                     setup="from pyrex import IceModel",
+                     use_globals={"tof": trapz_method,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", trapz_method(from_pt, to_pt, pyrex.IceModel(), n_steps=10))
+
+    performance_test("tof(from_pt, to_pt, IceModel(), n_steps=1000)", number=100,
+                     setup="from pyrex import IceModel",
+                     use_globals={"tof": trapz_method,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", trapz_method(from_pt, to_pt, pyrex.IceModel(), n_steps=1000))
+
+    def sum_method(from_point, to_point, ice, n_steps):
+        z0 = from_point[2]
+        z1 = to_point[2]
+        dz = (z1 - z0) / n_steps
+        zs, dz = np.linspace(z0+dz/2, z1+dz/2, n_steps, endpoint=False, retstep=True)
+        u = to_point - from_point
+        rho = np.sqrt(u[0]**2 + u[1]**2)
+        dr = rho / (z1 - z0) * dz
+        dp = np.sqrt(dz**2 + dr**2)
+        ts = dp / 3e8 * ice.index(zs)
+        t = np.sum(ts)
+        return t
+
+    performance_test("tof(from_pt, to_pt, IceModel(), n_steps=10)", number=1000,
+                     setup="from pyrex import IceModel",
+                     use_globals={"tof": sum_method,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", sum_method(from_pt, to_pt, pyrex.IceModel(), n_steps=10))
+
+    performance_test("tof(from_pt, to_pt, IceModel(), n_steps=1000)", number=100,
+                     setup="from pyrex import IceModel",
+                     use_globals={"tof": sum_method,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", sum_method(from_pt, to_pt, pyrex.IceModel(), n_steps=1000))
+
+
+def test_atten_methods():
+    from_pt = np.array((-5000,-5000,0))
+    to_pt = np.array((5000,5000,-2800))
+    fs = np.logspace(1, 5, num=5)
+    freqs = np.append(np.append([0], fs), -fs)
+    def step_method(from_point, to_point, freqs, ice, n_steps):
+        fa = np.abs(freqs)
+        atten = 1
+        z0 = from_point[2]
+        z1 = to_point[2]
+        u = to_point - from_point
+        rho = np.sqrt(u[0]**2 + u[1]**2)
+        dz = z1 - z0
+        drdz = rho / dz
+        dz /= n_steps
+        for i in range(n_steps):
+            z = z0 + (i+0.5)*dz
+            dr = drdz * dz
+            p = np.sqrt(dr**2 + dz**2)
+            alen = ice.attenuation_length(z, fa*1e-6)
+            atten *= np.exp(-p/alen)
+        return atten
+
+    performance_test("atten(from_pt, to_pt, freqs, IceModel(), n_steps=10)",
+                     number=1000, setup="from pyrex import IceModel",
+                     use_globals={"atten": step_method, "freqs": freqs,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", step_method(from_pt, to_pt, freqs, pyrex.IceModel(), n_steps=10))
+
+    performance_test("atten(from_pt, to_pt, freqs, IceModel(), n_steps=1000)",
+                     number=10, setup="from pyrex import IceModel",
+                     use_globals={"atten": step_method, "freqs": freqs,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", step_method(from_pt, to_pt, freqs, pyrex.IceModel(), n_steps=1000))
+
+    def prod_method(from_point, to_point, freqs, ice, n_steps):
+        fa = np.abs(freqs)
+        z0 = from_point[2]
+        z1 = to_point[2]
+        zs, dz = np.linspace(z0, z1, n_steps, endpoint=True, retstep=True)
+        u = to_point - from_point
+        rho = np.sqrt(u[0]**2 + u[1]**2)
+        dr = rho / (z1 - z0) * dz
+        dp = np.sqrt(dz**2 + dr**2)
+        alens = ice.attenuation_length(zs, fa*1e-6)
+        attens = np.exp(-dp/alens)
+        return np.prod(attens, axis=0)
+
+    performance_test("atten(from_pt, to_pt, freqs, IceModel(), n_steps=10)",
+                     number=1000, setup="from pyrex import IceModel",
+                     use_globals={"atten": prod_method, "freqs": freqs,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", step_method(from_pt, to_pt, freqs, pyrex.IceModel(), n_steps=10))
+
+    performance_test("atten(from_pt, to_pt, freqs, IceModel(), n_steps=1000)",
+                     number=100, setup="from pyrex import IceModel",
+                     use_globals={"atten": prod_method, "freqs": freqs,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", step_method(from_pt, to_pt, freqs, pyrex.IceModel(), n_steps=1000))
+
+    performance_test("atten(from_pt, to_pt, freqs, IceModel(), n_steps=100000)",
+                     number=1, setup="from pyrex import IceModel",
+                     use_globals={"atten": prod_method, "freqs": freqs,
+                                  "from_pt": from_pt, "to_pt": to_pt})
+    print("Returns:", step_method(from_pt, to_pt, freqs, pyrex.IceModel(), n_steps=100000))
 
 
 if __name__ == '__main__':
-    # test_EventKernel_event(1e6)
+    test_EventKernel_event(1e6)
+    print()
     # test_PathFinder_propagate()
     test_filter_attenuation()
-    
+    # test_tof_methods()
+    # test_atten_methods()
