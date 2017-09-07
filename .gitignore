@@ -17,8 +17,5 @@ __pycache__/
 tests/Bug*
 tests/bug*
 
-# Sphinx documentation build directory, except final pdf
+# Sphinx documentation build directory
 docs/_build/*
-!docs/_build/latex/
-docs/_build/latex/*
-!docs/_build/latex/PyREx.pdf
