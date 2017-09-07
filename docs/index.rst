@@ -10,7 +10,7 @@ Welcome to PyREx's documentation!
    :maxdepth: 3
    :caption: Contents:
 
-   introduction
+   readme
 
    examples
 
