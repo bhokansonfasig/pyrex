@@ -12,6 +12,8 @@ Version 1.0.2
 
 * Removed (deprecated) ``Antenna.isHit()``.
 
+* Added ``Antenna.make_noise()`` method so custom antennas can use their own noise functions.
+
 * Performance improvements:
 
     * Allowing for ``IceModel`` to calculate many attenuation lengths at once improves speed of ``PathFinder.propagate()``.
