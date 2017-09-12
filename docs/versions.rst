@@ -8,6 +8,10 @@ Version 1.0.2
 
     * ``IceModel.gradient()`` must still be calculated at individual depths.
 
+* Added ability to specify RMS voltage of ``ThermalNoise`` without providing temperature and resistance.
+
+* Removed (deprecated) ``Antenna.isHit()``.
+
 * Performance improvements:
 
     * Allowing for ``IceModel`` to calculate many attenuation lengths at once improves speed of ``PathFinder.propagate()``.
