@@ -387,14 +387,15 @@ class GaussianNoise(FunctionSignal):
 
 
 class ThermalNoise(Signal):
-    """Thermal Rayleigh noise at a given temperature (K) and resistance (ohms)
-    in the frequency band f_band=[f_min,f_max] (Hz). Optional parameters are
-    f_amplitude (default 1) which can be a number or a function designating the
-    amplitudes at each frequency, and n_freqs which is the number of frequencies
-    to use (in f_band) for the calculation (default is based on the FFT bin size
-    of given times array). Returned signal values are voltages (V)."""
-    def __init__(self, times, temperature, resistance, f_band,
-                 f_amplitude=1, n_freqs=0):
+    """Thermal Rayleigh noise in the frequency band f_band=[f_min,f_max] (Hz)
+    at a given temperature (K) and resistance (ohms) or with a given RMS
+    voltage (V). Optional parameters are f_amplitude (default 1) which can be
+    a number or a function designating the amplitudes at each frequency,
+    and n_freqs which is the number of frequencies to use (in f_band)
+    for the calculation (default is based on the FFT bin size of the given
+    times array). Returned signal values are voltages (V)."""
+    def __init__(self, times, f_band, f_amplitude=1, rms_voltage=None,
+                 temperature=None, resistance=None, n_freqs=0):
         # Calculation based on Rician (Rayleigh) noise model for ANITA:
         # https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps
 
@@ -439,7 +440,14 @@ class ThermalNoise(Signal):
 
         # So far, the units of the values are V/V_rms, so multiply by the
         # rms voltage: sqrt(4 * kB * T * R * bandwidth)
-        values *= np.sqrt(4 * 1.38e-23 * temperature * resistance
-                          * (self.f_max - self.f_min))
+        if rms_voltage is not None:
+            self.rms = rms_voltage
+        elif temperature is not None and resistance is not None:
+            self.rms = np.sqrt(4 * 1.38e-23 * temperature * resistance
+                               * (self.f_max - self.f_min))
+        else:
+            raise ValueError("Either RMS voltage or temperature and resistance"+
+                             " must be provided to calculate noise amplitude")
+        values *= self.rms
 
         super().__init__(times, values)
