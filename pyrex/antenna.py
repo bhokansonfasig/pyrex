@@ -35,12 +35,6 @@ class Antenna:
         """Test for whether the antenna has received a signal."""
         return len(self.waveforms)>0
 
-    def isHit(self):
-        """Deprecated. Replaced by is_hit property."""
-        warnings.warn("Antenna.isHit has been replaced by Antenna.is_hit",
-                      DeprecationWarning, stacklevel=2)
-        return self.is_hit()
-
     def clear(self):
         """Reset the antenna to a state of having received no signals."""
         self.signals.clear()
