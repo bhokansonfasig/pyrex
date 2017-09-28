@@ -389,9 +389,21 @@ def test_atten_methods():
     print("Returns:", step_method(from_pt, to_pt, freqs, pyrex.IceModel(), n_steps=100000))
 
 
+
+def test_event_generation(energy):
+    generator = pyrex.ShadowGenerator(10000, 10000, 2800, lambda: energy)
+    print("energy =", energy)
+    performance_test("gen.create_particle()", number=100,
+                     use_globals={"gen": generator})
+
+
 if __name__ == '__main__':
     test_EventKernel_event(1e6)
     print()
+    # test_EventKernel_event(1e8)
+    # print()
+    # test_EventKernel_event(1e10)
+    # print()
     # test_PathFinder_propagate()
     test_filter_attenuation()
     # test_tof_methods()
