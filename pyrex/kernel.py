@@ -24,10 +24,17 @@ class EventKernel:
             pf = PathFinder(self.ice, p.vertex, ant.position)
             if not(pf.exists):
                 continue
+
+            # p.direction and k should both be unit vectors
+            # epol is (negative) vector rejection of k onto p.direction
             k = pf.emitted_ray
             epol = np.vdot(k, p.direction) * k - p.direction
-            epol = epol / np.linalg.norm(epol)
-            # p.direction and k should both be unit vectors
+            # In case k and p.direction are equal
+            # (antenna directly on shower axis), just let epol be all zeros
+            # Don't divide so no divide-by-zero warning is thrown
+            if not(np.all(epol==0)):
+                epol = epol / np.linalg.norm(epol)
+
             psi = np.arccos(np.vdot(p.direction, k))
 
             # TODO: Support angles larger than pi/2
@@ -39,6 +46,8 @@ class EventKernel:
                                    theta=psi, n=n)
 
             pf.propagate(pulse)
+            # Dividing by path length scales Askaryan pulse properly
+            pulse.values /= pf.path_length
 
             ant.receive(pulse, epol)
 

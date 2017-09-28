@@ -248,6 +248,12 @@ class FastAskaryanSignal(Signal):
         for i, z in enumerate(z_Q_vals):
             Q[i] = self.charge_profile(z)
 
+        # Fail gracefully if the energy is less than the critical energy for
+        # shower formation (i.e. all Q values are zero)
+        if np.all(Q==0) and len(Q)>0:
+            super().__init__(times, np.zeros(len(times)))
+            return
+
         # Calculate RAC at a specific number of t values (n_RAC) determined so
         # that the full convolution will have the same size as the times array,
         # when appropriately rescaled by dt_divider.

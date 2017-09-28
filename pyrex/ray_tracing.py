@@ -70,6 +70,5 @@ class PathFinder:
         if not self.exists:
             raise RuntimeError("Cannot propagate signal along a path that "+
                                "doesn't exist")
-        signal.values *= 1 / self.path_length
         signal.filter_frequencies(self.attenuation)
         signal.times += self.tof
