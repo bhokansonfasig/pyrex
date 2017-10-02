@@ -98,7 +98,8 @@ class IREXAntenna:
         return self.antenna.receive(signal, polarization=polarization)
 
     def clear(self):
-        return self.antenna.clear()
+        self._triggers.clear()
+        self.antenna.clear()
 
     def trigger(self, signal):
         imax = len(signal.times)
