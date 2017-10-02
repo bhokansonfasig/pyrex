@@ -113,3 +113,102 @@ class IREXAntenna:
                     return True
             i += 1
         return False
+
+
+
+class IREXDetector:
+    """Class for automatically generating antenna positions based on geometry
+    criteria. Takes as arguments the number of stations, the distance between
+    stations, the number of antennas per string, the separation (in z) of the
+    antennas on the string, the position of the lowest antenna, and the name
+    of the geometry to use. Optional parameters (depending on the geometry)
+    are the number of strings per station and the distance from station to
+    string.
+    The build_antennas method is responsible for actually placing antennas
+    at the generated positions, after which the class can be directly iterated
+    to iterate over the antennas."""
+    def __init__(self, number_of_stations, station_separation,
+                 antennas_per_string, antenna_separation, lowest_antenna,
+                 geometry="grid", strings_per_station=1, string_separation=100):
+        self.antenna_positions = []
+
+        if "grid" in geometry.lower():
+            n_x = int(np.sqrt(number_of_stations))
+            n_y = int(number_of_stations/n_x)
+            n_z = antennas_per_string
+            dx = station_separation
+            dy = station_separation
+            dz = antenna_separation
+            for i in range(n_x):
+                x = -dx*n_x/2 + dx/2 + dx*i
+                for j in range(n_y):
+                    y = -dy*n_y/2 + dy/2 + dy*j
+                    for k in range(n_z):
+                        z = lowest_antenna + dz*k
+                        self.antenna_positions.append((x,y,z))
+
+        elif "cluster" in geometry.lower():
+            n_x = int(number_of_stations/2)
+            n_y = int(number_of_stations - n_x)
+            n_z = antennas_per_string
+            n_r = strings_per_station
+            dx = station_separation
+            dy = station_separation
+            dz = antenna_separation
+            dr = string_separation
+            for i in range(n_x):
+                x_st = -dx*n_x/2 + dx/2 + dx*i
+                for j in range(n_y):
+                    y_st = -dy*n_y/2 + dy/2 + dy*j
+                    for L in range(n_r):
+                        angle = 2*np.pi * L/n_r
+                        x = x_st + dr*np.cos(angle)
+                        y = y_st + dr*np.sin(angle)
+                        for k in range(n_z):
+                            z = lowest_antenna + dz*k
+                            self.antenna_positions.append((x,y,z))
+
+        self.antennas = []
+
+    def build_antennas(self, trigger_threshold, time_over_threshold=0,
+                       naming_scheme=lambda i, ant: "ant_"+str(i),
+                       polarization_scheme=lambda i, ant: (0,0,1), noisy=True):
+        """Sets up IREXAntennas at the positions stored in the class.
+        Takes as arguments the trigger threshold, optional time over
+        threshold, and whether to add noise to the waveforms.
+        Other optional arguments include a naming scheme and polarization scheme
+        which are functions taking the antenna index i and the antenna object
+        and should return the name and polarization of the antenna,
+        respectively."""
+        self.antennas = []
+        for pos in self.antenna_positions:
+            self.antennas.append(
+                IREXAntenna(name="IREX antenna", position=pos,
+                            trigger_threshold=trigger_threshold,
+                            time_over_threshold=time_over_threshold,
+                            polarization=(0,0,1), noisy=noisy)
+            )
+        for i, ant in enumerate(self.antennas):
+            ant.name = str(naming_scheme(i, ant))
+            ant.polarization = polarization_scheme(i, ant)
+
+    def __iter__(self):
+        self._iter_counter = 0
+        self._iter_max = len(self.antennas)
+        return self
+
+    def __next__(self):
+        self._iter_counter += 1
+        if self._iter_counter > self._iter_max:
+            raise StopIteration
+        else:
+            return self.antennas[self._iter_counter-1]
+
+    def __len__(self):
+        return len(self.antennas)
+
+    def __getitem__(self, key):
+        return self.antennas[key]
+
+    def __setitem__(self, key, value):
+        self.antennas[key] = value
