@@ -223,7 +223,7 @@ PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provid
     center_frequency = 250e6 # Hz
     bandwidth = 300e6 # Hz
     resistance = 100 # ohm
-    antenna_length = center_frequency/3e8 # m
+    antenna_length = 3e8/center_frequency/2 # m
     polarization_direction = (0, 0, 1)
     trigger_threshold = 1e-5 # V
     dipole = pyrex.DipoleAntenna(name=antenna_identifier,position=position,
@@ -335,7 +335,7 @@ PyREx provides the ``EventKernel`` class to control a basic simulation including
         detector.append(
             pyrex.DipoleAntenna(name="antenna_"+str(i), position=(0, 0, z),
                                 center_frequency=250e6, bandwidth=300e6,
-                                resistance=0, effective_height=0.83333,
+                                resistance=0, effective_height=0.6,
                                 trigger_threshold=0, noisy=False)
         )
     kernel = pyrex.EventKernel(generator=particle_generator,
