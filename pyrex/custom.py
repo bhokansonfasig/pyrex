@@ -8,13 +8,13 @@ from pyrex.ice_model import IceModel
 
 class IREXBaseAntenna(Antenna):
     """Antenna to be used in IREXAntenna class. Has a position (m),
-    center frequency (MHz), bandwidth (MHz), resistance (ohm),
+    center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
                  effective_height, polarization=(0,0,1), noisy=True):
         # Get the critical frequencies in Hz
-        f_low = (center_frequency - bandwidth/2) * 1e6
-        f_high = (center_frequency + bandwidth/2) * 1e6
+        f_low = center_frequency - bandwidth/2
+        f_high = center_frequency + bandwidth/2
         super().__init__(position=position,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
@@ -57,11 +57,11 @@ class IREXAntenna:
 
         self._triggers = []
 
-    def change_antenna(self, center_frequency=250, bandwidth=300,
+    def change_antenna(self, center_frequency=250e6, bandwidth=300e6,
                        resistance=100, polarization=(0,0,1), noisy=True):
-        """Changes attributes of the antenna including center frequency (MHz),
-        bandwidth (MHz), and resistance (ohms)."""
-        h = 3e8 / (center_frequency*1e6) / 2
+        """Changes attributes of the antenna including center frequency (Hz),
+        bandwidth (Hz), and resistance (ohms)."""
+        h = 3e8 / center_frequency / 2
         self.antenna = IREXBaseAntenna(position=self.position,
                                        center_frequency=center_frequency,
                                        bandwidth=bandwidth,
