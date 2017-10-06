@@ -5,6 +5,7 @@ The following code examples assume these imports::
 
     import numpy as np
     import matplotlib.pyplot as plt
+    import scipy.fftpack
     import pyrex
 
 All of the following examples can also be found (and quickly run) in the Code Examples python notebook.
@@ -23,6 +24,7 @@ The base ``Signal`` class is simply an array of times and an array of signal val
 Plotting the ``Signal`` object is as simple as plotting the times vs the values::
 
     plt.plot(my_signal.times, my_signal.values)
+    plt.show()
 
 ``Signal`` objects can be added as long as they have the same time array, and also support the python ``sum`` function::
 
@@ -39,6 +41,7 @@ Plotting the ``Signal`` object is as simple as plotting the times vs the values:
     signal4 = sum(all_signals)
     plt.plot(signal4.times, signal4.values, label="signal4")
     plt.legend()
+    plt.show()
 
 The ``Signal`` class provides many convenience attributes for dealing with signals::
 
@@ -70,6 +73,7 @@ The ``filter_frequencies`` function will apply a frequency-domain filter to the 
     plt.plot(my_signal.times, my_signal.values)
     my_signal.filter_frequencies(lowpass_filter)
     plt.plot(my_signal.times, my_signal.values)
+    plt.show()
 
 
 A number of classes which inherit from the Signal class are included in PyREx: ``EmptySignal``, ``FunctionSignal``, ``AskaryanSignal``, and ``ThermalNoise``. ``EmptySignal`` is simply a signal whose values are all zero::
@@ -77,6 +81,7 @@ A number of classes which inherit from the Signal class are included in PyREx: `
     time_array = np.linspace(0,10)
     empty = pyrex.EmptySignal(times=time_array)
     plt.plot(empty.times, empty.values)
+    plt.show()
 
 ``FunctionSignal`` takes a function of time and creates a signal based on that function::
 
@@ -88,15 +93,17 @@ A number of classes which inherit from the Signal class are included in PyREx: `
             return -1
     square_signal = pyrex.FunctionSignal(times=time_array, function=square_wave)
     plt.plot(square_signal.times, square_signal.values)
+    plt.show()
 
 ``AskaryanSignal`` produces an Askaryan pulse on a time array due to a neutrino of given energy observed at a given angle from the shower axis::
 
     time_array = np.linspace(-10e-9, 40e-9, 1001)
-    neutrino_energy = 1e5 # TeV
+    neutrino_energy = 1e8 # GeV
     observation_angle = 45 * np.pi/180 # radians
     askaryan = pyrex.AskaryanSignal(times=time_array, energy=neutrino_energy,
                                     theta=observation_angle)
     plt.plot(askaryan.times, askaryan.values)
+    plt.show()
 
 ``ThermalNoise`` produces Rayleigh noise at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range::
 
@@ -108,6 +115,7 @@ A number of classes which inherit from the Signal class are included in PyREx: `
                                resistance=system_resistance,
                                f_band=frequency_range)
     plt.plot(noise.times, noise.values)
+    plt.show()
 
 
 
@@ -212,10 +220,10 @@ PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provid
 
     antenna_identifier = "antenna 1"
     position = (0, 0, -100)
-    center_frequency = 250 # MHz
-    bandwidth = 200 # MHz
-    resistance = 1000 # ohm
-    antenna_length = 1 # m
+    center_frequency = 250e6 # Hz
+    bandwidth = 300e6 # Hz
+    resistance = 100 # ohm
+    antenna_length = center_frequency/3e8 # m
     polarization_direction = (0, 0, 1)
     trigger_threshold = 1e-5 # V
     dipole = pyrex.DipoleAntenna(name=antenna_identifier,position=position,
@@ -236,7 +244,7 @@ PyREx provides a class ``IceModel``, which is an alias for whichever south pole 
     pyrex.IceModel.temperature(depth)
     pyrex.IceModel.index(depth)
     pyrex.IceModel.gradient(depth)
-    frequency = 100 # MHz
+    frequency = 1e8 # Hz
     pyrex.IceModel.attenuation_length(depth, frequency)
 
 PyREx also provides two functions realted to its earth model: ``prem_density`` and ``slant_depth``. ``prem_density`` calculates the density in grams per cubic centimeter of the earth at a given radius::
@@ -326,8 +334,8 @@ PyREx provides the ``EventKernel`` class to control a basic simulation including
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
             pyrex.DipoleAntenna(name="antenna_"+str(i), position=(0, 0, z),
-                                center_frequency=500, bandwidth=500,
-                                resistance=0, effective_height=1,
+                                center_frequency=250e6, bandwidth=300e6,
+                                resistance=0, effective_height=0.83333,
                                 trigger_threshold=0, noisy=False)
         )
     kernel = pyrex.EventKernel(generator=particle_generator,

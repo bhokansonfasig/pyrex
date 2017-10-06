@@ -2,8 +2,7 @@
 ray tracking (no raytracing yet), and hit generation."""
 
 import numpy as np
-import scipy.fftpack
-from pyrex.signals import Signal, AskaryanSignal
+from pyrex.signals import AskaryanSignal
 from pyrex.ray_tracing import PathFinder
 
 
@@ -42,8 +41,7 @@ class EventKernel:
                 continue
 
             times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False)
-            pulse = AskaryanSignal(times=times, energy=p.energy*1e-3,
-                                   theta=psi, n=n)
+            pulse = AskaryanSignal(times=times, energy=p.energy, theta=psi, n=n)
 
             pf.propagate(pulse)
             # Dividing by path length scales Askaryan pulse properly

@@ -6,4 +6,4 @@ from .particle import Particle, ShadowGenerator
 from .ray_tracing import PathFinder
 from .kernel import EventKernel
 
-__version__ = "1.0.3"
+__version__ = "1.1.0"

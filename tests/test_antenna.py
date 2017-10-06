@@ -18,8 +18,8 @@ def antenna():
 @pytest.fixture
 def dipole():
     """Fixture for forming basic DipoleAntenna object"""
-    return DipoleAntenna(name="ant", position=[0,0,-250], center_frequency=250,
-                         bandwidth=100, resistance=1000, effective_height=1.0,
+    return DipoleAntenna(name="ant", position=[0,0,-250], center_frequency=250e6,
+                         bandwidth=100e6, resistance=1000, effective_height=1.0,
                          trigger_threshold=5E-6)
 
 

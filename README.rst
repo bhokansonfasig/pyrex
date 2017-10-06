@@ -1,5 +1,5 @@
-Quick Start
-===========
+Introduction to PyREx
+=====================
 
 PyREx (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension) is, as its name suggests, a python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
 The code is designed to be modular so that it can also be applied to other askaryan radio antennas, as in the ARA and ARIANA collaborations.
@@ -47,3 +47,24 @@ Now the signals received by each antenna can be accessed by their ``waveforms`` 
             plt.figure()
             plt.plot(wave.times, wave.values)
             plt.show()
+
+
+Units
+-----
+
+For ease of use, PyREx tries to use consistent units in all classes and functions. The units used are mostly SI with a few exceptions listed in bold below:
+
+======================= ========================================
+Metric                  Unit
+======================= ========================================
+time                    seconds (s)
+frequency               hertz (Hz)
+distance                meters (m)
+**density**             **grams per cubic centimeter (g/cm^3)**
+**material thickness**  **grams per square centimeter (g/cm^2)**
+temperature             kelvin (K)
+**energy**              **gigaelectronvolts (GeV)**
+resistance              ohms (Ω)
+voltage                 volts (V)
+electric field          volts per meter (V/m)
+======================= ========================================

@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 1.1.0
+-------------
+
+* Made units consistent across PyREx
+
+
+
 Version 1.0.3
 -------------
 

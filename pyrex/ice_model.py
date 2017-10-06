@@ -5,7 +5,9 @@ ice model."""
 import numpy as np
 
 class AntarcticIce:
-    """Class containing characteristics of ice at the south pole."""
+    """Class containing characteristics of ice at the south pole.
+    In all cases, depth z is given with negative values in the ice and positive
+    values above the ice."""
     k = 0.438
     a = 0.0132
     n0 = 1.32
@@ -47,16 +49,17 @@ class AntarcticIce:
     @staticmethod
     def __atten_coeffs(t, f):
         """Helper function to calculate a and b coefficients for attenuation
-        length calculation at given temperature (C) and frequency (MHz)."""
+        length calculation at given temperature (K) and frequency (Hz)."""
+        t_C = t - 273.15
         w0 = np.log(1e-4)
         w1 = 0
         w2 = np.log(3.16)
 
-        b0 = -6.7489 + t * (0.026709 - 8.84e-4 * t)
-        b1 = -6.2212 - t * (0.070927 + 1.77e-3 * t)
-        b2 = -4.0947 - t * (0.002213 + 3.32e-4 * t)
+        b0 = -6.7489 + t_C * (0.026709 - 8.84e-4 * t_C)
+        b1 = -6.2212 - t_C * (0.070927 + 1.77e-3 * t_C)
+        b2 = -4.0947 - t_C * (0.002213 + 3.32e-4 * t_C)
 
-        if f < 1000.0:
+        if f < 1e9:
             a = (b1 * w0 - b0 * w1) / (w0 - w1)
             b = (b1 - b0) / (w1 - w0)
         else:
@@ -66,16 +69,17 @@ class AntarcticIce:
 
     @classmethod
     def attenuation_length(cls, z, f):
-        """Returns the attenuation length at depth z (m) and frequency f (MHz).
+        """Returns the attenuation length at depth z (m) and frequency f (Hz).
         Supports passing a numpy array of depths and/or frequencies.
         If both are passed as arrays, a 2-D array is returned where
         each row is a single depth and each column is a single frequency."""
         # Suppress RuntimeWarnings when f==0 temporarily
         with np.errstate(divide='ignore'):
-            w = np.log(f*0.001)
+            # w is log of frequency in GHz
+            w = np.log(f*1e-9)
 
-        # Temperature in celsius
-        t = cls.temperature(z) - 273.15
+        # Temperature in kelvin
+        t = cls.temperature(z)
 
         try:
             a_lens = np.zeros(len(f))

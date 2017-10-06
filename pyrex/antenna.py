@@ -1,6 +1,5 @@
 """Module containing antenna class capable of receiving signals"""
 
-import warnings
 import numpy as np
 import scipy.fftpack
 import scipy.signal
@@ -99,21 +98,20 @@ class Antenna:
 
 
 class DipoleAntenna(Antenna):
-    """Antenna with a given name, position (m), center frequency (MHz),
-    bandwidth (MHz), resistance (ohm), effective height (m), polarization
+    """Antenna with a given name, position (m), center frequency (Hz),
+    bandwidth (Hz), resistance (ohm), effective height (m), polarization
     direction, and trigger threshold (V)."""
     def __init__(self, name, position, center_frequency, bandwidth, resistance,
                  effective_height, polarization=[0,0,1],
                  trigger_threshold=0, noisy=True):
         # Get the critical frequencies in Hz
-        f_low = (center_frequency - bandwidth/2) * 1e6
-        f_high = (center_frequency + bandwidth/2) * 1e6
+        f_low = center_frequency - bandwidth/2
+        f_high = center_frequency + bandwidth/2
         super().__init__(position=position,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          noisy=noisy)
-        # gets the time of the hit [ns]
-        # induced signal strength [V]
+
         self.name = name
         self.effective_height = effective_height
         self.polarization = (np.array(polarization)

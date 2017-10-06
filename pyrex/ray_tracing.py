@@ -61,7 +61,7 @@ class PathFinder:
         rho = np.sqrt(u[0]**2 + u[1]**2)
         dr = rho / (z1 - z0) * dz
         dp = np.sqrt(dz**2 + dr**2)
-        alens = self.ice.attenuation_length(zs, fa*1e-6)
+        alens = self.ice.attenuation_length(zs, fa)
         attens = np.exp(-dp/alens)
         return np.prod(attens, axis=0)
 

@@ -22,7 +22,6 @@ def bad_path():
 path_attenuations = [(1e3, 0.9993676), (1e4, 0.9985931), (1e5, 0.9968715),
                      (1e6, 0.9930505), (1e7, 0.9845992), (1e8, 0.9660472),
                      (1e9, 0.9260033), (1e10, 2.625058e-4)]
-# TODO: Confirm sharp drop-off above 1 GHz
 
 class TestPathFinder:
     """Tests for PathFinder class"""
@@ -84,8 +83,7 @@ class TestPathFinder:
         assert (path_finder.attenuation(frequency, n_steps=10000)
                 == pytest.approx(attenuation, rel=0.0001))
 
-    # 10 GHz test excluded since it's low value means the test fails
-    # FIXME when sharp cutoff above 1 GHz is confirmed
+    # FIXME 10 GHz test excluded since it's low value means the test fails
     @pytest.mark.parametrize("frequency,attenuation", path_attenuations[:7])
     def test_attenuation(self, path_finder, frequency, attenuation):
         """Test that attenuation returns the expected values within 1%"""

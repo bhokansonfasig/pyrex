@@ -106,7 +106,7 @@ class FunctionSignal(Signal):
 
 
 class SlowAskaryanSignal(Signal):
-    """Askaryan pulse binned to times from neutrino with given energy (TeV)
+    """Askaryan pulse binned to times from neutrino with given energy (GeV)
     observed at angle theta (radians). Optional parameters are the index of
     refraction n, and pulse offset to start time t0 (s). Returned signal
     values are electric fields (V/m).\n
@@ -164,17 +164,17 @@ class SlowAskaryanSignal(Signal):
         # Get absolute value of time in nanoseconds
         ta = np.abs(time) * 1e9
         if time>=0:
-            return (-4.5e-14 * self.energy
+            return (-4.5e-17 * self.energy
                     * (np.exp(-ta/0.057) + (1+2.87*ta)**-3))
         else:
-            return (-4.5e-14 * self.energy
+            return (-4.5e-17 * self.energy
                     * (np.exp(-ta/0.030) + (1+3.05*ta)**-3.5))
 
-    def charge_profile(self, z, density=0.92, crit_energy=7.86e-5,
+    def charge_profile(self, z, density=0.92, crit_energy=7.86e-2,
                        rad_length=36.08):
         """Calculates the longitudinal charge profile in the EM shower at
         distance z (m) with parameters for the density (g/cm^3),
-        critical energy (TeV), and electron radiation length (g/cm^2) in ice."""
+        critical energy (GeV), and electron radiation length (g/cm^2) in ice."""
         if z<=0 or self.energy<=crit_energy:
             return 0
 
@@ -193,9 +193,9 @@ class SlowAskaryanSignal(Signal):
 
         return N * 1.602e-19
 
-    def max_length(self, density=0.92, crit_energy=7.86e-5, rad_length=36.08):
+    def max_length(self, density=0.92, crit_energy=7.86e-2, rad_length=36.08):
         """Calculates the maximum length (m) of an EM shower
-        with parameters for the density (g/cm^3), critical energy (TeV), and
+        with parameters for the density (g/cm^3), critical energy (GeV), and
         electron radiation length (g/cm^2) in ice."""
         # Maximum depth in g/cm^2
         x_max = rad_length * np.log(self.energy / crit_energy) / np.log(2)
@@ -204,7 +204,7 @@ class SlowAskaryanSignal(Signal):
 
 
 class FastAskaryanSignal(Signal):
-    """Askaryan pulse binned to times from neutrino with given energy (TeV)
+    """Askaryan pulse binned to times from neutrino with given energy (GeV)
     observed at angle theta (radians). Optional parameters are the index of
     refraction n, and pulse offset to start time t0 (s). Returned signal
     values are electric fields (V/m).\n
@@ -337,17 +337,17 @@ class FastAskaryanSignal(Signal):
         # Get absolute value of time in nanoseconds
         ta = np.abs(time) * 1e9
         if time>=0:
-            return (-4.5e-14 * self.energy
+            return (-4.5e-17 * self.energy
                     * (np.exp(-ta/0.057) + (1+2.87*ta)**-3))
         else:
-            return (-4.5e-14 * self.energy
+            return (-4.5e-17 * self.energy
                     * (np.exp(-ta/0.030) + (1+3.05*ta)**-3.5))
 
-    def charge_profile(self, z, density=0.92, crit_energy=7.86e-5,
+    def charge_profile(self, z, density=0.92, crit_energy=7.86e-2,
                        rad_length=36.08):
         """Calculates the longitudinal charge profile in the EM shower at
         distance z (m) with parameters for the density (g/cm^3),
-        critical energy (TeV), and electron radiation length (g/cm^2) in ice."""
+        critical energy (GeV), and electron radiation length (g/cm^2) in ice."""
         if z<=0 or self.energy<=crit_energy:
             return 0
 
@@ -366,9 +366,9 @@ class FastAskaryanSignal(Signal):
 
         return N * 1.602e-19
 
-    def max_length(self, density=0.92, crit_energy=7.86e-5, rad_length=36.08):
+    def max_length(self, density=0.92, crit_energy=7.86e-2, rad_length=36.08):
         """Calculates the maximum length (m) of an EM shower
-        with parameters for the density (g/cm^3), critical energy (TeV), and
+        with parameters for the density (g/cm^3), critical energy (GeV), and
         electron radiation length (g/cm^2) in ice."""
         # Maximum depth in g/cm^2
         x_max = rad_length * np.log(self.energy / crit_energy) / np.log(2)

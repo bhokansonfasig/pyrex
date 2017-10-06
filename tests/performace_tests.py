@@ -68,7 +68,7 @@ def test_EventKernel_event(energy=1e6):
 
     ice = pyrex.IceModel()
     ant = pyrex.DipoleAntenna(name='ant', position=(5000,5000,-200),
-                              center_frequency=250, bandwidth=100, resistance=None,
+                              center_frequency=250e6, bandwidth=100e6, resistance=None,
                               effective_height=1, trigger_threshold=36e-6, noisy=False)
     def get_good_path():
         z = np.random.random() * -2800
@@ -103,7 +103,7 @@ def test_EventKernel_event(energy=1e6):
                                number=1000, setup="import numpy as np")
     print("  * ~1000 antennas")
 
-    t_loop += performance_test("pulse = AskaryanSignal(times=times, energy=p.energy*1e-3, "+
+    t_loop += performance_test("pulse = AskaryanSignal(times=times, energy=p.energy, "+
                                "theta=psi, n=n)", number=100,
                                setup="import numpy as np;"+
                                      "from pyrex import AskaryanSignal;"+
@@ -121,7 +121,7 @@ def test_EventKernel_event(energy=1e6):
                                      "import pyrex;"+
                                      "times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False);"+
                                      "pulse = pyrex.AskaryanSignal(times=times, "+
-                                     "energy=p.energy*1e-3, theta=psi, n=n)",
+                                     "energy=p.energy, theta=psi, n=n)",
                                use_globals={"p": p, "pf": pf, "psi": psi,
                                             "n": ice.index(p.vertex[2])})
     print("  * ~1000 antennas")
@@ -131,7 +131,7 @@ def test_EventKernel_event(energy=1e6):
                                      "import pyrex;"+
                                      "times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False);"+
                                      "pulse = pyrex.AskaryanSignal(times=times, "+
-                                     "energy=p.energy*1e-3, theta=psi, n=n)",
+                                     "energy=p.energy, theta=psi, n=n)",
                                use_globals={"p": p, "pf": pf, "psi": psi,
                                             "n": ice.index(p.vertex[2]),
                                             "ant": ant})
@@ -160,7 +160,7 @@ def test_PathFinder_propagate():
     n = pyrex.IceModel.index(p.vertex[2])
 
     pulse = pyrex.AskaryanSignal(times=np.linspace(-20e-9, 80e-9, 2048, endpoint=False),
-                                 energy=p.energy*1e-3, theta=psi, n=n)
+                                 energy=p.energy, theta=psi, n=n)
 
     t += performance_test("signal.values *= 1 / pf.path_length", repeats=100,
                           setup="import pyrex;"+
@@ -211,7 +211,7 @@ def test_filter_attenuation():
     n = pyrex.IceModel.index(p.vertex[2])
 
     pulse = pyrex.AskaryanSignal(times=np.linspace(-20e-9, 80e-9, 2048, endpoint=False),
-                                 energy=p.energy*1e-3, theta=psi, n=n)
+                                 energy=p.energy, theta=psi, n=n)
 
     t += performance_test("filtered_spectrum = pulse.spectrum", number=1000,
                           use_globals={"pulse": pulse})
@@ -341,7 +341,7 @@ def test_atten_methods():
             z = z0 + (i+0.5)*dz
             dr = drdz * dz
             p = np.sqrt(dr**2 + dz**2)
-            alen = ice.attenuation_length(z, fa*1e-6)
+            alen = ice.attenuation_length(z, fa)
             atten *= np.exp(-p/alen)
         return atten
 
@@ -366,7 +366,7 @@ def test_atten_methods():
         rho = np.sqrt(u[0]**2 + u[1]**2)
         dr = rho / (z1 - z0) * dz
         dp = np.sqrt(dz**2 + dr**2)
-        alens = ice.attenuation_length(zs, fa*1e-6)
+        alens = ice.attenuation_length(zs, fa)
         attens = np.exp(-dp/alens)
         return np.prod(attens, axis=0)
 
