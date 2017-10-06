@@ -85,3 +85,8 @@ pyrex\.kernel module
 
 .. automodule:: pyrex.kernel
 
+pyrex\.custom module
+^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyrex.custom
+

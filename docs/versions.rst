@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 1.0.3
+-------------
+
+* Added ``custom`` module to contain classes and functions specific to the IREX project.
+
+
+
 Version 1.0.2
 -------------
 
@@ -19,6 +26,8 @@ Version 1.0.2
     * Allowing for ``IceModel`` to calculate many attenuation lengths at once improves speed of ``PathFinder.propagate()``.
 
     * Improved speed of ``PathFinder.time_of_flight()`` and ``PathFinder.attenuation()`` (and improved accuracy to boot).
+
+
 
 Version 1.0.1
 -------------
