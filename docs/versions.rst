@@ -4,7 +4,23 @@ Version History
 Version 1.1.0
 -------------
 
-* Made units consistent across PyREx
+* Made units consistent across PyREx.
+
+* Added ``directional_gain`` and ``polarization_gain`` methods to base ``Antenna``.
+
+    * ``receive`` method should no longer be overwritten in most cases.
+
+    * ``Antenna`` now has orientation defined by ``z_axis`` and ``x_axis``.
+
+    * ``antenna_factor`` and ``efficiency`` attributes added to ``Antenna`` for more flexibility.
+
+* Added ability to define ``Antenna`` noise by RMS voltage rather than temperature and resistance if desired.
+
+* Added ``value_type`` attribute to ``Signal`` class and derived classes.
+
+    * Current value types are ``ValueTypes.undefined``, ``ValueTypes.voltage``, ``ValueTypes.field``, and ``ValueTypes.power``.
+
+* Allow ``DipoleAntenna`` to guess at ``effective_height`` if not specified.
 
 
 

@@ -15,7 +15,7 @@ All of the following examples can also be found (and quickly run) in the Code Ex
 Working with Signal Objects
 ---------------------------
 
-The base ``Signal`` class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The ``times`` array is assumed to be in units of seconds, but there are no general units for the ``values`` array (though it is commonly assumed to be in volts or volts per meter). It is worth noting that the Singal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the ``Signal`` object. ::
+The base ``Signal`` class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The ``times`` array is assumed to be in units of seconds, but there are no general units for the ``values`` array. It is worth noting that the Singal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the ``Signal`` object. ::
 
     time_array = np.linspace(0, 10)
     value_array = np.sin(time_array)
@@ -26,20 +26,25 @@ Plotting the ``Signal`` object is as simple as plotting the times vs the values:
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
-``Signal`` objects can be added as long as they have the same time array, and also support the python ``sum`` function::
+While there are no specified units for a ``Signal.values``, there is the option to specify the ``value_type`` of the ``values``. This is done using the ``ValueTypes`` enum. By default, a ``Signal`` object has ``value_type=ValueTypes.unknown``. However, if the signal represents a voltage, electric field, or electric power; ``value_type`` can be set to ``ValueTypes.voltage``, ``ValueTypes.field``, or ``ValueTypes.power`` respectively::
+
+    my_voltage_signal = pyrex.Signal(times=time_array, values=value_array,
+                                     value_type=pyrex.ValueTypes.voltage)
+
+``Signal`` objects can be added as long as they have the same time array and ``value_type``. ``Signal`` objects also support the python ``sum`` function::
 
     time_array = np.linspace(0, 10)
     values1 = np.sin(time_array)
     values2 = np.cos(time_array)
     signal1 = pyrex.Signal(time_array, values1)
-    plt.plot(signal1.times, signal1.values, label="signal1")
+    plt.plot(signal1.times, signal1.values, label="signal1 = sin(t)")
     signal2 = pyrex.Signal(time_array, values2)
-    plt.plot(signal2.times, signal2.values, label="signal2")
+    plt.plot(signal2.times, signal2.values, label="signal2 = cos(t)")
     signal3 = signal1 + signal2
-    plt.plot(signal3.times, signal3.values, label="signal3")
+    plt.plot(signal3.times, signal3.values, label="signal3 = sin(t)+cos(t)")
     all_signals = [signal1, signal2, signal3]
     signal4 = sum(all_signals)
-    plt.plot(signal4.times, signal4.values, label="signal4")
+    plt.plot(signal4.times, signal4.values, label="signal4 = 2*(sin(t)+cos(t))")
     plt.legend()
     plt.show()
 
@@ -95,17 +100,18 @@ A number of classes which inherit from the Signal class are included in PyREx: `
     plt.plot(square_signal.times, square_signal.values)
     plt.show()
 
-``AskaryanSignal`` produces an Askaryan pulse on a time array due to a neutrino of given energy observed at a given angle from the shower axis::
+``AskaryanSignal`` produces an Askaryan pulse (in V/m) on a time array due to a neutrino of given energy observed at a given angle from the shower axis::
 
     time_array = np.linspace(-10e-9, 40e-9, 1001)
     neutrino_energy = 1e8 # GeV
     observation_angle = 45 * np.pi/180 # radians
     askaryan = pyrex.AskaryanSignal(times=time_array, energy=neutrino_energy,
                                     theta=observation_angle)
+    print(askaryan.value_type)
     plt.plot(askaryan.times, askaryan.values)
     plt.show()
 
-``ThermalNoise`` produces Rayleigh noise at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range::
+``ThermalNoise`` produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range::
 
     time_array = np.linspace(-10e-9, 40e-9, 1001)
     noise_temp = 300 # K
@@ -114,6 +120,7 @@ A number of classes which inherit from the Signal class are included in PyREx: `
     noise = pyrex.ThermalNoise(times=time_array, temperature=noise_temp,
                                resistance=system_resistance,
                                f_band=frequency_range)
+    print(noise.value_type)
     plt.plot(noise.times, noise.values)
     plt.show()
 
@@ -138,42 +145,34 @@ The basic properties of an ``Antenna`` object are ``is_hit`` and ``waveforms``. 
     basic_antenna.is_hit == False
     basic_antenna.waveforms == []
 
-The ``Antenna`` class defines three methods which are expected to be overwritten: ``trigger``, ``response``, and ``receive``. ``trigger`` takes a ``Signal`` object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns ``True``). ``response`` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). ::
+The ``Antenna`` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are ``efficiency`` and ``antenna_factor``, and the methods are ``response``, ``directional_gain``, and ``polarization_gain``. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. ``efficiency`` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). ``antenna_factor`` is a factor used in converting received electric fields into voltages (``antenna_factor`` = E / V; default value is ``1``). ``response`` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). ``directional_gain`` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). Finally, ``polarization_gain`` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
 
-    basic_antenna.trigger(pyrex.Signal([0],[0])) == True
+    basic_antenna.efficiency == 1
+    basic_antenna.antenna_factor == 1
     freqs = [1, 2, 3, 4, 5]
     basic_antenna.response(freqs) == [1, 1, 1, 1, 1]
+    basic_antenna.directional_gain(theta=np.pi/2, phi=0) == 1
+    basic_antenna.polarization_gain([0,0,1]) == 1
 
-The ``receive`` method is a bit different in that it contains some default functionality::
+The ``Antenna`` class defines a ``trigger`` method which is also expected to be overwritten. ``trigger`` takes a ``Signal`` object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns ``True``). ::
 
-    def receive(self, signal):
-        copy = Signal(signal.times, signal.values)
-        copy.filter_frequencies(self.response)
-        self.signals.append(copy)
+    basic_antenna.trigger(pyrex.Signal([0],[0])) == True
 
-In this sense, the ``receive`` function is intended to be extended instead of overwritten. In derived classes, it is recommended that a newly defined ``receive`` function call ``super().receive(signal)``. For example, if a polarization is to be applied, the following ``receive`` function could be implemented::
+The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal`` object and processes the signal according to the antenna's attributes (``efficiency``, ``antenna_factor``, ``response``, ``directional_gain``, and ``polarization_gain`` as described above). To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest. You can also optionally specify the origin point of the signal (used in ``directional_gain`` calculation) and the polarization direction of the signal (used in ``polarization_gain`` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
 
-    def receive(self, signal, signal_polarization):
-        polarization_factor = np.vdot(self.polariztion, signal_polarization)
-        polarized_signal = Signal(signal.times,
-                                  signal.values * polarization_factor)
-        super().receive(polarized_signal)
-
-To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest::
-
-    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin)
+    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin,
+                                           value_type=pyrex.ValueTypes.voltage)
     basic_antenna.receive(incoming_singal)
+    basic_antenna.receive(incoming_singal, origin=[0,0,-300], polarization=[1,0,0])
     basic_antenna.is_hit == True
-    for wave in basic_antenna.waveforms:
+    for waveform, pure_signal in zip(basic_antenna.waveforms, basic_antenna.signals):
         plt.figure()
-        plt.plot(wave.times, wave.values)
-        plt.show()
-    for pure_signal in basic_antenna.signals:
-        plt.figure()
-        plt.plot(pure_signal.times, pure_signal.values)
+        plt.plot(waveform.times, waveform.values, label="Waveform")
+        plt.plot(pure_signal.times, pure_signal.values, label="Pure Signal")
+        plt.legend()
         plt.show()
 
-The ``Antenna`` class also defines a ``clear`` method which will reset the antenna to a state of having received no signals::
+Finally, the ``Antenna`` class defines a ``clear`` method which will reset the antenna to a state of having received no signals::
 
     basic_antenna.clear()
     basic_antenna.is_hit == False
@@ -197,14 +196,16 @@ Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude 
 
     my_antenna = NoiselessThresholdAntenna(position=(0, 0, 0), threshold=2)
 
-    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin)
+    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin,
+                                           value_type=pyrex.ValueTypes.voltage)
     my_antenna.receive(incoming_singal)
     my_antenna.is_hit == False
     len(my_antenna.waveforms) == 0
     len(my_antenna.all_waveforms) == 1
 
     incoming_singal = pyrex.Signal(incoming_singal.times,
-                                   5*incoming_singal.values)
+                                   5*incoming_singal.values,
+                                   incoming_singal.value_type)
     my_antenna.receive(incoming_singal)
     my_antenna.is_hit == True
     len(my_antenna.waveforms) == 1
@@ -216,7 +217,7 @@ Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude 
         plt.show()
 
 
-PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provides a basic threshold trigger, a basic bandpass filter, and a polarization effect on the reception of a signal. A ``DipoleAntenna`` object is created as follows::
+PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A ``DipoleAntenna`` object is created as follows::
 
     antenna_identifier = "antenna 1"
     position = (0, 0, -100)
@@ -230,7 +231,7 @@ PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provid
                                  center_frequency=center_frequency,
                                  bandwidth=bandwidth, resistance=resistance,
                                  effective_height=antenna_length,
-                                 polarization=polarization_direction,
+                                 orientation=polarization_direction,
                                  trigger_threshold=trigger_threshold)
 
 
