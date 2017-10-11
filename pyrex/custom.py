@@ -93,7 +93,8 @@ class IREXAntenna:
     @property
     def signals(self):
         # Return envelopes of antenna signals
-        return [Signal(s.times, s.envelope) for s in self.antenna.signals]
+        return [Signal(s.times, s.envelope, value_type=s.value_type)
+                for s in self.antenna.signals]
 
     @property
     def waveforms(self):
@@ -109,7 +110,8 @@ class IREXAntenna:
     @property
     def all_waveforms(self):
         # Return envelopes of antenna waveforms
-        return [Signal(w.times, w.envelope) for w in self.antenna.all_waveforms]
+        return [Signal(w.times, w.envelope, value_type=w.value_type)
+                for w in self.antenna.all_waveforms]
 
     def receive(self, signal, polarization=[0,0,1]):
         return self.antenna.receive(signal, polarization=polarization)

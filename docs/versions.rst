@@ -20,6 +20,8 @@ Version 1.1.0
 
     * Current value types are ``ValueTypes.undefined``, ``ValueTypes.voltage``, ``ValueTypes.field``, and ``ValueTypes.power``.
 
+    * ``Signal`` objects now must have the same ``value_type`` to be added (though those with ``ValueTypes.undefined`` can be coerced).
+
 * Allow ``DipoleAntenna`` to guess at ``effective_height`` if not specified.
 
 

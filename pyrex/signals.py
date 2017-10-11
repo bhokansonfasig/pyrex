@@ -34,8 +34,18 @@ class Signal:
                             +str(type(other))+" to a signal")
         if not(np.array_equal(self.times, other.times)):
             raise ValueError("Can't add signals with different times")
+        if (self.value_type!=ValueTypes.undefined and
+                other.value_type!=ValueTypes.undefined and
+                self.value_type!=other.value_type):
+            raise ValueError("Can't add signals with different value types")
 
-        return Signal(self.times,self.values+other.values)
+        if self.value_type==ValueTypes.undefined:
+            value_type = other.value_type
+        else:
+            value_type = self.value_type
+
+        return Signal(self.times, self.values+other.values,
+                      value_type=value_type)
 
     def __radd__(self, other):
         """Allows for adding Signal object to 0.

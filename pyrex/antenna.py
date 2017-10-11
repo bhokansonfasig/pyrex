@@ -132,7 +132,7 @@ class Antenna:
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
         but should end with super().receive(signal)."""
-        copy = Signal(signal.times, signal.values)
+        copy = Signal(signal.times, signal.values, value_type=ValueTypes.voltage)
         copy.filter_frequencies(self.response)
 
         if origin is None:
