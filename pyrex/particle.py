@@ -1,8 +1,8 @@
 """Module for particles (namely neutrinos) and neutrino interactions in the ice.
 Interactions include Earth shadowing (absorption) effect."""
 
-from collections import namedtuple
 import numpy as np
+from pyrex.internal_functions import normalize
 import pyrex.earth_model as earth_model
 
 AVOGADRO_NUMBER = 6.02e23
@@ -24,11 +24,13 @@ class NeutrinoInteraction:
 CC_NU = NeutrinoInteraction(2.69E-36, 0.402)
 # FIXME: add other interactions
 
-# Can be made into a class later if any functions or mutability are needed
-# Note: energy is in GeV
-Particle = namedtuple('Particle', ['vertex','direction','energy'])
-Particle.__doc__ = """Named tuple for containing particle attributes.
-Consists of a 3-D vertex (m), 3-D direction vector, and an energy (GeV)."""
+class Particle:
+    """Class for storing particle attributes. Consists of a 3-D vertex (m),
+    3-D direction vector (automatically normalized), and an energy (GeV)."""
+    def __init__(self, vertex, direction, energy):
+        self.vertex = np.array(vertex)
+        self.direction = normalize(direction)
+        self.energy = energy
 
 def random_direction():
     """Generate an arbitrary 3D unit vector."""

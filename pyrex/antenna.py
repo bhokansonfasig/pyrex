@@ -3,6 +3,7 @@
 import numpy as np
 import scipy.fftpack
 import scipy.signal
+from pyrex.internal_functions import normalize
 from pyrex.signals import Signal, ThermalNoise, ValueTypes
 from pyrex.ice_model import IceModel
 
@@ -17,8 +18,8 @@ class Antenna:
                  antenna_factor=1, efficiency=1, freq_range=None,
                  noise_rms=None, temperature=None, resistance=None, noisy=True):
         self.position = position
-        self.z_axis = np.array(z_axis) / np.linalg.norm(z_axis)
-        self.x_axis = np.array(x_axis) / np.linalg.norm(x_axis)
+        self.z_axis = normalize(z_axis)
+        self.x_axis = normalize(x_axis)
         self.antenna_factor = antenna_factor
         self.efficiency = efficiency
         self.freq_range = freq_range
@@ -144,7 +145,7 @@ class Antenna:
         if polarization is None:
             p_gain = 1
         else:
-            p_gain = self.polarization_gain(polarization)
+            p_gain = self.polarization_gain(normalize(polarization))
 
         signal_factor = d_gain * p_gain * self.efficiency
 
@@ -184,9 +185,8 @@ class DipoleAntenna(Antenna):
         tmp_vector = np.zeros(3)
         while np.array_equal(np.cross(orientation, tmp_vector), (0,0,0)):
             tmp_vector = np.random.rand(3)
-            tmp_vector /= np.linalg.norm(tmp_vector)
         ortho = np.cross(orientation, tmp_vector)
-        ortho /= np.linalg.norm(ortho)
+        # Note: ortho is not normalized, but will be normalized by Antenna's init
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,

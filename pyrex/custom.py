@@ -26,9 +26,8 @@ class IREXBaseAntenna(Antenna):
         tmp_vector = np.zeros(3)
         while np.array_equal(np.cross(orientation, tmp_vector), (0,0,0)):
             tmp_vector = np.random.rand(3)
-            tmp_vector /= np.linalg.norm(tmp_vector)
         ortho = np.cross(orientation, tmp_vector)
-        ortho /= np.linalg.norm(ortho)
+        # Note: ortho is not normalized, but will be normalized by Antenna's init
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,

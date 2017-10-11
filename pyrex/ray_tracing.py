@@ -2,6 +2,7 @@
 Ray tracing not yet implemented."""
 
 import numpy as np
+from pyrex.internal_functions import normalize
 
 class PathFinder:
     """Class for ray tracking."""
@@ -24,14 +25,12 @@ class PathFinder:
     @property
     def emitted_ray(self):
         """Direction in which ray is emitted."""
-        r = self.to_point - self.from_point
-        return r / np.linalg.norm(r)
+        return normalize(self.to_point - self.from_point)
 
     @property
     def path_length(self):
         """Length of the path (m)."""
-        r = self.to_point - self.from_point
-        return np.linalg.norm(r)
+        return np.linalg.norm(self.to_point - self.from_point)
 
     @property
     def tof(self):

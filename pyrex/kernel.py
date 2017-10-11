@@ -2,6 +2,7 @@
 ray tracking (no raytracing yet), and hit generation."""
 
 import numpy as np
+from pyrex.internal_functions import normalize
 from pyrex.signals import AskaryanSignal
 from pyrex.ray_tracing import PathFinder
 
@@ -27,12 +28,9 @@ class EventKernel:
             # p.direction and k should both be unit vectors
             # epol is (negative) vector rejection of k onto p.direction
             k = pf.emitted_ray
-            epol = np.vdot(k, p.direction) * k - p.direction
+            epol = normalize(np.vdot(k, p.direction) * k - p.direction)
             # In case k and p.direction are equal
             # (antenna directly on shower axis), just let epol be all zeros
-            # Don't divide so no divide-by-zero warning is thrown
-            if not(np.all(epol==0)):
-                epol = epol / np.linalg.norm(epol)
 
             psi = np.arccos(np.vdot(p.direction, k))
 
