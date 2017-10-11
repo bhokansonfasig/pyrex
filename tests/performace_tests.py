@@ -423,6 +423,38 @@ def test_angle_calculation():
                      repeats=10000)
 
 
+def test_normalization():
+    def norm0(vector):
+        return np.array(vector) / np.linalg.norm(vector)
+
+    def norm1(vector):
+        v = np.array(vector)
+        if np.all(v==0):
+            return v
+        else:
+            return v / np.linalg.norm(v)
+
+    def norm2(vector):
+        v = np.array(vector)
+        mag = np.linalg.norm(v)
+        if mag==0:
+            return v
+        else:
+            return v / mag
+
+    performance_test("norm0(vector)", repeats=10000,
+                     setup="import numpy as np; vector=list(np.random.rand(3)*1000)",
+                     use_globals={"norm0": norm0})
+    
+    performance_test("norm1(vector)", repeats=10000,
+                     setup="import numpy as np; vector=list(np.random.rand(3)*1000)",
+                     use_globals={"norm1": norm1})
+
+    performance_test("norm2(vector)", repeats=10000,
+                     setup="import numpy as np; vector=list(np.random.rand(3)*1000)",
+                     use_globals={"norm2": norm2})
+
+
 if __name__ == '__main__':
     test_EventKernel_event(1e6)
     print()
@@ -436,3 +468,5 @@ if __name__ == '__main__':
     # test_atten_methods()
 
     # test_angle_calculation()
+
+    # test_normalization()
