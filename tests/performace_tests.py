@@ -397,6 +397,32 @@ def test_event_generation(energy):
                      use_globals={"gen": generator})
 
 
+def test_angle_calculation():
+    performance_test("r = np.sqrt(np.sum(np.array(origin)**2)); "
+                     +"theta=np.arccos(origin[2]/r); "
+                     +"phi=np.arctan(origin[1]/origin[0])",
+                     setup="import numpy as np; origin=np.random.rand(3)*1000",
+                     repeats=10000)
+
+    performance_test("x, y, z = origin; r=np.sqrt(x**2+y**2+z**2); "
+                     +"theta=np.arccos(z/r); "
+                     +"phi=np.arctan(y/x)",
+                     setup="import numpy as np; origin=np.random.rand(3)*1000",
+                     repeats=10000)
+
+    performance_test("x, y, z = origin; r=np.sqrt(np.sum(np.array(origin)**2)); "
+                     +"theta=np.arccos(z/r); "
+                     +"phi=np.arctan(y/x)",
+                     setup="import numpy as np; origin=np.random.rand(3)*1000",
+                     repeats=10000)
+
+    performance_test("x, y, z = origin; "
+                     +"theta=np.arccos(z/np.sqrt(x**2+y**2+z**2)); "
+                     +"phi=np.arctan(y/x)",
+                     setup="import numpy as np; origin=np.random.rand(3)*1000",
+                     repeats=10000)
+
+
 if __name__ == '__main__':
     test_EventKernel_event(1e6)
     print()
@@ -408,3 +434,5 @@ if __name__ == '__main__':
     test_filter_attenuation()
     # test_tof_methods()
     # test_atten_methods()
+
+    # test_angle_calculation()

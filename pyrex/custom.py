@@ -11,17 +11,30 @@ class IREXBaseAntenna(Antenna):
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
-                 effective_height, polarization=(0,0,1), noisy=True):
+                 orientation=(0,0,1), effective_height=None, noisy=True):
+        if effective_height is None:
+            # Calculate length of half-wave dipole
+            self.effective_height = 3e8 / center_frequency / 2
+        else:
+            self.effective_height = effective_height
+
         # Get the critical frequencies in Hz
         f_low = center_frequency - bandwidth/2
         f_high = center_frequency + bandwidth/2
-        super().__init__(position=position,
+
+        # Get arbitrary x-axis orthogonal to orientation
+        tmp_vector = np.zeros(3)
+        while np.array_equal(np.cross(orientation, tmp_vector), (0,0,0)):
+            tmp_vector = np.random.rand(3)
+            tmp_vector /= np.linalg.norm(tmp_vector)
+        ortho = np.cross(orientation, tmp_vector)
+        ortho /= np.linalg.norm(ortho)
+
+        super().__init__(position=position, z_axis=orientation, x_axis=ortho,
+                         antenna_factor=1/self.effective_height,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          noisy=noisy)
-        self.effective_height = effective_height
-        self.polarization = (np.array(polarization)
-                             / np.linalg.norm(polarization))
 
         # Build scipy butterworth filter to speed up response function
         b, a  = scipy.signal.butter(1, 2*np.pi*np.array(self.freq_range),
@@ -35,22 +48,26 @@ class IREXBaseAntenna(Antenna):
                                   angular_freqs)
         return h
 
-    def receive(self, signal, polarization=[0,0,1]):
-        """Apply polarization effect to signal, then proceed with usual
-        antenna reception."""
-        scaled_values = (signal.values * self.effective_height
-                         * np.abs(np.vdot(self.polarization, polarization)))
-        super().receive(Signal(signal.times, scaled_values))
+    def directional_gain(self, theta, phi):
+        """Power gain of dipole antenna goes as sin(theta)^2, so electric field
+        gain goes as sin(theta)."""
+        return np.sin(theta)
+
+    def polarization_gain(self, polarization):
+        """Polarization gain is simply the dot product of the polarization
+        with the antenna's z-axis."""
+        return np.vdot(self.z_axis, polarization)
+
 
 
 class IREXAntenna:
     """IREX antenna system consisting of dipole antenna, low-noise amplifier,
     optional bandpass filter, and envelope circuit."""
     def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
-                 polarization=(0,0,1), noisy=True):
+                 orientation=(0,0,1), noisy=True):
         self.name = str(name)
         self.position = position
-        self.change_antenna(polarization=polarization, noisy=noisy)
+        self.change_antenna(orientation=orientation, noisy=noisy)
 
         self.trigger_threshold = trigger_threshold
         self.time_over_threshold = time_over_threshold
@@ -58,16 +75,17 @@ class IREXAntenna:
         self._triggers = []
 
     def change_antenna(self, center_frequency=250e6, bandwidth=300e6,
-                       resistance=100, polarization=(0,0,1), noisy=True):
+                       resistance=100, orientation=(0,0,1),
+                       effective_height=None, noisy=True):
         """Changes attributes of the antenna including center frequency (Hz),
-        bandwidth (Hz), and resistance (ohms)."""
-        h = 3e8 / center_frequency / 2
+        bandwidth (Hz), resistance (ohms), orientation, and effective
+        height (m)."""
         self.antenna = IREXBaseAntenna(position=self.position,
                                        center_frequency=center_frequency,
                                        bandwidth=bandwidth,
                                        resistance=resistance,
-                                       effective_height=h,
-                                       polarization=polarization, noisy=noisy)
+                                       effective_height=effective_height,
+                                       orientation=orientation, noisy=noisy)
 
     @property
     def is_hit(self):
@@ -187,7 +205,7 @@ class IREXDetector:
                 IREXAntenna(name="IREX antenna", position=pos,
                             trigger_threshold=trigger_threshold,
                             time_over_threshold=time_over_threshold,
-                            polarization=(0,0,1), noisy=noisy)
+                            orientation=(0,0,1), noisy=noisy)
             )
         for i, ant in enumerate(self.antennas):
             ant.name = str(naming_scheme(i, ant))
