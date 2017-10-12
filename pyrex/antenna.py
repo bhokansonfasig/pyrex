@@ -20,6 +20,9 @@ class Antenna:
         self.position = position
         self.z_axis = normalize(z_axis)
         self.x_axis = normalize(x_axis)
+        if np.dot(self.z_axis, self.x_axis)!=0:
+            raise ValueError("Antenna's x_axis must be perpendicular to its "
+                             +"z_axis")
         self.antenna_factor = antenna_factor
         self.efficiency = efficiency
         self.freq_range = freq_range
