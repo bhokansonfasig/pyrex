@@ -1,4 +1,4 @@
-"""File containing tests of pyrex digsig module"""
+"""File containing tests of pyrex signals module"""
 
 import pytest
 
