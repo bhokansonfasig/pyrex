@@ -45,6 +45,6 @@ class EventKernel:
             # Dividing by path length scales Askaryan pulse properly
             pulse.values /= pf.path_length
 
-            ant.receive(pulse, epol)
+            ant.receive(pulse, origin=p.vertex, polarization=epol)
 
         return p
