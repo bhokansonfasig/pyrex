@@ -64,6 +64,28 @@ class TestAntenna:
         """Test that the frequency response is always 1"""
         assert np.array_equal(antenna.response(np.logspace(0,10)), np.ones(50))
 
+    def test_default_directional_gain(self, antenna):
+        """Test that the directional gain is always 1"""
+        thetas = np.linspace(0, np.pi, 7)
+        phis = np.linspace(0, 2*np.pi, 13)
+        gains = []
+        for theta in thetas:
+            for phi in phis:
+                gains.append(antenna.directional_gain(theta, phi))
+        assert np.array_equal(gains, np.ones(7*13))
+
+    def test_default_polarization_gain(self, antenna):
+        """Test that the polarization gain is always 1"""
+        xs = np.linspace(0, 1, 3)
+        ys = np.linspace(0, 1, 3)
+        zs = np.linspace(0, 1, 3)
+        gains = []
+        for x in xs:
+            for y in ys:
+                for z in zs:
+                    gains.append(antenna.polarization_gain((x,y,z)))
+        assert np.array_equal(gains, np.ones(3**3))
+
     def test_receive(self, antenna):
         """Test that the antenna properly receives signals"""
         antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], ValueTypes.voltage))
