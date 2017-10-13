@@ -97,4 +97,34 @@ class TestAntarcticIce:
         frequencies. Make sure attenuations match expected within 1%."""
         assert(AntarcticIce.attenuation_length(depth, freq) == 
                pytest.approx(attenuations[(depth,freq)], rel=0.01))
+
+    @pytest.mark.parametrize("depth", list(-1*np.linspace(100,1000,10)))
+    def test_attenuation_length_freq_match(self, depth):
+        """Tests the attenuation length in the ice calculated for many freqs
+        at once matches the individual calculation."""
+        freq = np.logspace(3, 12, 4)
+        a_lens = [AntarcticIce.attenuation_length(depth, f) for f in freq]
+        assert np.array_equal(AntarcticIce.attenuation_length(depth, freq),
+                              a_lens)
+
+    @pytest.mark.parametrize("freq", list(np.logspace(3,12,4)))
+    def test_attenuation_length_depth_match(self, freq):
+        """Tests the attenuation length in the ice calculated for many depths
+        at once matches the individual calculation."""
+        depth = -1*np.linspace(100,1000,10)
+        a_lens = [AntarcticIce.attenuation_length(d, freq) for d in depth]
+        assert np.array_equal(AntarcticIce.attenuation_length(depth, freq),
+                              a_lens)
+
+    def test_attenuation_length_both_match(self):
+        """Tests the attenuation length in the ice calculated for many depths
+        and freqs at once matches the individual calculation."""
+        depth = -1*np.linspace(100,1000,10)
+        freq = np.logspace(3, 12, 4)
+        a_lens = np.zeros((len(depth),len(freq)))
+        for i, d in enumerate(depth):
+            for j, f in enumerate(freq):
+                a_lens[i,j] = AntarcticIce.attenuation_length(d, f)
+        assert np.array_equal(AntarcticIce.attenuation_length(depth, freq),
+                              a_lens)
     

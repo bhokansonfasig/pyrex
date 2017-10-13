@@ -49,7 +49,8 @@ class AntarcticIce:
     @staticmethod
     def __atten_coeffs(t, f):
         """Helper function to calculate a and b coefficients for attenuation
-        length calculation at given temperature (K) and frequency (Hz)."""
+        length calculation at given temperature (K) and frequency (Hz).
+        Supports passing numpy arrays for t and f."""
         t_C = t - 273.15
         w0 = np.log(1e-4)
         w1 = 0
@@ -59,12 +60,38 @@ class AntarcticIce:
         b1 = -6.2212 - t_C * (0.070927 + 1.77e-3 * t_C)
         b2 = -4.0947 - t_C * (0.002213 + 3.32e-4 * t_C)
 
-        if f < 1e9:
+        if isinstance(t, np.ndarray) and isinstance(f, np.ndarray):
+            # t and f are both arrays, so return 2-D array of coefficients
+            # where each row is a single t and each column is a single f.
+            a = np.zeros((len(t),len(f)))
+            b = np.zeros((len(t),len(f)))
+            # Use numpy slicing to calculate different values when
+            # f<1e9 and f>=1e9. Transpose b0, b1, b2 into column vectors
+            # so numpy multiplies properly
+            a[:,f<1e9] += (b1[:,np.newaxis] * w0 - b0[:,np.newaxis] * w1) / (w0 - w1)
+            b[:,f<1e9] += (b1[:,np.newaxis] - b0[:,np.newaxis]) / (w1 - w0)
+            a[:,f>=1e9] += (b2[:,np.newaxis] * w1 - b1[:,np.newaxis] * w2) / (w1 - w2)
+            b[:,f>=1e9] += (b2[:,np.newaxis] - b1[:,np.newaxis]) / (w2 - w1)
+        elif isinstance(f, np.ndarray):
+            # t is a scalar, so return an array of coefficients based
+            # on the frequencies
+            a = np.zeros(len(f))
+            b = np.zeros(len(f))
+            # Again use numpy slicing to differentiate f<1e9 and f>=1e9
+            a[f<1e9] += (b1 * w0 - b0 * w1) / (w0 - w1)
+            b[f<1e9] += (b1 - b0) / (w1 - w0)
+            a[f>=1e9] += (b2 * w1 - b1 * w2) / (w1 - w2)
+            b[f>=1e9] += (b2 - b1) / (w2 - w1)
+
+        # Past this point, f must be a scalar
+        # Then an array or single coefficient is returned based on the type of t
+        elif f < 1e9:
             a = (b1 * w0 - b0 * w1) / (w0 - w1)
             b = (b1 - b0) / (w1 - w0)
         else:
             a = (b2 * w1 - b1 * w2) / (w1 - w2)
             b = (b2 - b1) / (w2 - w1)
+
         return a, b
 
     @classmethod
@@ -81,28 +108,10 @@ class AntarcticIce:
         # Temperature in kelvin
         t = cls.temperature(z)
 
-        try:
-            a_lens = np.zeros(len(f))
-        except TypeError:
-            # f is a scalar, so return single value or array based on depths
-            # (automatic so long as z is a numpy array)
-            a, b = cls.__atten_coeffs(t, f)
-            return np.exp(-(a + b * w))
+        a, b = cls.__atten_coeffs(t, f)
+        # a and b will be scalar, 1-D, or 2-D as necessary based on t and f
 
-        try:
-            a_lens = np.zeros((len(z),len(f)))
-        except TypeError:
-            # z is a scalar, so return array based on frequencies
-            for i, freq in enumerate(f):
-                a, b = cls.__atten_coeffs(t, freq)
-                a_lens[i] = np.exp(-(a + b * w[i]))
-            return a_lens
-
-        # f and z are both arrays, so return 2-D array of values
-        for i, freq in enumerate(f):
-            a, b = cls.__atten_coeffs(t, freq)
-            a_lens[:,i] = np.exp(-(a + b * w[i]))
-        return a_lens
+        return np.exp(-(a + b * w))
 
 
 

@@ -2,6 +2,7 @@
 
 import timeit
 import numpy as np
+import collections
 import pyrex
 
 def performance_test(method_string, number=1, setup="pass", use_globals=False,
@@ -116,7 +117,7 @@ def test_EventKernel_event(energy=1e6):
     pulse = pyrex.AskaryanSignal(times=times, energy=p.energy*1e-3,
                                  theta=psi, n=ice.index(p.vertex[2]))
 
-    t_loop += performance_test("pf.propagate(pulse)", repeats=10,
+    t_loop += performance_test("pf.propagate(pulse)", repeats=100,
                                setup="import numpy as np;"+
                                      "import pyrex;"+
                                      "times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False);"+
@@ -224,7 +225,7 @@ def test_filter_attenuation():
     # performance_test("alen = ice.attenuation_length(-1000, fa*1e-6)", number=100,
     #                  use_globals={"ice": pyrex.IceModel(), "fa": np.abs(fs)})
 
-    t += performance_test("responses = freq_response(fs)", number=100,
+    t += performance_test("responses = freq_response(fs)", number=1000,
                           use_globals={"freq_response": pf.attenuation, "fs": fs})
 
     # t += performance_test("responses = np.array(freq_response(pulse.frequencies))",
@@ -389,6 +390,232 @@ def test_atten_methods():
     print("Returns:", step_method(from_pt, to_pt, freqs, pyrex.IceModel(), n_steps=100000))
 
 
+def test_alen_differentiation_methods():
+    z = -500
+    zs = np.linspace(-1000, 0, 101)
+    f = 1e8
+    fs = np.logspace(1, 11, 101)
+
+    def try_method(z, f):
+        with np.errstate(divide='ignore'):
+            w = np.log(f*1e-9)
+        t = pyrex.IceModel.temperature(z)
+
+        try:
+            a_lens = np.zeros(len(f))
+        except TypeError:
+            # f is a scalar, so return single value or array based on depths
+            # (automatic so long as z is a numpy array)
+            a, b = pyrex.IceModel.coeffs(t, f)
+            return np.exp(-(a + b * w))
+
+        try:
+            a_lens = np.zeros((len(z),len(f)))
+        except TypeError:
+            # z is a scalar, so return array based on frequencies
+            for i, freq in enumerate(f):
+                a, b = pyrex.IceModel.coeffs(t, freq)
+                a_lens[i] = np.exp(-(a + b * w[i]))
+            return a_lens
+
+        # f and z are both arrays, so return 2-D array of values
+        for i, freq in enumerate(f):
+            a, b = pyrex.IceModel.coeffs(t, freq)
+            a_lens[:,i] = np.exp(-(a + b * w[i]))
+        return a_lens
+
+    print("'try' method:")
+    t = performance_test("alen(z, f)", number=1000,
+                         use_globals={"alen": try_method, "z": z, "f": f})
+    print(" ", round(t*1e6, 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, f)", number=1000,
+                         use_globals={"alen": try_method, "zs": zs, "f": f})
+    print(" ", round(t*1e6/len(zs), 3), "microseconds per pair")
+
+    t = performance_test("alen(z, fs)", number=1000,
+                         use_globals={"alen": try_method, "z": z, "fs": fs})
+    print(" ", round(t*1e6/len(fs), 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, fs)", number=1000,
+                         use_globals={"alen": try_method, "zs": zs, "fs": fs})
+    print(" ", round(t*1e6/len(zs)/len(fs), 3), "microseconds per pair")
+
+
+    def hasattr_method(z, f):
+        with np.errstate(divide='ignore'):
+            w = np.log(f*1e-9)
+        t = pyrex.IceModel.temperature(z)
+
+        if hasattr(z, "__len__") and hasattr(f, "__len__"):
+            # f and z are both arrays, so return 2-D array of values
+            a_lens = np.zeros((len(z),len(f)))
+            for i, freq in enumerate(f):
+                a, b = pyrex.IceModel.coeffs(t, freq)
+                a_lens[:,i] = np.exp(-(a + b * w[i]))
+            return a_lens
+        elif hasattr(f, "__len__"):
+            # z is a scalar, so return array based on frequencies
+            a_lens = np.zeros(len(f))
+            for i, freq in enumerate(f):
+                a, b = pyrex.IceModel.coeffs(t, freq)
+                a_lens[i] = np.exp(-(a + b * w[i]))
+            return a_lens
+        else:
+            # f is a scalar, so return single value or array based on depths
+            # (automatic so long as z is a numpy array)
+            a, b = pyrex.IceModel.coeffs(t, f)
+            return np.exp(-(a + b * w))
+
+    print("\n'hasattr' method:")
+    t = performance_test("alen(z, f)", number=1000,
+                         use_globals={"alen": hasattr_method, "z": z, "f": f})
+    print(" ", round(t*1e6, 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, f)", number=1000,
+                         use_globals={"alen": hasattr_method, "zs": zs, "f": f})
+    print(" ", round(t*1e6/len(zs), 3), "microseconds per pair")
+
+    t = performance_test("alen(z, fs)", number=1000,
+                         use_globals={"alen": hasattr_method, "z": z, "fs": fs})
+    print(" ", round(t*1e6/len(fs), 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, fs)", number=1000,
+                         use_globals={"alen": hasattr_method, "zs": zs, "fs": fs})
+    print(" ", round(t*1e6/len(zs)/len(fs), 3), "microseconds per pair")
+
+
+    def isinstance_method(z, f):
+        with np.errstate(divide='ignore'):
+            w = np.log(f*1e-9)
+        if isinstance(z, collections.Sequence):
+            z = np.array(z)
+        t = pyrex.IceModel.temperature(z)
+
+        if isinstance(z, np.ndarray) and isinstance(f, (np.ndarray, collections.Sequence)):
+            # f and z are both arrays, so return 2-D array of values
+            a_lens = np.zeros((len(z),len(f)))
+            for i, freq in enumerate(f):
+                a, b = pyrex.IceModel.coeffs(t, freq)
+                a_lens[:,i] = np.exp(-(a + b * w[i]))
+            return a_lens
+        elif isinstance(f, np.ndarray):
+            # z is a scalar, so return array based on frequencies
+            a_lens = np.zeros(len(f))
+            for i, freq in enumerate(f):
+                a, b = pyrex.IceModel.coeffs(t, freq)
+                a_lens[i] = np.exp(-(a + b * w[i]))
+            return a_lens
+        else:
+            # f is a scalar, so return single value or array based on depths
+            # (automatic so long as z is a numpy array)
+            a, b = pyrex.IceModel.coeffs(t, f)
+            return np.exp(-(a + b * w))
+
+    print("\n'isinstance' method:")
+    t = performance_test("alen(z, f)", number=1000,
+                         use_globals={"alen": isinstance_method, "z": z, "f": f})
+    print(" ", round(t*1e6, 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, f)", number=1000,
+                         use_globals={"alen": isinstance_method, "zs": zs, "f": f})
+    print(" ", round(t*1e6/len(zs), 3), "microseconds per pair")
+
+    t = performance_test("alen(z, fs)", number=1000,
+                         use_globals={"alen": isinstance_method, "z": z, "fs": fs})
+    print(" ", round(t*1e6/len(fs), 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, fs)", number=1000,
+                         use_globals={"alen": isinstance_method, "zs": zs, "fs": fs})
+    print(" ", round(t*1e6/len(zs)/len(fs), 3), "microseconds per pair")
+
+
+    def force_method(z, f):
+        z = np.array(z, ndmin=1)
+        f = np.array(f, ndmin=1)
+        with np.errstate(divide='ignore'):
+            w = np.log(f*1e-9)
+        t = pyrex.IceModel.temperature(z)
+
+        a_lens = np.zeros((len(z),len(f)))
+        for i, freq in enumerate(f):
+            a, b = pyrex.IceModel.coeffs(t, freq)
+            a_lens[:,i] = np.exp(-(a + b * w[i]))
+        return a_lens
+
+    print("\nforce method:")
+    t = performance_test("alen(z, f)", number=1000,
+                         use_globals={"alen": force_method, "z": z, "f": f})
+    print(" ", round(t*1e6, 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, f)", number=1000,
+                         use_globals={"alen": force_method, "zs": zs, "f": f})
+    print(" ", round(t*1e6/len(zs), 3), "microseconds per pair")
+
+    t = performance_test("alen(z, fs)", number=1000,
+                         use_globals={"alen": force_method, "z": z, "fs": fs})
+    print(" ", round(t*1e6/len(fs), 3), "microseconds per pair")
+
+    t = performance_test("alen(zs, fs)", number=1000,
+                         use_globals={"alen": force_method, "zs": zs, "fs": fs})
+    print(" ", round(t*1e6/len(zs)/len(fs), 3), "microseconds per pair")
+
+
+
+def test_alen_calculation_methods():
+    zs = np.linspace(-1000, 0, 101)
+    fs = np.logspace(1, 11, 101)
+
+    def np_slice_method(z, f):
+        with np.errstate(divide='ignore'):
+            w = np.log(f*1e-9)
+        t = pyrex.IceModel.temperature(z)
+
+        a_lens = np.zeros((len(z),len(f)))
+        for i, freq in enumerate(f):
+            a, b = pyrex.IceModel.coeffs(t, freq)
+            a_lens[:,i] = np.exp(-(a + b * w[i]))
+        return a_lens
+
+    print("numpy slice method:")
+    t = performance_test("alen(zs, fs)", number=1000,
+                         use_globals={"alen": np_slice_method, "zs": zs, "fs": fs})
+    print(" ", round(t*1e6/len(zs)/len(fs), 3), "microseconds per pair")
+
+
+    def loop_method(z, f):
+        with np.errstate(divide='ignore'):
+            w = np.log(f*1e-9)
+        t = pyrex.IceModel.temperature(z)
+
+        a_lens = np.zeros((len(z),len(f)))
+        for i, freq in enumerate(f):
+            a, b = pyrex.IceModel.coeffs(t, freq)
+            for j, depth in enumerate(z):
+                a_lens[j,i] = np.exp(-(a[j] + b[j] * w[i]))
+        return a_lens
+
+    print("\nloop method:")
+    t = performance_test("alen(zs, fs)", number=10,
+                         use_globals={"alen": loop_method, "zs": zs, "fs": fs})
+    print(" ", round(t*1e6/len(zs)/len(fs), 3), "microseconds per pair")
+
+
+    def array_method(z, f):
+        with np.errstate(divide='ignore'):
+            w = np.log(f*1e-9)
+        t = pyrex.IceModel.temperature(z)
+
+        a, b = pyrex.IceModel.coeffs(t, f)
+        a_lens = np.exp(-(a + b * w))
+        return a_lens
+
+    print("\narray method:")
+    t = performance_test("alen(zs, fs)", number=1000,
+                         use_globals={"alen": array_method, "zs": zs, "fs": fs})
+    print(" ", round(t*1e6/len(zs)/len(fs), 3), "microseconds per pair")
+
+
 
 def test_event_generation(energy):
     generator = pyrex.ShadowGenerator(10000, 10000, 2800, lambda: energy)
@@ -445,7 +672,7 @@ def test_normalization():
     performance_test("norm0(vector)", repeats=10000,
                      setup="import numpy as np; vector=list(np.random.rand(3)*1000)",
                      use_globals={"norm0": norm0})
-    
+
     performance_test("norm1(vector)", repeats=10000,
                      setup="import numpy as np; vector=list(np.random.rand(3)*1000)",
                      use_globals={"norm1": norm1})
@@ -466,6 +693,8 @@ if __name__ == '__main__':
     test_filter_attenuation()
     # test_tof_methods()
     # test_atten_methods()
+    # test_alen_differentiation_methods()
+    # test_alen_calculation_methods()
 
     # test_angle_calculation()
 
