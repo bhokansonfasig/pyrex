@@ -24,6 +24,8 @@ Version 1.1.0
 
 * Allow ``DipoleAntenna`` to guess at ``effective_height`` if not specified.
 
+* Increase speed of ``IceModel.__atten_coeffs`` method, resulting in increased speed of attenuation length calculations.
+
 
 
 Version 1.0.3
