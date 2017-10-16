@@ -113,8 +113,9 @@ class IREXAntenna:
         return [Signal(w.times, w.envelope, value_type=w.value_type)
                 for w in self.antenna.all_waveforms]
 
-    def receive(self, signal, polarization=[0,0,1]):
-        return self.antenna.receive(signal, polarization=polarization)
+    def receive(self, signal, origin=None, polarization=None):
+        return self.antenna.receive(signal, origin=origin,
+                                    polarization=polarization)
 
     def clear(self):
         self._triggers.clear()
