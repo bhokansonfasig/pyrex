@@ -682,6 +682,83 @@ def test_normalization():
                      use_globals={"norm2": norm2})
 
 
+from PySpice.Spice.NgSpice.Shared import NgSpiceShared
+from PySpice.Spice.Netlist import Circuit
+from PySpice.Spice.Library import SpiceLibrary
+from PySpice.Unit import *
+
+def test_pyspice_envelope():
+    times, dt = np.linspace(0, 100e-9, 2048, endpoint=False, retstep=True)
+    pulse = pyrex.AskaryanSignal(times=times, energy=1e8, theta=45*np.pi/180,
+                                 n=1.75, t0=20e-9)
+
+    performance_test("pyrex.Signal(pulse.times, pulse.envelope)", number=100,
+                     setup="import pyrex", use_globals={"pulse": pulse})
+
+    spice_library = SpiceLibrary("/Users/bhokansonfasig/Documents/IceCube/"+
+                                 "scalable_radio_array/spice_models")
+
+    class NgSpiceSharedSignal(NgSpiceShared):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self._signal = None
+
+        def get_vsrc_data(self, voltage, time, node, ngspice_id):
+            self._logger.debug('ngspice_id-{} get_vsrc_data @{} node {}'.format(ngspice_id, time, node))
+            voltage[0] = np.interp(time, self._signal.times, self._signal.values)
+            return 0
+
+    ngspice_shared = NgSpiceSharedSignal()
+
+    class NgSpiceSignal:
+        def __init__(self, signal, shared=ngspice_shared):
+            self.shared = ngspice_shared
+            self.shared._signal = signal
+
+    def setup_circuit(kind="biased"):
+        if kind=="biased":
+            circuit = Circuit('Biased Envelope Circuit')
+            circuit.include(spice_library['hsms'])
+
+            circuit.V('in', 'input', circuit.gnd, 'dc 0 external')
+            # bias portion
+            circuit.C(2, 'input', 1, 10@u_nF)
+            circuit.R(2, 1, 2, 1@u_kOhm)
+            circuit.X('D2', 'hsms', 2, circuit.gnd)
+            circuit.R(3, 2, 'bias', 1@u_kOhm)
+            circuit.V('bias', 'bias', circuit.gnd, 5@u_V)
+            # envelope portion
+            circuit.X('D1', 'hsms', 1, 'output')
+            circuit.C(1, 'output', circuit.gnd, 220@u_pF)
+            circuit.R(1, 'output', circuit.gnd, 50@u_Ohm)
+            return circuit
+
+        elif kind=="basic":
+            circuit = Circuit('Biased Envelope Circuit')
+            circuit.include(spice_library['hsms'])
+
+            circuit.V('in', 'input', circuit.gnd, 'dc 0 external')
+            # envelope portion
+            circuit.X('D1', 'hsms', 'input', 'output')
+            circuit.C(1, 'output', circuit.gnd, 220@u_pF)
+            circuit.R(1, 'output', circuit.gnd, 50@u_Ohm)
+            return circuit
+
+    performance_test("ng_in = NgSpiceSignal(pulse); "+
+                     "simulator = circuit.simulator(temperature=25, "+
+                     "nominal_temperature=25, ngspice_shared=ng_in.shared); "+
+                     "analysis = simulator.transient(step_time=dt, "+
+                     "end_time=pulse.times[-1]); "+
+                     "pyrex.Signal(analysis.output.abscissa, analysis.output)",
+                     number=10,
+                     setup="import pyrex; circuit = setup_circuit()",
+                     use_globals={"pulse": pulse, "dt": dt,
+                                  "setup_circuit": setup_circuit,
+                                  "NgSpiceSignal": NgSpiceSignal},
+                     alternate_title="pyrex.Signal(analysis.output.abscissa, "+
+                                     "analysis.output)")
+
+
 if __name__ == '__main__':
     test_EventKernel_event(1e6)
     print()
@@ -689,8 +766,10 @@ if __name__ == '__main__':
     # print()
     # test_EventKernel_event(1e10)
     # print()
+
     # test_PathFinder_propagate()
-    test_filter_attenuation()
+    # test_filter_attenuation()
+
     # test_tof_methods()
     # test_atten_methods()
     # test_alen_differentiation_methods()
@@ -699,3 +778,6 @@ if __name__ == '__main__':
     # test_angle_calculation()
 
     # test_normalization()
+
+    print("\nEnvelope:")
+    test_pyspice_envelope()
