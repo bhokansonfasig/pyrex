@@ -189,6 +189,11 @@ class IREXDetector:
                             z = lowest_antenna + dz*k
                             self.antenna_positions.append((x,y,z))
 
+        for pos in self.antenna_positions:
+            if pos[2]>0:
+                raise ValueError("Antenna placed outside of ice will cause "
+                                 +"unexpected issues")
+
         self.antennas = []
 
     def build_antennas(self, trigger_threshold, time_over_threshold=0,
