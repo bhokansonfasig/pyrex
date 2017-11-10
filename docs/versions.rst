@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 1.1.1
+-------------
+
+* Moved ``ValueTypes`` inside ``Signal`` class. Now access as ``Signal.ValueTypes.voltage``, etc.
+
+
+
 Version 1.1.0
 -------------
 

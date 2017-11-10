@@ -2,6 +2,7 @@
 
 import timeit
 import numpy as np
+from scipy.special import lambertw
 import collections
 import pyrex
 
@@ -692,7 +693,7 @@ def test_pyspice_envelope():
     pulse = pyrex.AskaryanSignal(times=times, energy=1e8, theta=45*np.pi/180,
                                  n=1.75, t0=20e-9)
 
-    performance_test("pyrex.Signal(pulse.times, pulse.envelope)", number=100,
+    performance_test("pyrex.Signal(pulse.times, pulse.envelope)", number=1000,
                      setup="import pyrex", use_globals={"pulse": pulse})
 
     spice_library = SpiceLibrary("/Users/bhokansonfasig/Documents/IceCube/"+
@@ -744,6 +745,14 @@ def test_pyspice_envelope():
             circuit.R(1, 'output', circuit.gnd, 50@u_Ohm)
             return circuit
 
+        elif kind=="diode":
+            circuit = Circuit('Diode Output')
+            circuit.include(spice_library['hsms'])
+            
+            circuit.V('in', 'input', circuit.gnd, 'dc 0 external')
+            circuit.X('D1', 'hsms', 'input', 'output')
+            return circuit
+
     performance_test("ng_in = NgSpiceSignal(pulse); "+
                      "simulator = circuit.simulator(temperature=25, "+
                      "nominal_temperature=25, ngspice_shared=ng_in.shared); "+
@@ -759,9 +768,62 @@ def test_pyspice_envelope():
                                      "analysis.output)")
 
 
+    def envelope_circuit(signal, cap=220e-12, res=50):
+        v_c = 0
+        v_out = []
+
+        r_d = 25
+        i_s = 3e-6
+        n = 1.06
+        v_t = 26e-3
+
+        charge_exp = np.exp(-signal.dt/(res*cap))
+        discharge = i_s*res*(1-charge_exp)
+        lambert_factor = n*v_t*res/r_d*(1-charge_exp)
+        frac = i_s*r_d/n/v_t
+
+        lambert_exponent = np.log(frac) + frac
+
+        for v_in in signal.values:
+            a = lambert_exponent + (v_in - v_c)/n/v_t
+            if a>100:
+                b = np.log(a)
+                lambert_term = a - b + b/a
+            else:
+                lambert_term = np.real(lambertw(np.exp(a)))
+                if np.isnan(lambert_term):
+                    lambert_term = 0
+            v_c = v_c*charge_exp - discharge + lambert_factor*lambert_term
+            v_out.append(v_c)
+
+        return pyrex.Signal(signal.times, v_out,
+                            value_type=pyrex.Signal.ValueTypes.voltage)
+
+
+    performance_test("envelope(pulse)",
+                     number=100,
+                     use_globals={"pulse": pulse, "envelope": envelope_circuit},
+                     alternate_title="analytic circuit simulation")
+
+
+    # performance_test("ng_in = NgSpiceSignal(pulse); "+
+    #                  "simulator = circuit.simulator(temperature=25, "+
+    #                  "nominal_temperature=25, ngspice_shared=ng_in.shared); "+
+    #                  "analysis = simulator.transient(step_time=dt, "+
+    #                  "end_time=pulse.times[-1]); "+
+    #                  "pyrex.Signal(analysis.output.abscissa, analysis.output)",
+    #                  number=10,
+    #                  setup="import pyrex; circuit = setup_circuit('diode')",
+    #                  use_globals={"pulse": pulse, "dt": dt,
+    #                               "setup_circuit": setup_circuit,
+    #                               "NgSpiceSignal": NgSpiceSignal},
+    #                  alternate_title="process diode output only")
+
+
+
 if __name__ == '__main__':
-    test_EventKernel_event(1e6)
-    print()
+    # test_EventKernel_event(1e6)
+    # print()
     # test_EventKernel_event(1e8)
     # print()
     # test_EventKernel_event(1e10)

@@ -4,7 +4,7 @@ import numpy as np
 import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
-from pyrex.signals import Signal, ThermalNoise, ValueTypes
+from pyrex.signals import Signal, ThermalNoise
 from pyrex.ice_model import IceModel
 
 
@@ -135,7 +135,7 @@ class Antenna:
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
         but should end with super().receive(signal)."""
-        copy = Signal(signal.times, signal.values, value_type=ValueTypes.voltage)
+        copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
         copy.filter_frequencies(self.response)
 
         if origin is None:
@@ -152,13 +152,13 @@ class Antenna:
 
         signal_factor = d_gain * p_gain * self.efficiency
 
-        if signal.value_type==ValueTypes.voltage:
+        if signal.value_type==Signal.ValueTypes.voltage:
             pass
-        elif signal.value_type==ValueTypes.field:
+        elif signal.value_type==Signal.ValueTypes.field:
             signal_factor /= self.antenna_factor
         else:
             raise ValueError("Signal's value type must be either "
-                             +"voltage or field.")
+                             +"voltage or field. Given "+str(signal.value_type))
 
         copy.values *= signal_factor
         self.signals.append(copy)

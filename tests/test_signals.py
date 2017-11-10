@@ -86,6 +86,11 @@ class TestSignal:
             assert signal.times[i] == expected.times[i]
             assert signal.values[i] == pytest.approx(expected.values[i])
 
+    def test_value_types_equivalent(self, signal):
+        """Test that value types are equivalent across classes"""
+        assert signal.ValueTypes.voltage == Signal.ValueTypes.voltage
+        assert Signal.ValueTypes.voltage == EmptySignal.ValueTypes.voltage
+
 
 def test_empty_signal():
     """Test that an empty signal truly is empty"""
