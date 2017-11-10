@@ -6,6 +6,8 @@ Version 1.1.1
 
 * Moved ``ValueTypes`` inside ``Signal`` class. Now access as ``Signal.ValueTypes.voltage``, etc.
 
+* Changed signal envelope calculation in custom ``IREXAntenna`` from hilbert transform to a basic model. Spice model also available, but slower.
+
 
 
 Version 1.1.0

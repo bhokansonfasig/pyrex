@@ -1,17 +1,117 @@
 """Module containing customized classes for IREX"""
 
+import os, os.path
 import numpy as np
 import scipy.signal
+from scipy.special import lambertw
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.ice_model import IceModel
+
+USE_PYSPICE = False
+
+if USE_PYSPICE:
+    from PySpice.Spice.NgSpice.Shared import NgSpiceShared
+    from PySpice.Spice.Netlist import Circuit
+    from PySpice.Spice.Library import SpiceLibrary
+    from PySpice.Unit import *
+
+
+    SPICE_LIBRARY = SpiceLibrary(os.path.join(os.getcwd(), 'spice_models'))
+
+    ENVELOPE_CIRCUIT_C1 = 220@u_pF
+    ENVELOPE_CIRCUIT_R1 = 50@u_Ohm
+
+    ENVELOPE_CIRCUIT_C2 = 10@u_nF
+    ENVELOPE_CIRCUIT_R2 = 1@u_kOhm
+    ENVELOPE_CIRCUIT_R3 = 1@u_kOhm
+    ENVELOPE_CIRCUIT_VBIAS = 5@u_V
+
+    ENVELOPE_CIRCUIT = Circuit('Biased Envelope Circuit')
+    ENVELOPE_CIRCUIT.include(SPICE_LIBRARY['hsms'])
+
+    ENVELOPE_CIRCUIT.V('in', 'input', ENVELOPE_CIRCUIT.gnd, 'dc 0 external')
+    # bias portion
+    ENVELOPE_CIRCUIT.C(2, 'input', 1, ENVELOPE_CIRCUIT_C2)
+    ENVELOPE_CIRCUIT.R(2, 1, 2, ENVELOPE_CIRCUIT_R2)
+    ENVELOPE_CIRCUIT.X('D2', 'hsms', 2, ENVELOPE_CIRCUIT.gnd)
+    ENVELOPE_CIRCUIT.R(3, 2, 'bias', ENVELOPE_CIRCUIT_R3)
+    ENVELOPE_CIRCUIT.V('bias', 'bias', ENVELOPE_CIRCUIT.gnd, ENVELOPE_CIRCUIT_VBIAS)
+    # envelope portion
+    ENVELOPE_CIRCUIT.X('D1', 'hsms', 1, 'output')
+    ENVELOPE_CIRCUIT.C(1, 'output', ENVELOPE_CIRCUIT.gnd, ENVELOPE_CIRCUIT_C1)
+    ENVELOPE_CIRCUIT.R(1, 'output', ENVELOPE_CIRCUIT.gnd, ENVELOPE_CIRCUIT_R1)
+
+
+    class NgSpiceSharedSignal(NgSpiceShared):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self._signal = None
+
+        def get_vsrc_data(self, voltage, time, node, ngspice_id):
+            self._logger.debug('ngspice_id-{} get_vsrc_data @{} node {}'.format(ngspice_id, time, node))
+            voltage[0] = np.interp(time, self._signal.times, self._signal.values)
+            return 0
+
+    NGSPICE_SHARED_MASTER = NgSpiceSharedSignal()
+
+    class SpiceSignal:
+        def __init__(self, signal, shared=NGSPICE_SHARED_MASTER):
+            self.shared = shared
+            self.shared._signal = signal
+
+
+def envelope_model(signal, cap=220e-12, res=50):
+    """Model of a basic diode-capacitor-resistor envelope circuit. Takes a
+    signal object as the input voltage and returns the output voltage signal
+    object."""
+    v_c = 0
+    v_out = []
+
+    r_d = 25
+    i_s = 3e-6
+    n = 1.06
+    v_t = 26e-3
+
+    # Terms which can be calculated ahead of time to save time in the loop
+    charge_exp = np.exp(-signal.dt/(res*cap))
+    discharge = i_s*res*(1-charge_exp)
+    lambert_factor = n*v_t*res/r_d*(1-charge_exp)
+    frac = i_s*r_d/n/v_t
+    lambert_exponent = np.log(frac) + frac
+
+    for v_in in signal.values:
+        # Calculate exponent of exponential in lambert function instead of
+        # calculating exponential directly to avoid overflows
+        a = lambert_exponent + (v_in - v_c)/n/v_t
+        if a>100:
+            # If exponential in lambert function is large enough,
+            # use approximation of lambert function
+            # (doesn't save time, but does prevent overflows)
+            b = np.log(a)
+            lambert_term = a - b + b/a
+        else:
+            # Otherwise, use the lambert function directly
+            lambert_term = np.real(lambertw(np.exp(a)))
+            if np.isnan(lambert_term):
+                # Only seems to happen when np.exp(a) is very close to zero
+                # (so lambert_term will also be very close to zero)
+                lambert_term = 0
+
+        # Calculate voltage across capacitor after time dt
+        v_c = v_c*charge_exp - discharge + lambert_factor*lambert_term
+        v_out.append(v_c)
+
+    return Signal(signal.times, v_out, value_type=Signal.ValueTypes.voltage)
+
 
 class IREXBaseAntenna(Antenna):
     """Antenna to be used in IREXAntenna class. Has a position (m),
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), effective_height=None, noisy=True):
+                 orientation=(0,0,1), effective_height=None,
+                 amplification=1, noisy=True):
         if effective_height is None:
             # Calculate length of half-wave dipole
             self.effective_height = 3e8 / center_frequency / 2
@@ -31,6 +131,7 @@ class IREXBaseAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
+                         efficiency=amplification,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          noisy=noisy)
@@ -63,19 +164,25 @@ class IREXAntenna:
     """IREX antenna system consisting of dipole antenna, low-noise amplifier,
     optional bandpass filter, and envelope circuit."""
     def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
-                 orientation=(0,0,1), noisy=True):
+                 orientation=(0,0,1), amplification=1, noisy=True,
+                 envelope_method="analytic"):
         self.name = str(name)
         self.position = position
-        self.change_antenna(orientation=orientation, noisy=noisy)
+        self.change_antenna(orientation=orientation,
+                            amplification=amplification, noisy=noisy)
 
         self.trigger_threshold = trigger_threshold
         self.time_over_threshold = time_over_threshold
 
+        self.envelope_method = envelope_method
+
+        self._signals = []
+        self._all_waveforms = []
         self._triggers = []
 
     def change_antenna(self, center_frequency=250e6, bandwidth=300e6,
                        resistance=100, orientation=(0,0,1),
-                       effective_height=None, noisy=True):
+                       effective_height=None, amplification=1, noisy=True):
         """Changes attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
@@ -83,8 +190,30 @@ class IREXAntenna:
                                        center_frequency=center_frequency,
                                        bandwidth=bandwidth,
                                        resistance=resistance,
+                                       orientation=orientation,
                                        effective_height=effective_height,
-                                       orientation=orientation, noisy=noisy)
+                                       amplification=amplification,
+                                       noisy=noisy)
+
+    def make_envelope(self, signal):
+        if self.envelope_method=="hilbert":
+            return Signal(signal.times, signal.envelope,
+                          value_type=signal.value_type)
+        elif self.envelope_method=="spice":
+            if not(USE_PYSPICE):
+                raise ModuleNotFoundError("PySpice was not imported")
+            ngspice_in = SpiceSignal(signal)
+            simulator = ENVELOPE_CIRCUIT.simulator(
+                temperature=25, nominal_temperature=25,
+                ngspice_shared=ngspice_in.shared
+            )
+            analysis = simulator.transient(step_time=signal.dt,
+                                           start_time=signal.times[0],
+                                           end_time=signal.times[-1])
+            return Signal(signal.times, analysis.output,
+                          value_type=signal.value_type)
+        elif self.envelope_method=="analytic":
+            return envelope_model(signal)
 
     @property
     def is_hit(self):
@@ -92,9 +221,12 @@ class IREXAntenna:
 
     @property
     def signals(self):
+        # Process envelopes of any unprocessed antenna signals
+        while len(self._signals)<len(self.antenna.signals):
+            signal = self.antenna.signals[len(self._signals)]
+            self._signals.append(self.make_envelope(signal))
         # Return envelopes of antenna signals
-        return [Signal(s.times, s.envelope, value_type=s.value_type)
-                for s in self.antenna.signals]
+        return self._signals
 
     @property
     def waveforms(self):
@@ -109,15 +241,20 @@ class IREXAntenna:
 
     @property
     def all_waveforms(self):
+        # Process envelopes of any unprocessed antenna waveforms
+        while len(self._all_waveforms)<len(self.antenna.all_waveforms):
+            signal = self.antenna.all_waveforms[len(self._all_waveforms)]
+            self._all_waveforms.append(self.make_envelope(signal))
         # Return envelopes of antenna waveforms
-        return [Signal(w.times, w.envelope, value_type=w.value_type)
-                for w in self.antenna.all_waveforms]
+        return self._all_waveforms
 
     def receive(self, signal, origin=None, polarization=None):
         return self.antenna.receive(signal, origin=origin,
                                     polarization=polarization)
 
     def clear(self):
+        self._signals.clear()
+        self._all_waveforms.clear()
         self._triggers.clear()
         self.antenna.clear()
 
@@ -169,8 +306,8 @@ class IREXDetector:
                         self.antenna_positions.append((x,y,z))
 
         elif "cluster" in geometry.lower():
-            n_x = int(number_of_stations/2)
-            n_y = int(number_of_stations - n_x)
+            n_x = int(np.sqrt(number_of_stations))
+            n_y = int(number_of_stations/n_x)
             n_z = antennas_per_string
             n_r = strings_per_station
             dx = station_separation
@@ -198,7 +335,8 @@ class IREXDetector:
 
     def build_antennas(self, trigger_threshold, time_over_threshold=0,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
-                       polarization_scheme=lambda i, ant: (0,0,1), noisy=True):
+                       polarization_scheme=lambda i, ant: (0,0,1), noisy=True,
+                       envelope_method="analytic"):
         """Sets up IREXAntennas at the positions stored in the class.
         Takes as arguments the trigger threshold, optional time over
         threshold, and whether to add noise to the waveforms.
@@ -212,7 +350,8 @@ class IREXDetector:
                 IREXAntenna(name="IREX antenna", position=pos,
                             trigger_threshold=trigger_threshold,
                             time_over_threshold=time_over_threshold,
-                            orientation=(0,0,1), noisy=noisy)
+                            orientation=(0,0,1), noisy=noisy,
+                            envelope_method=envelope_method)
             )
         for i, ant in enumerate(self.antennas):
             ant.name = str(naming_scheme(i, ant))
