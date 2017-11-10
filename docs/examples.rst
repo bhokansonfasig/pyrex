@@ -26,10 +26,10 @@ Plotting the ``Signal`` object is as simple as plotting the times vs the values:
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
-While there are no specified units for a ``Signal.values``, there is the option to specify the ``value_type`` of the ``values``. This is done using the ``ValueTypes`` enum. By default, a ``Signal`` object has ``value_type=ValueTypes.unknown``. However, if the signal represents a voltage, electric field, or electric power; ``value_type`` can be set to ``ValueTypes.voltage``, ``ValueTypes.field``, or ``ValueTypes.power`` respectively::
+While there are no specified units for a ``Signal.values``, there is the option to specify the ``value_type`` of the ``values``. This is done using the ``Signal.ValueTypes`` enum. By default, a ``Signal`` object has ``value_type=ValueTypes.unknown``. However, if the signal represents a voltage, electric field, or electric power; ``value_type`` can be set to ``Signal.ValueTypes.voltage``, ``Signal.ValueTypes.field``, or ``Signal.ValueTypes.power`` respectively::
 
     my_voltage_signal = pyrex.Signal(times=time_array, values=value_array,
-                                     value_type=pyrex.ValueTypes.voltage)
+                                     value_type=pyrex.Signal.ValueTypes.voltage)
 
 ``Signal`` objects can be added as long as they have the same time array and ``value_type``. ``Signal`` objects also support the python ``sum`` function::
 
@@ -161,7 +161,7 @@ The ``Antenna`` class defines a ``trigger`` method which is also expected to be 
 The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal`` object and processes the signal according to the antenna's attributes (``efficiency``, ``antenna_factor``, ``response``, ``directional_gain``, and ``polarization_gain`` as described above). To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest. You can also optionally specify the origin point of the signal (used in ``directional_gain`` calculation) and the polarization direction of the signal (used in ``polarization_gain`` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
 
     incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin,
-                                           value_type=pyrex.ValueTypes.voltage)
+                                           value_type=pyrex.Signal.ValueTypes.voltage)
     basic_antenna.receive(incoming_singal)
     basic_antenna.receive(incoming_singal, origin=[0,0,-300], polarization=[1,0,0])
     basic_antenna.is_hit == True
@@ -197,7 +197,7 @@ Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude 
     my_antenna = NoiselessThresholdAntenna(position=(0, 0, 0), threshold=2)
 
     incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin,
-                                           value_type=pyrex.ValueTypes.voltage)
+                                           value_type=pyrex.Signal.ValueTypes.voltage)
     my_antenna.receive(incoming_singal)
     my_antenna.is_hit == False
     len(my_antenna.waveforms) == 0
