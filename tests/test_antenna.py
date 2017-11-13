@@ -128,6 +128,16 @@ class TestAntenna:
         assert antenna.waveforms == []
         assert antenna.all_waveforms != []
 
+    def test_noise_master_generation(self, antenna):
+        """Test that _noise_master is generated the first time make_noise is
+        called and never again"""
+        assert antenna._noise_master is None
+        noise = antenna.make_noise(np.linspace(0, 100e-9))
+        assert antenna._noise_master is not None
+        old_noise_master = antenna._noise_master
+        noise = antenna.make_noise(np.linspace(0, 50e-9))
+        assert antenna._noise_master == old_noise_master
+
 
 
 class TestDipoleAntenna:

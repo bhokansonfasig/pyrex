@@ -81,7 +81,7 @@ The ``filter_frequencies`` function will apply a frequency-domain filter to the 
             return 1
         else:
             return 0
-        
+
     time_array = np.linspace(0, 10, 1001)
     value_array = np.sin(0.1*2*np.pi*time_array) + np.sin(2*2*np.pi*time_array)
     my_signal = pyrex.Signal(times=time_array, values=value_array)
@@ -144,7 +144,7 @@ Additionally, ``FunctionSignal`` leverages its knowledge of the function to more
     plt.plot(noise.times, noise.values)
     plt.show()
 
-Note that since ``ThermalNoise`` inherits from ``FunctionSignal``, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a large number of frequencies is requested on initialization.
+Note that since ``ThermalNoise`` inherits from ``FunctionSignal``, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a large number of frequencies is requested on initialization. ::
 
     short_noise = pyrex.ThermalNoise(times=time_array, temperature=noise_temp,
                                      resistance=system_resistance,
@@ -163,10 +163,11 @@ Antenna Class and Subclasses
 
 The base ``Antenna`` class provided by PyREx is designed to be inherited from to match the needs of each project. At its core, an ``Antenna`` object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance for noise calculations and a boolean dictating whether or not noise should be added to the antenna's signals (note that if noise is to be added, a resistance must be specified). ::
 
+    # Please note that some values are unrealistic in order to simplify demonstration
     position = (0, 0, -100) # m
     temperature = 300 # K
-    resistance = 1 # ohm
-    frequency_range = (0, 1e3) # Hz
+    resistance = 1e17 # ohm
+    frequency_range = (0, 5) # Hz
     basic_antenna = pyrex.Antenna(position=position, temperature=temperature,
                                   resistance=resistance,
                                   freq_range=frequency_range)
@@ -192,10 +193,12 @@ The ``Antenna`` class defines a ``trigger`` method which is also expected to be 
 
 The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal`` object and processes the signal according to the antenna's attributes (``efficiency``, ``antenna_factor``, ``response``, ``directional_gain``, and ``polarization_gain`` as described above). To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest. You can also optionally specify the origin point of the signal (used in ``directional_gain`` calculation) and the polarization direction of the signal (used in ``polarization_gain`` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
 
-    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin,
-                                           value_type=pyrex.Signal.ValueTypes.voltage)
-    basic_antenna.receive(incoming_singal)
-    basic_antenna.receive(incoming_singal, origin=[0,0,-300], polarization=[1,0,0])
+    incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), np.sin,
+                                             value_type=pyrex.Signal.ValueTypes.voltage)
+    incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), np.sin,
+                                             value_type=pyrex.Signal.ValueTypes.voltage)
+    basic_antenna.receive(incoming_signal_1)
+    basic_antenna.receive(incoming_signal_2, origin=[0,0,-300], polarization=[1,0,0])
     basic_antenna.is_hit == True
     for waveform, pure_signal in zip(basic_antenna.waveforms, basic_antenna.signals):
         plt.figure()
@@ -203,6 +206,17 @@ The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal``
         plt.plot(pure_signal.times, pure_signal.values, label="Pure Signal")
         plt.legend()
         plt.show()
+
+Beyond ``Antenna.waveforms``, the ``Antenna`` object also provides methods for checking the waveform and trigger status for arbitrary times: ``full_waveform`` and ``is_hit_during``. Both of these methods take a time array as an argument and return the waveform ``Signal`` object for those times and whether said waveform triggered the antenna, respectively. ::
+
+    total_waveform = basic_antenna.full_waveform(np.linspace(0,20))
+    plt.plot(total_waveform.times, total_waveform.values, label="Total Waveform")
+    plt.plot(incoming_singal_1.times, incoming_singal_1.values, label="Pure Signals")
+    plt.plot(incoming_signal_2.times, incoming_signal_2.values, color="C1")
+    plt.legend()
+    plt.show()
+
+    basic_antenna.is_hit_during(np.linspace(0, 200e-9)) == True
 
 Finally, the ``Antenna`` class defines a ``clear`` method which will reset the antenna to a state of having received no signals::
 

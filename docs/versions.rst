@@ -6,6 +6,12 @@ Version 1.1.2
 
 * Added ``with_times`` method to ``Signal`` class for interpolation/extrapolation of signals to different times.
 
+* Change ``Antenna.make_noise`` to use a single master noise object and use ``with_times`` to calculate noise at different times.
+
+    * To ensure noise is not obviously periodic (for <100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.
+
+* Add ``full_waveform`` and ``is_hit_during`` methods to ``Antenna`` class for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.
+
 
 
 Version 1.1.1

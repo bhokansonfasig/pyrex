@@ -821,6 +821,101 @@ def test_pyspice_envelope():
 
 
 
+def test_noise_generation():
+    f_band = (100e6, 400e6)
+    short_times = np.linspace(0, 100e-9, 101)
+    long_times = np.linspace(0, 100e-9, 10001)
+    performance_test("ThermalNoise(short_times, f_band, "
+                     +"rms_voltage=1, n_freqs=100)", number=1000,
+                     setup="from pyrex import ThermalNoise",
+                     use_globals={"short_times": short_times,
+                                  "f_band": f_band})
+
+    performance_test("ThermalNoise(long_times, f_band, "
+                     +"rms_voltage=1, n_freqs=100)", number=1000,
+                     setup="from pyrex import ThermalNoise",
+                     use_globals={"long_times": long_times,
+                                  "f_band": f_band})
+
+    performance_test("ThermalNoise(short_times, f_band, "
+                     +"rms_voltage=1, n_freqs=10000)", number=100,
+                     setup="from pyrex import ThermalNoise",
+                     use_globals={"short_times": short_times,
+                                  "f_band": f_band})
+
+    performance_test("ThermalNoise(long_times, f_band, "
+                     +"rms_voltage=1, n_freqs=10000)", number=10,
+                     setup="from pyrex import ThermalNoise",
+                     use_globals={"long_times": long_times,
+                                  "f_band": f_band})
+
+
+def test_antenna_noise_generation():
+    def reset_antennas():
+        times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False)
+        pulse = pyrex.AskaryanSignal(times=times, energy=1e8, theta=np.radians(45))
+
+        times2 = np.linspace(180e-9, 280e-9, 2048, endpoint=False)
+        pulse2 = pyrex.AskaryanSignal(times=times, energy=1e8, theta=np.radians(45),
+                                    t0=200e-9)
+
+        antenna = pyrex.Antenna((0,0,0), freq_range=(100e6, 400e6), noise_rms=25e-6)
+        antenna.receive(pulse)
+
+        antenna2 = pyrex.Antenna((0,0,0), freq_range=(100e6, 400e6), noise_rms=25e-6)
+        antenna2.receive(pulse)
+        antenna2.receive(pulse2)
+
+        return antenna, antenna2
+
+    antenna, antenna2 = reset_antennas()
+
+    performance_test("antenna.waveforms", number=1,
+                     use_globals={"antenna": antenna})
+    
+    performance_test("antenna2.waveforms", number=1,
+                     use_globals={"antenna2": antenna2})
+
+    performance_test("antenna.waveforms", number=1000,
+                     use_globals={"antenna": antenna})
+    
+    performance_test("antenna2.waveforms", number=1000,
+                     use_globals={"antenna2": antenna2})
+
+
+    antenna, antenna2 = reset_antennas()
+
+    performance_test("antenna.is_hit", number=1,
+                     use_globals={"antenna": antenna})
+
+    performance_test("antenna2.is_hit", number=1,
+                     use_globals={"antenna2": antenna2})
+
+    performance_test("antenna.is_hit", number=1000,
+                     use_globals={"antenna": antenna})
+
+    performance_test("antenna2.is_hit", number=1000,
+                     use_globals={"antenna2": antenna2})
+
+    antenna, antenna2 = reset_antennas()
+
+    performance_test("antenna.is_hit_during(np.linspace(0,300e-9,3001))",
+                     number=1, setup="import numpy as np",
+                     use_globals={"antenna": antenna})
+
+    performance_test("antenna2.is_hit_during(np.linspace(0,300e-9,3001))",
+                     number=1, setup="import numpy as np",
+                     use_globals={"antenna2": antenna2})
+
+    performance_test("antenna.is_hit_during(np.linspace(0,300e-9,3001))",
+                     number=1, setup="import numpy as np",
+                     use_globals={"antenna": antenna})
+
+    performance_test("antenna2.is_hit_during(np.linspace(0,300e-9,3001))",
+                     number=1, setup="import numpy as np",
+                     use_globals={"antenna2": antenna2})
+
+
 if __name__ == '__main__':
     # test_EventKernel_event(1e6)
     # print()
@@ -841,5 +936,9 @@ if __name__ == '__main__':
 
     # test_normalization()
 
-    print("\nEnvelope:")
-    test_pyspice_envelope()
+    # print("\nEnvelope:")
+    # test_pyspice_envelope()
+
+    # test_noise_generation()
+
+    test_antenna_noise_generation()
