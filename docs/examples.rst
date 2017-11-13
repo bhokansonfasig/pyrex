@@ -62,6 +62,17 @@ The ``Signal`` class also provides functions for manipulating the signal. The ``
     len(my_signal.times) == len(my_signal.values) == 1001
     my_signal.times[0] == 0
     my_signal.times[-1] == 10
+    plt.plot(my_signal.times, my_signal.values)
+    plt.show()
+
+The ``with_times`` function will interpolate/extrapolate the signal's values onto a new times array::
+
+    new_times = np.linspace(-5, 15)
+    new_signal = my_signal.with_times(new_times)
+    plt.plot(new_signal.times, new_signal.values, label="new signal")
+    plt.plot(my_signal.times, my_signal.values, label="original signal")
+    plt.legend()
+    plt.show()
 
 The ``filter_frequencies`` function will apply a frequency-domain filter to the values array based on the passed frequency response function::
 
@@ -90,7 +101,7 @@ A number of classes which inherit from the Signal class are included in PyREx: `
 
 ``FunctionSignal`` takes a function of time and creates a signal based on that function::
 
-    time_array = np.linspace(0,10)
+    time_array = np.linspace(0, 10, num=101)
     def square_wave(time):
         if int(time)%2==0:
             return 1
@@ -98,6 +109,15 @@ A number of classes which inherit from the Signal class are included in PyREx: `
             return -1
     square_signal = pyrex.FunctionSignal(times=time_array, function=square_wave)
     plt.plot(square_signal.times, square_signal.values)
+    plt.show()
+
+Additionally, ``FunctionSignal`` leverages its knowledge of the function to more accurately interpolate and extrapolate values for the ``with_times`` function::
+
+    new_times = np.linspace(0, 20, num=201)
+    long_square_signal = square_signal.with_times(new_times)
+    plt.plot(long_square_signal.times, long_square_signal.values, label="new signal")
+    plt.plot(square_signal.times, square_signal.values, label="original signal")
+    plt.legend()
     plt.show()
 
 ``AskaryanSignal`` produces an Askaryan pulse (in V/m) on a time array due to a neutrino of given energy observed at a given angle from the shower axis::
@@ -122,6 +142,18 @@ A number of classes which inherit from the Signal class are included in PyREx: `
                                f_band=frequency_range)
     print(noise.value_type)
     plt.plot(noise.times, noise.values)
+    plt.show()
+
+Note that since ``ThermalNoise`` inherits from ``FunctionSignal``, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a large number of frequencies is requested on initialization.
+
+    short_noise = pyrex.ThermalNoise(times=time_array, temperature=noise_temp,
+                                     resistance=system_resistance,
+                                     f_band=(100e6, 400e6))
+    long_noise = short_noise.with_times(np.linspace(-10e-9, 90e-9, 2001))
+
+    plt.plot(short_noise.times, short_noise.values)
+    plt.show()
+    plt.plot(long_noise.times, long_noise.values)
     plt.show()
 
 

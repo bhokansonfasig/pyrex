@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 1.1.2
+-------------
+
+* Added ``with_times`` method to ``Signal`` class for interpolation/extrapolation of signals to different times.
+
+
+
 Version 1.1.1
 -------------
 
