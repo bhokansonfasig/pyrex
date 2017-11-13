@@ -77,7 +77,7 @@ class TestSignal:
         """Test that envelope cannot be assigned to"""
         with pytest.raises(AttributeError):
             signal.envelope = [1,2,1,2,1]
-    
+
     def test_resample(self, signal):
         """Test signal resampling"""
         expected = Signal(signal.times[::2], [1.2,1.6258408572364818,1.3741591427635182])
@@ -90,6 +90,14 @@ class TestSignal:
         """Test that value types are equivalent across classes"""
         assert signal.ValueTypes.voltage == Signal.ValueTypes.voltage
         assert Signal.ValueTypes.voltage == EmptySignal.ValueTypes.voltage
+
+    def test_with_times(self, signal):
+        """Test that with_times method works as expected"""
+        times = [-2,-1,0,1,2,3,4,5,6,7]
+        new = signal.with_times(times)
+        expected = Signal(times, [0,0,1,2,1,2,1,0,0,0])
+        for i in range(10):
+            assert new.values[i] == pytest.approx(expected.values[i])
 
 
 def test_empty_signal():
@@ -107,3 +115,8 @@ def test_function_signal(func):
     signal = FunctionSignal(ts, func)
     for i in range(5):
         assert signal.values[i] == pytest.approx(func(ts[i]))
+
+    long_ts = [-2,-1,0,1,2,3,4,5,6,7]
+    long_signal = signal.with_times(long_ts)
+    for i in range(10):
+        assert long_signal.values[i] == pytest.approx(func(long_ts[i]))
