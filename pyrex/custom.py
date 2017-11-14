@@ -219,6 +219,9 @@ class IREXAntenna:
     def is_hit(self):
         return len(self.waveforms)>0
 
+    def is_hit_during(self, times):
+        return self.trigger(self.full_waveform(times))
+
     @property
     def signals(self):
         # Process envelopes of any unprocessed antenna signals
@@ -247,6 +250,10 @@ class IREXAntenna:
             self._all_waveforms.append(self.make_envelope(signal))
         # Return envelopes of antenna waveforms
         return self._all_waveforms
+
+    def full_waveform(self, times):
+        preprocessed = self.antenna.full_waveform(times)
+        return self.make_envelope(preprocessed)
 
     def receive(self, signal, origin=None, polarization=None):
         return self.antenna.receive(signal, origin=origin,
