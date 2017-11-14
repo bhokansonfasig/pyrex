@@ -106,7 +106,7 @@ class Antenna:
 
             # Calculate recommended number of frequencies for longest
             # signal length stored
-            duration = 0 if len(self.signals)==0 else 1e-6
+            duration = 1e-7 if len(self.signals)==0 else 0
             for signal in self.signals:
                 signal_duration = signal.times[-1] - signal.times[0]
                 if signal_duration > duration:
