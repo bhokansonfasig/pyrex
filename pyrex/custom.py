@@ -110,8 +110,7 @@ class IREXBaseAntenna(Antenna):
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), effective_height=None,
-                 amplification=1, noisy=True):
+                 orientation=(0,0,1), effective_height=None, noisy=True):
         if effective_height is None:
             # Calculate length of half-wave dipole
             self.effective_height = 3e8 / center_frequency / 2
@@ -131,7 +130,6 @@ class IREXBaseAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         efficiency=amplification,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          noisy=noisy)
@@ -168,8 +166,8 @@ class IREXAntenna:
                  envelope_method="analytic"):
         self.name = str(name)
         self.position = position
-        self.change_antenna(orientation=orientation,
-                            amplification=amplification, noisy=noisy)
+        self.change_antenna(orientation=orientation, noisy=noisy)
+        self.amplification = amplification
 
         self.trigger_threshold = trigger_threshold
         self.time_over_threshold = time_over_threshold
@@ -182,7 +180,7 @@ class IREXAntenna:
 
     def change_antenna(self, center_frequency=250e6, bandwidth=300e6,
                        resistance=100, orientation=(0,0,1),
-                       effective_height=None, amplification=1, noisy=True):
+                       effective_height=None, noisy=True):
         """Changes attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
@@ -192,7 +190,6 @@ class IREXAntenna:
                                        resistance=resistance,
                                        orientation=orientation,
                                        effective_height=effective_height,
-                                       amplification=amplification,
                                        noisy=noisy)
 
     def make_envelope(self, signal):
@@ -224,9 +221,10 @@ class IREXAntenna:
 
     @property
     def signals(self):
-        # Process envelopes of any unprocessed antenna signals
+        # Amplify and process envelopes of any unprocessed antenna signals
         while len(self._signals)<len(self.antenna.signals):
             signal = self.antenna.signals[len(self._signals)]
+            signal.values *= self.amplification
             self._signals.append(self.make_envelope(signal))
         # Return envelopes of antenna signals
         return self._signals
@@ -244,15 +242,18 @@ class IREXAntenna:
 
     @property
     def all_waveforms(self):
-        # Process envelopes of any unprocessed antenna waveforms
+        # Amplify and process envelopes of any unprocessed antenna waveforms
         while len(self._all_waveforms)<len(self.antenna.all_waveforms):
             signal = self.antenna.all_waveforms[len(self._all_waveforms)]
+            signal.values *= self.amplification
             self._all_waveforms.append(self.make_envelope(signal))
         # Return envelopes of antenna waveforms
         return self._all_waveforms
 
     def full_waveform(self, times):
+        # Amplify and process envelope of full antenna waveform
         preprocessed = self.antenna.full_waveform(times)
+        preprocessed.values *= self.amplification
         return self.make_envelope(preprocessed)
 
     def receive(self, signal, origin=None, polarization=None):
