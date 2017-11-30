@@ -162,12 +162,14 @@ class IREXAntenna:
     """IREX antenna system consisting of dipole antenna, low-noise amplifier,
     optional bandpass filter, and envelope circuit."""
     def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
-                 orientation=(0,0,1), amplification=1, noisy=True,
-                 envelope_method="analytic"):
+                 orientation=(0,0,1), amplification=1, amplifier_clipping=3,
+                 noisy=True, envelope_method="analytic"):
         self.name = str(name)
         self.position = position
         self.change_antenna(orientation=orientation, noisy=noisy)
+
         self.amplification = amplification
+        self.amplifier_clipping = amplifier_clipping
 
         self.trigger_threshold = trigger_threshold
         self.time_over_threshold = time_over_threshold
@@ -193,6 +195,7 @@ class IREXAntenna:
                                        noisy=noisy)
 
     def make_envelope(self, signal):
+        """Return the signal envelope based on the antenna's envelope_method."""
         if self.envelope_method=="hilbert":
             return Signal(signal.times, signal.envelope,
                           value_type=signal.value_type)
@@ -212,6 +215,15 @@ class IREXAntenna:
         elif self.envelope_method=="analytic":
             return envelope_model(signal)
 
+    def front_end_processing(self, signal):
+        """Apply the front-end processing of the antenna signal, including
+        amplification, clipping, and envelope processing."""
+        amplified_values = np.clip(signal.values*self.amplification,
+                                   a_min=-self.amplifier_clipping,
+                                   a_max=self.amplifier_clipping)
+        copy = Signal(signal.times, amplified_values)
+        return self.make_envelope(copy)
+
     @property
     def is_hit(self):
         return len(self.waveforms)>0
@@ -221,11 +233,10 @@ class IREXAntenna:
 
     @property
     def signals(self):
-        # Amplify and process envelopes of any unprocessed antenna signals
+        # Process any unprocessed antenna signals
         while len(self._signals)<len(self.antenna.signals):
             signal = self.antenna.signals[len(self._signals)]
-            signal.values *= self.amplification
-            self._signals.append(self.make_envelope(signal))
+            self._signals.append(self.front_end_processing(signal))
         # Return envelopes of antenna signals
         return self._signals
 
@@ -242,19 +253,17 @@ class IREXAntenna:
 
     @property
     def all_waveforms(self):
-        # Amplify and process envelopes of any unprocessed antenna waveforms
+        # Process any unprocessed antenna waveforms
         while len(self._all_waveforms)<len(self.antenna.all_waveforms):
             signal = self.antenna.all_waveforms[len(self._all_waveforms)]
-            signal.values *= self.amplification
-            self._all_waveforms.append(self.make_envelope(signal))
+            self._all_waveforms.append(self.front_end_processing(signal))
         # Return envelopes of antenna waveforms
         return self._all_waveforms
 
     def full_waveform(self, times):
-        # Amplify and process envelope of full antenna waveform
+        # Process full antenna waveform
         preprocessed = self.antenna.full_waveform(times)
-        preprocessed.values *= self.amplification
-        return self.make_envelope(preprocessed)
+        return self.front_end_processing(preprocessed)
 
     def receive(self, signal, origin=None, polarization=None):
         return self.antenna.receive(signal, origin=origin,
