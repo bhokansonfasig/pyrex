@@ -128,7 +128,7 @@ class Antenna:
                                                   n_freqs=n_freqs)
 
         noise = self._noise_master.with_times(times)
-        noise.value *= self.efficiency
+        noise.values *= self.efficiency
         return noise
 
 
