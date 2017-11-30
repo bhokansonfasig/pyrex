@@ -127,7 +127,9 @@ class Antenna:
                                                   rms_voltage=self.noise_rms,
                                                   n_freqs=n_freqs)
 
-        return self._noise_master.with_times(times)
+        noise = self._noise_master.with_times(times)
+        noise.value *= self.efficiency
+        return noise
 
 
     def trigger(self, signal):
