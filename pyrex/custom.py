@@ -341,6 +341,7 @@ class IREXDetector:
         self.antennas = []
 
     def build_antennas(self, trigger_threshold, time_over_threshold=0,
+                       amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
                        polarization_scheme=lambda i, ant: (0,0,1), noisy=True,
                        envelope_method="analytic"):
@@ -357,6 +358,7 @@ class IREXDetector:
                 IREXAntenna(name="IREX antenna", position=pos,
                             trigger_threshold=trigger_threshold,
                             time_over_threshold=time_over_threshold,
+                            amplification=amplification,
                             orientation=(0,0,1), noisy=noisy,
                             envelope_method=envelope_method)
             )
