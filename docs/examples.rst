@@ -262,6 +262,8 @@ Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude 
         plt.plot(wave.times, wave.values)
         plt.show()
 
+For more on customizing PyREx, see the `custom-package` section.
+
 
 PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A ``DipoleAntenna`` object is created as follows::
 

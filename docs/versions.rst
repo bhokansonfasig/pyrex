@@ -1,6 +1,15 @@
 Version History
 ===============
 
+Version 1.2.0
+-------------
+
+* Changed ``custom`` module to a package containing ``irex`` module.
+
+* ``custom`` package leverages "Implicit Namespace Package" structure to allow plug-in style additions to the package in either the user's ``~/.pyrex-custom/`` directory or the ``./pyrex-custom`` directory.
+
+
+
 Version 1.1.2
 -------------
 
@@ -11,6 +20,8 @@ Version 1.1.2
     * To ensure noise is not obviously periodic (for <100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.
 
 * Add ``full_waveform`` and ``is_hit_during`` methods to ``Antenna`` class for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.
+
+* Added ``front_end_processing`` method to ``IREXAntenna`` for processing envelope, amplifying signal, and downsampling result (downsampling currently inactive).
 
 
 

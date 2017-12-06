@@ -14,6 +14,8 @@ Welcome to PyREx's documentation!
 
    examples
 
+   customize
+
    pyrex
 
    versions

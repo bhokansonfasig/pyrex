@@ -85,8 +85,14 @@ pyrex\.kernel module
 
 .. automodule:: pyrex.kernel
 
-pyrex\.custom module
-^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: pyrex.custom
+PyREx Custom Subpackage
+-----------------------
+
+More modules available as plug-ins, see `custom-package`.
+
+pyrex\.custom\.irex module
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyrex.custom.irex
 
