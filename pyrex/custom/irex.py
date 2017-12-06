@@ -1,4 +1,4 @@
-"""Module containing customized classes for IREX"""
+"""Module containing customized classes for IREX (IceCube Radio Extension)"""
 
 import os, os.path
 import numpy as np
@@ -223,6 +223,21 @@ class IREXAntenna:
                                    a_max=self.amplifier_clipping)
         copy = Signal(signal.times, amplified_values)
         return self.make_envelope(copy)
+
+        # # Two options for downsampling:
+        # envelope = self.make_envelope(copy)
+        # time = envelope.times[-1] - envelope.times[0]
+        # sampling_time = 1e-9
+        # npts = time / sampling_time
+
+        # # Option 1
+        # downsampled_times = np.linspace(envelope.times[0], envelope.times[-1],
+        #                                 num=npts+1)
+        # return envelope.with_times()
+
+        # # Option 2
+        # envelope.resample(npts)
+        # return envelope
 
     @property
     def is_hit(self):
