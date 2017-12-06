@@ -1,14 +1,19 @@
 Introduction to PyREx
 =====================
 
-PyREx (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension) is, as its name suggests, a python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
-The code is designed to be modular so that it can also be applied to other askaryan radio antennas, as in the ARA and ARIANA collaborations.
+PyREx (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension) is, as its name suggests, a Python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
+The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANA collaborations).
 
 
 Installation
 ------------
 
-To use the PyREx package, download the code from https://github.com/bhokansonfasig/pyrex and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory. In the future, PyREx may be installable via ``pip``, but it is not currently available there.
+The easiest way to get the PyREx package is using ``pip`` as follows::
+
+    pip install -e git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
+
+Alternatively, you can download the code from https://github.com/bhokansonfasig/pyrex and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory.
+PyREx is not currently available on PyPI, so a simple ``pip install pyrex`` will not have the intended effect.
 
 
 Code Example
