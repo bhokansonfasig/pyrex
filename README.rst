@@ -10,7 +10,7 @@ Installation
 
 The easiest way to get the PyREx package is using ``pip`` as follows::
 
-    pip install -e git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
+    pip install git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
 
 Alternatively, you can download the code from https://github.com/bhokansonfasig/pyrex and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory.
 PyREx is not currently available on PyPI, so a simple ``pip install pyrex`` will not have the intended effect.
