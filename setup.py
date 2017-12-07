@@ -7,7 +7,7 @@ with open(os.path.join('pyrex', '__about__.py')) as f:
     exec(f.read(), about)
 
 setup(
-    name = about["__fullname__"],
+    name = about["__fullname__"].lower(),
     version = about["__version__"],
     description = about["__description__"],
     long_description = about["__long_description__"],
