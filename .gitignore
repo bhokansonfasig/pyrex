@@ -19,3 +19,6 @@ tests/bug*
 
 # Sphinx documentation build directory
 docs/_build/*
+
+# egg-related files
+*.egg*
