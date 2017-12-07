@@ -26,10 +26,10 @@ setup(
     author_email = about["__author_email__"],
     license = about["__license__"],
     packages = find_packages(),
-    python_requires = '>= 3.5',
+    python_requires = '>= 3.6',
     install_requires = [
-        'numpy',
-        'scipy'
+        'numpy>=1.13',
+        'scipy>=0.19'
     ],
     setup_requires = ['pytest-runner'],
     tests_require = ['pytest'],
