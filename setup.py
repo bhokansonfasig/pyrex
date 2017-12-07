@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 import os.path
 
 # Grab information about package without loading it
@@ -25,7 +25,7 @@ setup(
     author = about["__author__"],
     author_email = about["__author_email__"],
     license = about["__license__"],
-    packages = find_packages(),
+    packages = ['pyrex', 'pyrex.custom'],
     python_requires = '>= 3.6',
     install_requires = [
         'numpy>=1.13',
