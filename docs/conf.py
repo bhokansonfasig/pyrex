@@ -20,7 +20,12 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
-from pyrex import __version__ as VERSION
+
+
+# Grab information about package without loading package
+about = {}
+with open(os.path.join(os.path.join("..", "pyrex"), "__about__.py")) as f:
+    exec(f.read(), about)
 
 
 # -- General configuration ------------------------------------------------
@@ -49,9 +54,12 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'PyREx'
-copyright = '2017, Ben Hokanson-Fasig'
-author = 'Ben Hokanson-Fasig'
+module_name = about['__modulename__']
+project = about['__fullname__']
+copyright = about['__copyright__']
+author = about['__author__']
+VERSION = about['__version__']
+description = about['__description__']
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -106,7 +114,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PyRExdoc'
+htmlhelp_basename = project+'doc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -133,8 +141,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'PyREx.tex', 'PyREx Documentation',
-     'Ben Hokanson-Fasig', 'manual'),
+    (master_doc, project+'.tex', project+' Documentation',
+     author, 'manual'),
 ]
 
 
@@ -143,7 +151,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pyrex', 'PyREx Documentation',
+    (master_doc, module_name, project+' Documentation',
      [author], 1)
 ]
 
@@ -154,8 +162,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PyREx', 'PyREx Documentation',
-     author, 'PyREx', 'One line description of project.',
+    (master_doc, project, project+' Documentation',
+     author, project, description,
      'Miscellaneous'),
 ]
 
@@ -168,10 +176,10 @@ autodoc_member_order = 'bysource'
 # Flags automatically added
 autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
 
-# Special controls for processing the docstrings
-def custom_process_docstring(app, what, name, obj, options, lines):
-    if what=="attribute" and "Particle" in name:
-        lines.clear()
+# # Special controls for processing the docstrings
+# def custom_process_docstring(app, what, name, obj, options, lines):
+#     if what=="attribute" and "Particle" in name:
+#         lines.clear()
 
-def setup(app):
-    app.connect('autodoc-process-docstring', custom_process_docstring)
+# def setup(app):
+#     app.connect('autodoc-process-docstring', custom_process_docstring)

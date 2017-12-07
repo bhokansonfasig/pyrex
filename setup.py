@@ -1,11 +1,16 @@
 from setuptools import setup, find_packages
-import pyrex
+import os.path
+
+# Grab information about package without loading it
+about = {}
+with open(os.path.join('pyrex', '__about__.py')) as f:
+    exec(f.read(), about)
 
 setup(
-    name = "PyREx",
-    version = pyrex.__version__,
-    description = pyrex.__doc__.splitlines()[0],
-    long_description = pyrex.__doc__,
+    name = about["__fullname__"],
+    version = about["__version__"],
+    description = about["__description__"],
+    long_description = about["__long_description__"],
     classifiers = [
         "Development Status :: 4 - Beta",
         "Programming Language :: Python",
@@ -16,10 +21,10 @@ setup(
         "Topic :: Scientific/Engineering :: Astronomy",
     ],
     keywords = "radio neutrino astronomy physics",
-    url = "https://github.com/bhokansonfasig/pyrex",
-    author = "Ben Hokanson-Fasig",
-    author_email = "fasig@icecube.wisc.edu",
-    license = "MIT",
+    url = about["__url__"],
+    author = about["__author__"],
+    author_email = about["__author_email__"],
+    license = about["__license__"],
     packages = find_packages(),
     python_requires = '>= 3.5',
     install_requires = [

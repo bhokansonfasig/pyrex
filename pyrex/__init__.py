@@ -1,14 +1,10 @@
-"""A Python package for simulation of Askaryan pulses and radio antennas.
-
-PyREx (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension) is,
-as its name suggests, a Python package designed to simulate the measurement of
-Askaryan pulses via a radio antenna array around the IceCube South Pole
-Neutrino Observatory.
-The code is designed to be modular so that it can also be applied to other
-askaryan radio antennas (e.g. the ARA and ARIANA collaborations)."""
+"""PyREx radio neutrino simulation package."""
 
 import os
 import os.path
+
+from .__about__ import __version__, __long_description__
+__doc__ = __long_description__
 
 from .signals import Signal, EmptySignal, FunctionSignal, AskaryanSignal, ThermalNoise
 from .antenna import Antenna, DipoleAntenna
@@ -17,8 +13,6 @@ from .earth_model import prem_density, slant_depth
 from .particle import Particle, ShadowGenerator
 from .ray_tracing import PathFinder
 from .kernel import EventKernel
-
-__version__ = "1.2.0"
 
 
 # Allow users to create their own (or borrow from others) modules that add to
