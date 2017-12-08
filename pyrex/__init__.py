@@ -18,14 +18,19 @@ from .kernel import EventKernel
 # Allow users to create their own (or borrow from others) modules that add to
 # the custom package. These "plug-in" modules should be kept in a
 # .pyrex-custom directory inside the user's home directory.
-# Note that plug-in modules should NOT have an __init__.py or else things break.
+# Note that plug-in "custom" directories should NOT have an __init__.py
+# or else things break.
 # Example directory structure below:
 #   /some/path/pyrex/
 #   |-- __init__.py
 #   |-- ... (other pyrex modules)
 #   |-- custom/
-#   |   |-- irex.py
-#   |   |-- ... (other built-in custom modules)
+#   |   |-- pyspice.py
+#   |   |-- irex/
+#   |   |   |-- __init__.py
+#   |   |   |-- antenna.py
+#   |   |   |-- ... (other irex-related modules)
+#   |   |-- ... (other built-in custom modules/packages)
 #
 #   ~/.pyrex-custom/
 #   |-- ara-customization/

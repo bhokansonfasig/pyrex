@@ -1,0 +1,11 @@
+*SPICE model for HSMS-285x
+*The parameters are for a single diode (HSMS-2850). Parameters also apply 
+*to the individual diodes within multiple diode configurations. 
+*
+.SUBCKT hsms 1 2
+DCD1    1     2      DMOD    
+.MODEL  DMOD	D
++		IS=3E-6, CJO=0.18E-12, VJ=.35, BV=3.8, IBV=3E-4
++		EG=0.69, N=1.06, RS=25, XTI=2, M=0.5)
+.ENDS
+
