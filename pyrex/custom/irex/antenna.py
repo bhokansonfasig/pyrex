@@ -206,7 +206,7 @@ class IREXAntenna:
         while len(self._all_waveforms)<len(self.antenna.signals):
             signal = self.antenna.signals[len(self._all_waveforms)]
             t = signal.times
-            long_times = np.concatenate(t-t[-1]+t[0], t[1:])
+            long_times = np.concatenate((t-t[-1]+t[0], t[1:]))
             long_signal = signal.with_times(long_times)
             long_noise = self.antenna.make_noise(long_times)
             long_waveform = self.front_end_processing(long_signal+long_noise)
@@ -218,7 +218,7 @@ class IREXAntenna:
         # Process full antenna waveform
         # TODO: Optimize this so it doesn't have to double the amount of time
         # And same for the similar method above in all_waveforms
-        long_times = np.concatenate(times-times[-1]+times[0], times[1:])
+        long_times = np.concatenate((times-times[-1]+times[0], times[1:]))
         preprocessed = self.antenna.full_waveform(long_times)
         long_waveform = self.front_end_processing(preprocessed)
         return long_waveform.with_times(times)
