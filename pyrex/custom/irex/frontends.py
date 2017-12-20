@@ -17,13 +17,13 @@ if pyspice.__available__:
 
     # Basic envelope circuit:
     #
-    #   Vin---D1---+---+---out
-    #              |   |
-    #             C1   R1
-    #              |   |
-    #              +---+
-    #              |
-    #             gnd
+    #   Vin---D1>---+---+---out
+    #               |   |
+    #              C1   R1
+    #               |   |
+    #               +---+
+    #               |
+    #              gnd
     #
     basic_envelope_circuit = pyspice.Circuit('Basic Envelope Circuit')
     basic_envelope_circuit.include(spice_library['hsms'])
@@ -38,15 +38,16 @@ if pyspice.__available__:
     
     spice_circuits['basic'] = basic_envelope_circuit
 
-    # Double-diode biased envelope circuit:
+    # Biased envelope circuit:
     #
-    #     Vin---C2---+---D1---+---+---out
-    #                |        |   |
-    #               R2       C1   R1
-    #                |        |   |
-    #   Vbias---R3---+        +---+
-    #                |        |
-    #               D2       gnd
+    #     Vin---C2---+---D1>---+---+---out
+    #                |         |   |
+    #               R2        C1   R1
+    #                |         |   |
+    #   Vbias---R3---+         +---+
+    #                |         |
+    #               D2        gnd
+    #                v
     #                |
     #               gnd
     #
@@ -73,6 +74,73 @@ if pyspice.__available__:
                        pyspice.u_Ohm(50))
 
     spice_circuits['biased'] = biased_envelope_circuit
+
+    # Voltage doubler envelope circuit:
+    #
+    #                       Isrc
+    #                        |
+    #   Vin---C1---+---D1>---+---C3---out
+    #              |         |
+    #              ^         |
+    #             D2         C2
+    #              |         |
+    #              +----+----+
+    #                   |
+    #                  gnd
+    #
+    doubler_envelope_circuit = pyspice.Circuit('Voltage Doubler Envelope Circuit')
+    doubler_envelope_circuit.include(spice_library['hsms'])
+
+    doubler_envelope_circuit.V('in', 'input', doubler_envelope_circuit.gnd,
+                               'dc 0 external')
+    doubler_envelope_circuit.C(1, 'input', 1,
+                               pyspice.u_pF(220))
+    doubler_envelope_circuit.X('D1', 'hsms', 1, 'output')
+    doubler_envelope_circuit.X('D2', 'hsms', doubler_envelope_circuit.gnd, 1)
+    doubler_envelope_circuit.C(2, 'output', doubler_envelope_circuit.gnd,
+                               pyspice.u_pF(220))
+    # doubler_envelope_circuit.I('src', 2, 3,
+    #                            pyspice.u_mA(0.1))
+    # doubler_envelope_circuit.V('bias', doubler_envelope_circuit.gnd, 3,
+    #                            pyspice.u_V(0.75))
+    # doubler_envelope_circuit.C(3, 2, 'output',
+    #                            pyspice.u_nF(1))
+    doubler_envelope_circuit.R(1, 'output', doubler_envelope_circuit.gnd,
+                               pyspice.u_Ohm(50))
+
+    spice_circuits['doubler'] = doubler_envelope_circuit
+
+    # Log amplifier envelope circuit:
+    #
+    #   Vin---+---C1---+   +-------+-----Vs
+    #         |        |   |       |
+    #         |        8   7   6   5
+    #         |     +--+---+---+---+--+
+    #        R1     |      AD8310     |
+    #         |     +--+---+---+---+--+
+    #         |        1   2   3   4
+    #         |        |   |       |
+    #         +---C2---+  gnd      +-----Vout
+    #         |
+    #        gnd
+    #
+    log_amp_envelope_circuit = pyspice.Circuit('Log Amplifier Envelope Circuit')
+    log_amp_envelope_circuit.include(spice_library['AD8310_MODEL'])
+
+    log_amp_envelope_circuit.V('in', 'input', log_amp_envelope_circuit.gnd,
+                               'dc 0 external')
+    log_amp_envelope_circuit.R(1, 'input', log_amp_envelope_circuit.gnd,
+                               pyspice.u_Ohm(52.3))
+    log_amp_envelope_circuit.C(1, 'input', 'pin8',
+                               pyspice.u_nF(10))
+    log_amp_envelope_circuit.C(2, log_amp_envelope_circuit.gnd, 'pin1',
+                               pyspice.u_nF(10))
+    log_amp_envelope_circuit.X('AD8310', 'AD8310_MODEL', 'pin8', 'pin1',
+                               'pin5/7', 'pin3', 'output', 'pin6', 'pin5/7')
+    log_amp_envelope_circuit.V('s', 'pin5/7', log_amp_envelope_circuit.gnd,
+                               pyspice.u_V(5))
+
+    spice_circuits['logamp'] = log_amp_envelope_circuit
 
 
 # Basic envelope circuit:

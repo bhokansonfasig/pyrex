@@ -1,0 +1,339 @@
+*AD8310 SPICE Macro-model
+**Description: Logarithmic Amplifier
+*Generic Desc: Fast, Voltage-Output, DC to 440 MHz, 95 dB Logarithmic Amplifier
+*Developed by: Joel Dobler
+*
+*Revision History:
+*1.0 (2/2014) -JD
+*
+*Copyright 2014 by Analog Devices
+*
+* Refer to http://www.analog.com/Analog_Root/static/techSupport/designTools/spiceModels/license/spice_general.html for License Statement. Use of this model
+* indicates your acceptance of the terms and provisions in the License Statement.
+*
+*
+* BEGIN Notes:
+*
+* Not Modeled:
+*   Noise on Output Stage
+*	Offset Compensation Loop
+*	Random input DC offsets
+*
+* Parameters/Affects modeled include:
+*   Vout saturation (due to detectors)
+*	Vout saturation (due to larger than nominal slopes)
+*   Transfer Function Ripple
+*   Input Z as a function of frequency
+*   Adjustable Slope and Intercept (w/ external connections)
+*   Input DC bias
+*   Vout function of frequency
+*   Output Filtering (video BW)
+*   Enable/Disable Function
+*   Supply Current (@ 5V supply)
+*   Vout sensitivity limit
+*   Temperature Drift
+*
+* Supply range:
+*    Single Supply: 2.7V to 5.5V
+*
+*
+*
+* Typical Specifications used in Model
+*
+* END Notes
+
+
+
+****************************************************************************************************
+****************************************************************************************************
+*******************************	      Test Setup			****************************************
+
+**  Source Syntax:
+
+*	DC Voltage Source:
+* 	V{name} {+node} {-node} [DC_value]
+
+**  Statement syntax:
+*	DC sweep:
+* .DC [DEC] [OCT] {source name} {DC_start_voltage} {DC_stop_voltage} {number of points per decade/octave}
+
+*	Set temperature:
+* .TEMP {VALUE}
+
+*	Sweep temperature over a few values:
+* .TEMP {VALUE1} {VALUE2} {VALUE3} ...
+
+*	Step a source, parameter, variable, etc:
+* .step {var_name} {start} {stop} {increment}
+
+
+****************************************************************************************************
+****************************************************************************************************
+**		DC sweeps 			   	**
+
+** DC source
+*V1	INHI_EXT INLO_EXT .001
+
+****************************************************************************************************
+**		Transient Sweeps		**
+
+.param Vpeak=28.2843e-6
+
+** Transient source
+
+Vtran IN 0 sin(0 {Vpeak} 100MEG)
+
+**  RF Burst Sources
+*Vtran IN tran_neg sin(0 1.414 100MEG 150n)
+*Vtran_neg tran_neg 0 sin(0 -1.414 100MEG 1000n)
+
+
+****************************************************************************************************
+****************************************************************************************************
+
+**		Off chip input network		**
+R_source IN IN_50 50
+R_dc_path IN_50 0 100meg
+Cc1	IN_50 INHI_EXT 1u
+
+R1	INHI_EXT INLO_EXT 52.3
+C_lo INLO_EXT 0 .01u
+
+Vsup VPOS_EXT 0 5
+Venbl ENBL_EXT 0 5
+C_comp OFLT_EXT 0 .00001u
+C_op_flt BFIN_EXT 0 .00001u
+R_out VOUT_EXT 0 10meg
+
+
+** Subcircuit Call
+
+
+X_AD8310_1 INHI_EXT INLO_EXT VPOS_EXT OFLT_EXT VOUT_EXT BFIN_EXT ENBL_EXT AD8310_MODEL
+
+
+**	Output Filtering capacitor - Uncomment and size accordingly to adjust Video BW
+*C_op_flt BFIN_EXT 0 10n
+
+** Slope Adjust Resistor - Uncomment and size accordingly
+**R_slope det_sum vout 12.1k
+*R_slope BFIN_EXT VOUT_EXT 12.1k
+
+
+****************************************************************************************************
+**		Off chip input network		**
+*Rtran tran_in IN_ext 50
+*C_hi IN_ext INHI 10u
+*R1	INHI	INLO	52.3
+*C_lo INLO 0 10u
+
+*Vsup VPOS 0 5
+*Venbl ENBL 0 5
+
+
+*****************************************************************************************************
+*****************************************************************************************************
+*Node Assignments
+*
+*					 Positive Signal Input
+*					 | Negative Signal Input
+*					 | | Postive Supply
+*					 | | | Offset Filter Access
+*					 | | | | Log Output
+*					 | | | | | Buffer Input
+*					 | | | | | | Chip Enable
+*					 | | | | | | |
+.SUBCKT AD8310_MODEL 8 1 5 3 4 6 7
+
+*Supply Current
+G1 0 5 VALUE = {IF(V(7) >= 2.3, 8m, 0.05u)}
+
+*Input Stage
+R1 8 9 500
+R2 1 9 500
+C1 8 1 1.4p
+R3 8 0 100meg
+R4 1 0 100meg
+V1 9 0 3.2578
+E1 10 0 VALUE = {IF(V(7) >= 2.3 ,V(8)-V(1), 0)}
+V2 12 11 0u
+E13 44 0 24 0 1000
+R29 44 oflt 2625
+C23 3 0 33p
+E14 45 0 VALUE = {IF(V(3) <= 15m, V(3), 15m)}
+E2 11 10 VALUE = {0}
+
+*Amplifier Stages
+E3 13 0 VALUE = {998.692u*(TEMP+287.775)*TANH(V(12)/(172.5u*(TEMP+274.15)))}
+R5 13 14 1k
+C2 14 0 .18p
+E4 15 0 VALUE = {904.1875u*(TEMP+287.334488)*TANH(V(14)/(172.5u*(TEMP+274.15)))}
+R6 15 16 1k
+C3 16 0 .08p
+E5 17 0 VALUE = {903.975u*(TEMP+287.7372)*TANH(V(16)/(172.5u*(TEMP+274.15)))}
+R7 17 18 1k
+C4 18 0 .08p
+E6 19 0 VALUE = {801.8u*(TEMP+301.1642)*TANH(V(18)/(172.5u*(TEMP+274.15)))}
+R8 19 20 1k
+C5 20 0 .108p
+E7 21 0 VALUE = {896.75u*(TEMP+301.1642)*TANH(V(20)/(172.5u*(TEMP+274.15)))}
+R9 21 22 1k
+C6 22 0 .085p
+E8 23 0 VALUE = {977.5u*(TEMP+273.2804)*TANH(V(22)/(172.5u*(TEMP+274.15)))}
+R10 23 24 1k
+C7 24 0 .085p
+
+*Detector Stages
+G2 0 25 VALUE = {(7.76n*TEMP + 29.8147u)*(COSH(V(14)/(172.5u*(TEMP+274.15)))/(1+COSH(V(14)/(172.5u*(TEMP+274.15)))))}
+C8 25 0 0.3p
+R11 25 26 4k
+G3 0 27 VALUE = {-(7.76n*TEMP + 29.8147u)/(1+COSH(V(14)/(172.5u*(TEMP+274.15))))}
+C9 27 0 0.3p
+R12 27 26 4k
+G4 0 28 VALUE = {(.9885n*TEMP + 29.70868u)*(COSH(V(16)/(172.5u*(TEMP+274.15)))/(1+COSH(V(16)/(172.5u*(TEMP+274.15)))))}
+C10 28 0 0.3p
+R13 28 26 4k
+G5 0	29 VALUE = {-(.9885n*TEMP + 29.70868u)/(1+COSH(V(16)/(172.5u*(TEMP+274.15))))}
+C11 29 0 0.3p
+R14 29 26 4k
+G6 0 30 VALUE = {(.9885n*TEMP + 29.70868u)*(COSH(V(18)/(172.5u*(TEMP+274.15)))/(1+COSH(V(18)/(172.5u*(TEMP+274.15)))))}
+C12 30 0 0.3p
+R15 30 26 4k
+G7 0 31 VALUE = {-(.9885n*TEMP + 29.70868u)/(1+COSH(V(18)/(172.5u*(TEMP+274.15))))}
+C13 31 0 0.3p
+R16 31 26 4k
+G8 0 32 VALUE = {(3.954n*TEMP + 29.6286u)*(COSH(V(20)/(172.5u*(TEMP+274.15)))/(1+COSH(V(20)/(172.5u*(TEMP+274.15)))))}
+C14 32 0 0.3p
+R17 32 26 4k
+G9 0 33 VALUE = {-(3.954n*TEMP + 29.6286u)/(1+COSH(V(20)/(172.5u*(TEMP+274.15))))}
+C15 33 0 0.3p
+R18 33 26 4k
+G10 0	34 VALUE = {(7.908n*TEMP + 29.5219u)*(COSH(V(22)/(172.5u*(TEMP+274.15)))/(1+COSH(V(22)/(172.5u*(TEMP+274.15)))))}
+C16 34 0 0.3p
+R19 34 26 4k
+G11 0 35 VALUE = {-(7.908n*TEMP + 29.5219u)/(1+COSH(V(22)/(172.5u*(TEMP+274.15))))}
+C17 35 0 0.3p
+R20 35 26 4k
+G12 0 36 VALUE = {(37.46n*TEMP + 57.0747u)*(COSH(V(24)/(172.5u*(TEMP+274.15)))/(1+COSH(V(24)/(172.5u*(TEMP+274.15)))))}
+C18 36 0 0.3p
+R21 36 26 4k
+G13 0 37 VALUE = {-(37.46n*TEMP + 57.0747u)/(1+COSH(V(24)/(172.5u*(TEMP+274.15))))}
+C19 37 0 0.3p
+R22 37 26 4k
+G14 0 38 VALUE = {(7.132n*TEMP + 27.5784u)*(COSH(1.2*V(12)/(172.5u*(TEMP + 274.15)))/(1+COSH(1.2*V(12)/(172.5u*(TEMP + 274.15)))))}
+G15 0 39 VALUE = {-(7.132n*TEMP + 27.5784u)/(1+COSH(1.2*V(12)/(172.5u*(TEMP + 274.15))))}
+G16 0 38 VALUE = {(4.7n*TEMP + 26.8338u)*(COSH(.25*V(12)/(172.5u*(TEMP + 274.15)))/(1+COSH(.25*V(12)/(172.5u*(TEMP + 274.15)))))}
+G17 0 39 VALUE = {-(4.7n*TEMP + 26.8338u)/(1+COSH(.25*V(12)/(172.5u*(TEMP + 274.15))))}
+G18 0 38 VALUE = {(9.564n*TEMP + 31.8017u)*(COSH(.045*V(12)/(172.5u*(TEMP + 274.15)))/(1+COSH(.045*V(12)/(172.5u*(TEMP + 274.15)))))}
+G19 0 39 VALUE = {-(9.564n*TEMP + 31.8017u)/(1+COSH(.045*V(12)/(172.5u*(TEMP + 274.15))))}
+C20 38 0 0.4p
+R23 38 26 800
+C21 39 0 0.4p
+R24 39 26 800
+G20 0 26 VALUE = {-45u}
+R25 26 0 3.075k
+
+*Output Stage
+E9 40 0 VALUE = {IF(V(26) <= .66, V(26), 0.66)}
+R26 6 40 3k
+C22 6 0 2.1p
+E10 41 0 6 42 1000
+E11 43 0 VALUE = {IF(V(41) >= 0.4, v(41), 0.4)}
+E12 4 0 VALUE = {IF(V(43) <= 4.75, v(43), 4.75)}
+R27 42 0 1k
+R28 4 42 3k
+
+.ENDS
+
+
+
+*********************************************************************************************************************************
+*********************************************************************************************************************************
+**	Analysis Statements					**
+*
+*	Circuit is currently setup for a simple DC sweep at temperature of 27 degrees.  To run
+*	other analyses, comment out the DC sweep lines and uncomment the desired analysis lines.
+
+
+****************************************************************************************************
+**		DC sweep 			   	**
+*
+*	This should be similar to Figure 4 in the datasheet; the 10 MHz curve.
+
+*.DC DEC V1 1u 6.5 20
+*.TEMP 27
+
+
+****************************************************************************************************
+****************************************************************************************************
+**		DC sweep and Temperature sweep over 3 temperatures: -40, 27, 85 C			   	**
+*
+*	This should be similar to Figure 3 in the datasheet.
+
+*.DC DEC V1 1u 6.5 20
+*.TEMP -40 27 85
+
+
+****************************************************************************************************
+****************************************************************************************************
+**		DC sweep and Temperature sweep over multiple 			   	**
+**		temperatures beteen  -40 & 85 in steps of 5 degrees			**
+
+
+*.DC DEC V1 1u 6.5 20
+*.STEP TEMP -40 85 5
+
+
+****************************************************************************************************
+****************************************************************************************************
+**		AC sweep					**
+
+**	AC source
+*VAC INHI INLO AC .001
+
+**	 Analysis Statements
+*.AC DEC 20 1 10g
+*.TEMP 27
+
+****************************************************************************************************
+****************************************************************************************************
+**		Transient sweep		**
+
+
+*Full Signal Sweep: -90 dBV to +6 dBV
+* Vin (dBV)         =     -90		-88			 -86		 -84		-82		   -80		  -78			-76			-74		   -72	      -70
+.step param Vpeak list 89.4427e-6 112.6017e-6 141.7572e-6 178.4617e-6 224.67e-6 282.8427e-6 356.0779e-6 448.2755e-6 564.3454e-6 710.4688e-6 894.427e-6
+* -68		-66		-64		  -62		-60		   -58		  -56	  -54		-52		   -50	      -48
++1.126e-3 1.4176e-3 1.7846e-3 2.2467e-3 2.8284e-3 3.5608e-3 4.4828e-3 5.6435e-3 7.1047e-3 8.9443e-3 11.2602e-3
+*-46		-44		   -42		  -40		 -38		-36		  -34	     -32		-30		   -28	       -26
++14.1757e-3 17.8462e-3 22.467e-3 28.2843e-3 35.6078e-3 44.8275e-3 56.4345e-3 71.0469e-3 89.4427e-3 112.602e-3 141.757e-3
+*-24		-22		   -20		  -18		  -16		 -14		  -12	    -10	   -8	 -6	    -4
++178.4617e-3 224.67e-3 2.8284e-1 356.0779e-3 448.2755e-3 564.3454e-3 710.4688e-3 .8944 1.126 1.4176 1.7846
+*-2	 0		 +2		+4	   +6
++2.2467 2.8284e0 3.5608 4.4828 5.6435
+
+*.tran 1n 10m 0 10n
+.tran 10u 5u
+.TEMP -40
+
+****************************************************************************************************
+****************************************************************************************************
+**		RF Pulse Respose - Use with .tran statement 				**
+*
+*	This should be similar to Figures 9 through 14 in the datasheet
+
+**	Transient Sources
+
+**	 Analysis Statements
+*.tran 1n 200u 0 10n
+*.TEMP 27
+*.OP
+*.PROBE
+*.END
+
+****************************************************************************************************
+
+
+.OP
+.PROBE
+.END

@@ -120,12 +120,21 @@ class IREXAntenna:
             copy = Signal(signal.times-signal.times[0], signal.values)
             ngspice_in = pyspice.SpiceSignal(copy)
 
-            if "basic" in self.envelope_method:
-                circuit = spice_circuits['basic']
-            elif ("biased" in self.envelope_method or
-                  "double-diode" in self.envelope_method):
-                circuit = spice_circuits['biased']
-            else:
+            circuit = None
+            # Try to match circuit name in spice_circuits keys
+            for key, val in spice_circuits.items():
+                if key in self.envelope_method:
+                    circuit = val
+                    break
+            # If circuit not matched, try manual matching of circuit name
+            if circuit is None:
+                if "simple" in self.envelope_method:
+                    circuit = spice_circuits['basic']
+                elif ("log amp" in self.envelope_method or
+                      "logarithmic amp" in self.envelope_method):
+                    circuit = spice_circuits['logamp']
+            # If still no circuits match, raise error
+            if circuit is None:
                 raise ValueError("Circuit '"+self.envelope_method+"' not implemented")
 
             simulator = circuit.simulator(
@@ -194,16 +203,25 @@ class IREXAntenna:
     @property
     def all_waveforms(self):
         # Process any unprocessed antenna waveforms
-        while len(self._all_waveforms)<len(self.antenna.all_waveforms):
-            signal = self.antenna.all_waveforms[len(self._all_waveforms)]
-            self._all_waveforms.append(self.front_end_processing(signal))
+        while len(self._all_waveforms)<len(self.antenna.signals):
+            signal = self.antenna.signals[len(self._all_waveforms)]
+            t = signal.times
+            long_times = np.concatenate(t-t[-1]+t[0], t[1:])
+            long_signal = signal.with_times(long_times)
+            long_noise = self.antenna.make_noise(long_times)
+            long_waveform = self.front_end_processing(long_signal+long_noise)
+            self._all_waveforms.append(long_waveform.with_times(t))
         # Return envelopes of antenna waveforms
         return self._all_waveforms
 
     def full_waveform(self, times):
         # Process full antenna waveform
-        preprocessed = self.antenna.full_waveform(times)
-        return self.front_end_processing(preprocessed)
+        # TODO: Optimize this so it doesn't have to double the amount of time
+        # And same for the similar method above in all_waveforms
+        long_times = np.concatenate(times-times[-1]+times[0], times[1:])
+        preprocessed = self.antenna.full_waveform(long_times)
+        long_waveform = self.front_end_processing(preprocessed)
+        return long_waveform.with_times(times)
 
     def receive(self, signal, origin=None, polarization=None):
         return self.antenna.receive(signal, origin=origin,
