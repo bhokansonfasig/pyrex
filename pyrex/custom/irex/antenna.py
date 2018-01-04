@@ -313,15 +313,15 @@ class IREXDetector:
     def build_antennas(self, trigger_threshold, time_over_threshold=0,
                        amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
-                       polarization_scheme=lambda i, ant: (0,0,1), noisy=True,
-                       envelope_method="analytic"):
+                       orientation_scheme=lambda i, ant: ((0,0,1), (1,0,0)),
+                       noisy=True, envelope_method="analytic"):
         """Sets up IREXAntennas at the positions stored in the class.
         Takes as arguments the trigger threshold, optional time over
         threshold, and whether to add noise to the waveforms.
-        Other optional arguments include a naming scheme and polarization scheme
-        which are functions taking the antenna index i and the antenna object
-        and should return the name and polarization of the antenna,
-        respectively."""
+        Other optional arguments include a naming scheme and orientation scheme
+        which are functions taking the antenna index i and the antenna object.
+        The naming scheme should return the name and the orientation scheme
+        should return the orientation z-axis and x-axis of the antenna."""
         self.antennas = []
         for pos in self.antenna_positions:
             self.antennas.append(
@@ -334,7 +334,7 @@ class IREXDetector:
             )
         for i, ant in enumerate(self.antennas):
             ant.name = str(naming_scheme(i, ant))
-            ant.polarization = polarization_scheme(i, ant)
+            ant.antenna.set_orientation(*orientation_scheme(i, ant))
 
     def __iter__(self):
         self._iter_counter = 0

@@ -18,8 +18,7 @@ class Antenna:
                  antenna_factor=1, efficiency=1, freq_range=None,
                  noise_rms=None, temperature=None, resistance=None, noisy=True):
         self.position = position
-        self.z_axis = normalize(z_axis)
-        self.x_axis = normalize(x_axis)
+        self.set_orientation(z_axis=z_axis, x_axis=x_axis)
         if np.dot(self.z_axis, self.x_axis)!=0:
             raise ValueError("Antenna's x_axis must be perpendicular to its "
                              +"z_axis")
@@ -35,6 +34,13 @@ class Antenna:
         self._noise_master = None
         self._noises = []
         self._triggers = []
+
+    def set_orientation(self, z_axis=[0,0,1], x_axis=[1,0,0]):
+        self.z_axis = normalize(z_axis)
+        self.x_axis = normalize(x_axis)
+        if np.dot(self.z_axis, self.x_axis)!=0:
+            raise ValueError("Antenna's x_axis must be perpendicular to its "
+                             +"z_axis")
 
     @property
     def is_hit(self):
