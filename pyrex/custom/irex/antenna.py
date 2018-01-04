@@ -133,6 +133,8 @@ class IREXAntenna:
                 elif ("log amp" in self.envelope_method or
                       "logarithmic amp" in self.envelope_method):
                     circuit = spice_circuits['logamp']
+                elif "rectifier" in self.envelope_method:
+                    circuit = spice_circuits['bridge']
             # If still no circuits match, raise error
             if circuit is None:
                 raise ValueError("Circuit '"+self.envelope_method+"' not implemented")

@@ -32,9 +32,9 @@ if pyspice.__available__:
                              'dc 0 external')
     basic_envelope_circuit.X('D1', 'hsms', 'input', 'output')
     basic_envelope_circuit.C(1, 'output', basic_envelope_circuit.gnd,
-                             pyspice.u_pF(220))
+                             pyspice.u_pF(20))
     basic_envelope_circuit.R(1, 'output', basic_envelope_circuit.gnd,
-                             pyspice.u_Ohm(50))
+                             pyspice.u_Ohm(500))
     
     spice_circuits['basic'] = basic_envelope_circuit
 
@@ -69,9 +69,9 @@ if pyspice.__available__:
     # envelope portion
     biased_envelope_circuit.X('D1', 'hsms', 1, 'output')
     biased_envelope_circuit.C(1, 'output', biased_envelope_circuit.gnd,
-                       pyspice.u_pF(220))
+                       pyspice.u_pF(20))
     biased_envelope_circuit.R(1, 'output', biased_envelope_circuit.gnd,
-                       pyspice.u_Ohm(50))
+                       pyspice.u_Ohm(500))
 
     spice_circuits['biased'] = biased_envelope_circuit
 
@@ -94,11 +94,11 @@ if pyspice.__available__:
     doubler_envelope_circuit.V('in', 'input', doubler_envelope_circuit.gnd,
                                'dc 0 external')
     doubler_envelope_circuit.C(1, 'input', 1,
-                               pyspice.u_pF(220))
+                               pyspice.u_pF(20))
     doubler_envelope_circuit.X('D1', 'hsms', 1, 'output')
     doubler_envelope_circuit.X('D2', 'hsms', doubler_envelope_circuit.gnd, 1)
     doubler_envelope_circuit.C(2, 'output', doubler_envelope_circuit.gnd,
-                               pyspice.u_pF(220))
+                               pyspice.u_pF(20))
     # doubler_envelope_circuit.I('src', 2, 3,
     #                            pyspice.u_mA(0.1))
     # doubler_envelope_circuit.V('bias', doubler_envelope_circuit.gnd, 3,
@@ -106,41 +106,77 @@ if pyspice.__available__:
     # doubler_envelope_circuit.C(3, 2, 'output',
     #                            pyspice.u_nF(1))
     doubler_envelope_circuit.R(1, 'output', doubler_envelope_circuit.gnd,
-                               pyspice.u_Ohm(50))
+                               pyspice.u_Ohm(500))
 
     spice_circuits['doubler'] = doubler_envelope_circuit
 
-    # Log amplifier envelope circuit:
-    #
-    #   Vin---+---C1---+   +-------+-----Vs
-    #         |        |   |       |
-    #         |        8   7   6   5
-    #         |     +--+---+---+---+--+
-    #        R1     |      AD8310     |
-    #         |     +--+---+---+---+--+
-    #         |        1   2   3   4
-    #         |        |   |       |
-    #         +---C2---+  gnd      +-----Vout
-    #         |
-    #        gnd
-    #
-    log_amp_envelope_circuit = pyspice.Circuit('Log Amplifier Envelope Circuit')
-    log_amp_envelope_circuit.include(spice_library['AD8310_MODEL'])
+    # # Log amplifier envelope circuit:
+    # #
+    # #   Vin---+---C1---+   +-------+-----Vs
+    # #         |        |   |       |
+    # #         |        8   7   6   5
+    # #         |     +--+---+---+---+--+
+    # #        R1     |      AD8310     |
+    # #         |     +--+---+---+---+--+
+    # #         |        1   2   3   4
+    # #         |        |   |       |
+    # #         +---C2---+  gnd      +-----Vout
+    # #         |
+    # #        gnd
+    # #
+    # log_amp_envelope_circuit = pyspice.Circuit('Log Amplifier Envelope Circuit')
+    # log_amp_envelope_circuit.include(spice_library['AD8310_MODEL'])
 
-    log_amp_envelope_circuit.V('in', 'input', log_amp_envelope_circuit.gnd,
-                               'dc 0 external')
-    log_amp_envelope_circuit.R(1, 'input', log_amp_envelope_circuit.gnd,
-                               pyspice.u_Ohm(52.3))
-    log_amp_envelope_circuit.C(1, 'input', 'pin8',
-                               pyspice.u_nF(10))
-    log_amp_envelope_circuit.C(2, log_amp_envelope_circuit.gnd, 'pin1',
-                               pyspice.u_nF(10))
-    log_amp_envelope_circuit.X('AD8310', 'AD8310_MODEL', 'pin8', 'pin1',
-                               'pin5/7', 'pin3', 'output', 'pin6', 'pin5/7')
-    log_amp_envelope_circuit.V('s', 'pin5/7', log_amp_envelope_circuit.gnd,
-                               pyspice.u_V(5))
+    # log_amp_envelope_circuit.V('in', 'input', log_amp_envelope_circuit.gnd,
+    #                            'dc 0 external')
+    # log_amp_envelope_circuit.R(1, 'input', log_amp_envelope_circuit.gnd,
+    #                            pyspice.u_Ohm(52.3))
+    # log_amp_envelope_circuit.C(1, 'input', 'pin8',
+    #                            pyspice.u_nF(10))
+    # log_amp_envelope_circuit.C(2, log_amp_envelope_circuit.gnd, 'pin1',
+    #                            pyspice.u_nF(10))
+    # log_amp_envelope_circuit.X('AD8310', 'AD8310_MODEL', 'pin8', 'pin1',
+    #                            'pin5/7', 'pin3', 'output', 'pin6', 'pin5/7')
+    # log_amp_envelope_circuit.V('s', 'pin5/7', log_amp_envelope_circuit.gnd,
+    #                            pyspice.u_V(5))
 
-    spice_circuits['logamp'] = log_amp_envelope_circuit
+    # spice_circuits['logamp'] = log_amp_envelope_circuit
+
+
+    # Bridge rectifier envelope circuit:
+    #
+    #   +-----------+
+    #   |           |
+    #   |       +---+---+
+    #   |       |       |
+    #   |       ^       D1
+    #   |      D3       v
+    #   |       |       |
+    #  Vin      +--gnd  +-----+---+---out
+    #   |       |       |     |   |
+    #   |      D4       ^
+    #   |       v       D2   C1   R1
+    #   |       |       |     |   |
+    #   |       +---+---+     +---+
+    #   |           |         |
+    #   +-----------+        gnd
+    #
+    bridge_envelope_circuit = pyspice.Circuit('Bridge Rectifier Envelope Circuit')
+    bridge_envelope_circuit.include(spice_library['hsms'])
+
+    bridge_envelope_circuit.V('in', 'input', 'neg',
+                              'dc 0 external')
+    bridge_envelope_circuit.X('D1', 'hsms', 'input', 'output')
+    bridge_envelope_circuit.X('D2', 'hsms', 'neg', 'output')
+    bridge_envelope_circuit.X('D3', 'hsms', bridge_envelope_circuit.gnd, 'input')
+    bridge_envelope_circuit.X('D4', 'hsms', bridge_envelope_circuit.gnd, 'neg')
+    bridge_envelope_circuit.C(1, 'output', basic_envelope_circuit.gnd,
+                              pyspice.u_pF(20))
+    bridge_envelope_circuit.R(1, 'output', basic_envelope_circuit.gnd,
+                              pyspice.u_Ohm(500))
+
+    spice_circuits['bridge'] = bridge_envelope_circuit
+
 
 
 # Basic envelope circuit:
@@ -153,7 +189,7 @@ if pyspice.__available__:
 #              |
 #             gnd
 #
-def basic_envelope_model(signal, cap=220e-12, res=50):
+def basic_envelope_model(signal, cap=20e-12, res=500):
     """Model of a basic diode-capacitor-resistor envelope circuit. Takes a
     signal object as the input voltage and returns the output voltage signal
     object."""
