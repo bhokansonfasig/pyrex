@@ -1,9 +1,11 @@
 """Module containing customized classes for ARA (Askaryan Radio Array)"""
 
 import numpy as np
+import scipy.signal
 
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
+from pyrex.ice_model import IceModel
 
 
 class ARABaseAntenna(Antenna):
