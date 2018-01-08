@@ -254,7 +254,8 @@ class ARADetector:
 
     def build_antennas(self, power_threshold, amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
-                       orientation_scheme=lambda i, ant: (0,0,1), noisy=True):
+                       orientation_scheme=lambda i, ant: [(0,0,1), (1,0,0)],
+                       noisy=True):
         """Sets up ARAAntennas at the positions stored in the class.
         Takes as arguments the power threshold, amplification, and whether to
         add noise to the waveforms.
