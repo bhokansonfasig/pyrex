@@ -168,8 +168,10 @@ class ARAAntenna:
         self.antenna.clear()
 
     def trigger(self, signal):
-        return (np.max(signal.values)**2/self.antenna.resistance
-                > self.power_threshold)
+        if self.antenna._noise_master is None:
+            self.antenna.make_noise([0,1])
+        return (np.max(signal.values) >
+                -1 * self.power_threshold * self.antenna._noise_master.rms)
 
 
 
@@ -254,8 +256,8 @@ class ARADetector:
                        naming_scheme=lambda i, ant: "ant_"+str(i),
                        orientation_scheme=lambda i, ant: (0,0,1), noisy=True):
         """Sets up ARAAntennas at the positions stored in the class.
-        Takes as arguments the trigger threshold, optional time over
-        threshold, and whether to add noise to the waveforms.
+        Takes as arguments the power threshold, amplification, and whether to
+        add noise to the waveforms.
         Other optional arguments include a naming scheme and orientation scheme
         which are functions taking the antenna index i and the antenna object.
         The naming scheme should return the name and the orientation scheme
