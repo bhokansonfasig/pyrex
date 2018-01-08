@@ -19,9 +19,6 @@ class Antenna:
                  noise_rms=None, temperature=None, resistance=None, noisy=True):
         self.position = position
         self.set_orientation(z_axis=z_axis, x_axis=x_axis)
-        if np.dot(self.z_axis, self.x_axis)!=0:
-            raise ValueError("Antenna's x_axis must be perpendicular to its "
-                             +"z_axis")
         self.antenna_factor = antenna_factor
         self.efficiency = efficiency
         self.freq_range = freq_range
