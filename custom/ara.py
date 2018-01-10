@@ -3,9 +3,50 @@
 import numpy as np
 import scipy.signal
 
+from pyrex.internal_functions import normalize
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.ice_model import IceModel
+
+
+
+def read_response_data(filename):
+    """Gather antenna response data from a data file. Returns the data as a
+    dictionary with keys (freq, theta, phi) and values (gain, phase).
+    Also returns a set of the frequencies appearing in the keys."""
+    data = {}
+    freqs = set()
+    freq = 0
+    with open(filename) as f:
+        for line in f:
+            words = line.split()
+            if line.startswith('freq'):
+                freq = 1
+                if words[-1]=="Hz":
+                    pass
+                elif words[-1]=="kHz":
+                    freq *= 1e3
+                elif words[-1]=="MHz":
+                    freq *= 1e6
+                elif words[-1]=="GHz":
+                    freq *= 1e9
+                else:
+                    raise ValueError("Cannot parse line: '"+line+"'")
+                freq *= float(words[-2])
+                freqs.add(freq)
+            elif len(words)==5 and words[0]!="Theta":
+                theta = int(words[0])
+                phi = int(words[1])
+                db_gain = float(words[2])
+                gain = float(words[3])
+                phase = float(words[4])
+                data[(freq, theta, phi)] = (gain, phase)
+
+    return data, freqs
+
+
+VPOL_RESPONSE, VPOL_FREQS = read_response_data("ARA_bicone6in_output.txt")
+HPOL_RESPONSE, HPOL_FREQS = read_response_data("ARA_dipoletest1_output.txt")
 
 
 class ARABaseAntenna(Antenna):
@@ -13,7 +54,8 @@ class ARABaseAntenna(Antenna):
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), effective_height=None, noisy=True):
+                 orientation=(0,0,1), effective_height=None,
+                 response_data=None, response_freqs=None, noisy=True):
         if effective_height is None:
             # Calculate length of half-wave dipole
             self.effective_height = 3e8 / center_frequency / 2
@@ -37,22 +79,13 @@ class ARABaseAntenna(Antenna):
                          freq_range=(f_low, f_high), resistance=resistance,
                          noisy=noisy)
 
-        # Build scipy butterworth filter to speed up response function
-        b, a  = scipy.signal.butter(1, 2*np.pi*np.array(self.freq_range),
-                                    btype='bandpass', analog=True)
-        self.filter_coeffs = (b, a)
+        self._response_data = response_data
+        self._response_freqs = response_freqs
+        if self._response_freqs is None and self._response_data is not None:
+            self._response_freqs = set()
+            for key in self._response_data:
+                self._response_freqs.add(key[0])
 
-    def response(self, frequencies):
-        """Butterworth filter response for the antenna's frequency range."""
-        angular_freqs = np.array(frequencies) * 2*np.pi
-        w, h = scipy.signal.freqs(self.filter_coeffs[0], self.filter_coeffs[1],
-                                  angular_freqs)
-        return h
-
-    def directional_gain(self, theta, phi):
-        """Power gain of dipole antenna goes as sin(theta)^2, so electric field
-        gain goes as sin(theta)."""
-        return np.sin(theta)
 
     def polarization_gain(self, polarization):
         """Polarization gain is simply the dot product of the polarization
@@ -60,16 +93,86 @@ class ARABaseAntenna(Antenna):
         return np.vdot(self.z_axis, polarization)
 
 
+    def generate_freq_gains(self, theta, phi):
+        """Generate arrays of frequencies and gains for given angles."""
+        if self._response_data is None:
+            return np.array([1]), np.array([1])
+
+        theta_under = 5*int(theta/5)
+        theta_over = 5*(int(theta/5)+1)
+        phi_under = 5*int(phi/5)
+        phi_over = 5*(int(phi/5)+1)
+        t = (theta - theta_under) / (theta_over - theta_under)
+        u = (phi - phi_under) / (phi_over - phi_under)
+
+        theta_over %= 180
+        phi_over %= 360
+
+        nfreqs = len(self._response_freqs)
+        gain_ij = np.zeros(nfreqs)
+        gain_i1j = np.zeros(nfreqs)
+        gain_ij1 = np.zeros(nfreqs)
+        gain_i1j1 = np.zeros(nfreqs)
+        for f, freq in enumerate(self._response_freqs):
+            # TODO: Implement phase shift as imaginary part of gain
+            gain_ij[f] = self._response_data[(freq, theta_under, phi_under)]
+            gain_i1j[f] = self._response_data[(freq, theta_over, phi_under)]
+            gain_ij1[f] = self._response_data[(freq, theta_under, phi_over)]
+            gain_i1j1[f] = self._response_data[(freq, theta_over, phi_over)]
+
+        freqs = np.array(list(self._response_freqs))
+        gains = ((1-t)*(1-u)*gain_ij + t*(1-u)*gain_i1j +
+                 (1-t)*u*gain_ij1 + t*u*gain_i1j1)
+
+        return freqs, gains
+
+
+    def receive(self, signal, origin=None, polarization=None):
+        """Process incoming signal according to the filter function and
+        store it to the signals list. Subclasses may extend this fuction,
+        but should end with super().receive(signal)."""
+        copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
+        copy.filter_frequencies(self.response)
+
+        if origin is not None:
+            # Calculate theta and phi relative to the orientation
+            r, theta, phi = self._convert_to_antenna_coordinates(origin)
+            freq_data, gain_data = self.generate_freq_gains(theta, phi)
+            def interpolated_response(frequencies):
+                return np.interp(frequencies, freq_data, gain_data)
+            copy.filter_frequencies(interpolated_response)
+
+        if polarization is None:
+            p_gain = 1
+        else:
+            p_gain = self.polarization_gain(normalize(polarization))
+
+        signal_factor = p_gain * self.efficiency
+
+        if signal.value_type==Signal.ValueTypes.voltage:
+            pass
+        elif signal.value_type==Signal.ValueTypes.field:
+            signal_factor /= self.antenna_factor
+        else:
+            raise ValueError("Signal's value type must be either "
+                             +"voltage or field. Given "+str(signal.value_type))
+
+        copy.values *= signal_factor
+        self.signals.append(copy)
+
+
 
 class ARAAntenna:
-    """ARA antenna system consisting of dipole antenna, amplification,
+    """ARA antenna system consisting of antenna, amplification,
     and tunnel diode response."""
-    def __init__(self, name, position, power_threshold,
-                 orientation=(0,0,1), amplification=1, amplifier_clipping=3,
-                 noisy=True):
+    def __init__(self, name, position, power_threshold, response_data=None,
+                 response_freqs=None, orientation=(0,0,1), amplification=1,
+                 amplifier_clipping=3, noisy=True):
         self.name = str(name)
         self.position = position
-        self.change_antenna(orientation=orientation, noisy=noisy)
+        self.change_antenna(response_data=response_data,
+                            response_freqs=response_freqs,
+                            orientation=orientation, noisy=noisy)
 
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
@@ -82,6 +185,7 @@ class ARAAntenna:
 
     def change_antenna(self, center_frequency=500e6, bandwidth=700e6,
                        resistance=100, orientation=(0,0,1),
+                       response_data=None, response_freqs=None,
                        effective_height=None, noisy=True):
         """Changes attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
@@ -92,6 +196,8 @@ class ARAAntenna:
                                       resistance=resistance,
                                       orientation=orientation,
                                       effective_height=effective_height,
+                                      response_data=response_data,
+                                      response_freqs=response_freqs,
                                       noisy=noisy)
 
     def tunnel_diode(self, signal):
@@ -175,6 +281,37 @@ class ARAAntenna:
 
 
 
+class HpolAntenna(ARAAntenna):
+    """ARA Hpol ("quad-slot") antenna system consisting of antenna,
+    amplification, and tunnel diode response."""
+    def __init__(self, name, position, power_threshold,
+                 amplification=1, amplifier_clipping=3, noisy=True):
+        super().__init__(name=name, position=position,
+                         power_threshold=power_threshold,
+                         response_data=HPOL_RESPONSE,
+                         response_freqs=HPOL_FREQS,
+                         orientation=(1,0,0),
+                         amplification=amplification,
+                         amplifier_clipping=amplifier_clipping,
+                         noisy=noisy)
+
+
+class VpolAntenna(ARAAntenna):
+    """ARA Vpol ("bicone" or "birdcage") antenna system consisting of antenna,
+    amplification, and tunnel diode response."""
+    def __init__(self, name, position, power_threshold,
+                 amplification=1, amplifier_clipping=3, noisy=True):
+        super().__init__(name=name, position=position,
+                         power_threshold=power_threshold,
+                         response_data=VPOL_RESPONSE,
+                         response_freqs=VPOL_FREQS,
+                         orientation=(0,0,1),
+                         amplification=amplification,
+                         amplifier_clipping=amplifier_clipping,
+                         noisy=noisy)
+
+
+
 def convert_hex_coords(hex_coords, unit=1):
     """Converts from hexagonal coordinate system to x, y coordinates.
     Optional unit will multiply the x, y coordinate result."""
@@ -254,7 +391,7 @@ class ARADetector:
 
     def build_antennas(self, power_threshold, amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
-                       orientation_scheme=lambda i, ant: [(0,0,1), (1,0,0)],
+                       class_scheme=lambda i: HpolAntenna if i%2 else VpolAntenna,
                        noisy=True):
         """Sets up ARAAntennas at the positions stored in the class.
         Takes as arguments the power threshold, amplification, and whether to
@@ -264,16 +401,16 @@ class ARADetector:
         The naming scheme should return the name and the orientation scheme
         should return the orientation z-axis and x-axis of the antenna."""
         self.antennas = []
-        for pos in self.antenna_positions:
+        for i, pos in enumerate(self.antenna_positions):
+            AntennaClass = class_scheme(i)
             self.antennas.append(
-                ARAAntenna(name="ARA antenna", position=pos,
-                           power_threshold=power_threshold,
-                           amplification=amplification,
-                           orientation=(0,0,1), noisy=noisy)
+                AntennaClass(name="ARA antenna", position=pos,
+                             power_threshold=power_threshold,
+                             amplification=amplification,
+                             noisy=noisy)
             )
         for i, ant in enumerate(self.antennas):
             ant.name = str(naming_scheme(i, ant))
-            ant.antenna.set_orientation(*orientation_scheme(i, ant))
 
     def __iter__(self):
         self._iter_counter = 0
