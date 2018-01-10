@@ -29,7 +29,7 @@ class IREXBaseAntenna(Antenna):
         while np.array_equal(np.cross(orientation, tmp_vector), (0,0,0)):
             tmp_vector = np.random.rand(3)
         ortho = np.cross(orientation, tmp_vector)
-        # Note: ortho is not normalized, but will be normalized by Antenna's init
+        # Note: ortho is not normalized, but will be normalized by Antenna init
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
@@ -108,14 +108,16 @@ class IREXAntenna:
                     self.envelope_method=="analytic"):
                 return basic_envelope_model(signal)
             else:
-                raise ValueError("Only basic envelope circuit is modeled analytically")
+                raise ValueError("Only basic envelope circuit is modeled "+
+                                 "analytically")
 
         elif "spice" in self.envelope_method:
             if not(pyspice.__available__):
                 raise ModuleNotFoundError(pyspice.__modulenotfound__)
 
             if self.envelope_method=="spice":
-                raise ValueError("Type of spice circuit to use must be specified")
+                raise ValueError("Type of spice circuit to use must be "+
+                                 "specified")
 
             copy = Signal(signal.times-signal.times[0], signal.values)
             ngspice_in = pyspice.SpiceSignal(copy)
@@ -137,7 +139,8 @@ class IREXAntenna:
                     circuit = spice_circuits['bridge']
             # If still no circuits match, raise error
             if circuit is None:
-                raise ValueError("Circuit '"+self.envelope_method+"' not implemented")
+                raise ValueError("Circuit '"+self.envelope_method+
+                                 "' not implemented")
 
             simulator = circuit.simulator(
                 temperature=25, nominal_temperature=25,
@@ -149,7 +152,8 @@ class IREXAntenna:
                           value_type=signal.value_type)
 
         else:
-            raise ValueError("No envelope method matching '"+self.envelope_method+"'")
+            raise ValueError("No envelope method matching '"+
+                             self.envelope_method+"'")
 
     def front_end_processing(self, signal):
         """Apply the front-end processing of the antenna signal, including
