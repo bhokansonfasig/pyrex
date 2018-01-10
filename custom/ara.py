@@ -1,5 +1,6 @@
 """Module containing customized classes for ARA (Askaryan Radio Array)"""
 
+import os.path
 import numpy as np
 import scipy.signal
 
@@ -45,8 +46,11 @@ def read_response_data(filename):
     return data, freqs
 
 
-VPOL_RESPONSE, VPOL_FREQS = read_response_data("ARA_bicone6in_output.txt")
-HPOL_RESPONSE, HPOL_FREQS = read_response_data("ARA_dipoletest1_output.txt")
+ARA_DATA_DIR = os.path.dirname(__file__)
+VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output.txt")
+HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output.txt")
+VPOL_RESPONSE, VPOL_FREQS = read_response_data(VPOL_DATA_FILE)
+HPOL_RESPONSE, HPOL_FREQS = read_response_data(HPOL_DATA_FILE)
 
 
 class ARABaseAntenna(Antenna):
