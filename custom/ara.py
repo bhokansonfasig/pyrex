@@ -119,10 +119,10 @@ class ARABaseAntenna(Antenna):
         gain_i1j1 = np.zeros(nfreqs)
         for f, freq in enumerate(self._response_freqs):
             # TODO: Implement phase shift as imaginary part of gain
-            gain_ij[f] = self._response_data[(freq, theta_under, phi_under)]
-            gain_i1j[f] = self._response_data[(freq, theta_over, phi_under)]
-            gain_ij1[f] = self._response_data[(freq, theta_under, phi_over)]
-            gain_i1j1[f] = self._response_data[(freq, theta_over, phi_over)]
+            gain_ij[f] = self._response_data[(freq, theta_under, phi_under)][0]
+            gain_i1j[f] = self._response_data[(freq, theta_over, phi_under)][0]
+            gain_ij1[f] = self._response_data[(freq, theta_under, phi_over)][0]
+            gain_i1j1[f] = self._response_data[(freq, theta_over, phi_over)][0]
 
         freqs = np.array(list(self._response_freqs))
         gains = ((1-t)*(1-u)*gain_ij + t*(1-u)*gain_i1j +
