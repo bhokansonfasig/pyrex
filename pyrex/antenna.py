@@ -174,7 +174,8 @@ class Antenna:
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
         but should end with super().receive(signal)."""
-        copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
+        copy = Signal(signal.times, signal.values,
+                      value_type=Signal.ValueTypes.voltage)
         copy.filter_frequencies(self.response)
 
         if origin is None:
@@ -228,7 +229,7 @@ class DipoleAntenna(Antenna):
         while np.array_equal(np.cross(orientation, tmp_vector), (0,0,0)):
             tmp_vector = np.random.rand(3)
         ortho = np.cross(orientation, tmp_vector)
-        # Note: ortho is not normalized, but will be normalized by Antenna's init
+        # Note: ortho is not normalized, but will be normalized by Antenna init
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,

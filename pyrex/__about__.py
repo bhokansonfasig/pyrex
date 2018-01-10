@@ -6,7 +6,8 @@ __fullname__ = "PyREx"
 
 __version__ = "1.2.0"
 
-__long_description__ = """A Python package for simulation of Askaryan pulses and radio antennas in ice.
+__long_description__ = """
+A Python package for simulation of Askaryan pulses and radio antennas in ice.
 
 PyREx (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension) is,
 as its name suggests, a Python package designed to simulate the measurement of

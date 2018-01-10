@@ -173,7 +173,8 @@ class SlowAskaryanSignal(Signal):
         z_min = 0
         z_max = 2.5*self.max_length()
         n_z = 1000
-        z_vals, dz = np.linspace(z_min, z_max, n_z, endpoint=False, retstep=True)
+        z_vals, dz = np.linspace(z_min, z_max, n_z, endpoint=False,
+                                 retstep=True)
 
         # Q(z) is the same for every time
         Q = np.zeros(n_z)
@@ -497,7 +498,8 @@ class ThermalNoise(FunctionSignal):
                     continue
                 values += amp * np.cos(2*np.pi*freq * ts + phase)
 
-            # Normalization calculated by guess-and-check, but seems to work fine
+            # Normalization calculated by guess-and-check,
+            # but seems to work fine
             # normalization = np.sqrt(2/len(self.freqs))
             values *= np.sqrt(2/len(self.freqs))
 

@@ -64,7 +64,8 @@ class ShadowGenerator:
         self.count = 0
 
     def create_particle(self):
-        """Creates a particle with random vertex in cube and random direction."""
+        """Creates a particle with random vertex in cube with a random
+        direction."""
         vtx = np.random.uniform(low=(-self.dx/2, -self.dy/2, -self.dz),
                                 high=(self.dx/2, self.dy/2, 0))
         u = random_direction()

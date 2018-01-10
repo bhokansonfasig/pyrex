@@ -68,9 +68,11 @@ class AntarcticIce:
             # Use numpy slicing to calculate different values when
             # f<1e9 and f>=1e9. Transpose b0, b1, b2 into column vectors
             # so numpy multiplies properly
-            a[:,f<1e9] += (b1[:,np.newaxis] * w0 - b0[:,np.newaxis] * w1) / (w0 - w1)
+            a[:,f<1e9] += ((b1[:,np.newaxis] * w0 - b0[:,np.newaxis] * w1)
+                           / (w0 - w1))
             b[:,f<1e9] += (b1[:,np.newaxis] - b0[:,np.newaxis]) / (w1 - w0)
-            a[:,f>=1e9] += (b2[:,np.newaxis] * w1 - b1[:,np.newaxis] * w2) / (w1 - w2)
+            a[:,f>=1e9] += ((b2[:,np.newaxis] * w1 - b1[:,np.newaxis] * w2)
+                            / (w1 - w2))
             b[:,f>=1e9] += (b2[:,np.newaxis] - b1[:,np.newaxis]) / (w2 - w1)
         elif isinstance(f, np.ndarray):
             # t is a scalar, so return an array of coefficients based
