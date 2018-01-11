@@ -56,9 +56,9 @@
 *
 * END Notes
 
-* Added to make PySpice work
-.PARAM TEMP=25
-.func if(a,b,c) 'ternary_fcn( a , b , c )'
+* Uncomment to make PySpice work:
+* .PARAM TEMP=25
+* .func if(a,b,c) 'ternary_fcn( a , b , c )'
 
 *****************************************************************************************************
 *****************************************************************************************************

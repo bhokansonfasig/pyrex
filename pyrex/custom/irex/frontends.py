@@ -5,6 +5,7 @@ import numpy as np
 from scipy.special import lambertw
 from pyrex.signals import Signal
 
+import warnings
 
 import pyrex.custom.pyspice as pyspice
 
