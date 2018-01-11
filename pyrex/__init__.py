@@ -6,7 +6,7 @@ import os.path
 from .__about__ import __version__, __long_description__
 __doc__ = __long_description__
 
-from .signals import (Signal, EmptySignal, FunctionSignal
+from .signals import (Signal, EmptySignal, FunctionSignal,
                       AskaryanSignal, ThermalNoise)
 from .antenna import Antenna, DipoleAntenna
 from .ice_model import IceModel
