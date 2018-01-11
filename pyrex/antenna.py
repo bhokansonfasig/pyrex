@@ -139,11 +139,13 @@ class Antenna:
         return True
 
     def _convert_to_antenna_coordinates(self, point):
+        # Get cartesian point relative to antenna position
+        rel_point = np.array(point) - np.array(self.position)
         # Matrix multiplication using antenna axes as rows in transformation
         # matrix to transform point into antenna coordinates
         y_axis = np.cross(self.z_axis, self.x_axis)
         transformation = np.array([self.x_axis, y_axis, self.z_axis])
-        x, y, z = np.dot(transformation, point)
+        x, y, z = np.dot(transformation, rel_point)
         # Convert to spherical coordinates
         r = np.sqrt(x**2 + y**2 + z**2)
         if r==0:
