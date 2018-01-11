@@ -102,6 +102,8 @@ class ARABaseAntenna(Antenna):
         if self._response_data is None:
             return np.array([1]), np.array([1])
 
+        theta = np.degrees(theta) % 180
+        phi = np.degrees(phi) % 360
         theta_under = 5*int(theta/5)
         theta_over = 5*(int(theta/5)+1)
         phi_under = 5*int(phi/5)
@@ -294,7 +296,7 @@ class HpolAntenna(ARAAntenna):
                          power_threshold=power_threshold,
                          response_data=HPOL_RESPONSE,
                          response_freqs=HPOL_FREQS,
-                         orientation=(1,0,0),
+                         orientation=(0,0,1),
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
                          noisy=noisy)
