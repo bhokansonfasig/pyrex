@@ -1,6 +1,15 @@
 Version History
 ===============
 
+Version 1.2.1
+-------------
+
+* Added ``set_orientation`` function to ``Antenna`` class for setting the ``z_axis`` and ``x_axis`` attributes appropriately.
+
+* Fix bug where ``Antenna._convert_to_antenna_coordinates`` function was returning coordinates relative to (0,0,0) rather than the antenna's position.
+
+
+
 Version 1.2.0
 -------------
 
