@@ -2,8 +2,6 @@
 
 import inspect
 
-from pyrex.antenna import Antenna
-
 
 class AntennaSystem:
     """Base class for an antenna system consisting of an antenna and some
@@ -146,4 +144,3 @@ class Detector:
 
     def __setitem__(self, key, value):
         self.antennas[key] = value
-
