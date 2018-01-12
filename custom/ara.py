@@ -7,6 +7,7 @@ import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
+from pyrex.detector import AntennaSystem, Detector
 from pyrex.ice_model import IceModel
 
 
@@ -53,8 +54,8 @@ VPOL_RESPONSE, VPOL_FREQS = read_response_data(VPOL_DATA_FILE)
 HPOL_RESPONSE, HPOL_FREQS = read_response_data(HPOL_DATA_FILE)
 
 
-class ARABaseAntenna(Antenna):
-    """Antenna to be used in ARAAntenna class. Has a position (m),
+class ARAAntenna(Antenna):
+    """Antenna to be used in ARA antenna systems. Has a position (m),
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
@@ -168,49 +169,47 @@ class ARABaseAntenna(Antenna):
 
 
 
-class ARAAntenna:
+class ARAAntennaSystem(AntennaSystem):
     """ARA antenna system consisting of antenna, amplification,
     and tunnel diode response."""
     def __init__(self, name, position, power_threshold, response_data=None,
                  response_freqs=None, orientation=(0,0,1), amplification=1,
                  amplifier_clipping=3, noisy=True):
+        super().__init__(ARAAntenna)
+
         self.name = str(name)
         self.position = position
-        self.change_antenna(response_data=response_data,
-                            response_freqs=response_freqs,
-                            orientation=orientation, noisy=noisy)
+        self.setup_antenna(response_data=response_data,
+                           response_freqs=response_freqs,
+                           orientation=orientation, noisy=noisy)
 
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
 
         self.power_threshold = power_threshold
 
-        self._signals = []
-        self._all_waveforms = []
-        self._triggers = []
-
-    def change_antenna(self, center_frequency=500e6, bandwidth=700e6,
-                       resistance=100, orientation=(0,0,1),
-                       response_data=None, response_freqs=None,
-                       effective_height=None, noisy=True):
-        """Changes attributes of the antenna including center frequency (Hz),
+    def setup_antenna(self, center_frequency=500e6, bandwidth=700e6,
+                      resistance=100, orientation=(0,0,1),
+                      response_data=None, response_freqs=None,
+                      effective_height=None, noisy=True):
+        """Sets attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
-        self.antenna = ARABaseAntenna(position=self.position,
-                                      center_frequency=center_frequency,
-                                      bandwidth=bandwidth,
-                                      resistance=resistance,
-                                      orientation=orientation,
-                                      effective_height=effective_height,
-                                      response_data=response_data,
-                                      response_freqs=response_freqs,
-                                      noisy=noisy)
+        super().setup_antenna(position=self.position,
+                              center_frequency=center_frequency,
+                              bandwidth=bandwidth,
+                              resistance=resistance,
+                              orientation=orientation,
+                              effective_height=effective_height,
+                              response_data=response_data,
+                              response_freqs=response_freqs,
+                              noisy=noisy)
 
     def tunnel_diode(self, signal):
         """Return the signal response from the tunnel diode."""
         return signal
 
-    def front_end_processing(self, signal):
+    def front_end(self, signal):
         """Apply the front-end processing of the antenna signal, including
         amplification, clipping, and envelope processing."""
         amplified_values = np.clip(signal.values*self.amplification,
@@ -218,66 +217,6 @@ class ARAAntenna:
                                    a_max=self.amplifier_clipping)
         copy = Signal(signal.times, amplified_values)
         return self.tunnel_diode(copy)
-
-    @property
-    def is_hit(self):
-        return len(self.waveforms)>0
-
-    def is_hit_during(self, times):
-        return self.trigger(self.full_waveform(times))
-
-    @property
-    def signals(self):
-        # Process any unprocessed antenna signals
-        while len(self._signals)<len(self.antenna.signals):
-            signal = self.antenna.signals[len(self._signals)]
-            self._signals.append(self.front_end_processing(signal))
-        # Return envelopes of antenna signals
-        return self._signals
-
-    @property
-    def waveforms(self):
-        # Process any unprocessed triggers
-        all_waves = self.all_waveforms
-        while len(self._triggers)<len(all_waves):
-            waveform = all_waves[len(self._triggers)]
-            self._triggers.append(self.trigger(waveform))
-
-        return [wave for wave, triggered in zip(all_waves, self._triggers)
-                if triggered]
-
-    @property
-    def all_waveforms(self):
-        # Process any unprocessed antenna waveforms
-        while len(self._all_waveforms)<len(self.antenna.signals):
-            signal = self.antenna.signals[len(self._all_waveforms)]
-            t = signal.times
-            long_times = np.concatenate((t-t[-1]+t[0], t[1:]))
-            long_signal = signal.with_times(long_times)
-            long_noise = self.antenna.make_noise(long_times)
-            long_waveform = self.front_end_processing(long_signal+long_noise)
-            self._all_waveforms.append(long_waveform.with_times(t))
-        # Return envelopes of antenna waveforms
-        return self._all_waveforms
-
-    def full_waveform(self, times):
-        # Process full antenna waveform
-        # TODO: Optimize this so it doesn't have to double the amount of time
-        # And same for the similar method above in all_waveforms
-        long_times = np.concatenate((times-times[-1]+times[0], times[1:]))
-        preprocessed = self.antenna.full_waveform(long_times)
-        long_waveform = self.front_end_processing(preprocessed)
-        return long_waveform.with_times(times)
-
-    def receive(self, signal, origin=None, polarization=None):
-        return self.antenna.receive(signal, origin=origin,
-                                    polarization=polarization)
-
-    def clear(self):
-        self._signals.clear()
-        self._all_waveforms.clear()
-        self._triggers.clear()
-        self.antenna.clear()
 
     def trigger(self, signal):
         if self.antenna._noise_master is None:
@@ -287,7 +226,7 @@ class ARAAntenna:
 
 
 
-class HpolAntenna(ARAAntenna):
+class HpolAntenna(ARAAntennaSystem):
     """ARA Hpol ("quad-slot") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
@@ -302,7 +241,7 @@ class HpolAntenna(ARAAntenna):
                          noisy=noisy)
 
 
-class VpolAntenna(ARAAntenna):
+class VpolAntenna(ARAAntennaSystem):
     """ARA Vpol ("bicone" or "birdcage") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
@@ -327,7 +266,7 @@ def convert_hex_coords(hex_coords, unit=1):
 
 
 
-class ARADetector:
+class ARADetector(Detector):
     """Class for automatically generating antenna positions based on geometry
     criteria. Takes as arguments the number of stations, the distance between
     stations, the number of antennas per string, the separation (in z) of the
@@ -338,10 +277,13 @@ class ARADetector:
     The build_antennas method is responsible for actually placing antennas
     at the generated positions, after which the class can be directly iterated
     to iterate over the antennas."""
-    def __init__(self, number_of_stations=1, station_separation=2000,
-                 antennas_per_string=4, antenna_separation=10,
-                 lowest_antenna=-200, strings_per_station=4,
-                 string_separation=10):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def set_positions(self, number_of_stations=1, station_separation=2000,
+                      antennas_per_string=4, antenna_separation=10,
+                      lowest_antenna=-200, strings_per_station=4,
+                      string_separation=10):
         self.antenna_positions = []
 
         # Set positions of stations in hexagonal spiral
@@ -388,13 +330,6 @@ class ARADetector:
                     z = lowest_antenna + ant_index*antenna_separation
                     self.antenna_positions.append((x,y,z))
 
-        for pos in self.antenna_positions:
-            if pos[2]>0:
-                raise ValueError("Antenna placed outside of ice will cause "
-                                 +"unexpected issues")
-
-        self.antennas = []
-
     def build_antennas(self, power_threshold, amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
                        class_scheme=lambda i: HpolAntenna if i%2 else VpolAntenna,
@@ -410,31 +345,10 @@ class ARADetector:
         for i, pos in enumerate(self.antenna_positions):
             AntennaClass = class_scheme(i)
             self.antennas.append(
-                AntennaClass(name="ARA antenna", position=pos,
+                AntennaClass(name=AntennaClass.__name__, position=pos,
                              power_threshold=power_threshold,
                              amplification=amplification,
                              noisy=noisy)
             )
         for i, ant in enumerate(self.antennas):
             ant.name = str(naming_scheme(i, ant))
-
-    def __iter__(self):
-        self._iter_counter = 0
-        self._iter_max = len(self.antennas)
-        return self
-
-    def __next__(self):
-        self._iter_counter += 1
-        if self._iter_counter > self._iter_max:
-            raise StopIteration
-        else:
-            return self.antennas[self._iter_counter-1]
-
-    def __len__(self):
-        return len(self.antennas)
-
-    def __getitem__(self, key):
-        return self.antennas[key]
-
-    def __setitem__(self, key, value):
-        self.antennas[key] = value
