@@ -321,7 +321,7 @@ class ARADetector(Detector):
             )
 
         # Set antennas at each station
-        for stat_index, base_pos in enumerate(station_positions):
+        for base_pos in station_positions:
             for str_index in range(strings_per_station):
                 angle = str_index/strings_per_station * 2*np.pi
                 x = base_pos[0] + string_separation*np.cos(angle)
