@@ -82,10 +82,6 @@ class IREXAntennaSystem(AntennaSystem):
 
         self.envelope_method = envelope_method
 
-        self._signals = []
-        self._all_waveforms = []
-        self._triggers = []
-
     def setup_antenna(self, center_frequency=250e6, bandwidth=300e6,
                       resistance=100, orientation=(0,0,1),
                       effective_height=None, noisy=True):
