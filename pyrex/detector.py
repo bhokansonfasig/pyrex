@@ -20,7 +20,7 @@ class AntennaSystem:
         self._triggers = []
 
     def setup_antenna(self, *args, **kwargs):
-        """Setup the antenna by passing along its __init__ arguments.
+        """Setup the antenna by passing along its init arguments.
         This function can be overwritten if desired, just make sure to assign
         the self.antenna attribute in the function."""
         self.antenna = self._antenna_class(*args, **kwargs)
@@ -111,10 +111,11 @@ class Detector:
         self.antennas = []
 
     def set_positions(self, *args, **kwargs):
-        """Generates positions for the antennas based on the given arguments
-        and assigns those positions to the antenna_positions attribute.
-        By default does nothing."""
-        self.antenna_positions = []
+        """Not implemented. Should generates positions for the antennas based
+        on the given arguments and assign those positions to the
+        antenna_positions attribute."""
+        raise NotImplementedError("set_positions method must be implemented "
+                                  +"by inheriting class")
 
     def build_antennas(self, antenna_class, **kwargs):
         """Sets up antenna objects at the positions stored in the class.
