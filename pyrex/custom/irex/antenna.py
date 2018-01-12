@@ -281,8 +281,8 @@ class IREXGrid(IREXDetector):
 
 
 class IREXClusteredGrid(IREXDetector):
-    """Class for (semi)automatically generating a rectangular grid of strings
-    of antennas, which can then be iterated over."""
+    """Class for (semi)automatically generating a rectangular grid of clusters
+    of strings of antennas, which can then be iterated over."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -314,6 +314,50 @@ class IREXClusteredGrid(IREXDetector):
                     angle = 2*np.pi * L/n_r
                     x = x_st + dr*np.cos(angle)
                     y = y_st + dr*np.sin(angle)
+                    for k in range(n_z):
+                        z = lowest_antenna + dz*k
+                        self.antenna_positions.append((x,y,z))
+
+
+class IREXCoxeterClusters(IREXDetector):
+    """Class for (semi)automatically generating a rectangular grid of 
+    Coxeter-plane-like clusters (one string at center) of strings of antennas,
+    which can then be iterated over."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def set_positions(self, number_of_stations=1, station_separation=500,
+                      antennas_per_string=2, antenna_separation=40,
+                      lowest_antenna=-200, strings_per_station=4,
+                      string_separation=25):
+        """Generates antenna positions in a grid of strings.
+        Takes as arguments the number of stations, the distance between
+        stations, the number of antennas per string, the separation (in z) of the
+        antennas on the string, the position of the lowest antenna, and the name
+        of the geometry to use. Optional parameters (depending on the geometry)
+        are the number of strings per station and the distance from station to
+        string."""
+        self.antenna_positions = []
+        n_x = int(np.sqrt(number_of_stations))
+        n_y = int(number_of_stations/n_x)
+        n_z = antennas_per_string
+        n_r = strings_per_station
+        dx = station_separation
+        dy = station_separation
+        dz = antenna_separation
+        dr = string_separation
+        for i in range(n_x):
+            x_st = -dx*n_x/2 + dx/2 + dx*i
+            for j in range(n_y):
+                y_st = -dy*n_y/2 + dy/2 + dy*j
+                for L in range(n_r):
+                    if L==0:
+                        x = x_st
+                        y = y_st
+                    else:
+                        angle = 0 if L==1 else 2*np.pi * (L-1)/(n_r-1)
+                        x = x_st + dr*np.cos(angle)
+                        y = y_st + dr*np.sin(angle)
                     for k in range(n_z):
                         z = lowest_antenna + dz*k
                         self.antenna_positions.append((x,y,z))
