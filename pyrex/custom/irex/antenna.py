@@ -220,9 +220,6 @@ class IREXAntennaSystem(AntennaSystem):
 class IREXDetector(Detector):
     """Base class for IREX detector classes which implements the build_antennas
     method, but not set_positions."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def build_antennas(self, trigger_threshold, time_over_threshold=0,
                        amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
@@ -254,9 +251,6 @@ class IREXDetector(Detector):
 class IREXGrid(IREXDetector):
     """Class for (semi)automatically generating a rectangular grid of strings
     of antennas, which can then be iterated over."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def set_positions(self, number_of_strings=1, string_separation=500,
                       antennas_per_string=2, antenna_separation=40,
                       lowest_antenna=-200):
@@ -283,9 +277,6 @@ class IREXGrid(IREXDetector):
 class IREXClusteredGrid(IREXDetector):
     """Class for (semi)automatically generating a rectangular grid of clusters
     of strings of antennas, which can then be iterated over."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def set_positions(self, number_of_stations=1, station_separation=500,
                       antennas_per_string=2, antenna_separation=40,
                       lowest_antenna=-200, strings_per_station=4,
@@ -323,9 +314,6 @@ class IREXCoxeterClusters(IREXDetector):
     """Class for (semi)automatically generating a rectangular grid of 
     Coxeter-plane-like clusters (one string at center) of strings of antennas,
     which can then be iterated over."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def set_positions(self, number_of_stations=1, station_separation=500,
                       antennas_per_string=2, antenna_separation=40,
                       lowest_antenna=-200, strings_per_station=4,
