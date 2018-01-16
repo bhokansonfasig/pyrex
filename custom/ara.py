@@ -277,9 +277,6 @@ class ARADetector(Detector):
     The build_antennas method is responsible for actually placing antennas
     at the generated positions, after which the class can be directly iterated
     to iterate over the antennas."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def set_positions(self, number_of_stations=1, station_separation=2000,
                       antennas_per_string=4, antenna_separation=10,
                       lowest_antenna=-200, strings_per_station=4,
