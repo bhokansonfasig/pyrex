@@ -15,7 +15,7 @@ All of the following examples can also be found (and quickly run) in the Code Ex
 Working with Signal Objects
 ---------------------------
 
-The base ``Signal`` class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The ``times`` array is assumed to be in units of seconds, but there are no general units for the ``values`` array. It is worth noting that the Singal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the ``Signal`` object. ::
+The base ``Signal`` class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The ``times`` array is assumed to be in units of seconds, but there are no general units for the ``values`` array. It is worth noting that the Signal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the ``Signal`` object. ::
 
     time_array = np.linspace(0, 10)
     value_array = np.sin(time_array)
@@ -178,7 +178,7 @@ The basic properties of an ``Antenna`` object are ``is_hit`` and ``waveforms``. 
     basic_antenna.is_hit == False
     basic_antenna.waveforms == []
 
-The ``Antenna`` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are ``efficiency`` and ``antenna_factor``, and the methods are ``response``, ``directional_gain``, and ``polarization_gain``. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. ``efficiency`` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). ``antenna_factor`` is a factor used in converting received electric fields into voltages (``antenna_factor`` = E / V; default value is ``1``). ``response`` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). ``directional_gain`` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). Finally, ``polarization_gain`` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
+The ``Antenna`` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are ``efficiency`` and ``antenna_factor``, and the methods are ``response``, ``directional_gain``, and ``polarization_gain``. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. ``efficiency`` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). ``antenna_factor`` is a factor used in converting received electric fields into voltages (``antenna_factor`` = E / V; default value is ``1``). ``response`` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). ``directional_gain`` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). ``directional_gain`` is dependent on the antenna's orientation, which is defined by its ``z_axis`` and ``x_axis`` attributes. To change the antenna's orientation, use the ``set_orientation`` method which takes ``z_axis`` and ``x_axis`` arguments. Finally, ``polarization_gain`` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
 
     basic_antenna.efficiency == 1
     basic_antenna.antenna_factor == 1
@@ -211,7 +211,7 @@ Beyond ``Antenna.waveforms``, the ``Antenna`` object also provides methods for c
 
     total_waveform = basic_antenna.full_waveform(np.linspace(0,20))
     plt.plot(total_waveform.times, total_waveform.values, label="Total Waveform")
-    plt.plot(incoming_singal_1.times, incoming_singal_1.values, label="Pure Signals")
+    plt.plot(incoming_signal_1.times, incoming_signal_1.values, label="Pure Signals")
     plt.plot(incoming_signal_2.times, incoming_signal_2.values, color="C1")
     plt.legend()
     plt.show()
@@ -242,17 +242,17 @@ Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude 
 
     my_antenna = NoiselessThresholdAntenna(position=(0, 0, 0), threshold=2)
 
-    incoming_singal = pyrex.FunctionSignal(np.linspace(0,10), np.sin,
+    incoming_signal = pyrex.FunctionSignal(np.linspace(0,10), np.sin,
                                            value_type=pyrex.Signal.ValueTypes.voltage)
-    my_antenna.receive(incoming_singal)
+    my_antenna.receive(incoming_signal)
     my_antenna.is_hit == False
     len(my_antenna.waveforms) == 0
     len(my_antenna.all_waveforms) == 1
 
-    incoming_singal = pyrex.Signal(incoming_singal.times,
-                                   5*incoming_singal.values,
-                                   incoming_singal.value_type)
-    my_antenna.receive(incoming_singal)
+    incoming_signal = pyrex.Signal(incoming_signal.times,
+                                   5*incoming_signal.values,
+                                   incoming_signal.value_type)
+    my_antenna.receive(incoming_signal)
     my_antenna.is_hit == True
     len(my_antenna.waveforms) == 1
     len(my_antenna.all_waveforms) == 2
@@ -281,6 +281,127 @@ PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provid
                                  effective_height=antenna_length,
                                  orientation=polarization_direction,
                                  trigger_threshold=trigger_threshold)
+
+
+
+AntennaSystem and Detector Classes
+----------------------------------
+
+The ``AntennaSystem`` class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna's signals. It is designed to be subclassed, but by default it takes as an argument the ``Antenna`` class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the ``Antenna`` class, but where a ``front_end`` method (which by default does nothing) is applied to the extended antenna's signals.
+
+To extend an ``Antenna`` class or subclass into a full antenna system, subclass the ``AntennaSystem`` class and define the ``front_end`` method. Optionally a trigger can be defined for the antenna system (by default it uses the antenna's trigger)::
+
+    class PowerAntennaSystem(pyrex.AntennaSystem):
+        """Antenna system whose signals and waveforms are powers instead of
+        voltages."""
+        def __init__(self, position, temperature, resistance, frequency_range):
+            super().__init__(pyrex.Antenna)
+            # The setup_antenna method simply passes all arguments on to the
+            # antenna class passed to super.__init__() and stores the resulting
+            # antenna to self.antenna
+            self.setup_antenna(position=position, temperature=temperature,
+                               resistance=resistance,
+                               freq_range=frequency_range)
+
+        def front_end(self, signal):
+            return pyrex.Signal(signal.times, signal.values**2,
+                                value_type=pyrex.Signal.ValueTypes.power)
+
+Objects of this class can then, for the most part, be interacted with as though they were regular antenna objects::
+
+    position = (0, 0, -100) # m
+    temperature = 300 # K
+    resistance = 1e17 # ohm
+    frequency_range = (0, 5) # Hz
+
+    basic_antenna_system = PowerAntennaSystem(position=position,
+                                              temperature=temperature,
+                                              resistance=resistance,
+                                              frequency_range=frequency_range)
+
+    basic_antenna_system.trigger(pyrex.Signal([0],[0])) == True
+
+    incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), np.sin,
+                                             value_type=pyrex.Signal.ValueTypes.voltage)
+    incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), np.sin,
+                                             value_type=pyrex.Signal.ValueTypes.voltage)
+    basic_antenna_system.receive(incoming_signal_1)
+    basic_antenna_system.receive(incoming_signal_2, origin=[0,0,-300],
+                                 polarization=[1,0,0])
+    basic_antenna_system.is_hit == True
+    for waveform, pure_signal in zip(basic_antenna_system.waveforms,
+                                     basic_antenna_system.signals):
+        plt.figure()
+        plt.plot(waveform.times, waveform.values, label="Waveform")
+        plt.plot(pure_signal.times, pure_signal.values, label="Pure Signal")
+        plt.legend()
+        plt.show()
+
+    total_waveform = basic_antenna_system.full_waveform(np.linspace(0,20))
+    plt.plot(total_waveform.times, total_waveform.values, label="Total Waveform")
+    plt.plot(incoming_signal_1.times, incoming_signal_1.values, label="Pure Signals")
+    plt.plot(incoming_signal_2.times, incoming_signal_2.values, color="C1")
+    plt.legend()
+    plt.show()
+
+    basic_antenna_system.is_hit_during(np.linspace(0, 200e-9)) == True
+
+    basic_antenna_system.clear()
+    basic_antenna_system.is_hit == False
+    len(basic_antenna_system.waveforms) == 0
+
+
+The ``Detector`` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used to build a detector). Subclasses must define a ``set_positions`` method to assign vector positions to the self.antenna_positions attribute. By default ``set_positions`` will raise a ``NotImplementedError``. Additionally subclasses may extend the default ``build_antennas`` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the ``Detector`` class is that once the ``build_antennas`` method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the ``Detector`` class is shown below::
+
+    class AntennaGrid(pyrex.Detector):
+        """A detector composed of a plane of antennas in a rectangular grid layout
+        some distance below the ice."""
+        def set_positions(self, number, separation=10, depth=-50):
+            n_x = int(np.sqrt(number))
+            n_y = int(number/n_x)
+            dx = separation
+            dy = separation
+            for i in range(n_x):
+                x = -dx*n_x/2 + dx/2 + dx*i
+                for j in range(n_y):
+                    y = -dy*n_y/2 + dy/2 + dy*j
+                    self.antenna_positions.append((x, y, depth))
+
+    grid_detector = AntennaGrid(9)
+
+    # Build the antennas
+    temperature = 300 # K
+    resistance = 1e17 # ohm
+    frequency_range = (0, 5) # Hz
+    grid_detector.build_antennas(pyrex.Antenna, temperature=temperature,
+                                 resistance=resistance,
+                                 freq_range=frequency_range)
+
+    plt.figure(figsize=(6,6))
+    for antenna in grid_detector:
+        x = antenna.position[0]
+        y = antenna.position[1]
+        plt.plot(x, y, "kD")
+    plt.ylim(plt.xlim())
+    plt.show()
+
+Due to the parallels between ``Antenna`` and ``AntennaSystem``, an antenna system may also be used in the custom detector class. Note however, that the antenna positions must be accessed as ``antenna.antenna.position`` since we didn't define a position attribute for the ``PowerAntennaSystem``::
+
+    grid_detector = AntennaGrid(12)
+
+    # Build the antennas
+    temperature = 300 # K
+    resistance = 1e17 # ohm
+    frequency_range = (0, 5) # Hz
+    grid_detector.build_antennas(PowerAntennaSystem, temperature=temperature,
+                                resistance=resistance,
+                                frequency_range=frequency_range)
+
+    for antenna in grid_detector:
+        x = antenna.antenna.position[0]
+        y = antenna.antenna.position[1]
+        plt.plot(x, y, "kD")
+    plt.show()
 
 
 
