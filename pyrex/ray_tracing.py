@@ -71,3 +71,75 @@ class PathFinder:
                                "doesn't exist")
         signal.filter_frequencies(self.attenuation)
         signal.times += self.tof
+
+
+class ReflectedPathFinder:
+    """Class for ray tracking of ray reflected off ice surface."""
+    def __init__(self, ice_model, from_point, to_point):
+        self.from_point = np.array(from_point)
+        self.to_point = np.array(to_point)
+        self.ice = ice_model
+
+        self.bounce_point = self.get_bounce_point()
+
+        self.path_1 = PathFinder(ice_model=self.ice,
+                                 from_point=self.from_point,
+                                 to_point=self.bounce_point)
+        self.path_2 = PathFinder(ice_model=self.ice,
+                                 from_point=self.bounce_point,
+                                 to_point=self.to_point)
+
+    def get_bounce_point(self):
+        """Calculation of point at which signal is reflected by the ice surface
+        (z=0)."""
+        z0 = self.from_point[2]
+        z1 = self.to_point[2]
+        u = self.to_point - self.from_point
+        # x-y distance between points
+        rho = np.sqrt(u[0]**2 + u[1]**2)
+        # x-y distance to bounce point based on geometric arguments
+        distance = z0*rho / (z0+z1)
+        # x-y direction vector
+        u_xy = np.array([u[0], u[1], 0])
+        direction = normalize(u_xy)
+        bounce_point = self.from_point + distance*direction
+        bounce_point[2] = 0
+        return bounce_point
+
+
+    @property
+    def exists(self):
+        """Boolean of whether path exists."""
+        return self.path_1.exists and self.path_2.exists
+
+    @property
+    def emitted_ray(self):
+        """Direction in which ray is emitted."""
+        return normalize(self.bounce_point - self.from_point)
+
+    @property
+    def path_length(self):
+        """Length of the path (m)."""
+        return self.path_1.path_length + self.path_2.path_length
+
+    @property
+    def tof(self):
+        """Time of flight (s) for a particle along the path.
+        Calculated using default values of self.time_of_flight()"""
+        return self.path_1.tof + self.path_2.tof
+
+    def time_of_flight(self, n_steps=100):
+        """Time of flight (s) for a particle along the path."""
+        return (self.path_1.time_of_flight(n_steps) +
+                self.path_2.time_of_flight(n_steps))
+
+    def attenuation(self, f, n_steps=100):
+        """Returns the attenuation factor for a signal of frequency f (Hz)
+        traveling along the path. Supports passing a list of frequencies."""
+        return (self.path_1.attenuation(f, n_steps) *
+                self.path_2.attenuation(f, n_steps))
+
+    def propagate(self, signal):
+        """Applies attenuation to the signal along the path."""
+        self.path_1.propagate(signal)
+        self.path_2.propagate(signal)
