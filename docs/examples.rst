@@ -357,6 +357,7 @@ The ``Detector`` class is another convenience class meant to be subclassed. It i
         """A detector composed of a plane of antennas in a rectangular grid layout
         some distance below the ice."""
         def set_positions(self, number, separation=10, depth=-50):
+            self.antenna_positions = []
             n_x = int(np.sqrt(number))
             n_y = int(number/n_x)
             dx = separation
