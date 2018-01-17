@@ -55,7 +55,7 @@ class PathFinder:
         fa = np.abs(f)
         z0 = self.from_point[2]
         z1 = self.to_point[2]
-        zs, dz = np.linspace(z0, z1, n_steps, endpoint=True, retstep=True)
+        zs, dz = np.linspace(z0, z1, n_steps, endpoint=False, retstep=True)
         u = self.to_point - self.from_point
         rho = np.sqrt(u[0]**2 + u[1]**2)
         dr = rho / (z1 - z0) * dz
