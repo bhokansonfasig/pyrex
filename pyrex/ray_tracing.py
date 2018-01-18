@@ -13,12 +13,17 @@ class PathFinder:
 
     @property
     def exists(self):
-        """Boolean of whether path exists."""
+        """Boolean of whether path exists based on basic total internal
+        reflection calculation."""
         ni = self.ice.index(self.from_point[2])
         nf = self.ice.index(self.to_point[2])
         nr = nf / ni
+        # If relative index is greater than 1, total internal reflection
+        # is impossible
         if nr > 1:
             return True
+        # Check z-component of emitted ray against normalized z-component
+        # of critical ray for total internal reflection
         tir = np.sqrt(1 - nr**2)
         return self.emitted_ray[2] > tir
 
@@ -26,6 +31,11 @@ class PathFinder:
     def emitted_ray(self):
         """Direction in which ray is emitted."""
         return normalize(self.to_point - self.from_point)
+
+    @property
+    def received_ray(self):
+        """Direction from which ray is received."""
+        return self.emitted_ray
 
     @property
     def path_length(self):
@@ -106,16 +116,31 @@ class ReflectedPathFinder:
         bounce_point[2] = 0
         return bounce_point
 
-
     @property
     def exists(self):
-        """Boolean of whether path exists."""
-        return self.path_1.exists and self.path_2.exists
+        """Boolean of whether path exists based on whether its sub-paths
+        exist and whether it could reflect off the ice surface."""
+        # nr = nf / ni = 1 / ni
+        nr = 1 / self.ice.index(self.from_point[2])
+        # For completeness, check that ice index isn't less than 1
+        if nr>1:
+            surface_reflection = False
+        else:
+            # Check z-component of emitted ray against normalized z-component
+            # of critical ray for total internal reflection
+            tir = np.sqrt(1 - nr**2)
+            surface_reflection = self.emitted_ray[2] < tir
+        return self.path_1.exists and self.path_2.exists and surface_reflection
 
     @property
     def emitted_ray(self):
         """Direction in which ray is emitted."""
         return normalize(self.bounce_point - self.from_point)
+
+    @property
+    def received_ray(self):
+        """Direction from which ray is received."""
+        return normalize(self.to_point - self.bounce_point)
 
     @property
     def path_length(self):
