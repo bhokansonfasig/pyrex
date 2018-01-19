@@ -457,14 +457,14 @@ PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos,
 Ray Tracing
 -----------
 
-While PyREx does not currently support full ray tracing, it does provide a ``PathFinder`` class which implements some basic ray analysis by Snell's law. ``PathFinder`` takes an ice model and two points as arguments and provides a number of properties and methods regarding the path between the points. ::
+While PyREx does not currently support full ray tracing, it does provide a ``PathFinder`` class which implements some basic ray analysis by checking for total internal reflection along a straight-line path. ``PathFinder`` takes an ice model and two points as arguments and provides a number of properties and methods regarding the path between the points. ::
 
     start = (0, 0, -100) # m
     finish = (0, 0, -250) # m
     my_path = pyrex.PathFinder(ice_model=pyrex.IceModel,
                                from_point=start, to_point=finish)
 
-``PathFinder.exists`` is a boolean value of whether or not the path between the points is traversable according to the indices of refraction. ``PathFinder.emitted_ray`` is a unit vector giving the direction from ``from_point`` to ``to_point``. ``PathFinder.path_length`` is the length in meters of the straight line path between the two points. ::
+``PathFinder.exists`` is a boolean value of whether or not the path between the points is traversable according to the indices of refraction. ``PathFinder.emitted_ray`` and ``PathFinder.received_ray`` are both unit vectors giving the direction from ``from_point`` to ``to_point``. ``PathFinder.path_length`` is the length in meters of the straight line path between the two points. ::
 
     my_path.exists
     my_path.emitted_ray
@@ -491,6 +491,11 @@ Finally, ``PathFinder.propagate()`` propagates a ``Signal`` object from ``from_p
     my_path.propagate(my_signal)
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
+
+
+PyREx also includes a ``ReflectedPathFinder`` class which essentially wraps two ``PathFinder`` objects containing rays which make up a path from the ``from_point`` to the ``to_point``, undergoing total internal reflection at the specified ``reflection_depth``. By default the ``reflection_depth`` is 0, assuming a reflection off of the surface of the ice.
+
+``ReflectedPathFinder`` is interacted with in the same way as ``PathFinder``: ``ReflectedPathFinder.exists`` is a boolean of whether each of the constituent paths exist and total internal reflection is possible at the specified depth. ``ReflectedPathFinder.emitted_ray`` is the emitted ray of the first constituent path and ``ReflectedPathFinder.received_ray`` is the received ray of the second constituent path. ``ReflectedPathFinder.tof`` and ``ReflectedPathFinder.time_of_flight()`` are the sums of the times of flight for the constituent paths (with ``n_step`` passed to each ``time_of_flight`` method). Similarly ``ReflectedPathFinder.attenuation()`` is the product of the attenuations for the constituent paths with ``n_step`` passed to each. And finally ``ReflectedPathFinder.propagate()`` runs the ``propagate`` methods of both constituent paths in sequence.
 
 
 
