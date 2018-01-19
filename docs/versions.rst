@@ -8,6 +8,8 @@ Version 1.3.0
 
 * Improve performance of ice index calculated at many depths.
 
+* Change ``AksaryanSignal`` angle to always be positive and remove < 90 degree restriction (Alvarez-Muniz, Romero-Wolf, & Zas paper suggests the algorithm should work for all angles).
+
 
 
 Version 1.2.1
