@@ -264,8 +264,13 @@ class FastAskaryanSignal(Signal):
         #                            RAC(z(1-n*cos(theta))/c))
         #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
         #                * c / (1-n*cos(theta))
-        if theta > np.pi/2:
-            raise ValueError("Angles greater than 90 degrees not supported")
+
+        # Theta should represent the angle from the shower axis, and so should
+        # always be positive
+        theta = np.abs(theta)
+
+        if theta > np.pi:
+            raise ValueError("Angles greater than 180 degrees not supported")
 
         self.energy = energy
 
