@@ -85,12 +85,12 @@ class PathFinder:
 
 class ReflectedPathFinder:
     """Class for ray tracking of ray reflected off ice surface."""
-    def __init__(self, ice_model, from_point, to_point):
+    def __init__(self, ice_model, from_point, to_point, reflection_depth=0):
         self.from_point = np.array(from_point)
         self.to_point = np.array(to_point)
         self.ice = ice_model
 
-        self.bounce_point = self.get_bounce_point()
+        self.bounce_point = self.get_bounce_point(reflection_depth)
 
         self.path_1 = PathFinder(ice_model=self.ice,
                                  from_point=self.from_point,
@@ -99,11 +99,11 @@ class ReflectedPathFinder:
                                  from_point=self.bounce_point,
                                  to_point=self.to_point)
 
-    def get_bounce_point(self):
+    def get_bounce_point(self, reflection_depth=0):
         """Calculation of point at which signal is reflected by the ice surface
         (z=0)."""
-        z0 = self.from_point[2]
-        z1 = self.to_point[2]
+        z0 = self.from_point[2] - reflection_depth
+        z1 = self.to_point[2] - reflection_depth
         u = self.to_point - self.from_point
         # x-y distance between points
         rho = np.sqrt(u[0]**2 + u[1]**2)
@@ -113,7 +113,7 @@ class ReflectedPathFinder:
         u_xy = np.array([u[0], u[1], 0])
         direction = normalize(u_xy)
         bounce_point = self.from_point + distance*direction
-        bounce_point[2] = 0
+        bounce_point[2] = reflection_depth
         return bounce_point
 
     @property
@@ -121,7 +121,9 @@ class ReflectedPathFinder:
         """Boolean of whether path exists based on whether its sub-paths
         exist and whether it could reflect off the ice surface."""
         # nr = nf / ni = 1 / ni
-        nr = 1 / self.ice.index(self.from_point[2])
+        ni = self.ice.index(self.from_point[2])
+        nf = self.ice.index(self.bounce_point[2]) if self.bounce_point[2]<0 else 1
+        nr = nf / ni
         # For completeness, check that ice index isn't less than 1
         if nr>1:
             surface_reflection = False
@@ -129,7 +131,7 @@ class ReflectedPathFinder:
             # Check z-component of emitted ray against normalized z-component
             # of critical ray for total internal reflection
             tir = np.sqrt(1 - nr**2)
-            surface_reflection = self.emitted_ray[2] < tir
+            surface_reflection = self.emitted_ray[2] <= tir
         return self.path_1.exists and self.path_2.exists and surface_reflection
 
     @property
