@@ -23,7 +23,7 @@ class AntarcticIce:
         """Returns the medium's index of refraction, n, at depth z (m).
         Supports passing a numpy array of depths."""
         try:
-            indices = np.zeros(len(z))
+            indices = np.ones(len(z))
         except TypeError:
             # z is a scalar, so just return one value
             if z>0:
@@ -31,11 +31,13 @@ class AntarcticIce:
             else:
                 return cls.n0 + cls.k * (1 - np.exp(cls.a * z))
 
-        for i, depth in enumerate(z):
-            if depth>0:
-                indices[i] = 1
-            else:
-                indices[i] = cls.n0 + cls.k * (1 - np.exp(cls.a * depth))
+        indices[z<=0] = cls.n0 + cls.k * (1 - np.exp(cls.a * z[z<=0]))
+
+        # for i, depth in enumerate(z):
+        #     if depth>0:
+        #         indices[i] = 1
+        #     else:
+        #         indices[i] = cls.n0 + cls.k * (1 - np.exp(cls.a * depth))
         return indices
 
     @staticmethod

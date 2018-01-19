@@ -83,6 +83,15 @@ class TestAntarcticIce:
         http://icecube.wisc.edu/~mnewcomb/radio/index/"""
         assert AntarcticIce.index(depth) == pytest.approx(index, rel=0.05)
 
+    def test_index_match(self):
+        """Tests the index of refraction in the ice calculated for many depths
+        at once matches the individual calculation."""
+        depths = -1*np.linspace(-100, 1000, 12)
+        indices = np.zeros(len(depths))
+        for i, d in enumerate(depths):
+            indices[i] = AntarcticIce.index(d)
+        assert np.array_equal(AntarcticIce.index(depths), indices)
+
     @pytest.mark.parametrize("depth, temp", KW_amanda_temps+KW_icecube_temps)
     def test_temperature(self, depth, temp):
         """Tests the temperature in the ice at different depths
