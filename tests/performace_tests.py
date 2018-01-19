@@ -618,6 +618,31 @@ def test_alen_calculation_methods():
 
 
 
+def test_index_methods(zs):
+    def numpy_method(z):
+        cl = pyrex.IceModel()
+        indices = np.ones(len(z))
+        indices[z<=0] = cl.n0 + cl.k * (1 - np.exp(cl.a * z[z<=0]))
+        return indices
+
+    def for_method(z):
+        cl = pyrex.IceModel()
+        indices = np.ones(len(z))
+        for i, depth in enumerate(z):
+            if depth>0:
+                indices[i] = 1
+            else:
+                indices[i] = cl.n0 + cl.k * (1 - np.exp(cl.a * depth))
+        return indices
+
+    performance_test("numpy_method(zs)", number=100,
+                     use_globals={"numpy_method": numpy_method, "zs": zs})
+
+    performance_test("for_method(zs)", number=100,
+                     use_globals={"for_method": for_method, "zs": zs})
+
+
+
 def test_event_generation(energy):
     generator = pyrex.ShadowGenerator(10000, 10000, 2800, lambda: energy)
     print("energy =", energy)
@@ -931,6 +956,7 @@ if __name__ == '__main__':
     # test_atten_methods()
     # test_alen_differentiation_methods()
     # test_alen_calculation_methods()
+    test_index_methods(np.linspace(-100, 1000, 1000))
 
     # test_angle_calculation()
 
@@ -941,4 +967,4 @@ if __name__ == '__main__':
 
     # test_noise_generation()
 
-    test_antenna_noise_generation()
+    # test_antenna_noise_generation()

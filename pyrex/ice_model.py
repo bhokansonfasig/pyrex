@@ -33,11 +33,6 @@ class AntarcticIce:
 
         indices[z<=0] = cls.n0 + cls.k * (1 - np.exp(cls.a * z[z<=0]))
 
-        # for i, depth in enumerate(z):
-        #     if depth>0:
-        #         indices[i] = 1
-        #     else:
-        #         indices[i] = cls.n0 + cls.k * (1 - np.exp(cls.a * depth))
         return indices
 
     @staticmethod

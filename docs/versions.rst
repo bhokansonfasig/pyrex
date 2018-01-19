@@ -6,6 +6,8 @@ Version 1.3.0
 
 * Added and implemented ``ReflectedPathFinder`` class for rays which undergo total internal reflection and subsequently reach an antenna.
 
+* Improve performance of ice index calculated at many depths.
+
 
 
 Version 1.2.1
