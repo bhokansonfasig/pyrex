@@ -25,7 +25,7 @@ setup(
     author = about["__author__"],
     author_email = about["__author_email__"],
     license = about["__license__"],
-    packages = ['pyrex', 'pyrex.custom'],
+    packages = ['pyrex', 'pyrex.custom', 'pyrex.custom.irex'],
     python_requires = '>= 3.6',
     install_requires = [
         'numpy>=1.13',
