@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 1.3.0
+-------------
+
+* Added and implemented ``ReflectedPathFinder`` class for rays which undergo total internal reflection and subsequently reach an antenna.
+
+
+
 Version 1.2.1
 -------------
 
