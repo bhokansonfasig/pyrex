@@ -221,8 +221,8 @@ class ARAAntennaSystem(AntennaSystem):
     def trigger(self, signal):
         if self.antenna._noise_master is None:
             self.antenna.make_noise([0,1])
-        return (np.max(signal.values) >
-                -1 * self.power_threshold * self.antenna._noise_master.rms)
+        return (np.max(signal.values**2) >
+                -1 * self.power_threshold * self.antenna._noise_master.rms**2)
 
 
 
