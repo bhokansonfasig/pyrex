@@ -14,6 +14,7 @@ class EventKernel:
         self.gen = generator
         self.ice = ice_model
         self.ant_array = antennas
+        self.allow_reflection = True
 
     def event(self):
         """Generate particle, propagate signal through ice to antennas,
@@ -22,9 +23,12 @@ class EventKernel:
         n = self.ice.index(p.vertex[2])
         for ant in self.ant_array:
             pf = PathFinder(self.ice, p.vertex, ant.position)
-            rpf = ReflectedPathFinder(self.ice, p.vertex, ant.position)
+            all_paths = [pf]
+            if self.allow_reflection:
+                rpf = ReflectedPathFinder(self.ice, p.vertex, ant.position)
+                all_paths.append(rpf)
 
-            for path in [pf, rpf]:
+            for path in all_paths:
                 # If path is invalid, skip it
                 if not(path.exists):
                     continue
