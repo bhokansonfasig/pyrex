@@ -21,7 +21,12 @@ class NeutrinoInteraction:
         """Return the interaction length at a given energy E (GeV)."""
         return 1 / (AVOGADRO_NUMBER * self.cross_section(E))
 
+# Neutrino interactions from GQRS Ultrahigh-Energy Neutrino Interactions 1995
+# https://arxiv.org/pdf/hep-ph/9512364.pdf
 CC_NU = NeutrinoInteraction(2.69E-36, 0.402)
+NC_NU = NeutrinoInteraction(1.06e-36, 0.408)
+CC_NUBAR = NeutrinoInteraction(2.53e-36, 0.404)
+NC_NUBAR = NeutrinoInteraction(0.98e-36, 0.410)
 # FIXME: add other interactions
 
 class Particle:
