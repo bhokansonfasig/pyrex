@@ -14,11 +14,12 @@ class NeutrinoInteraction:
         self.p = p
 
     def cross_section(self, E):
-        """Return the cross section at a given energy E (GeV)."""
+        """Return the cross section (cm^2) at a given energy E (GeV)."""
         return self.c * E**self.p
 
     def interaction_length(self, E):
-        """Return the interaction length at a given energy E (GeV)."""
+        """Return the interaction length (cm) in water equivalent at a
+        given energy E (GeV)."""
         return 1 / (AVOGADRO_NUMBER * self.cross_section(E))
 
 # Neutrino interactions from GQRS Ultrahigh-Energy Neutrino Interactions 1995
