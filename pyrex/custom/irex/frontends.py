@@ -232,3 +232,65 @@ def basic_envelope_model(signal, cap=20e-12, res=500):
         v_out.append(v_c)
 
     return Signal(signal.times, v_out, value_type=Signal.ValueTypes.voltage)
+
+
+# Bridge rectifier envelope circuit:
+#
+#   +-----------+
+#   |           |
+#   |       +---+---+
+#   |       |       |
+#   |       ^       D1
+#   |      D3       v
+#   |       |       |
+#  Vin      +--gnd  +-----+---+---out
+#   |       |       |     |   |
+#   |      D4       ^
+#   |       v       D2   C1   R1
+#   |       |       |     |   |
+#   |       +---+---+     +---+
+#   |           |         |
+#   +-----------+        gnd
+#
+def bridge_rectifier_envelope_model(signal, cap=20e-12, res=500):
+    """Model of a diode bridge rectifier envelope circuit. Takes a
+    signal object as the input voltage and returns the output voltage signal
+    object."""
+    v_c = 0
+    v_out = []
+
+    r_d = 25
+    i_s = 3e-6
+    n = 1.06
+    v_t = 26e-3
+
+    # Terms which can be calculated ahead of time to save time in the loop
+    charge_exp = np.exp(-signal.dt/(res*cap))
+    discharge = i_s*res*(1-charge_exp)
+    lambert_factor = n*v_t*res/r_d*(1-charge_exp)
+    frac = i_s*r_d/n/v_t
+    lambert_exponent = np.log(frac) + frac
+
+    for v_in in np.abs(signal.values):
+        # Calculate exponent of exponential in lambert function instead of
+        # calculating exponential directly to avoid overflows
+        a = lambert_exponent + (v_in - v_c)/n/v_t/2
+        if a>100:
+            # If exponential in lambert function is large enough,
+            # use approximation of lambert function
+            # (doesn't save time, but does prevent overflows)
+            b = np.log(a)
+            lambert_term = a - b + b/a
+        else:
+            # Otherwise, use the lambert function directly
+            lambert_term = np.real(lambertw(np.exp(a)))
+            if np.isnan(lambert_term):
+                # Only seems to happen when np.exp(a) is very close to zero
+                # (so lambert_term will also be very close to zero)
+                lambert_term = 0
+
+        # Calculate voltage across capacitor after time dt
+        v_c = v_c*charge_exp - discharge + lambert_factor*lambert_term
+        v_out.append(v_c)
+
+    return Signal(signal.times, v_out, value_type=Signal.ValueTypes.voltage)

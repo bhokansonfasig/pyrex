@@ -7,7 +7,8 @@ from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem, Detector
 from pyrex.ice_model import IceModel
 
-from .frontends import pyspice, spice_circuits, basic_envelope_model
+from .frontends import (pyspice, spice_circuits,
+                        basic_envelope_model, bridge_rectifier_envelope_model)
 
 class IREXAntenna(Antenna):
     """Antenna to be used in IREX. Has a position (m),
@@ -106,9 +107,11 @@ class IREXAntennaSystem(AntennaSystem):
             if ("basic" in self.envelope_method or
                     self.envelope_method=="analytic"):
                 return basic_envelope_model(signal)
+            elif "bridge" in self.envelope_method:
+                return bridge_rectifier_envelope_model(signal)
             else:
-                raise ValueError("Only basic envelope circuit is modeled "+
-                                 "analytically")
+                raise ValueError("Only basic and bridge rectifier envelope "+
+                                 "circuits are modeled analytically")
 
         elif "spice" in self.envelope_method:
             if not(pyspice.__available__):
