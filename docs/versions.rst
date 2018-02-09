@@ -8,6 +8,8 @@ Version 1.3.1
 
 * Added diode bridge rectifier envelope circuit analytic model to ``irex.frontends`` and made it the default analytic envelope model in ``IREXAntennaSystem``.
 
+* Added ``allow_reflection`` attribute to ``EventKernel`` class to determine whether ``ReflectedPathFinder`` solutions should be allowed.
+
 
 
 Version 1.3.0
