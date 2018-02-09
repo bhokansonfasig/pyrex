@@ -104,11 +104,11 @@ class IREXAntennaSystem(AntennaSystem):
                           value_type=signal.value_type)
 
         elif "analytic" in self.envelope_method:
-            if ("basic" in self.envelope_method or
+            if ("bridge" in self.envelope_method or
                     self.envelope_method=="analytic"):
-                return basic_envelope_model(signal)
-            elif "bridge" in self.envelope_method:
                 return bridge_rectifier_envelope_model(signal)
+            elif "basic" in self.envelope_method:
+                return basic_envelope_model(signal)
             else:
                 raise ValueError("Only basic and bridge rectifier envelope "+
                                  "circuits are modeled analytically")
