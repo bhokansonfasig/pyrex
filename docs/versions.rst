@@ -1,6 +1,15 @@
 Version History
 ===============
 
+Version 1.3.1
+-------------
+
+* Changed neutrino interaction model to include all neutrino and anti-neutrino interactions rather than only charged-current neutrino (relevant for ``ShadowGenerator`` class).
+
+* Added diode bridge rectifier envelope circuit analytic model to ``irex.frontends`` and made it the default analytic envelope model in ``IREXAntennaSystem``.
+
+
+
 Version 1.3.0
 -------------
 
