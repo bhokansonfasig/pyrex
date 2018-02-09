@@ -28,7 +28,6 @@ CC_NU = NeutrinoInteraction(2.69E-36, 0.402)
 NC_NU = NeutrinoInteraction(1.06e-36, 0.408)
 CC_NUBAR = NeutrinoInteraction(2.53e-36, 0.404)
 NC_NUBAR = NeutrinoInteraction(0.98e-36, 0.410)
-# FIXME: add other interactions
 
 class Particle:
     """Class for storing particle attributes. Consists of a 3-D vertex (m),
@@ -58,8 +57,6 @@ class ShadowGenerator:
     detectors. Takes into accout Earth shadowing (sort of).
     energy_generator should be a function that returns a particle energy
     in GeV."""
-    # TODO: Properly account for NC and anti-neutrino interactions
-    # Currently the cross section is just the CC cross section
     def __init__(self, dx, dy, dz, energy_generator):
         self.dx = dx
         self.dy = dy
@@ -79,12 +76,18 @@ class ShadowGenerator:
         depth = -vtx[2]
         t = earth_model.slant_depth(nadir, depth)
         E = self.egen()
-        # FIXME: Add other interactions
-        inter_length = CC_NU.interaction_length(E)
+        # Interaction length is average of neutrino and antineutrino
+        # interaction lengths. Each of those is the inverted-sum of the
+        # CC and NC interaction lengths.
+        inter_length = 2/(1/CC_NU.interaction_length(E) +
+                          1/NC_NU.interaction_length(E) +
+                          1/CC_NUBAR.interaction_length(E) +
+                          1/NC_NUBAR.interaction_length(E))
         x = t / inter_length
         self.count += 1
         rand_exponential = np.random.exponential()
         if rand_exponential > x:
             return Particle(vtx, u, E)
         else:
+            # Particle was shadowed by the earth. Try again
             return self.create_particle()
