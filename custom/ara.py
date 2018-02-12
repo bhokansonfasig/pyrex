@@ -36,6 +36,8 @@ def read_response_data(filename):
                     raise ValueError("Cannot parse line: '"+line+"'")
                 freq *= float(words[-2])
                 freqs.add(freq)
+            elif line.startswith('SWR'):
+                swr = float(words[-1])
             elif len(words)==5 and words[0]!="Theta":
                 theta = int(words[0])
                 phi = int(words[1])
@@ -48,8 +50,8 @@ def read_response_data(filename):
 
 
 ARA_DATA_DIR = os.path.dirname(__file__)
-VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output.txt")
-HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output.txt")
+VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output_MY.txt")
+HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output_MY.txt")
 VPOL_RESPONSE, VPOL_FREQS = read_response_data(VPOL_DATA_FILE)
 HPOL_RESPONSE, HPOL_FREQS = read_response_data(HPOL_DATA_FILE)
 
