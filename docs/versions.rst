@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 1.4.0
+-------------
+
+* Implemented full ray tracing in the ``RayTracer`` and ``RayTracePath`` classes.
+
+
+
 Version 1.3.1
 -------------
 

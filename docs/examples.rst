@@ -457,6 +457,8 @@ PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos,
 Ray Tracing
 -----------
 
+As of PyREx version 1.4.0 full ray tracing is supported. However, this section has yet to be updated. Complain to Ben about it.
+
 While PyREx does not currently support full ray tracing, it does provide a ``PathFinder`` class which implements some basic ray analysis by checking for total internal reflection along a straight-line path. ``PathFinder`` takes an ice model and two points as arguments and provides a number of properties and methods regarding the path between the points. ::
 
     start = (0, 0, -100) # m

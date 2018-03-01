@@ -4,7 +4,7 @@ __modulename__ = "pyrex"
 
 __fullname__ = "PyREx"
 
-__version__ = "1.3.1"
+__version__ = "1.4.0"
 
 __long_description__ = """
 A Python package for simulation of Askaryan pulses and radio antennas in ice.
