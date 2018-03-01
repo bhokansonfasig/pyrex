@@ -16,7 +16,7 @@ class AntarcticIce:
     @classmethod
     def gradient(cls, z):
         """Returns the gradient of the index of refraction at depth z (m)."""
-        return np.array([0.0, -cls.k * cls.a * np.exp(cls.a * z)])
+        return np.array([0, 0, -cls.k * cls.a * np.exp(cls.a * z)])
 
     @classmethod
     def index(cls, z):
@@ -34,6 +34,25 @@ class AntarcticIce:
         indices[z<=0] = cls.n0 + cls.k * (1 - np.exp(cls.a * z[z<=0]))
 
         return indices
+
+    @classmethod
+    def depth_with_index(cls, n):
+        """Returns the depth z (m) at which the medium has the given index
+        of refraction (inverse of index function, assumes index function is
+        monotonic so only one solution exists).
+        Supports passing a numpy array of indices."""
+        try:
+            depths = np.zeros(len(n))
+        except TypeError:
+            # n is a scalar, so just return one value
+            if n<=cls.n0:
+                return 0
+            else:
+                return np.log(1 - (n-cls.n0)/cls.k) / cls.a
+
+        depths[n>cls.n0] = np.log(1 - (n[n>cls.n0]-cls.n0)/cls.k) / cls.a
+
+        return depths
 
     @staticmethod
     def temperature(z):
