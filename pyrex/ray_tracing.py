@@ -1,212 +1,13 @@
 """Module containing class for ray tracing through the ice."""
 
 import numpy as np
-from pyrex.internal_functions import normalize, lazy_mutable_class, lazy_property
+from pyrex.internal_functions import (normalize, ConvergenceError,
+                                      LazyMutableClass, lazy_property)
 from pyrex.ice_model import IceModel
 
 
-@lazy_mutable_class("from_point", "to_point", "ice", "dz")
-class RayTracer:
-    """Class for proper ray tracing."""
-    def __init__(self, from_point, to_point, ice_model=IceModel, dz=0.001):
-        self.from_point = np.array(from_point)
-        self.to_point = np.array(to_point)
-        self.ice = ice_model
-        self.dz = dz
 
-    @property
-    def z_turn_proximity(self):
-        return self.dz/10
-
-    # Calculations performed launching from low to high
-    # (better for numerical error)
-    @property
-    def z0(self):
-        return min([self.from_point[2], self.to_point[2]])
-
-    @property
-    def z1(self):
-        return max([self.from_point[2], self.to_point[2]])
-
-    @lazy_property
-    def n0(self):
-        return self.ice.index(self.z0)
-
-    @lazy_property
-    def rho(self):
-        u = self.to_point - self.from_point
-        return np.sqrt(u[0]**2 + u[1]**2)
-
-    @lazy_property
-    def max_angle(self):
-        return np.arcsin(self.ice.index(self.z1)/self.n0)
-
-    @lazy_property
-    def peak_angle(self):
-        base_tolerance = np.log10(self.dz)
-        for tolerance in np.logspace(base_tolerance, base_tolerance+3, num=4):
-            for angle_step in np.logspace(-3, 0, num=4):
-                r_func = lambda angle: self._indirect_r_prime(angle, angle_step)
-                try:
-                    peak_angle = self.binary_angle_search(0, r_func,
-                                                          0.1, self.max_angle,
-                                                          tolerance=tolerance)
-                except ValueError:
-                    continue
-                else:
-                    if peak_angle>np.pi/2:
-                        peak_angle = np.pi - peak_angle
-                    return peak_angle
-
-    @lazy_property
-    def direct_r_max(self):
-        z_turn = self.ice.depth_with_index(self.n0 * np.sin(self.max_angle))
-        return self._direct_r(self.max_angle,
-                              force_z1=z_turn-self.z_turn_proximity)
-
-    @lazy_property
-    def indirect_r_max(self):
-        return self._indirect_r(self.peak_angle)
-
-    @lazy_property
-    def exists(self):
-        return np.any(self.expected_solutions)
-
-    @lazy_property
-    def expected_solutions(self):
-        if self.rho<self.direct_r_max:
-            return [True, False, True]
-        elif self.rho<self.indirect_r_max:
-            return [False, True, True]
-        else:
-            return [False, False, False]
-
-    @lazy_property
-    def solutions(self):
-        """Calculate existing rays between the two points."""
-        angles = [
-            self.direct_angle,
-            self.indirect_angle_1,
-            self.indirect_angle_2
-        ]
-
-        return [RayTracePath(self, angle, direct=(i==0))
-                for i, angle, exists in zip(range(3), angles,
-                                            self.expected_solutions)
-                if exists and angle is not None]
-
-
-    def _direct_r(self, angle, force_z1=None):
-        if force_z1 is not None:
-            z1 = force_z1
-        else:
-            z1 = self.z1
-        n_zs = int(np.abs((z1-self.z0)/self.dz))
-        zs, dz = np.linspace(self.z0, z1, n_zs+1, retstep=True)
-        integrand = np.tan(np.arcsin(np.sin(angle) *
-                                     self.n0/self.ice.index(zs)))
-        return np.trapz(integrand, dx=dz)
-
-    def _indirect_r(self, angle):
-        z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
-        n_zs_1 = int(np.abs((z_turn-self.z_turn_proximity-self.z0)/self.dz))
-        zs_1, dz_1 = np.linspace(self.z0, z_turn-self.z_turn_proximity,
-                                 n_zs_1+1, retstep=True)
-        integrand_1 = np.tan(np.arcsin(np.sin(angle) *
-                                       self.n0/self.ice.index(zs_1)))
-        n_zs_2 = int(np.abs((z_turn-self.z_turn_proximity-self.z1)/self.dz))
-        zs_2, dz_2 = np.linspace(z_turn-self.z_turn_proximity, self.z1,
-                                 n_zs_2+1, retstep=True)
-        integrand_2 = np.tan(np.arcsin(np.sin(angle) *
-                                       self.n0/self.ice.index(zs_2)))
-        return (np.trapz(integrand_1, dx=dz_1) +
-                np.trapz(integrand_2, dx=-dz_2))
-
-    def _indirect_r_prime(self, angle, d_angle=0.001):
-        return (self._indirect_r(angle+d_angle) -
-                self._indirect_r(angle)) / d_angle
-
-
-    def _get_launch_angle(self, r_function, min_angle=0, max_angle=90):
-        launch_angle = None
-        tolerance = self.dz
-        while launch_angle is None:
-            try:
-                launch_angle = self.binary_angle_search(self.rho, r_function,
-                                                        min_angle, max_angle,
-                                                        tolerance=tolerance)
-            except ValueError:
-                tolerance *= 10
-
-        # Convert to true launch angle from self.from_point
-        # rather than from lower point (self.z0)
-        return np.arcsin(np.sin(launch_angle) *
-                         self.n0 / self.ice.index(self.from_point[2]))
-
-
-    @lazy_property
-    def direct_angle(self):
-        if self.expected_solutions[0]:
-            launch_angle = self._get_launch_angle(self._direct_r,
-                                                  max_angle=self.max_angle)
-            if self.from_point[2] > self.to_point[2]:
-                launch_angle = np.pi - launch_angle
-            return launch_angle
-        else:
-            return None
-
-    @lazy_property
-    def indirect_angle_1(self):
-        if self.expected_solutions[1]:
-            return self._get_launch_angle(self._indirect_r,
-                                          min_angle=self.peak_angle,
-                                          max_angle=self.max_angle)
-        else:
-            return None
-
-    @lazy_property
-    def indirect_angle_2(self):
-        if self.expected_solutions[2]:
-            if self.expected_solutions[1]:
-                max_angle = self.peak_angle
-            else:
-                max_angle = self.max_angle
-            return self._get_launch_angle(self._indirect_r,
-                                          max_angle=max_angle)
-        else:
-            return None
-
-
-    def binary_angle_search(self, true_r, r_function, min_angle, max_angle,
-                            angle_guess=None, tolerance=0.001,
-                            max_iterations=100):
-        angle = angle_guess if angle_guess is not None else (max_angle + min_angle)/2
-
-        r = r_function(angle) - true_r
-        r_min = r_function(min_angle) - true_r
-
-        i = 0
-        prev_angle = None
-        while not np.isclose(r, 0, atol=tolerance, rtol=0) and angle!=prev_angle:
-            prev_angle = angle
-            i += 1
-            if i>=max_iterations:
-                raise ValueError("Didn't converge fast enough")
-
-            if (r<=0)==(r_min<=0):
-                min_angle = angle
-                r_min = r
-            else:
-                max_angle = angle
-
-            angle = (max_angle + min_angle) / 2
-            r = r_function(angle) - true_r
-
-        return angle
-
-
-@lazy_mutable_class("from_point", "to_point", "theta0", "ice", "dz", "direct")
-class RayTracePath:
+class RayTracePath(LazyMutableClass):
     """Class for storing a single ray-trace solution betwen points."""
     def __init__(self, parent_tracer, launch_angle, direct):
         self.from_point = parent_tracer.from_point
@@ -215,6 +16,7 @@ class RayTracePath:
         self.ice = parent_tracer.ice
         self.dz = parent_tracer.dz
         self.direct = direct
+        super().__init__()
 
     @property
     def z_turn_proximity(self):
@@ -350,6 +152,220 @@ class RayTracePath:
         ys = self.from_point[1] + rs*np.sin(self.phi)
 
         return xs, ys, zs
+
+
+
+class RayTracer(LazyMutableClass):
+    """Class for proper ray tracing. Most properties lazily evaluated to save
+    on re-computation time."""
+    solution_class = RayTracePath
+
+    def __init__(self, from_point, to_point, ice_model=IceModel, dz=0.001):
+        self.from_point = np.array(from_point)
+        self.to_point = np.array(to_point)
+        self.ice = ice_model
+        self.dz = dz
+        super().__init__()
+
+    @property
+    def z_turn_proximity(self):
+        return self.dz/10
+
+    # Calculations performed launching from low to high
+    # (better for numerical error)
+    @property
+    def z0(self):
+        return min([self.from_point[2], self.to_point[2]])
+
+    @property
+    def z1(self):
+        return max([self.from_point[2], self.to_point[2]])
+
+    @lazy_property
+    def n0(self):
+        return self.ice.index(self.z0)
+
+    @lazy_property
+    def rho(self):
+        u = self.to_point - self.from_point
+        return np.sqrt(u[0]**2 + u[1]**2)
+
+    @lazy_property
+    def max_angle(self):
+        return np.arcsin(self.ice.index(self.z1)/self.n0)
+
+    @lazy_property
+    def peak_angle(self):
+        peak_angle = None
+        tolerance = self.dz
+        while peak_angle is None:
+            for angle_step in np.logspace(-3, 0, num=4):
+                r_func = lambda angle: self._indirect_r_prime(angle, angle_step)
+                try:
+                    # FIXME: Is min_angle=0.1 necessary?
+                    peak_angle = self.angle_search(0, r_func,
+                                                   0.1, self.max_angle,
+                                                   tolerance=tolerance)
+                except ConvergenceError:
+                    continue
+                else:
+                    if peak_angle>np.pi/2:
+                        peak_angle = np.pi - peak_angle
+                    return peak_angle
+            tolerance *= 10
+            if tolerance>np.abs(self.z1-self.z0):
+                raise ConvergenceError("peak_angle calculation failed to converge even for exceptionally high tolerance")
+
+    @lazy_property
+    def direct_r_max(self):
+        z_turn = self.ice.depth_with_index(self.n0 * np.sin(self.max_angle))
+        return self._direct_r(self.max_angle,
+                              force_z1=z_turn-self.z_turn_proximity)
+
+    @lazy_property
+    def indirect_r_max(self):
+        return self._indirect_r(self.peak_angle)
+
+    @lazy_property
+    def exists(self):
+        return np.any(self.expected_solutions)
+
+    @lazy_property
+    def expected_solutions(self):
+        if self.rho<self.direct_r_max:
+            return [True, False, True]
+        elif self.rho<self.indirect_r_max:
+            return [False, True, True]
+        else:
+            return [False, False, False]
+
+    @lazy_property
+    def solutions(self):
+        """Calculate existing rays between the two points."""
+        angles = [
+            self.direct_angle,
+            self.indirect_angle_1,
+            self.indirect_angle_2
+        ]
+
+        return [self.solution_class(self, angle, direct=(i==0))
+                for i, angle, exists in zip(range(3), angles,
+                                            self.expected_solutions)
+                if exists and angle is not None]
+
+
+    def _direct_r(self, angle, force_z1=None):
+        if force_z1 is not None:
+            z1 = force_z1
+        else:
+            z1 = self.z1
+        n_zs = int(np.abs((z1-self.z0)/self.dz))
+        zs, dz = np.linspace(self.z0, z1, n_zs+1, retstep=True)
+        integrand = np.tan(np.arcsin(np.sin(angle) *
+                                     self.n0/self.ice.index(zs)))
+        return np.trapz(integrand, dx=dz)
+
+    def _indirect_r(self, angle):
+        z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
+        n_zs_1 = int(np.abs((z_turn-self.z_turn_proximity-self.z0)/self.dz))
+        zs_1, dz_1 = np.linspace(self.z0, z_turn-self.z_turn_proximity,
+                                 n_zs_1+1, retstep=True)
+        integrand_1 = np.tan(np.arcsin(np.sin(angle) *
+                                       self.n0/self.ice.index(zs_1)))
+        n_zs_2 = int(np.abs((z_turn-self.z_turn_proximity-self.z1)/self.dz))
+        zs_2, dz_2 = np.linspace(z_turn-self.z_turn_proximity, self.z1,
+                                 n_zs_2+1, retstep=True)
+        integrand_2 = np.tan(np.arcsin(np.sin(angle) *
+                                       self.n0/self.ice.index(zs_2)))
+        return (np.trapz(integrand_1, dx=dz_1) +
+                np.trapz(integrand_2, dx=-dz_2))
+
+    def _indirect_r_prime(self, angle, d_angle=0.001):
+        return (self._indirect_r(angle+d_angle) -
+                self._indirect_r(angle)) / d_angle
+
+
+    def _get_launch_angle(self, r_function, min_angle=0, max_angle=90):
+        launch_angle = None
+        tolerance = self.dz
+        while launch_angle is None:
+            try:
+                launch_angle = self.angle_search(self.rho, r_function,
+                                                 min_angle, max_angle,
+                                                 tolerance=tolerance)
+            except ConvergenceError:
+                tolerance *= 10
+                if tolerance>np.abs(self.z1-self.z0):
+                    raise ConvergenceError("launch_angle calculation failed to converge even for exceptionally high tolerance")
+
+        # Convert to true launch angle from self.from_point
+        # rather than from lower point (self.z0)
+        return np.arcsin(np.sin(launch_angle) *
+                         self.n0 / self.ice.index(self.from_point[2]))
+
+
+    @lazy_property
+    def direct_angle(self):
+        if self.expected_solutions[0]:
+            launch_angle = self._get_launch_angle(self._direct_r,
+                                                  max_angle=self.max_angle)
+            if self.from_point[2] > self.to_point[2]:
+                launch_angle = np.pi - launch_angle
+            return launch_angle
+        else:
+            return None
+
+    @lazy_property
+    def indirect_angle_1(self):
+        if self.expected_solutions[1]:
+            return self._get_launch_angle(self._indirect_r,
+                                          min_angle=self.peak_angle,
+                                          max_angle=self.max_angle)
+        else:
+            return None
+
+    @lazy_property
+    def indirect_angle_2(self):
+        if self.expected_solutions[2]:
+            if self.expected_solutions[1]:
+                max_angle = self.peak_angle
+            else:
+                max_angle = self.max_angle
+            return self._get_launch_angle(self._indirect_r,
+                                          max_angle=max_angle)
+        else:
+            return None
+
+    @staticmethod
+    def binary_angle_search(true_r, r_function, min_angle, max_angle,
+                            angle_guess=None, tolerance=0.001,
+                            max_iterations=100):
+        angle = angle_guess if angle_guess is not None else (max_angle + min_angle)/2
+
+        r = r_function(angle) - true_r
+        r_min = r_function(min_angle) - true_r
+
+        i = 0
+        prev_angle = None
+        while not np.isclose(r, 0, atol=tolerance, rtol=0) and angle!=prev_angle:
+            prev_angle = angle
+            i += 1
+            if i>=max_iterations:
+                raise ConvergenceError("Didn't converge fast enough")
+
+            if (r<=0)==(r_min<=0):
+                min_angle = angle
+                r_min = r
+            else:
+                max_angle = angle
+
+            angle = (max_angle + min_angle) / 2
+            r = r_function(angle) - true_r
+
+        return angle
+
+    # Default angle search method
+    angle_search = binary_angle_search
 
 
 

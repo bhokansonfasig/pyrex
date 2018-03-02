@@ -27,39 +27,41 @@ def lazy_property(fn):
     def _lazy_property(self):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, fn(self))
+            # print("Setting", attr_name)
         return getattr(self, attr_name)
 
     return _lazy_property
 
 
-# Note: additional time added in setting attribute of lazy_mutable_class
+# Note: additional time added in setting attribute of LazyMutableClass
 # has not been tested, but it shouldn't be significant compared to the time
-# saved in lazy_evaluation of properties
-def lazy_mutable_class(*static_attributes):
-    """Decorator which allows some class properties to be lazily evaluated as
-    long as the specified static attributes are not changed."""
-    def lazy_class_decorator(cls):
-        """Decorator for lazy class"""
-        class LazyClass:
-            def __init__(self, *args, **kwargs):
-                self._wrapped = cls(*args, **kwargs)
+# saved in lazy evaluation of properties
+class LazyMutableClass:
+    def __init__(self, static_attributes=None):
+        # If static_attributes not specified, set to any currently-set attrs
+        # Allows for easy setting of static attributes in subclasses
+        # by simply delaying the super().__init__ call
+        if static_attributes is None:
+            self._static_attrs = [attr for attr in self.__dict__
+                                  if not attr.startswith("_")]
+        else:
+            self._static_attrs = static_attributes
 
-            def __getattribute__(self, name):
-                if name=="_wrapped":
-                    return super().__getattribute__(name)
-                else:
-                    return self._wrapped.__getattribute__(name)
+    def __setattr__(self, name, value):
+        # If static attributes have not yet been set, just use default setattr
+        if "_static_attrs" not in self.__dict__:
+            super().__setattr__(name, value)
 
-            def __setattr__(self, name, value):
-                if name in static_attributes:
-                    # print("Clearing all lazy attributes")
-                    lazy_attributes = [attr for attr in self._wrapped.__dict__
-                                       if attr.startswith("_lazy_")]
-                    for lazy_attr in lazy_attributes:
-                        delattr(self._wrapped, lazy_attr)
+        elif name in self._static_attrs:
+            lazy_attributes = [attr for attr in self.__dict__
+                               if attr.startswith("_lazy_")]
+            for lazy_attr in lazy_attributes:
+                # print("Clearing", lazy_attr)
+                delattr(self, lazy_attr)
 
-                super().__setattr__(name, value)
+        super().__setattr__(name, value)
 
-        return LazyClass
 
-    return lazy_class_decorator
+
+class ConvergenceError(Exception):
+    pass
