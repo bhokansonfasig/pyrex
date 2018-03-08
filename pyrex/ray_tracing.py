@@ -158,6 +158,135 @@ class RayTracePath(LazyMutableClass):
 
 
 
+class SpecializedRayTracePath(RayTracePath):
+    """Class for storing a single ray-trace solution betwen points.
+    Calculations performed using true integral evaluation.
+    Ice model must use methods inherited from pyrex.AntarcticIce"""
+    def z_integral(self, integrand):
+        if not(isinstance(self.ice, AntarcticIce) or
+               (isinstance(self.ice, type) and
+                issubclass(self.ice, AntarcticIce))):
+            raise TypeError("Ice model must inherit methods from "+
+                             "pyrex.AntarcticIce")
+        beta = np.sin(self.theta0) * self.n0
+        int_z0 = integrand(self.z0, beta, self.ice)
+        int_z1 = integrand(self.z1, beta, self.ice)
+        if self.direct:
+            return int_z1 - int_z0
+        else:
+            int_zturn = integrand(self.z_turn, beta, self.ice)
+            return (int_zturn - int_z0) + (int_zturn - int_z1)
+
+    @staticmethod
+    def _integral_shortcuts(z, beta, ice):
+        """Useful pre-calculated substitutions for integrations."""
+        with np.errstate(invalid="ignore"):
+            alpha = ice.n0**2 - beta**2
+            n_z = ice.n0 - ice.k*np.exp(ice.a*z)
+            gamma = n_z**2 - beta**2
+            log_term_1 = ice.n0*n_z - beta**2 - np.sqrt(alpha*gamma)
+            log_term_2 = -n_z - np.sqrt(gamma)
+        return alpha, n_z, gamma, log_term_1, -log_term_2
+
+    @classmethod
+    def _distance_integral(cls, z, beta, ice):
+        """Indefinite z-integral of tan(arcsin(beta/n(z))), which between
+        two z values gives the radial distance of the direct path between the
+        z values."""
+        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return np.where(beta==0, 0,
+                            beta / np.sqrt(alpha) * (-z + np.log(log_1)/ice.a))
+
+    @classmethod
+    def _distance_integral_derivative(cls, z, beta, ice):
+        """Beta derivative of the distance integral for finding maximum
+        distance integral value as a function of launch angle."""
+        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        term_1 = (1+beta**2/alpha)/np.sqrt(alpha)*(-z + np.log(log_1) / ice.a)
+        term_2 = ((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
+                  (ice.a*alpha*np.sqrt(gamma)*log_1))
+        # When gamma==0, term_2 is infinity
+        # In testing, it appears dropping this term when gamma==0 results in
+        # approximately the correct solution, though it hasn't been proven why
+        # TODO: Fix small errors with this assumption
+        return np.where(gamma==0, term_1, term_1+term_2)
+
+    @classmethod
+    def _pathlen_integral(cls, z, beta, ice):
+        """Indefinite z-integral of sec(arcsin(beta/n(z))), which between
+        two z values gives the path length of the direct path between the
+        z values."""
+        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        return np.where(beta==0, z,
+                        (ice.n0 / np.sqrt(alpha) * (-z + np.log(log_1) / ice.a)
+                         + np.log(log_2) / ice.a))
+
+    @classmethod
+    def _tof_integral(cls, z, beta, ice):
+        """Indefinite z-integral of n(z)/c*sec(arcsin(beta/n(z))), which between
+        two z values gives the time of flight of the direct path between the
+        z values."""
+        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        return np.where(beta==0, ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
+                        (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
+                           ice.n0**2*np.log(log_1)/np.sqrt(alpha)) / ice.a) -
+                         z*ice.n0**2/np.sqrt(alpha)) / 3e8)
+
+    @lazy_property
+    def path_length(self):
+        """Length of the path (m)."""
+        return np.abs(self.z_integral(self._pathlen_integral))
+
+    @lazy_property
+    def tof(self):
+        """Time of flight (s) along the path."""
+        return np.abs(self.z_integral(self._tof_integral))
+
+    def attenuation(self, f):
+        """Returns the attenuation factor for a signal of frequency f (Hz)
+        traveling along the path. Supports passing a list of frequencies."""
+        fa = np.abs(f)
+        return np.exp(-super().z_integral(lambda z: 1 / np.cos(self.theta(z)) /
+                                          self.ice.attenuation_length(z, fa)))
+
+    @lazy_property
+    def coordinates(self):
+        beta = np.sin(self.theta0) * self.n0
+        int_z0 = self._distance_integral(self.z0, beta, self.ice)
+
+        if self.direct:
+            n_zs = int(np.abs(self.z1-self.z0)/self.dz)
+            zs = np.linspace(self.z0, self.z1, n_zs+1)
+            int_zs = self._distance_integral(zs, beta, self.ice)
+            rs = int_zs - int_z0
+
+        else:
+            n_zs_1 = int(np.abs(self.z_turn-self.z0)/self.dz)
+            zs_1 = np.linspace(self.z0, self.z_turn, n_zs_1, endpoint=False)
+            int_zs_1 = self._distance_integral(zs_1, beta, self.ice)
+            rs_1 = int_zs_1 - int_z0
+
+            int_zturn = self._distance_integral(self.z_turn, beta, self.ice)
+            r_turn = int_zturn - int_z0
+
+            n_zs_2 = int(np.abs(self.z_turn-self.z1)/self.dz)
+            zs_2 = np.linspace(self.z_turn, self.z1, n_zs_2+1)
+            int_zs_2 = self._distance_integral(zs_2, beta, self.ice)
+            rs_2 = r_turn + (int_zturn - int_zs_2)
+
+            rs = np.concatenate((rs_1, rs_2))
+            zs = np.concatenate((zs_1, zs_2))
+
+        xs = self.from_point[0] + rs*np.cos(self.phi)
+        ys = self.from_point[1] + rs*np.sin(self.phi)
+
+        return xs, ys, zs
+
+
+
+
+
 class RayTracer(LazyMutableClass):
     """Class for proper ray tracing. Calculations performed by integrating
     z-steps with size dz. Most properties lazily evaluated to save
@@ -373,136 +502,6 @@ class RayTracer(LazyMutableClass):
 
     # Default angle search method
     angle_search = binary_angle_search
-
-
-
-class SpecializedRayTracePath(RayTracePath):
-    """Class for storing a single ray-trace solution betwen points.
-    Calculations performed using true integral evaluation.
-    Ice model must use methods inherited from pyrex.AntarcticIce"""
-    def z_integral(self, integrand):
-        if not(isinstance(self.ice, AntarcticIce) or
-               (isinstance(self.ice, type) and
-                issubclass(self.ice, AntarcticIce))):
-            raise TypeError("Ice model must inherit methods from "+
-                             "pyrex.AntarcticIce")
-        beta = np.sin(self.theta0) * self.n0
-        int_z0 = integrand(self.z0, beta, self.ice)
-        int_z1 = integrand(self.z1, beta, self.ice)
-        if self.direct:
-            return int_z1 - int_z0
-        else:
-            int_zturn = integrand(self.z_turn, beta, self.ice)
-            return (int_zturn - int_z0) + (int_zturn - int_z1)
-
-    @staticmethod
-    def _integral_shortcuts(z, beta, ice):
-        """Useful pre-calculated substitutions for integrations."""
-        with np.errstate(invalid="ignore"):
-            alpha = ice.n0**2 - beta**2
-            n_z = ice.n0 - ice.k*np.exp(ice.a*z)
-            gamma = n_z**2 - beta**2
-            log_term_1 = ice.n0*n_z - beta**2 - np.sqrt(alpha*gamma)
-            log_term_2 = -n_z - np.sqrt(gamma)
-        return alpha, n_z, gamma, log_term_1, -log_term_2
-
-    @classmethod
-    def _distance_integral(cls, z, beta, ice):
-        """Indefinite z-integral of tan(arcsin(beta/n(z))), which between
-        two z values gives the radial distance of the direct path between the
-        z values."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            return np.where(beta==0, 0,
-                            beta / np.sqrt(alpha) * (-z + np.log(log_1) / ice.a))
-
-    @classmethod
-    def _distance_integral_derivative(cls, z, beta, ice):
-        """Beta derivative of the distance integral for finding maximum
-        distance integral value as a function of launch angle."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
-        term_1 = (1+beta**2/alpha)/np.sqrt(alpha)*(-z + np.log(log_1) / ice.a)
-        term_2 = ((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
-                  (ice.a*alpha*np.sqrt(gamma)*log_1))
-        # When gamma==0, term_2 is infinity
-        # In testing, it appears dropping this term when gamma==0 results in
-        # approximately the correct solution, though it hasn't been proven why
-        # TODO: Fix small errors with this assumption
-        return np.where(gamma==0, term_1, term_1+term_2)
-
-    @classmethod
-    def _pathlen_integral(cls, z, beta, ice):
-        """Indefinite z-integral of sec(arcsin(beta/n(z))), which between
-        two z values gives the path length of the direct path between the
-        z values."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
-        return (ice.n0 / np.sqrt(alpha) * (-z + np.log(log_1) / ice.a)
-                + np.log(log_2) / ice.a)
-
-    @classmethod
-    def _tof_integral(cls, z, beta, ice):
-        """Indefinite z-integral of n(z)/c*sec(arcsin(beta/n(z))), which between
-        two z values gives the time of flight of the direct path between the
-        z values."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
-        return (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
-                  ice.n0**2*np.log(log_1)/np.sqrt(alpha)) / ice.a) -
-                z*ice.n0**2/np.sqrt(alpha)) / 3e8
-
-    @lazy_property
-    def path_length(self):
-        """Length of the path (m)."""
-        return np.abs(self.z_integral(self._pathlen_integral))
-
-    @lazy_property
-    def tof(self):
-        """Time of flight (s) along the path."""
-        return np.abs(self.z_integral(self._tof_integral))
-
-    def attenuation(self, f):
-        """Returns the attenuation factor for a signal of frequency f (Hz)
-        traveling along the path. Supports passing a list of frequencies."""
-        fa = np.abs(f)
-        return np.exp(-super().z_integral(lambda z: 1 / np.cos(self.theta(z)) /
-                                          self.ice.attenuation_length(z, fa)))
-
-    def propagate(self, signal):
-        """Applies attenuation to the signal along the path."""
-        signal.filter_frequencies(self.attenuation)
-        signal.times += self.tof
-
-    @lazy_property
-    def coordinates(self):
-        beta = np.sin(self.theta0) * self.n0
-        int_z0 = self._distance_integral(self.z0, beta, self.ice)
-
-        if self.direct:
-            n_zs = int(np.abs(self.z1-self.z0)/self.dz)
-            zs = np.linspace(self.z0, self.z1, n_zs+1)
-            int_zs = self._distance_integral(zs, beta, self.ice)
-            rs = int_zs - int_z0
-
-        else:
-            n_zs_1 = int(np.abs(self.z_turn-self.z0)/self.dz)
-            zs_1 = np.linspace(self.z0, self.z_turn, n_zs_1, endpoint=False)
-            int_zs_1 = self._distance_integral(zs_1, beta, self.ice)
-            rs_1 = int_zs_1 - int_z0
-
-            int_zturn = self._distance_integral(self.z_turn, beta, self.ice)
-            r_turn = int_zturn - int_z0
-
-            n_zs_2 = int(np.abs(self.z_turn-self.z1)/self.dz)
-            zs_2 = np.linspace(self.z_turn, self.z1, n_zs_2+1)
-            int_zs_2 = self._distance_integral(zs_2, beta, self.ice)
-            rs_2 = r_turn + (int_zturn - int_zs_2)
-
-            rs = np.concatenate((rs_1, rs_2))
-            zs = np.concatenate((zs_1, zs_2))
-
-        xs = self.from_point[0] + rs*np.cos(self.phi)
-        ys = self.from_point[1] + rs*np.sin(self.phi)
-
-        return xs, ys, zs
 
 
 
