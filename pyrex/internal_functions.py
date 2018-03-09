@@ -60,8 +60,3 @@ class LazyMutableClass:
                 delattr(self, lazy_attr)
 
         super().__setattr__(name, value)
-
-
-
-class ConvergenceError(Exception):
-    pass

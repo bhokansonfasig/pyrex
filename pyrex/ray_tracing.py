@@ -1,8 +1,8 @@
 """Module containing class for ray tracing through the ice."""
 
 import numpy as np
-from pyrex.internal_functions import (normalize, ConvergenceError,
-                                      LazyMutableClass, lazy_property)
+import scipy.optimize
+from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
 from pyrex.ice_model import AntarcticIce, IceModel
 
 
@@ -162,20 +162,50 @@ class SpecializedRayTracePath(RayTracePath):
     """Class for storing a single ray-trace solution betwen points.
     Calculations performed using true integral evaluation.
     Ice model must use methods inherited from pyrex.AntarcticIce"""
+    uniformity_factor = 0.9999
+
+    @lazy_property
+    def valid_ice_model(self):
+        return ((isinstance(self.ice, type) and
+                 issubclass(self.ice, AntarcticIce))
+                or isinstance(self.ice, AntarcticIce))
+
+    @lazy_property
+    def z_uniform(self):
+        return self.ice.depth_with_index(self.ice.n0 * self.uniformity_factor)
+
     def z_integral(self, integrand):
-        if not(isinstance(self.ice, AntarcticIce) or
-               (isinstance(self.ice, type) and
-                issubclass(self.ice, AntarcticIce))):
+        if not self.valid_ice_model:
             raise TypeError("Ice model must inherit methods from "+
                              "pyrex.AntarcticIce")
         beta = np.sin(self.theta0) * self.n0
-        int_z0 = integrand(self.z0, beta, self.ice)
-        int_z1 = integrand(self.z1, beta, self.ice)
+        int_z0 = integrand(self.z0, beta, self.ice, deep=self.z0<self.z_uniform)
+        int_z1 = integrand(self.z1, beta, self.ice, deep=self.z1<self.z_uniform)
         if self.direct:
-            return int_z1 - int_z0
+            if (self.z0<self.z_uniform)==(self.z1<self.z_uniform):
+                # z0 and z1 on the same side of z_uniform
+                return int_z1 - int_z0
+            else:
+                return (int_z1 - int_z0 +
+                        integrand(self.z_uniform, beta, self.ice, deep=True) -
+                        integrand(self.z_uniform, beta, self.ice, deep=False))
         else:
             int_zturn = integrand(self.z_turn, beta, self.ice)
-            return (int_zturn - int_z0) + (int_zturn - int_z1)
+            if (self.z0<self.z_uniform)==(self.z_turn<self.z_uniform):
+                # z0 and z_turn on the same side of z_uniform
+                int_1 = int_zturn - int_z0
+            else:
+                int_1 = (int_zturn - int_z0 +
+                         integrand(self.z_uniform, beta, self.ice, deep=True) -
+                         integrand(self.z_uniform, beta, self.ice, deep=False))
+            if (self.z1<self.z_uniform)==(self.z_turn<self.z_uniform):
+                # z1 and z_turn on the same side of z_uniform
+                int_2 = int_zturn - int_z1
+            else:
+                int_2 = (int_zturn - int_z1 +
+                         integrand(self.z_uniform, beta, self.ice, deep=True) -
+                         integrand(self.z_uniform, beta, self.ice, deep=False))
+            return int_1 + int_2
 
     @staticmethod
     def _integral_shortcuts(z, beta, ice):
@@ -189,45 +219,67 @@ class SpecializedRayTracePath(RayTracePath):
         return alpha, n_z, gamma, log_term_1, -log_term_2
 
     @classmethod
-    def _distance_integral(cls, z, beta, ice):
+    def _distance_integral(cls, z, beta, ice, deep=False):
         """Indefinite z-integral of tan(arcsin(beta/n(z))), which between
         two z values gives the radial distance of the direct path between the
         z values."""
         alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        if deep:
+            return beta * z / np.sqrt(alpha)
         with np.errstate(divide="ignore", invalid="ignore"):
             return np.where(beta==0, 0,
                             beta / np.sqrt(alpha) * (-z + np.log(log_1)/ice.a))
 
     @classmethod
-    def _distance_integral_derivative(cls, z, beta, ice):
+    def _distance_integral_derivative(cls, z, beta, ice, deep=False):
         """Beta derivative of the distance integral for finding maximum
-        distance integral value as a function of launch angle."""
+        distance integral value as a function of launch angle.
+        This function actually gives the integral from z to the turning point
+        z_turn=ice.depth_with_index(beta), since that is what's needed for
+        finding the peak angle."""
         alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
-        term_1 = (1+beta**2/alpha)/np.sqrt(alpha)*(-z + np.log(log_1) / ice.a)
-        term_2 = ((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
-                  (ice.a*alpha*np.sqrt(gamma)*log_1))
-        # When gamma==0, term_2 is infinity
-        # In testing, it appears dropping this term when gamma==0 results in
-        # approximately the correct solution, though it hasn't been proven why
-        # TODO: Fix small errors with this assumption
-        return np.where(gamma==0, term_1, term_1+term_2)
+        if deep:
+            return z / np.sqrt(alpha)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            term_1 = ((1+beta**2/alpha)/np.sqrt(alpha) * 
+                      (z + np.log(beta*ice.k/log_1) / ice.a))
+            term_2 = -(beta**2+ice.n0*n_z) / (ice.a*alpha*np.sqrt(gamma))
+        return np.where(beta==0, np.inf, term_1+term_2)
+
+        # If the value of the integral just at z is needed (e.g. you want the
+        # correct values when reflecting off the surface of the ice),
+        # then use the terms below instead
+        # Be warned, however, that this gives the wrong value when turning over
+        # below the surface of the ice. The values get closer if only term_1
+        # is returned in cases where gamma==0 (turning over in ice),
+        # though the values are still slightly off
+        # if deep:
+        #     return z / np.sqrt(alpha)
+        # term_1 = (1+beta**2/alpha)/np.sqrt(alpha)*(-z + np.log(log_1) / ice.a)
+        # term_2 = ((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
+        #           (ice.a*alpha*np.sqrt(gamma)*log_1))
+        # return np.where(gamma==0, term_1, term_1+term_2)
 
     @classmethod
-    def _pathlen_integral(cls, z, beta, ice):
+    def _pathlen_integral(cls, z, beta, ice, deep=False):
         """Indefinite z-integral of sec(arcsin(beta/n(z))), which between
         two z values gives the path length of the direct path between the
         z values."""
         alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        if deep:
+            return ice.n0 * z / np.sqrt(alpha)
         return np.where(beta==0, z,
                         (ice.n0 / np.sqrt(alpha) * (-z + np.log(log_1) / ice.a)
                          + np.log(log_2) / ice.a))
 
     @classmethod
-    def _tof_integral(cls, z, beta, ice):
+    def _tof_integral(cls, z, beta, ice, deep=False):
         """Indefinite z-integral of n(z)/c*sec(arcsin(beta/n(z))), which between
         two z values gives the time of flight of the direct path between the
         z values."""
         alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        if deep:
+            return ice.n0*(n_z+ice.n0*(ice.a*z-1)) / (ice.a*np.sqrt(alpha)*3e8)
         return np.where(beta==0, ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
                         (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
                            ice.n0**2*np.log(log_1)/np.sqrt(alpha)) / ice.a) -
@@ -304,8 +356,7 @@ class RayTracer(LazyMutableClass):
     def z_turn_proximity(self):
         return self.dz/10
 
-    # Calculations performed launching from low to high
-    # (better for numerical error)
+    # Calculations performed as if launching from low to high
     @property
     def z0(self):
         return min([self.from_point[2], self.to_point[2]])
@@ -329,27 +380,18 @@ class RayTracer(LazyMutableClass):
 
     @lazy_property
     def peak_angle(self):
-        peak_angle = None
-        tolerance = self.dz
-        while peak_angle is None:
-            for angle_step in np.logspace(-3, 0, num=4):
-                r_func = lambda angle: self._indirect_r_prime(angle, angle_step)
-                try:
-                    # FIXME: Is min_angle=0.1 necessary?
-                    peak_angle = self.angle_search(0, r_func,
-                                                   0, self.max_angle,
-                                                   tolerance=tolerance)
-                except ConvergenceError:
-                    continue
-                else:
-                    if peak_angle>np.pi/2:
-                        peak_angle = np.pi - peak_angle
-                    return peak_angle
-            tolerance *= 10
-            if (tolerance>np.abs(self.z1-self.z0) or
-                (self.z1==self.z0 and tolerance>1000)):
-                # raise ConvergenceError("peak_angle calculation failed to converge even for exceptionally high tolerance")
-                return self.max_angle
+        for angle_step in np.logspace(-3, 0, num=4):
+            r_func = lambda angle, brent_arg: self._indirect_r_prime(angle, brent_arg, d_angle=angle_step)
+            try:
+                peak_angle = self.angle_search(0, r_func,
+                                                0, self.max_angle)
+            except RuntimeError:
+                # Failed to converge
+                continue
+            else:
+                if peak_angle>np.pi/2:
+                    peak_angle = np.pi - peak_angle
+                return peak_angle
 
     @lazy_property
     def direct_r_max(self):
@@ -389,7 +431,7 @@ class RayTracer(LazyMutableClass):
                 if exists and angle is not None]
 
 
-    def _direct_r(self, angle, force_z1=None):
+    def _direct_r(self, angle, brent_arg=0, force_z1=None):
         if force_z1 is not None:
             z1 = force_z1
         else:
@@ -398,9 +440,9 @@ class RayTracer(LazyMutableClass):
         zs, dz = np.linspace(self.z0, z1, n_zs+1, retstep=True)
         integrand = np.tan(np.arcsin(np.sin(angle) *
                                      self.n0/self.ice.index(zs)))
-        return np.trapz(integrand, dx=dz)
+        return np.trapz(integrand, dx=dz) - brent_arg
 
-    def _indirect_r(self, angle):
+    def _indirect_r(self, angle, brent_arg=0):
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
         n_zs_1 = int(np.abs((z_turn-self.z_turn_proximity-self.z0)/self.dz))
         zs_1, dz_1 = np.linspace(self.z0, z_turn-self.z_turn_proximity,
@@ -413,26 +455,20 @@ class RayTracer(LazyMutableClass):
         integrand_2 = np.tan(np.arcsin(np.sin(angle) *
                                        self.n0/self.ice.index(zs_2)))
         return (np.trapz(integrand_1, dx=dz_1) +
-                np.trapz(integrand_2, dx=-dz_2))
+                np.trapz(integrand_2, dx=-dz_2)) - brent_arg
 
-    def _indirect_r_prime(self, angle, d_angle=0.001):
+    def _indirect_r_prime(self, angle, brent_arg=0, d_angle=0.001):
         return (self._indirect_r(angle+d_angle) -
-                self._indirect_r(angle)) / d_angle
+                self._indirect_r(angle)) / d_angle - brent_arg
 
 
     def _get_launch_angle(self, r_function, min_angle=0, max_angle=90):
-        launch_angle = None
-        tolerance = self.dz
-        while launch_angle is None:
-            try:
-                launch_angle = self.angle_search(self.rho, r_function,
-                                                 min_angle, max_angle,
-                                                 tolerance=tolerance)
-            except ConvergenceError:
-                tolerance *= 10
-                if (tolerance>np.abs(self.z1-self.z0) or
-                    (self.z1==self.z0 and tolerance>1000)):
-                    raise ConvergenceError("launch_angle calculation failed to converge even for exceptionally high tolerance")
+        try:
+            launch_angle = self.angle_search(self.rho, r_function,
+                                                min_angle, max_angle)
+        except RuntimeError:
+            # Failed to converge
+            launch_angle = None
 
         # Convert to true launch angle from self.from_point
         # rather than from lower point (self.z0)
@@ -473,35 +509,11 @@ class RayTracer(LazyMutableClass):
             return None
 
     @staticmethod
-    def binary_angle_search(true_r, r_function, min_angle, max_angle,
-                            angle_guess=None, tolerance=0.001,
-                            max_iterations=100):
-        angle = angle_guess if angle_guess is not None else (max_angle + min_angle)/2
-
-        r = r_function(angle) - true_r
-        r_min = r_function(min_angle) - true_r
-
-        i = 0
-        prev_angle = None
-        while not np.isclose(r, 0, atol=tolerance, rtol=0) and angle!=prev_angle:
-            prev_angle = angle
-            i += 1
-            if i>=max_iterations:
-                raise ConvergenceError("Didn't converge fast enough")
-
-            if (r<=0)==(r_min<=0):
-                min_angle = angle
-                r_min = r
-            else:
-                max_angle = angle
-
-            angle = (max_angle + min_angle) / 2
-            r = r_function(angle) - true_r
-
-        return angle
-
-    # Default angle search method
-    angle_search = binary_angle_search
+    def angle_search(true_r, r_function, min_angle, max_angle,
+                     tolerance=1e-12, max_iterations=100):
+        return scipy.optimize.brentq(r_function, min_angle, max_angle,
+                                     args=(true_r), xtol=tolerance,
+                                     maxiter=max_iterations)
 
 
 
@@ -512,99 +524,86 @@ class SpecializedRayTracer(RayTracer):
     solution_class = SpecializedRayTracePath
 
     @lazy_property
+    def z_uniform(self):
+        return self.ice.depth_with_index(self.ice.n0 *
+                                         self.solution_class.uniformity_factor)
+
+    @lazy_property
+    def valid_ice_model(self):
+        return ((isinstance(self.ice, type) and
+                 issubclass(self.ice, AntarcticIce))
+                or isinstance(self.ice, AntarcticIce))
+
+    @lazy_property
     def direct_r_max(self):
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(self.max_angle))
         return self._direct_r(self.max_angle, force_z1=z_turn)
 
     def _r_distance(self, theta, z0, z1):
-        if not(isinstance(self.ice, AntarcticIce) or
-               (isinstance(self.ice, type) and
-                issubclass(self.ice, AntarcticIce))):
+        if not self.valid_ice_model:
             raise TypeError("Ice model must inherit methods from "+
-                             "pyrex.AntarcticIce")
+                            "pyrex.AntarcticIce")
         beta = np.sin(theta) * self.n0
-        return (self.solution_class._distance_integral(z1, beta, self.ice) -
-                self.solution_class._distance_integral(z0, beta, self.ice))
+        int_z0 = self.solution_class._distance_integral(z0, beta, self.ice,
+                                                        deep=z0<self.z_uniform)
+        int_z1 = self.solution_class._distance_integral(z1, beta, self.ice,
+                                                        deep=z1<self.z_uniform)
+        if (z0<self.z_uniform)==(z1<self.z_uniform):
+            # z0 and z1 on same side of z_uniform
+            return int_z1 - int_z0
+        else:
+            return (int_z1 - int_z0 + 
+                    self.solution_class._distance_integral(self.z_uniform,
+                                                           beta, self.ice,
+                                                           deep=True) -
+                    self.solution_class._distance_integral(self.z_uniform,
+                                                           beta, self.ice,
+                                                           deep=False))
 
     def _r_distance_derivative(self, theta, z0, z1):
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must inherit methods from "+
+                            "pyrex.AntarcticIce")
         beta = np.sin(theta) * self.n0
         beta_prime = np.cos(theta) * self.n0
         beta_derivative = self.solution_class._distance_integral_derivative
-        return beta_prime * (beta_derivative(z1, beta, self.ice) -
-                             beta_derivative(z0, beta, self.ice))
+        int_z0 = beta_derivative(z0, beta, self.ice, deep=z0<self.z_uniform)
+        int_z1 = beta_derivative(z1, beta, self.ice, deep=z1<self.z_uniform)
+        if (z0<self.z_uniform)==(z1<self.z_uniform):
+            # z0 and z1 on same side of z_uniform
+            return int_z1 - int_z0
+        else:
+            return (int_z1 - int_z0 + 
+                    beta_derivative(self.z_uniform, beta, self.ice, deep=True) -
+                    beta_derivative(self.z_uniform, beta, self.ice, deep=False))
 
-    def _direct_r(self, angle, force_z1=None):
+    def _direct_r(self, angle, brent_arg=0, force_z1=None):
         if force_z1 is not None:
             z1 = force_z1
         else:
             z1 = self.z1
-        return self._r_distance(angle, self.z0, z1)
+        return self._r_distance(angle, self.z0, z1) - brent_arg
 
-    def _indirect_r(self, angle):
+    def _indirect_r(self, angle, brent_arg=0):
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
         return (self._r_distance(angle, self.z0, z_turn) -
-                self._r_distance(angle, z_turn, self.z1))
+                self._r_distance(angle, z_turn, self.z1)) - brent_arg
 
-    # def _indirect_r_prime(self, angle):
-    #     z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
-    #     rtrn = (self._r_distance_derivative(angle, self.z0, z_turn) -
-    #             self._r_distance_derivative(angle, z_turn, self.z1))
-    #     print("-"*5, z_turn, self._indirect_r(angle), rtrn)
-    #     return rtrn
+    def _indirect_r_prime(self, angle, brent_arg=0):
+        return self._r_distance_derivative(angle, self.z0, self.z1) - brent_arg
 
-    # @lazy_property
-    # def peak_angle(self):
-    #     peak_angle = None
-    #     tolerance = self.dz
-    #     while peak_angle is None:
-    #         try:
-    #             peak_angle = self.angle_search(0, self._indirect_r_prime,
-    #                                            0, self.max_angle,
-    #                                            tolerance=tolerance)
-    #         except ConvergenceError:
-    #             continue
-    #         else:
-    #             if peak_angle>np.pi/2:
-    #                 peak_angle = np.pi - peak_angle
-    #             return peak_angle
-    #         tolerance *= 10
-    #         if (tolerance>np.abs(self.z1-self.z0) or
-    #             (self.z1==self.z0 and tolerance>1000)):
-    #             raise ConvergenceError("peak_angle calculation failed to converge even for exceptionally high tolerance")
-
-    @staticmethod
-    def broadcast_angle_search(true_r, r_function, min_angle, max_angle,
-                               n_angles=100, tolerance=0.001,
-                               max_iterations=100):
-        angles = np.linspace(min_angle, max_angle, n_angles+1)
-        dr = r_function(angles) - true_r
-
-        i = 0
-        while (not np.isclose(np.min(np.abs(dr)), 0, atol=tolerance, rtol=0)
-               and min_angle!=max_angle):
-            i += 1
-            if i>=max_iterations:
-                raise ConvergenceError("Didn't converge fast enough")
-
-            with np.errstate(invalid="ignore"):
-                if np.any(dr<0):
-                    min_angle = angles[dr<0][np.argmax(dr[dr<0])]
-                if np.any(dr>0):
-                    max_angle = angles[dr>0][np.argmin(dr[dr>0])]
-
-                # Bad patch for discrete derivative errors:
-                if true_r==0:
-                    first_negative = np.argmax(dr<0)
-                    min_angle = angles[first_negative-1]
-                    max_angle = angles[first_negative]
-
-            angles = np.linspace(min_angle, max_angle, n_angles+1)
-            dr = r_function(angles) - true_r
-
-        return angles[np.argmin(np.abs(dr))]
-
-    # Use broadcast search as default angle search
-    angle_search = broadcast_angle_search
+    @lazy_property
+    def peak_angle(self):
+        try:
+            peak_angle = self.angle_search(0, self._indirect_r_prime,
+                                           0, self.max_angle)
+        except RuntimeError:
+            # Failed to converge
+            return None
+        else:
+            if peak_angle>np.pi/2:
+                peak_angle = np.pi - peak_angle
+            return peak_angle
 
 
 
