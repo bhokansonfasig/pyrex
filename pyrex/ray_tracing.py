@@ -162,7 +162,7 @@ class SpecializedRayTracePath(RayTracePath):
     """Class for storing a single ray-trace solution betwen points.
     Calculations performed using true integral evaluation.
     Ice model must use methods inherited from pyrex.AntarcticIce"""
-    uniformity_factor = 0.9999
+    uniformity_factor = 0.99999
 
     @lazy_property
     def valid_ice_model(self):
@@ -174,41 +174,64 @@ class SpecializedRayTracePath(RayTracePath):
     def z_uniform(self):
         return self.ice.depth_with_index(self.ice.n0 * self.uniformity_factor)
 
+    @staticmethod
+    def _z_int_uniform_correction(z0, z1, z_uniform, beta, ice, integrand,
+                                  derivative_special_case=False):
+        int_z0 = integrand(z0, beta, ice, deep=z0<z_uniform)
+        int_z1 = integrand(z1, beta, ice, deep=z1<z_uniform)
+        if not derivative_special_case:
+            if (z0<z_uniform)==(z1<z_uniform):
+                # z0 and z1 on same side of z_uniform
+                return int_z1 - int_z0
+            else:
+                int_diff = (integrand(z_uniform, beta, ice, deep=True) -
+                            integrand(z_uniform, beta, ice, deep=False))
+                if z0<z1:
+                    # z0 below z_uniform, z1 above z_uniform
+                    return int_z1 - int_z0 + int_diff
+                else:
+                    # z0 above z_uniform, z1 below z_uniform
+                    return int_z1 - int_z0 - int_diff
+        else:
+            # Deal with special case of doing distance integral beta derivative
+            # which includes two bounds instead of just giving indef. integral
+            # FIXME: Somewhat inaccurate, should probably be done differently
+            z_turn = np.log((ice.n0-beta)/ice.k)/ice.a
+            if (z0<z_uniform)==(z1<z_uniform)==(z_turn<z_uniform):
+                # All on same side of z_uniform
+                return int_z0 + int_z1
+            else:
+                int_diff = (integrand(z_uniform, beta, ice, deep=True) -
+                            integrand(z_uniform, beta, ice, deep=False))
+                if (z0<z_uniform)==(z1<z_uniform):
+                    # z0 and z1 below z_uniform, but z_turn above
+                    return int_z0 + int_z1 - 2*int_diff
+                else:
+                    # z0 or z1 below z_uniform, others above
+                    return int_z0 + int_z1 - int_diff
+
+
+
     def z_integral(self, integrand):
         if not self.valid_ice_model:
             raise TypeError("Ice model must inherit methods from "+
                              "pyrex.AntarcticIce")
         beta = np.sin(self.theta0) * self.n0
-        int_z0 = integrand(self.z0, beta, self.ice, deep=self.z0<self.z_uniform)
-        int_z1 = integrand(self.z1, beta, self.ice, deep=self.z1<self.z_uniform)
         if self.direct:
-            if (self.z0<self.z_uniform)==(self.z1<self.z_uniform):
-                # z0 and z1 on the same side of z_uniform
-                return int_z1 - int_z0
-            else:
-                return (int_z1 - int_z0 +
-                        integrand(self.z_uniform, beta, self.ice, deep=True) -
-                        integrand(self.z_uniform, beta, self.ice, deep=False))
+            return self._z_int_uniform_correction(self.z0, self.z1,
+                                                  self.z_uniform, beta,
+                                                  self.ice, integrand)
         else:
-            int_zturn = integrand(self.z_turn, beta, self.ice)
-            if (self.z0<self.z_uniform)==(self.z_turn<self.z_uniform):
-                # z0 and z_turn on the same side of z_uniform
-                int_1 = int_zturn - int_z0
-            else:
-                int_1 = (int_zturn - int_z0 +
-                         integrand(self.z_uniform, beta, self.ice, deep=True) -
-                         integrand(self.z_uniform, beta, self.ice, deep=False))
-            if (self.z1<self.z_uniform)==(self.z_turn<self.z_uniform):
-                # z1 and z_turn on the same side of z_uniform
-                int_2 = int_zturn - int_z1
-            else:
-                int_2 = (int_zturn - int_z1 +
-                         integrand(self.z_uniform, beta, self.ice, deep=True) -
-                         integrand(self.z_uniform, beta, self.ice, deep=False))
+            int_1 = self._z_int_uniform_correction(self.z0, self.z_turn,
+                                                   self.z_uniform, beta,
+                                                   self.ice, integrand)
+            int_2 = self._z_int_uniform_correction(self.z1, self.z_turn,
+                                                   self.z_uniform, beta,
+                                                   self.ice, integrand)
             return int_1 + int_2
 
     @staticmethod
-    def _integral_shortcuts(z, beta, ice):
+    def _int_terms(z, beta, ice):
         """Useful pre-calculated substitutions for integrations."""
         with np.errstate(invalid="ignore"):
             alpha = ice.n0**2 - beta**2
@@ -223,11 +246,11 @@ class SpecializedRayTracePath(RayTracePath):
         """Indefinite z-integral of tan(arcsin(beta/n(z))), which between
         two z values gives the radial distance of the direct path between the
         z values."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
             return beta * z / np.sqrt(alpha)
         with np.errstate(divide="ignore", invalid="ignore"):
-            return np.where(beta==0, 0,
+            return np.where(np.isclose(beta, 0, atol=1e-12), 0,
                             beta / np.sqrt(alpha) * (-z + np.log(log_1)/ice.a))
 
     @classmethod
@@ -237,14 +260,31 @@ class SpecializedRayTracePath(RayTracePath):
         This function actually gives the integral from z to the turning point
         z_turn=ice.depth_with_index(beta), since that is what's needed for
         finding the peak angle."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
+        z_turn = np.log((ice.n0-beta)/ice.k)/ice.a
+        # print("z_turn:", z_turn)
         if deep:
-            return z / np.sqrt(alpha)
+            if z_turn<0:
+                return ((np.log((ice.n0-beta)/ice.k)/ice.a - z -
+                         beta/(ice.a*(ice.n0-beta))) / np.sqrt(alpha))
+            else:
+                return -z / np.sqrt(alpha)
         with np.errstate(divide="ignore", invalid="ignore"):
-            term_1 = ((1+beta**2/alpha)/np.sqrt(alpha) * 
-                      (z + np.log(beta*ice.k/log_1) / ice.a))
-            term_2 = -(beta**2+ice.n0*n_z) / (ice.a*alpha*np.sqrt(gamma))
-        return np.where(beta==0, np.inf, term_1+term_2)
+            if z_turn<0:
+                term_1 = ((1+beta**2/alpha)/np.sqrt(alpha) * 
+                          (z + np.log(beta*ice.k/log_1) / ice.a))
+                term_2 = -(beta**2+ice.n0*n_z) / (ice.a*alpha*np.sqrt(gamma))
+            else:
+                term_1 = -(1+beta**2/alpha)/np.sqrt(alpha)*(-z + np.log(log_1) /
+                           ice.a)
+                term_2 = -((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
+                           (ice.a*alpha*np.sqrt(gamma)*log_1))
+                alpha, n_z, gamma, log_1, log_2 = cls._int_terms(0, beta, ice)
+                term_1 += (1+beta**2/alpha)/np.sqrt(alpha)*(np.log(log_1) /
+                           ice.a)
+                term_2 += ((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
+                           (ice.a*alpha*np.sqrt(gamma)*log_1))
+        return np.where(np.isclose(beta, 0, atol=1e-12), np.inf, term_1+term_2)
 
         # If the value of the integral just at z is needed (e.g. you want the
         # correct values when reflecting off the surface of the ice),
@@ -265,25 +305,28 @@ class SpecializedRayTracePath(RayTracePath):
         """Indefinite z-integral of sec(arcsin(beta/n(z))), which between
         two z values gives the path length of the direct path between the
         z values."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
             return ice.n0 * z / np.sqrt(alpha)
-        return np.where(beta==0, z,
-                        (ice.n0 / np.sqrt(alpha) * (-z + np.log(log_1) / ice.a)
-                         + np.log(log_2) / ice.a))
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return np.where(np.isclose(beta, 0, atol=1e-12), z,
+                            (ice.n0/np.sqrt(alpha) * (-z + np.log(log_1)/ice.a)
+                             + np.log(log_2) / ice.a))
 
     @classmethod
     def _tof_integral(cls, z, beta, ice, deep=False):
         """Indefinite z-integral of n(z)/c*sec(arcsin(beta/n(z))), which between
         two z values gives the time of flight of the direct path between the
         z values."""
-        alpha, n_z, gamma, log_1, log_2 = cls._integral_shortcuts(z, beta, ice)
+        alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
             return ice.n0*(n_z+ice.n0*(ice.a*z-1)) / (ice.a*np.sqrt(alpha)*3e8)
-        return np.where(beta==0, ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
-                        (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
-                           ice.n0**2*np.log(log_1)/np.sqrt(alpha)) / ice.a) -
-                         z*ice.n0**2/np.sqrt(alpha)) / 3e8)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return np.where(np.isclose(beta, 0, atol=1e-12),
+                            ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
+                            (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
+                               ice.n0**2*np.log(log_1)/np.sqrt(alpha))/ice.a) -
+                             z*ice.n0**2/np.sqrt(alpha)) / 3e8)
 
     @lazy_property
     def path_length(self):
@@ -544,21 +587,10 @@ class SpecializedRayTracer(RayTracer):
             raise TypeError("Ice model must inherit methods from "+
                             "pyrex.AntarcticIce")
         beta = np.sin(theta) * self.n0
-        int_z0 = self.solution_class._distance_integral(z0, beta, self.ice,
-                                                        deep=z0<self.z_uniform)
-        int_z1 = self.solution_class._distance_integral(z1, beta, self.ice,
-                                                        deep=z1<self.z_uniform)
-        if (z0<self.z_uniform)==(z1<self.z_uniform):
-            # z0 and z1 on same side of z_uniform
-            return int_z1 - int_z0
-        else:
-            return (int_z1 - int_z0 + 
-                    self.solution_class._distance_integral(self.z_uniform,
-                                                           beta, self.ice,
-                                                           deep=True) -
-                    self.solution_class._distance_integral(self.z_uniform,
-                                                           beta, self.ice,
-                                                           deep=False))
+        return self.solution_class._z_int_uniform_correction(
+            z0, z1, self.z_uniform, beta, self.ice,
+            self.solution_class._distance_integral
+        )
 
     def _r_distance_derivative(self, theta, z0, z1):
         if not self.valid_ice_model:
@@ -566,16 +598,11 @@ class SpecializedRayTracer(RayTracer):
                             "pyrex.AntarcticIce")
         beta = np.sin(theta) * self.n0
         beta_prime = np.cos(theta) * self.n0
-        beta_derivative = self.solution_class._distance_integral_derivative
-        int_z0 = beta_derivative(z0, beta, self.ice, deep=z0<self.z_uniform)
-        int_z1 = beta_derivative(z1, beta, self.ice, deep=z1<self.z_uniform)
-        if (z0<self.z_uniform)==(z1<self.z_uniform):
-            # z0 and z1 on same side of z_uniform
-            return int_z1 - int_z0
-        else:
-            return (int_z1 - int_z0 + 
-                    beta_derivative(self.z_uniform, beta, self.ice, deep=True) -
-                    beta_derivative(self.z_uniform, beta, self.ice, deep=False))
+        return beta_prime * self.solution_class._z_int_uniform_correction(
+            z0, z1, self.z_uniform, beta, self.ice,
+            self.solution_class._distance_integral_derivative,
+            derivative_special_case=True
+        )
 
     def _direct_r(self, angle, brent_arg=0, force_z1=None):
         if force_z1 is not None:
@@ -586,8 +613,8 @@ class SpecializedRayTracer(RayTracer):
 
     def _indirect_r(self, angle, brent_arg=0):
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
-        return (self._r_distance(angle, self.z0, z_turn) -
-                self._r_distance(angle, z_turn, self.z1)) - brent_arg
+        return (self._r_distance(angle, self.z0, z_turn) +
+                self._r_distance(angle, self.z1, z_turn)) - brent_arg
 
     def _indirect_r_prime(self, angle, brent_arg=0):
         return self._r_distance_derivative(angle, self.z0, self.z1) - brent_arg
@@ -597,6 +624,10 @@ class SpecializedRayTracer(RayTracer):
         try:
             peak_angle = self.angle_search(0, self._indirect_r_prime,
                                            0, self.max_angle)
+        except ValueError:
+            # _indirect_r_prime(0) and _indirect_r_prime(max_angle) have the
+            # same sign -> no true peak angle
+            return self.max_angle
         except RuntimeError:
             # Failed to converge
             return None
