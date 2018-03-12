@@ -233,12 +233,11 @@ class SpecializedRayTracePath(RayTracePath):
     @staticmethod
     def _int_terms(z, beta, ice):
         """Useful pre-calculated substitutions for integrations."""
-        with np.errstate(invalid="ignore"):
-            alpha = ice.n0**2 - beta**2
-            n_z = ice.n0 - ice.k*np.exp(ice.a*z)
-            gamma = n_z**2 - beta**2
-            log_term_1 = ice.n0*n_z - beta**2 - np.sqrt(alpha*gamma)
-            log_term_2 = -n_z - np.sqrt(gamma)
+        alpha = ice.n0**2 - beta**2
+        n_z = ice.n0 - ice.k*np.exp(ice.a*z)
+        gamma = n_z**2 - beta**2
+        log_term_1 = ice.n0*n_z - beta**2 - np.sqrt(alpha*gamma)
+        log_term_2 = -n_z - np.sqrt(gamma)
         return alpha, n_z, gamma, log_term_1, -log_term_2
 
     @classmethod
@@ -249,7 +248,7 @@ class SpecializedRayTracePath(RayTracePath):
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
             return beta * z / np.sqrt(alpha)
-        with np.errstate(divide="ignore", invalid="ignore"):
+        else:
             return np.where(np.isclose(beta, 0, atol=1e-12), 0,
                             beta / np.sqrt(alpha) * (-z + np.log(log_1)/ice.a))
 
@@ -269,7 +268,7 @@ class SpecializedRayTracePath(RayTracePath):
                          beta/(ice.a*(ice.n0-beta))) / np.sqrt(alpha))
             else:
                 return -z / np.sqrt(alpha)
-        with np.errstate(divide="ignore", invalid="ignore"):
+        else:
             if z_turn<0:
                 term_1 = ((1+beta**2/alpha)/np.sqrt(alpha) * 
                           (z + np.log(beta*ice.k/log_1) / ice.a))
@@ -308,7 +307,7 @@ class SpecializedRayTracePath(RayTracePath):
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
             return ice.n0 * z / np.sqrt(alpha)
-        with np.errstate(divide="ignore", invalid="ignore"):
+        else:
             return np.where(np.isclose(beta, 0, atol=1e-12), z,
                             (ice.n0/np.sqrt(alpha) * (-z + np.log(log_1)/ice.a)
                              + np.log(log_2) / ice.a))
@@ -321,7 +320,7 @@ class SpecializedRayTracePath(RayTracePath):
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
             return ice.n0*(n_z+ice.n0*(ice.a*z-1)) / (ice.a*np.sqrt(alpha)*3e8)
-        with np.errstate(divide="ignore", invalid="ignore"):
+        else:
             return np.where(np.isclose(beta, 0, atol=1e-12),
                             ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
                             (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
