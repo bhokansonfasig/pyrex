@@ -85,7 +85,7 @@ class RayTracePath(LazyMutableClass):
         if self.direct:
             n_zs = int(np.abs(self.z1-self.z0)/self.dz)
             zs, dz = np.linspace(self.z0, self.z1, n_zs+1, retstep=True)
-            return np.trapz(integrand(zs), dx=np.abs(dz))
+            return np.trapz(integrand(zs), dx=np.abs(dz), axis=0)
         else:
             n_zs_1 = int(np.abs(self.z_turn-self.z_turn_proximity-self.z0)/self.dz)
             zs_1, dz_1 = np.linspace(self.z0, self.z_turn-self.z_turn_proximity,
@@ -93,8 +93,8 @@ class RayTracePath(LazyMutableClass):
             n_zs_2 = int(np.abs(self.z_turn-self.z_turn_proximity-self.z1)/self.dz)
             zs_2, dz_2 = np.linspace(self.z_turn-self.z_turn_proximity, self.z1,
                                      n_zs_2+1, retstep=True)
-            return (np.trapz(integrand(zs_1), dx=np.abs(dz_1)) +
-                    np.trapz(integrand(zs_2), dx=np.abs(dz_2)))
+            return (np.trapz(integrand(zs_1), dx=np.abs(dz_1), axis=0) +
+                    np.trapz(integrand(zs_2), dx=np.abs(dz_2), axis=0))
 
     @lazy_property
     def path_length(self):
@@ -111,7 +111,8 @@ class RayTracePath(LazyMutableClass):
         """Returns the attenuation factor for a signal of frequency f (Hz)
         traveling along the path. Supports passing a list of frequencies."""
         fa = np.abs(f)
-        return np.exp(-self.z_integral(lambda z: 1 / np.cos(self.theta(z)) /
+        return np.exp(-self.z_integral(lambda z: 1 /
+                                       np.vstack(np.cos(self.theta(z))) /
                                        self.ice.attenuation_length(z, fa)))
 
     def propagate(self, signal):
@@ -341,7 +342,8 @@ class SpecializedRayTracePath(RayTracePath):
         """Returns the attenuation factor for a signal of frequency f (Hz)
         traveling along the path. Supports passing a list of frequencies."""
         fa = np.abs(f)
-        return np.exp(-super().z_integral(lambda z: 1 / np.cos(self.theta(z)) /
+        return np.exp(-super().z_integral(lambda z: 1 /
+                                          np.vstack(np.cos(self.theta(z))) /
                                           self.ice.attenuation_length(z, fa)))
 
     @lazy_property
@@ -423,11 +425,13 @@ class RayTracer(LazyMutableClass):
     @lazy_property
     def peak_angle(self):
         for angle_step in np.logspace(-3, 0, num=4):
-            r_func = lambda angle, brent_arg: self._indirect_r_prime(angle, brent_arg, d_angle=angle_step)
+            r_func = (lambda angle, brent_arg:
+                      self._indirect_r_prime(angle, brent_arg,
+                                             d_angle=angle_step))
             try:
                 peak_angle = self.angle_search(0, r_func,
-                                                0, self.max_angle)
-            except RuntimeError:
+                                               angle_step, self.max_angle)
+            except (RuntimeError, ValueError):
                 # Failed to converge
                 continue
             else:
@@ -500,8 +504,8 @@ class RayTracer(LazyMutableClass):
                 np.trapz(integrand_2, dx=-dz_2)) - brent_arg
 
     def _indirect_r_prime(self, angle, brent_arg=0, d_angle=0.001):
-        return (self._indirect_r(angle+d_angle) -
-                self._indirect_r(angle)) / d_angle - brent_arg
+        return ((self._indirect_r(angle) - self._indirect_r(angle-d_angle))
+                / d_angle) - brent_arg
 
 
     def _get_launch_angle(self, r_function, min_angle=0, max_angle=90):
