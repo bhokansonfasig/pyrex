@@ -213,23 +213,46 @@ class SpecializedRayTracePath(RayTracePath):
 
 
 
-    def z_integral(self, integrand):
-        if not self.valid_ice_model:
-            raise TypeError("Ice model must inherit methods from "+
-                             "pyrex.AntarcticIce")
-        beta = np.sin(self.theta0) * self.n0
-        if self.direct:
-            return self._z_int_uniform_correction(self.z0, self.z1,
-                                                  self.z_uniform, beta,
-                                                  self.ice, integrand)
+    def z_integral(self, integrand, numerical=False, x_func=lambda x: x):
+        if not numerical:
+            if not self.valid_ice_model:
+                raise TypeError("Ice model must inherit methods from "+
+                                "pyrex.AntarcticIce")
+            beta = np.sin(self.theta0) * self.n0
+            if self.direct:
+                return self._z_int_uniform_correction(self.z0, self.z1,
+                                                    self.z_uniform, beta,
+                                                    self.ice, integrand)
+            else:
+                int_1 = self._z_int_uniform_correction(self.z0, self.z_turn,
+                                                    self.z_uniform, beta,
+                                                    self.ice, integrand)
+                int_2 = self._z_int_uniform_correction(self.z1, self.z_turn,
+                                                    self.z_uniform, beta,
+                                                    self.ice, integrand)
+                return int_1 + int_2
         else:
-            int_1 = self._z_int_uniform_correction(self.z0, self.z_turn,
-                                                   self.z_uniform, beta,
-                                                   self.ice, integrand)
-            int_2 = self._z_int_uniform_correction(self.z1, self.z_turn,
-                                                   self.z_uniform, beta,
-                                                   self.ice, integrand)
-            return int_1 + int_2
+            if self.direct:
+                # zs = self._generate_zs(self.z0, self.z1)
+                n_zs = int(np.abs(self.z1-self.z0)/self.dz)
+                zs = np.linspace(self.z0, self.z1, n_zs+1)
+                return np.trapz(integrand(zs), x=x_func(zs), axis=0)
+            else:
+                # zs_1 = self._generate_zs(self.z0, self.z_turn-self.z_turn_proximity)
+                n_zs_1 = int(np.abs(self.z_turn-self.z0)/self.dz)
+                zs_1 = np.linspace(self.z0, self.z_turn, n_zs_1+1)
+                # zs_2 = self._generate_zs(self.z1, self.z_turn-self.z_turn_proximity)
+                n_zs_2 = int(np.abs(self.z_turn-self.z1)/self.dz)
+                zs_2 = np.linspace(self.z1, self.z_turn, n_zs_2+1)
+                return (np.trapz(integrand(zs_1), x=x_func(zs_1), axis=0) +
+                        np.trapz(integrand(zs_2), x=x_func(zs_2), axis=0))
+
+    def _generate_zs(self, z0, z1, dn=0.001):
+        n0 = self.ice.index(z0)
+        n1 = self.ice.index(z1)
+        n_steps = int(np.abs(n1-n0)/dn)
+        ns = np.linspace(n0, n1, n_steps+2)
+        return np.log((self.ice.n0-ns)/self.ice.k)/self.ice.a
 
     @staticmethod
     def _int_terms(z, beta, ice):
@@ -342,9 +365,21 @@ class SpecializedRayTracePath(RayTracePath):
         """Returns the attenuation factor for a signal of frequency f (Hz)
         traveling along the path. Supports passing a list of frequencies."""
         fa = np.abs(f)
-        return np.exp(-super().z_integral(lambda z: 1 /
-                                          np.vstack(np.cos(self.theta(z))) /
-                                          self.ice.attenuation_length(z, fa)))
+
+        beta = np.sin(self.theta0) * self.n0
+        def xi(z):
+            return np.sqrt(1 - (beta/self.ice.index(z))**2)
+
+        def integrand(z):
+            partial_integrand = (self.ice.index(z)**3 / beta**2 /
+                                 (-self.ice.k*self.ice.a*np.exp(self.ice.a*z)))
+            return np.vstack(partial_integrand) / self.ice.attenuation_length(z, fa)
+
+        return np.exp(-self.z_integral(integrand, numerical=True, x_func=xi))
+
+        # return np.exp(-super().z_integral(lambda z: 1 /
+        #                                   np.vstack(np.cos(self.theta(z))) /
+        #                                   self.ice.attenuation_length(z, fa)))
 
     @lazy_property
     def coordinates(self):
