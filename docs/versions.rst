@@ -1,6 +1,15 @@
 Version History
 ===============
 
+Version 1.4.1
+-------------
+
+* Improved ray tracing and defaulted to the almost completely analytical ``SpecializedRayTracer`` and ``SpecializedRayTracePath`` classes as ``RayTracer`` and ``RayTracePath``
+
+* Added ray tracer into ``EventKernel`` to replace ``PathFinder`` completely
+
+
+
 Version 1.4.0
 -------------
 

@@ -40,7 +40,10 @@ Package contents
 .. autoclass:: ShadowGenerator
     :no-show-inheritance:
 
-.. autoclass:: PathFinder
+.. autoclass:: RayTracer
+    :no-show-inheritance:
+
+.. autoclass:: RayTracePath
     :no-show-inheritance:
 
 .. autoclass:: EventKernel
