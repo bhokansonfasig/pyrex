@@ -30,12 +30,12 @@ class EventKernel:
             for path in rt.solutions:
                 # p.direction and k should both be unit vectors
                 # epol is (negative) vector rejection of k onto p.direction
-                k = path.received_ray
+                k = path.received_direction
                 epol = normalize(np.vdot(k, p.direction) * k - p.direction)
                 # In case k and p.direction are equal
                 # (antenna directly on shower axis), just let epol be all zeros
 
-                psi = np.arccos(np.vdot(p.direction, path.emitted_ray))
+                psi = np.arccos(np.vdot(p.direction, path.emitted_direction))
                 # TODO: Support angles larger than pi/2
                 # (low priority since these angles are far from cherenkov cone)
                 if psi>np.pi/2:
