@@ -46,8 +46,12 @@ class RayTracePath(LazyMutableClass):
         return np.arctan2(u[1], u[0])
 
     @lazy_property
+    def beta(self):
+        return self.n0 * np.sin(self.theta0)
+
+    @lazy_property
     def z_turn(self):
-        return self.ice.depth_with_index(self.n0 * np.sin(self.theta0))
+        return self.ice.depth_with_index(self.beta)
 
     # @property
     # def exists(self):
@@ -79,6 +83,23 @@ class RayTracePath(LazyMutableClass):
         return np.arcsin(np.sin(self.theta0) * self.n0/self.ice.index(z))
 
 
+    # Log-scaled zs (commented out below and in z_integral method) seemed
+    # like a good idea for reducing dimentionality, but didn't work out.
+    # Kept here in case it works out better in the future
+
+    # @lazy_property
+    # def dn(self):
+    #     return np.abs(self.ice.gradient(-10)[2])*self.dz
+
+    # def _log_scale_zs(self, z0, z1):
+    #     # Base dn on dz at 10 meter depth
+    #     n0 = self.ice.index(z0)
+    #     n1 = self.ice.index(z1)
+    #     n_steps = int(np.abs(n1-n0)/self.dn)
+    #     ns = np.linspace(n0, n1, n_steps+2)
+    #     return self.ice.depth_with_index(ns)
+
+
     def z_integral(self, integrand):
         """Returns the integral of the integrand (a function of z) along
         the path."""
@@ -86,6 +107,8 @@ class RayTracePath(LazyMutableClass):
             n_zs = int(np.abs(self.z1-self.z0)/self.dz)
             zs, dz = np.linspace(self.z0, self.z1, n_zs+1, retstep=True)
             return np.trapz(integrand(zs), dx=np.abs(dz), axis=0)
+            # zs = self._log_scale_zs(self.z0, self.z1)
+            # return np.trapz(integrand(zs), x=zs, axis=0)
         else:
             n_zs_1 = int(np.abs(self.z_turn-self.z_turn_proximity-self.z0)/self.dz)
             zs_1, dz_1 = np.linspace(self.z0, self.z_turn-self.z_turn_proximity,
@@ -95,6 +118,10 @@ class RayTracePath(LazyMutableClass):
                                      n_zs_2+1, retstep=True)
             return (np.trapz(integrand(zs_1), dx=np.abs(dz_1), axis=0) +
                     np.trapz(integrand(zs_2), dx=np.abs(dz_2), axis=0))
+            # zs_1 = self._log_scale_zs(self.z0, self.z_turn-self.z_turn_proximity)
+            # zs_2 = self._log_scale_zs(self.z1, self.z_turn-self.z_turn_proximity)
+            # return (np.trapz(integrand(zs_1), x=zs_1, axis=0) +
+            #         np.trapz(integrand(zs_2), x=zs_2, axis=0))
 
     @lazy_property
     def path_length(self):
@@ -107,13 +134,35 @@ class RayTracePath(LazyMutableClass):
         return self.z_integral(lambda z: self.ice.index(z) / 3e8 /
                                np.cos(self.theta(z)))
 
+    @lazy_property
+    def fresnel(self):
+        """Fresnel reflectance square root (ratio of amplitudes, not powers)
+        for reflection off ice surface (1 if doesn't reach surface)."""
+        if self.direct or self.z_turn<0:
+            return 1
+        else:
+            n_1 = self.ice.index(0)
+            n_2 = 1 # air
+            theta_1 = self.theta(0)
+            if theta_1>=np.arcsin(n_2/n_1):
+                # Total internal reflection
+                return 1
+            else:
+                # Askaryan signal is p-polarized
+                # n_1 * cos(theta_2):
+                n_1_cos_2 = n_1 * np.sqrt(1 - (n_1/n_2*np.sin(theta_1))**2)
+                # n_2 * cos(theta_1):
+                n_2_cos_1 = n_2 * np.cos(theta_1)
+                return (n_1_cos_2 - n_2_cos_1) / (n_1_cos_2 + n_2_cos_1)
+
     def attenuation(self, f):
         """Returns the attenuation factor for a signal of frequency f (Hz)
         traveling along the path. Supports passing a list of frequencies."""
         fa = np.abs(f)
-        return np.exp(-self.z_integral(lambda z: 1 /
-                                       np.vstack(np.cos(self.theta(z))) /
-                                       self.ice.attenuation_length(z, fa)))
+        def integrand(z):
+            return (1 / np.vstack(np.cos(self.theta(z))) /
+                    self.ice.attenuation_length(z, fa))
+        return np.exp(-np.abs(self.z_integral(integrand))) * self.fresnel
 
     def propagate(self, signal):
         """Applies attenuation to the signal along the path."""
@@ -132,21 +181,25 @@ class RayTracePath(LazyMutableClass):
             rs[1:] += np.abs(np.cumsum(trap_areas))
 
         else:
-            n_zs_1 = int(np.abs(self.z_turn-self.z_turn_proximity-self.z0)/self.dz)
+            n_zs_1 = int(np.abs(self.z_turn-self.z_turn_proximity-self.z0) /
+                         self.dz)
             zs_1, dz_1 = np.linspace(self.z0, self.z_turn-self.z_turn_proximity,
                                      n_zs_1+1, retstep=True)
             integrand_1 = np.tan(self.theta(zs_1))
-            n_zs_2 = int(np.abs(self.z_turn-self.z_turn_proximity-self.z1)/self.dz)
+            n_zs_2 = int(np.abs(self.z_turn-self.z_turn_proximity-self.z1) /
+                         self.dz)
             zs_2, dz_2 = np.linspace(self.z_turn-self.z_turn_proximity, self.z1,
                                      n_zs_2+1, retstep=True)
             integrand_2 = np.tan(self.theta(zs_2))
 
             rs_1 = np.zeros(len(integrand_1))
-            trap_areas = (integrand_1[:-1] + np.diff(integrand_1)/2) * np.abs(dz_1)
+            trap_areas = ((integrand_1[:-1] + np.diff(integrand_1)/2) *
+                          np.abs(dz_1))
             rs_1[1:] += np.cumsum(trap_areas)
 
             rs_2 = np.zeros(len(integrand_2)) + rs_1[-1]
-            trap_areas = (integrand_2[:-1] + np.diff(integrand_2)/2) * np.abs(dz_2)
+            trap_areas = ((integrand_2[:-1] + np.diff(integrand_2)/2) *
+                          np.abs(dz_2))
             rs_2[1:] += np.cumsum(trap_areas)
 
             rs = np.concatenate((rs_1, rs_2[1:]))
@@ -163,7 +216,10 @@ class SpecializedRayTracePath(RayTracePath):
     """Class for storing a single ray-trace solution betwen points.
     Calculations performed using true integral evaluation.
     Ice model must use methods inherited from pyrex.AntarcticIce"""
+    # Factor of index of refraction at which calculations may break down
     uniformity_factor = 0.99999
+    # Beta value below which calculations may break down
+    beta_tolerance = 0.005
 
     @lazy_property
     def valid_ice_model(self):
@@ -218,41 +274,36 @@ class SpecializedRayTracePath(RayTracePath):
             if not self.valid_ice_model:
                 raise TypeError("Ice model must inherit methods from "+
                                 "pyrex.AntarcticIce")
-            beta = np.sin(self.theta0) * self.n0
             if self.direct:
                 return self._z_int_uniform_correction(self.z0, self.z1,
-                                                    self.z_uniform, beta,
-                                                    self.ice, integrand)
+                                                      self.z_uniform,
+                                                      self.beta, self.ice,
+                                                      integrand)
             else:
                 int_1 = self._z_int_uniform_correction(self.z0, self.z_turn,
-                                                    self.z_uniform, beta,
-                                                    self.ice, integrand)
+                                                       self.z_uniform,
+                                                       self.beta, self.ice,
+                                                       integrand)
                 int_2 = self._z_int_uniform_correction(self.z1, self.z_turn,
-                                                    self.z_uniform, beta,
-                                                    self.ice, integrand)
+                                                       self.z_uniform,
+                                                       self.beta, self.ice,
+                                                       integrand)
                 return int_1 + int_2
         else:
             if self.direct:
-                # zs = self._generate_zs(self.z0, self.z1)
                 n_zs = int(np.abs(self.z1-self.z0)/self.dz)
                 zs = np.linspace(self.z0, self.z1, n_zs+1)
+                # zs = self._log_scale_zs(self.z0, self.z1)
                 return np.trapz(integrand(zs), x=x_func(zs), axis=0)
             else:
-                # zs_1 = self._generate_zs(self.z0, self.z_turn-self.z_turn_proximity)
                 n_zs_1 = int(np.abs(self.z_turn-self.z0)/self.dz)
                 zs_1 = np.linspace(self.z0, self.z_turn, n_zs_1+1)
-                # zs_2 = self._generate_zs(self.z1, self.z_turn-self.z_turn_proximity)
                 n_zs_2 = int(np.abs(self.z_turn-self.z1)/self.dz)
                 zs_2 = np.linspace(self.z1, self.z_turn, n_zs_2+1)
+                # zs_1 = self._log_scale_zs(self.z0, self.z_turn)
+                # zs_2 = self._log_scale_zs(self.z1, self.z_turn)
                 return (np.trapz(integrand(zs_1), x=x_func(zs_1), axis=0) +
                         np.trapz(integrand(zs_2), x=x_func(zs_2), axis=0))
-
-    def _generate_zs(self, z0, z1, dn=0.001):
-        n0 = self.ice.index(z0)
-        n1 = self.ice.index(z1)
-        n_steps = int(np.abs(n1-n0)/dn)
-        ns = np.linspace(n0, n1, n_steps+2)
-        return np.log((self.ice.n0-ns)/self.ice.k)/self.ice.a
 
     @staticmethod
     def _int_terms(z, beta, ice):
@@ -273,7 +324,8 @@ class SpecializedRayTracePath(RayTracePath):
         if deep:
             return beta * z / np.sqrt(alpha)
         else:
-            return np.where(np.isclose(beta, 0, atol=1e-12), 0,
+            return np.where(np.isclose(beta, 0, atol=cls.beta_tolerance),
+                            0,
                             beta / np.sqrt(alpha) * (-z + np.log(log_1)/ice.a))
 
     @classmethod
@@ -307,7 +359,9 @@ class SpecializedRayTracePath(RayTracePath):
                            ice.a)
                 term_2 += ((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
                            (ice.a*alpha*np.sqrt(gamma)*log_1))
-        return np.where(np.isclose(beta, 0, atol=1e-12), np.inf, term_1+term_2)
+        return np.where(np.isclose(beta, 0, atol=cls.beta_tolerance),
+                        np.inf,
+                        term_1+term_2)
 
         # If the value of the integral just at z is needed (e.g. you want the
         # correct values when reflecting off the surface of the ice),
@@ -332,7 +386,8 @@ class SpecializedRayTracePath(RayTracePath):
         if deep:
             return ice.n0 * z / np.sqrt(alpha)
         else:
-            return np.where(np.isclose(beta, 0, atol=1e-12), z,
+            return np.where(np.isclose(beta, 0, atol=cls.beta_tolerance),
+                            z,
                             (ice.n0/np.sqrt(alpha) * (-z + np.log(log_1)/ice.a)
                              + np.log(log_2) / ice.a))
 
@@ -345,7 +400,7 @@ class SpecializedRayTracePath(RayTracePath):
         if deep:
             return ice.n0*(n_z+ice.n0*(ice.a*z-1)) / (ice.a*np.sqrt(alpha)*3e8)
         else:
-            return np.where(np.isclose(beta, 0, atol=1e-12),
+            return np.where(np.isclose(beta, 0, atol=cls.beta_tolerance),
                             ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
                             (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
                                ice.n0**2*np.log(log_1)/np.sqrt(alpha))/ice.a) -
@@ -366,45 +421,42 @@ class SpecializedRayTracePath(RayTracePath):
         traveling along the path. Supports passing a list of frequencies."""
         fa = np.abs(f)
 
-        beta = np.sin(self.theta0) * self.n0
         def xi(z):
-            return np.sqrt(1 - (beta/self.ice.index(z))**2)
+            return np.sqrt(1 - (self.beta/self.ice.index(z))**2)
 
         def integrand(z):
-            partial_integrand = (self.ice.index(z)**3 / beta**2 /
+            partial_integrand = (self.ice.index(z)**3 / self.beta**2 /
                                  (-self.ice.k*self.ice.a*np.exp(self.ice.a*z)))
-            return np.vstack(partial_integrand) / self.ice.attenuation_length(z, fa)
+            return (np.vstack(partial_integrand) /
+                    self.ice.attenuation_length(z, fa))
 
-        return np.exp(-self.z_integral(integrand, numerical=True, x_func=xi))
-
-        # return np.exp(-super().z_integral(lambda z: 1 /
-        #                                   np.vstack(np.cos(self.theta(z))) /
-        #                                   self.ice.attenuation_length(z, fa)))
+        return (np.exp(-self.z_integral(integrand, numerical=True, x_func=xi))
+                * self.fresnel)
 
     @lazy_property
     def coordinates(self):
-        beta = np.sin(self.theta0) * self.n0
-        int_z0 = self._distance_integral(self.z0, beta, self.ice)
+        def r_int(z0, z1s):
+            return np.array([self._z_int_uniform_correction(
+                                z0, z, self.z_uniform, self.beta, self.ice,
+                                self._distance_integral
+                             )
+                             for z in z1s])
 
         if self.direct:
             n_zs = int(np.abs(self.z1-self.z0)/self.dz)
             zs = np.linspace(self.z0, self.z1, n_zs+1)
-            int_zs = self._distance_integral(zs, beta, self.ice)
-            rs = int_zs - int_z0
+            rs = r_int(self.z0, zs)
 
         else:
             n_zs_1 = int(np.abs(self.z_turn-self.z0)/self.dz)
             zs_1 = np.linspace(self.z0, self.z_turn, n_zs_1, endpoint=False)
-            int_zs_1 = self._distance_integral(zs_1, beta, self.ice)
-            rs_1 = int_zs_1 - int_z0
+            rs_1 = r_int(self.z0, zs_1)
 
-            int_zturn = self._distance_integral(self.z_turn, beta, self.ice)
-            r_turn = int_zturn - int_z0
+            r_turn = r_int(self.z0, np.array([self.z_turn]))[0]
 
             n_zs_2 = int(np.abs(self.z_turn-self.z1)/self.dz)
             zs_2 = np.linspace(self.z_turn, self.z1, n_zs_2+1)
-            int_zs_2 = self._distance_integral(zs_2, beta, self.ice)
-            rs_2 = r_turn + (int_zturn - int_zs_2)
+            rs_2 = r_turn - r_int(self.z_turn, zs_2)
 
             rs = np.concatenate((rs_1, rs_2))
             zs = np.concatenate((zs_1, zs_2))
@@ -424,7 +476,7 @@ class RayTracer(LazyMutableClass):
     on re-computation time."""
     solution_class = RayTracePath
 
-    def __init__(self, from_point, to_point, ice_model=IceModel, dz=0.001):
+    def __init__(self, from_point, to_point, ice_model=IceModel, dz=1):
         self.from_point = np.array(from_point)
         self.to_point = np.array(to_point)
         self.ice = ice_model
