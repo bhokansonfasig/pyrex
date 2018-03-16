@@ -8,6 +8,10 @@ from pyrex.ice_model import AntarcticIce
 import numpy as np
 
 
+
+#TODO: Update tests for RayTracer instead of PathFinder
+
+
 @pytest.fixture
 def path_finder():
     """Fixture for forming basic PathFinder object"""

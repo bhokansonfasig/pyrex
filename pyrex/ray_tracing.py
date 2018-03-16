@@ -7,7 +7,7 @@ from pyrex.ice_model import AntarcticIce, IceModel
 
 
 
-class RayTracePath(LazyMutableClass):
+class BasicRayTracePath(LazyMutableClass):
     """Class for storing a single ray-trace solution betwen points.
     Calculations preformed by integrating z-steps of size dz."""
     def __init__(self, parent_tracer, launch_angle, direct):
@@ -212,7 +212,7 @@ class RayTracePath(LazyMutableClass):
 
 
 
-class SpecializedRayTracePath(RayTracePath):
+class SpecializedRayTracePath(BasicRayTracePath):
     """Class for storing a single ray-trace solution betwen points.
     Calculations performed using true integral evaluation.
     Ice model must use methods inherited from pyrex.AntarcticIce"""
@@ -470,11 +470,11 @@ class SpecializedRayTracePath(RayTracePath):
 
 
 
-class RayTracer(LazyMutableClass):
+class BasicRayTracer(LazyMutableClass):
     """Class for proper ray tracing. Calculations performed by integrating
     z-steps with size dz. Most properties lazily evaluated to save
     on re-computation time."""
-    solution_class = RayTracePath
+    solution_class = BasicRayTracePath
 
     def __init__(self, from_point, to_point, ice_model=IceModel, dz=1):
         self.from_point = np.array(from_point)
@@ -650,7 +650,7 @@ class RayTracer(LazyMutableClass):
 
 
 
-class SpecializedRayTracer(RayTracer):
+class SpecializedRayTracer(BasicRayTracer):
     """Ray tracer specifically for ice model with index of refraction
     n(z) = n0 - k*exp(a*z). Calculations performed using true integral
     evaluation. Ice model must use methods inherited from pyrex.AntarcticIce"""
@@ -727,6 +727,10 @@ class SpecializedRayTracer(RayTracer):
             return peak_angle
 
 
+
+# Set preferred ray tracer and path to specialized classes
+RayTracer = SpecializedRayTracer
+RayTracePath = SpecializedRayTracePath
 
 
 

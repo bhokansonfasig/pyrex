@@ -4,7 +4,7 @@ ray tracking (no raytracing yet), and hit generation."""
 import numpy as np
 from pyrex.internal_functions import normalize
 from pyrex.signals import AskaryanSignal
-from pyrex.ray_tracing import PathFinder, ReflectedPathFinder
+from pyrex.ray_tracing import RayTracer, RayTracePath
 
 
 class EventKernel:
@@ -14,7 +14,6 @@ class EventKernel:
         self.gen = generator
         self.ice = ice_model
         self.ant_array = antennas
-        self.allow_reflection = True
 
     def event(self):
         """Generate particle, propagate signal through ice to antennas,
@@ -22,17 +21,13 @@ class EventKernel:
         p = self.gen.create_particle()
         n = self.ice.index(p.vertex[2])
         for ant in self.ant_array:
-            pf = PathFinder(self.ice, p.vertex, ant.position)
-            all_paths = [pf]
-            if self.allow_reflection:
-                rpf = ReflectedPathFinder(self.ice, p.vertex, ant.position)
-                all_paths.append(rpf)
+            rt = RayTracer(p.vertex, ant.position)
 
-            for path in all_paths:
-                # If path is invalid, skip it
-                if not(path.exists):
-                    continue
+            # If no path(s) between the points, skip ahead
+            if not rt.exists:
+                continue
 
+            for path in rt.solutions:
                 # p.direction and k should both be unit vectors
                 # epol is (negative) vector rejection of k onto p.direction
                 k = path.received_ray
@@ -42,6 +37,7 @@ class EventKernel:
 
                 psi = np.arccos(np.vdot(p.direction, path.emitted_ray))
                 # TODO: Support angles larger than pi/2
+                # (low priority since these angles are far from cherenkov cone)
                 if psi>np.pi/2:
                     continue
 
