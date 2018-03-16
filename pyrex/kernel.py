@@ -21,7 +21,7 @@ class EventKernel:
         p = self.gen.create_particle()
         n = self.ice.index(p.vertex[2])
         for ant in self.ant_array:
-            rt = RayTracer(p.vertex, ant.position)
+            rt = RayTracer(p.vertex, ant.position, ice_model=self.ice)
 
             # If no path(s) between the points, skip ahead
             if not rt.exists:
