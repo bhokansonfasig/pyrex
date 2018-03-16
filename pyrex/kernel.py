@@ -4,7 +4,7 @@ ray tracking (no raytracing yet), and hit generation."""
 import numpy as np
 from pyrex.internal_functions import normalize
 from pyrex.signals import AskaryanSignal
-from pyrex.ray_tracing import RayTracer, RayTracePath
+from pyrex.ray_tracing import RayTracer
 
 
 class EventKernel:
