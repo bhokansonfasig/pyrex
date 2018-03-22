@@ -122,8 +122,10 @@ class AntarcticIce:
         Supports passing a numpy array of depths and/or frequencies.
         If both are passed as arrays, a 2-D array is returned where
         each row is a single depth and each column is a single frequency."""
-        # w is log of frequency in GHz
-        w = np.log(f*1e-9)
+        # Supress RuntimeWarnings when f==0 temporarily
+        with np.errstate(divide='ignore'):
+            # w is log of frequency in GHz
+            w = np.log(f*1e-9)
 
         # Temperature in kelvin
         t = cls.temperature(z)

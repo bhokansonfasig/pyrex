@@ -234,38 +234,40 @@ class SpecializedRayTracePath(BasicRayTracePath):
     @staticmethod
     def _z_int_uniform_correction(z0, z1, z_uniform, beta, ice, integrand,
                                   derivative_special_case=False):
-        int_z0 = integrand(z0, beta, ice, deep=z0<z_uniform)
-        int_z1 = integrand(z1, beta, ice, deep=z1<z_uniform)
-        if not derivative_special_case:
-            if (z0<z_uniform)==(z1<z_uniform):
-                # z0 and z1 on same side of z_uniform
-                return int_z1 - int_z0
-            else:
-                int_diff = (integrand(z_uniform, beta, ice, deep=True) -
-                            integrand(z_uniform, beta, ice, deep=False))
-                if z0<z1:
-                    # z0 below z_uniform, z1 above z_uniform
-                    return int_z1 - int_z0 + int_diff
-                else:
-                    # z0 above z_uniform, z1 below z_uniform
-                    return int_z1 - int_z0 - int_diff
-        else:
-            # Deal with special case of doing distance integral beta derivative
-            # which includes two bounds instead of just giving indef. integral
-            # FIXME: Somewhat inaccurate, should probably be done differently
-            z_turn = np.log((ice.n0-beta)/ice.k)/ice.a
-            if (z0<z_uniform)==(z1<z_uniform)==(z_turn<z_uniform):
-                # All on same side of z_uniform
-                return int_z0 + int_z1
-            else:
-                int_diff = (integrand(z_uniform, beta, ice, deep=True) -
-                            integrand(z_uniform, beta, ice, deep=False))
+        # Suppress numpy RuntimeWarnings
+        with np.errstate(divide='ignore', invalid='ignore'):
+            int_z0 = integrand(z0, beta, ice, deep=z0<z_uniform)
+            int_z1 = integrand(z1, beta, ice, deep=z1<z_uniform)
+            if not derivative_special_case:
                 if (z0<z_uniform)==(z1<z_uniform):
-                    # z0 and z1 below z_uniform, but z_turn above
-                    return int_z0 + int_z1 - 2*int_diff
+                    # z0 and z1 on same side of z_uniform
+                    return int_z1 - int_z0
                 else:
-                    # z0 or z1 below z_uniform, others above
-                    return int_z0 + int_z1 - int_diff
+                    int_diff = (integrand(z_uniform, beta, ice, deep=True) -
+                                integrand(z_uniform, beta, ice, deep=False))
+                    if z0<z1:
+                        # z0 below z_uniform, z1 above z_uniform
+                        return int_z1 - int_z0 + int_diff
+                    else:
+                        # z0 above z_uniform, z1 below z_uniform
+                        return int_z1 - int_z0 - int_diff
+            else:
+                # Deal with special case of doing distance integral beta derivative
+                # which includes two bounds instead of just giving indef. integral
+                # FIXME: Somewhat inaccurate, should probably be done differently
+                z_turn = np.log((ice.n0-beta)/ice.k)/ice.a
+                if (z0<z_uniform)==(z1<z_uniform)==(z_turn<z_uniform):
+                    # All on same side of z_uniform
+                    return int_z0 + int_z1
+                else:
+                    int_diff = (integrand(z_uniform, beta, ice, deep=True) -
+                                integrand(z_uniform, beta, ice, deep=False))
+                    if (z0<z_uniform)==(z1<z_uniform):
+                        # z0 and z1 below z_uniform, but z_turn above
+                        return int_z0 + int_z1 - 2*int_diff
+                    else:
+                        # z0 or z1 below z_uniform, others above
+                        return int_z0 + int_z1 - int_diff
 
 
 
