@@ -9,7 +9,8 @@ from pyrex.ice_model import AntarcticIce, IceModel
 
 class BasicRayTracePath(LazyMutableClass):
     """Class for storing a single ray-trace solution betwen points.
-    Calculations preformed by integrating z-steps of size dz."""
+    Calculations preformed by integrating z-steps of size dz.
+    Most properties lazily evaluated to save on re-computation time."""
     def __init__(self, parent_tracer, launch_angle, direct):
         self.from_point = parent_tracer.from_point
         self.to_point = parent_tracer.to_point
@@ -21,36 +22,46 @@ class BasicRayTracePath(LazyMutableClass):
 
     @property
     def z_turn_proximity(self):
+        """Parameter for how closely path approaches z_turn.
+        Necessary to avoid diverging integrals."""
+        # Best value of dz/10 determined empirically by checking errors
         return self.dz/10
 
     @property
     def z0(self):
+        """Depth of the launching point."""
         return self.from_point[2]
 
     @property
     def z1(self):
+        """Depth of the receiving point."""
         return self.to_point[2]
 
     @lazy_property
     def n0(self):
+        """Index of refraction of the ice at the launching point."""
         return self.ice.index(self.z0)
 
     @lazy_property
     def rho(self):
+        """Radial distance between the launching and receiving points."""
         u = self.to_point - self.from_point
         return np.sqrt(u[0]**2 + u[1]**2)
 
     @lazy_property
     def phi(self):
+        """Azimuthal angle between the launching and receiving points."""
         u = self.to_point - self.from_point
         return np.arctan2(u[1], u[0])
 
     @lazy_property
     def beta(self):
+        """Launching beta parameter (n(z0) * sin(theta0))."""
         return self.n0 * np.sin(self.theta0)
 
     @lazy_property
     def z_turn(self):
+        """Turning depth of the path."""
         return self.ice.depth_with_index(self.beta)
 
     # @property
@@ -153,6 +164,7 @@ class BasicRayTracePath(LazyMutableClass):
                 n_1_cos_2 = n_1 * np.sqrt(1 - (n_1/n_2*np.sin(theta_1))**2)
                 # n_2 * cos(theta_1):
                 n_2_cos_1 = n_2 * np.cos(theta_1)
+                # TODO: Confirm sign convention here
                 return (n_1_cos_2 - n_2_cos_1) / (n_1_cos_2 + n_2_cos_1)
 
     def attenuation(self, f):
@@ -171,6 +183,7 @@ class BasicRayTracePath(LazyMutableClass):
 
     @lazy_property
     def coordinates(self):
+        """x, y, and z-coordinates along the path (using dz step)."""
         if self.direct:
             n_zs = int(np.abs(self.z1-self.z0)/self.dz)
             zs, dz = np.linspace(self.z0, self.z1, n_zs+1, retstep=True)
@@ -213,9 +226,11 @@ class BasicRayTracePath(LazyMutableClass):
 
 
 class SpecializedRayTracePath(BasicRayTracePath):
-    """Class for storing a single ray-trace solution betwen points.
-    Calculations performed using true integral evaluation.
-    Ice model must use methods inherited from pyrex.AntarcticIce"""
+    """Class for storing a single ray-trace solution betwen points,
+    specifically for ice model with index of refraction
+    n(z) = n0 - k*exp(a*z). Calculations performed using true integral
+    evaluation (except attenuation). Ice model must use methods inherited from
+    pyrex.AntarcticIce"""
     # Factor of index of refraction at which calculations may break down
     uniformity_factor = 0.99999
     # Beta value below which calculations may break down
@@ -223,17 +238,22 @@ class SpecializedRayTracePath(BasicRayTracePath):
 
     @lazy_property
     def valid_ice_model(self):
+        """Whether the ice model being used supports this specialization."""
         return ((isinstance(self.ice, type) and
                  issubclass(self.ice, AntarcticIce))
                 or isinstance(self.ice, AntarcticIce))
 
     @lazy_property
     def z_uniform(self):
+        """Depth beyond which the ice should be treated as uniform.
+        Necessary due to numerical rounding issues."""
         return self.ice.depth_with_index(self.ice.n0 * self.uniformity_factor)
 
     @staticmethod
     def _z_int_uniform_correction(z0, z1, z_uniform, beta, ice, integrand,
                                   derivative_special_case=False):
+        """Function for performing z-integration, taking into account the
+        effect of treating the ice as uniform beyond some depth."""
         # Suppress numpy RuntimeWarnings
         with np.errstate(divide='ignore', invalid='ignore'):
             int_z0 = integrand(z0, beta, ice, deep=z0<z_uniform)
@@ -272,6 +292,8 @@ class SpecializedRayTracePath(BasicRayTracePath):
 
 
     def z_integral(self, integrand, numerical=False, x_func=lambda x: x):
+        """Function for integrating a given integrand along the depths of
+        the path."""
         if not numerical:
             if not self.valid_ice_model:
                 raise TypeError("Ice model must inherit methods from "+
@@ -426,17 +448,36 @@ class SpecializedRayTracePath(BasicRayTracePath):
         def xi(z):
             return np.sqrt(1 - (self.beta/self.ice.index(z))**2)
 
-        def integrand(z):
+        def xi_integrand(z):
             partial_integrand = (self.ice.index(z)**3 / self.beta**2 /
                                  (-self.ice.k*self.ice.a*np.exp(self.ice.a*z)))
-            return (np.vstack(partial_integrand) /
-                    self.ice.attenuation_length(z, fa))
+            alen = self.ice.attenuation_length(z, fa)
+            if alen.ndim<2:
+                return np.vstack(partial_integrand / alen)
+            else:
+                return np.vstack(partial_integrand) / alen
 
-        return (np.exp(-self.z_integral(integrand, numerical=True, x_func=xi))
-                * self.fresnel)
+        def z_integrand(z):
+            partial_integrand = 1 / np.cos(np.arcsin(self.beta /
+                                                     self.ice.index(z)))
+            alen = self.ice.attenuation_length(z, fa)
+            if alen.ndim<2:
+                return np.vstack(partial_integrand / alen)
+            else:
+                return np.vstack(partial_integrand) / alen
+
+        # If beta close to zero, just do the regular integral
+        if np.isclose(self.beta, 0, atol=self.beta_tolerance):
+            return (np.exp(-np.abs(self.z_integral(z_integrand, numerical=True)))
+                    * self.fresnel)
+        # Otherwise, do xi integral designed to avoid singularity at z_turn
+        else:
+            return (np.exp(-np.abs(self.z_integral(xi_integrand, numerical=True, x_func=xi)))
+                    * self.fresnel)
 
     @lazy_property
     def coordinates(self):
+        """x, y, and z-coordinates along the path (using dz step)."""
         def r_int(z0, z1s):
             return np.array([self._z_int_uniform_correction(
                                 z0, z, self.z_uniform, self.beta, self.ice,
@@ -474,8 +515,8 @@ class SpecializedRayTracePath(BasicRayTracePath):
 
 class BasicRayTracer(LazyMutableClass):
     """Class for proper ray tracing. Calculations performed by integrating
-    z-steps with size dz. Most properties lazily evaluated to save
-    on re-computation time."""
+    z-steps with size dz. Most properties lazily evaluated to save on
+    re-computation time."""
     solution_class = BasicRayTracePath
 
     def __init__(self, from_point, to_point, ice_model=IceModel, dz=1):
@@ -487,32 +528,44 @@ class BasicRayTracer(LazyMutableClass):
 
     @property
     def z_turn_proximity(self):
+        """Parameter for how closely path approaches z_turn.
+        Necessary to avoid diverging integrals."""
+        # Best value of dz/10 determined empirically by checking errors
         return self.dz/10
 
     # Calculations performed as if launching from low to high
     @property
     def z0(self):
+        """Depth of lower point. Ray tracing performed as if launching
+        from lower point to higher point."""
         return min([self.from_point[2], self.to_point[2]])
 
     @property
     def z1(self):
+        """Depth of higher point. Ray tracing performed as if launching
+        from lower point to higher point."""
         return max([self.from_point[2], self.to_point[2]])
 
     @lazy_property
     def n0(self):
+        """Index of refraction of the ice at the lower point."""
         return self.ice.index(self.z0)
 
     @lazy_property
     def rho(self):
+        """Radial distance between the launching and receiving points."""
         u = self.to_point - self.from_point
         return np.sqrt(u[0]**2 + u[1]**2)
 
     @lazy_property
     def max_angle(self):
+        """Maximum possible launch angle for rays between the points."""
         return np.arcsin(self.ice.index(self.z1)/self.n0)
 
     @lazy_property
     def peak_angle(self):
+        """Angle at which indirect solutions curve (in r vs angle) peaks.
+        Separates angle intervals for indirect solution root-finding."""
         for angle_step in np.logspace(-3, 0, num=4):
             r_func = (lambda angle, brent_arg:
                       self._indirect_r_prime(angle, brent_arg,
@@ -530,22 +583,27 @@ class BasicRayTracer(LazyMutableClass):
 
     @lazy_property
     def direct_r_max(self):
+        """Maximum r value of direct ray solutions."""
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(self.max_angle))
         return self._direct_r(self.max_angle,
                               force_z1=z_turn-self.z_turn_proximity)
 
     @lazy_property
     def indirect_r_max(self):
+        """Maximum r value of indirect ray solutions."""
         return self._indirect_r(self.peak_angle)
 
     @lazy_property
     def exists(self):
-        return np.any(self.expected_solutions)
+        """Boolean of whether any paths exist between the points."""
+        return True in self.expected_solutions
 
     @lazy_property
     def expected_solutions(self):
+        """List of which types of solutions are expected to exist.
+        0: direct path, 1: indirect path < peak, 2: indirect path > peak."""
         if self.rho<self.direct_r_max:
-            return [True, False, True]
+            return [True, True, False]
         elif self.rho<self.indirect_r_max:
             return [False, True, True]
         else:
@@ -553,7 +611,8 @@ class BasicRayTracer(LazyMutableClass):
 
     @lazy_property
     def solutions(self):
-        """Calculate existing rays between the two points."""
+        """List of existing rays between the two points.
+        Should have zero or two elements."""
         angles = [
             self.direct_angle,
             self.indirect_angle_1,
@@ -567,6 +626,8 @@ class BasicRayTracer(LazyMutableClass):
 
 
     def _direct_r(self, angle, brent_arg=0, force_z1=None):
+        """Returns the r distance of the direct ray for the given launch
+        angle."""
         if force_z1 is not None:
             z1 = force_z1
         else:
@@ -578,6 +639,8 @@ class BasicRayTracer(LazyMutableClass):
         return np.trapz(integrand, dx=dz) - brent_arg
 
     def _indirect_r(self, angle, brent_arg=0):
+        """Returns the r distance of the indirect ray for the given launch
+        angle."""
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
         n_zs_1 = int(np.abs((z_turn-self.z_turn_proximity-self.z0)/self.dz))
         zs_1, dz_1 = np.linspace(self.z0, z_turn-self.z_turn_proximity,
@@ -593,14 +656,18 @@ class BasicRayTracer(LazyMutableClass):
                 np.trapz(integrand_2, dx=-dz_2)) - brent_arg
 
     def _indirect_r_prime(self, angle, brent_arg=0, d_angle=0.001):
+        """Returns the derivative of the r distance of the indirect ray for the
+        given launch angle."""
         return ((self._indirect_r(angle) - self._indirect_r(angle-d_angle))
                 / d_angle) - brent_arg
 
 
     def _get_launch_angle(self, r_function, min_angle=0, max_angle=90):
+        """Calculates the launch angle by finding the root of the given
+        r function."""
         try:
             launch_angle = self.angle_search(self.rho, r_function,
-                                                min_angle, max_angle)
+                                             min_angle, max_angle)
         except RuntimeError:
             # Failed to converge
             launch_angle = None
@@ -613,6 +680,7 @@ class BasicRayTracer(LazyMutableClass):
 
     @lazy_property
     def direct_angle(self):
+        """Launch angle of the direct ray."""
         if self.expected_solutions[0]:
             launch_angle = self._get_launch_angle(self._direct_r,
                                                   max_angle=self.max_angle)
@@ -624,17 +692,10 @@ class BasicRayTracer(LazyMutableClass):
 
     @lazy_property
     def indirect_angle_1(self):
+        """Launch angle of the indirect ray (where the launch angle is less
+        than the peak angle)."""
         if self.expected_solutions[1]:
-            return self._get_launch_angle(self._indirect_r,
-                                          min_angle=self.peak_angle,
-                                          max_angle=self.max_angle)
-        else:
-            return None
-
-    @lazy_property
-    def indirect_angle_2(self):
-        if self.expected_solutions[2]:
-            if self.expected_solutions[1]:
+            if self.expected_solutions[2]:
                 max_angle = self.peak_angle
             else:
                 max_angle = self.max_angle
@@ -643,9 +704,21 @@ class BasicRayTracer(LazyMutableClass):
         else:
             return None
 
+    @lazy_property
+    def indirect_angle_2(self):
+        """Launch angle of the indirect ray (where the launch angle is greater
+        than the peak angle)."""
+        if self.expected_solutions[2]:
+            return self._get_launch_angle(self._indirect_r,
+                                          min_angle=self.peak_angle,
+                                          max_angle=self.max_angle)
+        else:
+            return None
+
     @staticmethod
     def angle_search(true_r, r_function, min_angle, max_angle,
                      tolerance=1e-12, max_iterations=100):
+        """Root-finding algorithm."""
         return scipy.optimize.brentq(r_function, min_angle, max_angle,
                                      args=(true_r), xtol=tolerance,
                                      maxiter=max_iterations)
@@ -659,22 +732,28 @@ class SpecializedRayTracer(BasicRayTracer):
     solution_class = SpecializedRayTracePath
 
     @lazy_property
-    def z_uniform(self):
-        return self.ice.depth_with_index(self.ice.n0 *
-                                         self.solution_class.uniformity_factor)
-
-    @lazy_property
     def valid_ice_model(self):
+        """Whether the ice model being used supports this specialization."""
         return ((isinstance(self.ice, type) and
                  issubclass(self.ice, AntarcticIce))
                 or isinstance(self.ice, AntarcticIce))
 
     @lazy_property
+    def z_uniform(self):
+        """Depth beyond which the ice should be treated as uniform.
+        Necessary due to numerical rounding issues."""
+        return self.ice.depth_with_index(self.ice.n0 *
+                                         self.solution_class.uniformity_factor)
+
+    @lazy_property
     def direct_r_max(self):
+        """Maximum r value of direct ray solutions."""
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(self.max_angle))
         return self._direct_r(self.max_angle, force_z1=z_turn)
 
     def _r_distance(self, theta, z0, z1):
+        """Returns the r distance between given depths for given launch
+        angle."""
         if not self.valid_ice_model:
             raise TypeError("Ice model must inherit methods from "+
                             "pyrex.AntarcticIce")
@@ -685,6 +764,8 @@ class SpecializedRayTracer(BasicRayTracer):
         )
 
     def _r_distance_derivative(self, theta, z0, z1):
+        """Returns the derivative of the r distance between given depths for
+        given launch angle."""
         if not self.valid_ice_model:
             raise TypeError("Ice model must inherit methods from "+
                             "pyrex.AntarcticIce")
@@ -697,6 +778,8 @@ class SpecializedRayTracer(BasicRayTracer):
         )
 
     def _direct_r(self, angle, brent_arg=0, force_z1=None):
+        """Returns the r distance of the direct ray for the given launch
+        angle."""
         if force_z1 is not None:
             z1 = force_z1
         else:
@@ -704,15 +787,21 @@ class SpecializedRayTracer(BasicRayTracer):
         return self._r_distance(angle, self.z0, z1) - brent_arg
 
     def _indirect_r(self, angle, brent_arg=0):
+        """Returns the r distance of the indirect ray for the given launch
+        angle."""
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
         return (self._r_distance(angle, self.z0, z_turn) +
                 self._r_distance(angle, self.z1, z_turn)) - brent_arg
 
     def _indirect_r_prime(self, angle, brent_arg=0):
+        """Returns the derivative of the r distance of the indirect ray for the
+        given launch angle."""
         return self._r_distance_derivative(angle, self.z0, self.z1) - brent_arg
 
     @lazy_property
     def peak_angle(self):
+        """Angle at which indirect solutions curve (in r vs angle) peaks.
+        Separates angle intervals for indirect solution root-finding."""
         try:
             peak_angle = self.angle_search(0, self._indirect_r_prime,
                                            0, self.max_angle)
