@@ -37,6 +37,10 @@ def lazy_property(fn):
 # has not been tested, but it shouldn't be significant compared to the time
 # saved in lazy evaluation of properties
 class LazyMutableClass:
+    """Class whose properties can be lazily evaluated by using lazy_property
+    decorator, but will re-evaluate lazy properties if any of its specified
+    static_attributes change. By default, static_attributes is set to all
+    attributes of the class at the time of the init call."""
     def __init__(self, static_attributes=None):
         # If static_attributes not specified, set to any currently-set attrs
         # Allows for easy setting of static attributes in subclasses

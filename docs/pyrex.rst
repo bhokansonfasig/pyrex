@@ -1,3 +1,5 @@
+.. _pyrex-api:
+
 PyREx API
 =========
 
@@ -25,10 +27,16 @@ Package contents
 
 .. autoclass:: DipoleAntenna
 
+.. autoclass:: AntennaSystem
+    :no-show-inheritance:
+
+.. autoclass:: Detector
+    :no-show-inheritance:
+
 .. autoclass:: IceModel
     :no-show-inheritance:
 
-.. autoclass:: pyrex.ice_model.AntarcticIce
+.. autoclass:: pyrex.ice_model.ArasimIce
 
 .. autofunction:: prem_density
 
@@ -41,10 +49,12 @@ Package contents
     :no-show-inheritance:
 
 .. autoclass:: RayTracer
-    :no-show-inheritance:
+
+.. autoclass:: pyrex.ray_tracing.SpecializedRayTracer
 
 .. autoclass:: RayTracePath
-    :no-show-inheritance:
+
+.. autoclass:: pyrex.ray_tracing.SpecializedRayTracePath
 
 .. autoclass:: EventKernel
     :no-show-inheritance:
@@ -62,6 +72,11 @@ pyrex\.antenna module
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyrex.antenna
+
+pyrex\.detector module
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyrex.detector
 
 pyrex\.ice\_model module
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -87,6 +102,11 @@ pyrex\.kernel module
 ^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyrex.kernel
+
+pyrex\.internal\_functions module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyrex.internal_functions
 
 
 PyREx Custom Subpackage

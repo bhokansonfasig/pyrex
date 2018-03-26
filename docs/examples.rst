@@ -457,32 +457,34 @@ PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos,
 Ray Tracing
 -----------
 
-As of PyREx version 1.4.0 full ray tracing is supported. However, this section has yet to be updated. Complain to Ben about it.
+PyREx provides ray tracing in the ``RayTracer`` and ``RayTracerPath`` classes. ``RayTracer`` takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as ``RayTracerPath`` objects). ::
 
-While PyREx does not currently support full ray tracing, it does provide a ``PathFinder`` class which implements some basic ray analysis by checking for total internal reflection along a straight-line path. ``PathFinder`` takes an ice model and two points as arguments and provides a number of properties and methods regarding the path between the points. ::
+    start = (0, 0, -250) # m
+    finish = (100, 0, -100) # m
+    my_ray_tracer = pyrex.RayTracer(from_point=start, to_point=finish)
 
-    start = (0, 0, -100) # m
-    finish = (0, 0, -250) # m
-    my_path = pyrex.PathFinder(ice_model=pyrex.IceModel,
-                               from_point=start, to_point=finish)
+The two most useful properties of ``RayTracer`` are ``RayTracer.exists`` and ``RayTracer.solutions``. ``RayTracer.exists`` is a boolean value of whether or not path solutions exist between the launch and receiving points. ``RayTracer.solutions`` is the list of (zero or two) ``RayTracerPath`` objects which exist between the launch and receiving points. There are many other properties available in ``RayTracer``, outlined in the `pyrex-api` section, which are mostly used internally and maybe not interesting otherwise. ::
 
-``PathFinder.exists`` is a boolean value of whether or not the path between the points is traversable according to the indices of refraction. ``PathFinder.emitted_ray`` and ``PathFinder.received_ray`` are both unit vectors giving the direction from ``from_point`` to ``to_point``. ``PathFinder.path_length`` is the length in meters of the straight line path between the two points. ::
+    my_ray_tracer.exists
+    my_ray_tracer.solutions
 
-    my_path.exists
-    my_path.emitted_ray
+The ``RayTracerPath`` class contains the attributes of the paths between points. The most useful properties of ``RayTracerPath`` are ``RayTracerPath.tof``, ``RayTracerPath.path_length``, ``RayTracerPath.emitted_direction``, and ``RayTracerPath.received_direction``. These properties provide the time of flight, path length, and direction of rays at the launch and receiving points respectively. ::
+
+    my_path = my_ray_tracer.solutions[0]
+    my_path.tof
     my_path.path_length
+    my_path.emitted_direction
+    my_path.received_direction
 
-``PathFinder.time_of_flight()`` calculates the time it takes for light to traverse the path, with an optional parameter ``n_steps`` defining the precision used. ``PathFinder.tof`` is a convenience property set to the time of flight using the default value of ``n_steps``. ::
+``RayTracePath`` also provides the ``RayTracePath.attenuation()`` method which gives the attenuation of the signal at a given frequency (or frequencies), and the ``RayTracePath.coordinates`` property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not garuanteed to be accurate for other purposes). ::
 
-    my_path.time_of_flight(n_steps=100)
-    my_path.time_of_flight() == my_path.tof
+    frequency = 500e6 # Hz
+    my_path.attenuation(100e6)
+    my_path.attenuation(np.linspace(1e8, 1e9, 11))
+    plt.plot(my_path.coordinates[0], my_path.coordinates[2])
+    plt.show()
 
-``PathFinder.attenuation()`` calculates the attenuation factor along the path for a signal of given frequency. Here again there is an optional parameter ``n_steps`` defining the precision used. ::
-
-    frequency = 1e9 # Hz
-    my_path.attenuation(f=frequency, n_steps=100)
-
-Finally, ``PathFinder.propagate()`` propagates a ``Signal`` object from ``from_point`` to ``to_point`` by applying a ``1/PathFinder.path_length`` factor, applying the frequency attenuation of ``PathFinder.attenuation()``, and shifting the signal times by ``PathFinder.tof``::
+Finally, ``RayTracePath.propagate()`` propagates a ``Signal`` object from the launch point to the receiving point by applying the frequency-dependent attenuation of ``RayTracePath.attenuation()``, and shifting the signal times by ``RayTracePath.tof``. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. ::
 
     time_array = np.linspace(0, 5e-9, 1001)
     my_signal = (pyrex.FunctionSignal(time_array, lambda t: np.sin(1e9*2*np.pi*t))
@@ -491,13 +493,9 @@ Finally, ``PathFinder.propagate()`` propagates a ``Signal`` object from ``from_p
     plt.show()
 
     my_path.propagate(my_signal)
+    my_signal.values /= my_path.path_length
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
-
-
-PyREx also includes a ``ReflectedPathFinder`` class which essentially wraps two ``PathFinder`` objects containing rays which make up a path from the ``from_point`` to the ``to_point``, undergoing total internal reflection at the specified ``reflection_depth``. By default the ``reflection_depth`` is 0, assuming a reflection off of the surface of the ice.
-
-``ReflectedPathFinder`` is interacted with in the same way as ``PathFinder``: ``ReflectedPathFinder.exists`` is a boolean of whether each of the constituent paths exist and total internal reflection is possible at the specified depth. ``ReflectedPathFinder.emitted_ray`` is the emitted ray of the first constituent path and ``ReflectedPathFinder.received_ray`` is the received ray of the second constituent path. ``ReflectedPathFinder.tof`` and ``ReflectedPathFinder.time_of_flight()`` are the sums of the times of flight for the constituent paths (with ``n_step`` passed to each ``time_of_flight`` method). Similarly ``ReflectedPathFinder.attenuation()`` is the product of the attenuations for the constituent paths with ``n_step`` passed to each. And finally ``ReflectedPathFinder.propagate()`` runs the ``propagate`` methods of both constituent paths in sequence.
 
 
 
