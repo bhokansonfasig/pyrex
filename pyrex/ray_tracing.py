@@ -335,6 +335,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
         alpha = ice.n0**2 - beta**2
         n_z = ice.n0 - ice.k*np.exp(ice.a*z)
         gamma = n_z**2 - beta**2
+        gamma = np.where(gamma<0, 0, gamma)
         log_term_1 = ice.n0*n_z - beta**2 - np.sqrt(alpha*gamma)
         log_term_2 = -n_z - np.sqrt(gamma)
         return alpha, n_z, gamma, log_term_1, -log_term_2
@@ -601,9 +602,9 @@ class BasicRayTracer(LazyMutableClass):
     @lazy_property
     def expected_solutions(self):
         """List of which types of solutions are expected to exist.
-        0: direct path, 1: indirect path < peak, 2: indirect path > peak."""
+        0: direct path, 1: indirect path > peak, 2: indirect path < peak."""
         if self.rho<self.direct_r_max:
-            return [True, True, False]
+            return [True, False, True]
         elif self.rho<self.indirect_r_max:
             return [False, True, True]
         else:
@@ -692,26 +693,26 @@ class BasicRayTracer(LazyMutableClass):
 
     @lazy_property
     def indirect_angle_1(self):
-        """Launch angle of the indirect ray (where the launch angle is less
+        """Launch angle of the indirect ray (where the launch angle is greater
         than the peak angle)."""
         if self.expected_solutions[1]:
-            if self.expected_solutions[2]:
-                max_angle = self.peak_angle
-            else:
-                max_angle = self.max_angle
             return self._get_launch_angle(self._indirect_r,
-                                          max_angle=max_angle)
+                                          min_angle=self.peak_angle,
+                                          max_angle=self.max_angle)
         else:
             return None
 
     @lazy_property
     def indirect_angle_2(self):
-        """Launch angle of the indirect ray (where the launch angle is greater
+        """Launch angle of the indirect ray (where the launch angle is less
         than the peak angle)."""
         if self.expected_solutions[2]:
+            if self.expected_solutions[1]:
+                max_angle = self.peak_angle
+            else:
+                max_angle = self.max_angle
             return self._get_launch_angle(self._indirect_r,
-                                          min_angle=self.peak_angle,
-                                          max_angle=self.max_angle)
+                                          max_angle=max_angle)
         else:
             return None
 
