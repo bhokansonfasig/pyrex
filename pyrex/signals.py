@@ -108,6 +108,9 @@ class Signal:
             responses = np.array(freq_response(self.frequencies))
         # Otherwise evaluate responses one at a time
         except ValueError:
+            logger.debug("Frequency response function %r could not be "+
+                         "evaluated for multiple frequencies at once",
+                         freq_response)
             responses = np.zeros(len(filtered_spectrum))
             for i, f in enumerate(self.frequencies):
                 responses[i] = freq_response(f)
@@ -162,6 +165,8 @@ class SlowAskaryanSignal(Signal):
     from source to observer. R is assumed to be 1 meter so that dividing by a
     different value produces the proper result."""
     def __init__(self, times, energy, theta, n=1.78, t0=0):
+        logger.warning("SlowAskaryanSignal is deprecated, use "+
+                       "FastAskaryanSignal (aliased to AskaryanSignal) instead")
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
         #   A(theta,t) = integral(Q(z) * RAC(t-z(1-n*cos(theta))/c))
@@ -291,6 +296,8 @@ class FastAskaryanSignal(Signal):
         dt_divider = 1
         while np.abs(dz/self.max_length()) > 0.1:
             dt_divider *= 2
+            logger.debug("z-step of %g too small; dt_divider changed to %g",
+                         dz, dt_divider)
             dz = dt / dt_divider / z_to_t
 
         # Create the charge-profile array up to 2.5 times the nominal
@@ -320,6 +327,7 @@ class FastAskaryanSignal(Signal):
         n_extra_end = 0
         t_tolerance = 1e-9
         while t_min >= -t_tolerance or t_max <= t_tolerance:
+            logger.debug("t_RAC_vals bad, expanding RAC")
             n_RAC = (len(times)*dt_divider + 1 - n_Q
                      + n_extra_beginning + n_extra_end)
             t_min = times[0] - t0 - n_extra_beginning * dz * z_to_t

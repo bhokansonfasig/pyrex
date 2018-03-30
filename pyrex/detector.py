@@ -24,12 +24,16 @@ class AntennaSystem:
         """Setup the antenna by passing along its init arguments.
         This function can be overwritten if desired, just make sure to assign
         the self.antenna attribute in the function."""
+        logger.debug("Using default setup_antenna from "+
+                     "pyrex.detector.AntennaSystem")
         self.antenna = self._antenna_class(*args, **kwargs)
 
     def front_end(self, signal):
         """This function should take the signal passed (from the antenna) and
         return the resulting signal after all processing by the antenna system's
         front-end. By default it just returns the given signal."""
+        logger.debug("Using default front_end from "+
+                     "pyrex.detector.AntennaSystem")
         return signal
 
     @property
@@ -115,6 +119,8 @@ class Detector:
         """Not implemented. Should generates positions for the antennas based
         on the given arguments and assign those positions to the
         antenna_positions attribute."""
+        logger.debug("Using default set_positions from "+
+                     "pyrex.detector.Detector")
         raise NotImplementedError("set_positions method must be implemented "
                                   +"by inheriting class")
 
@@ -123,6 +129,8 @@ class Detector:
         By default takes an antenna class and passes a position to the
         'position' argument, followed by the keyword arguments passed to this
         function."""
+        logger.debug("Using default build_antennas from "+
+                     "pyrex.detector.Detector")
         self.antennas = []
         for pos in self.antenna_positions:
             self.antennas.append(antenna_class(position=pos, **kwargs))

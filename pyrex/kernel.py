@@ -22,12 +22,14 @@ class EventKernel:
         """Generate particle, propagate signal through ice to antennas,
         process signal at antennas, and return the original particle."""
         p = self.gen.create_particle()
+        logger.info("Processing event for %s", p)
         n = self.ice.index(p.vertex[2])
         for ant in self.ant_array:
             rt = RayTracer(p.vertex, ant.position, ice_model=self.ice)
 
             # If no path(s) between the points, skip ahead
             if not rt.exists:
+                logger.debug("Ray paths do not exist")
                 continue
 
             for path in rt.solutions:
@@ -39,6 +41,7 @@ class EventKernel:
                 # (antenna directly on shower axis), just let epol be all zeros
 
                 psi = np.arccos(np.vdot(p.direction, path.emitted_direction))
+                logger.debug("Angle to antenna is %f degrees", np.degrees(psi))
                 # TODO: Support angles larger than pi/2
                 # (low priority since these angles are far from cherenkov cone)
                 if psi>np.pi/2:

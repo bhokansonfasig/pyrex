@@ -161,11 +161,15 @@ class Antenna:
         """Function to calculate the directive electric field gain of the
         antenna at given angles theta (polar) and phi (azimuthal)
         relative to the antenna's orientation."""
+        logger.debug("Using default directional_gain from "+
+                     "pyrex.antenna.Antenna")
         return 1
 
     def polarization_gain(self, polarization):
         """Function to calculate the electric field gain due to polarization
         for a given polarization direction."""
+        logger.debug("Using default polarization_gain from "+
+                     "pyrex.antenna.Antenna")
         return 1
 
     def response(self, frequencies):
@@ -173,12 +177,14 @@ class Antenna:
         given frequencies (Hz). This function should return the response as
         imaginary numbers, where the real part is the amplitude response and
         the imaginary part is the phase response."""
+        logger.debug("Using default response from "+
+                     "pyrex.antenna.Antenna")
         return np.ones(len(frequencies))
 
     def receive(self, signal, origin=None, polarization=None):
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
-        but should end with super().receive(signal)."""
+        but should likely end with super().receive(signal)."""
         copy = Signal(signal.times, signal.values,
                       value_type=Signal.ValueTypes.voltage)
         copy.filter_frequencies(self.response)

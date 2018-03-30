@@ -40,10 +40,10 @@ class Particle:
         self.direction = normalize(direction)
         self.energy = energy
 
-    def __repr__(self):
+    def __str__(self):
         string = self.__class__.__name__+"("
         for key, val in self.__dict__.items():
-            string += key+"="+val.__repr__()+", "
+            string += key+"="+repr(val)+", "
         return string[:-2]+")"
 
 def random_direction():
