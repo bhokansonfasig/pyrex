@@ -1,7 +1,11 @@
 """Helper functions for use in PyREx modules."""
 
 import copy
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
 
 def normalize(vector):
     """Returns the normalized form of the given vector."""

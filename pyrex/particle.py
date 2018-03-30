@@ -1,9 +1,12 @@
 """Module for particles (namely neutrinos) and neutrino interactions in the ice.
 Interactions include Earth shadowing (absorption) effect."""
 
+import logging
 import numpy as np
 from pyrex.internal_functions import normalize
 import pyrex.earth_model as earth_model
+
+logger = logging.getLogger(__name__)
 
 AVOGADRO_NUMBER = 6.02e23
 
@@ -36,6 +39,12 @@ class Particle:
         self.vertex = np.array(vertex)
         self.direction = normalize(direction)
         self.energy = energy
+
+    def __repr__(self):
+        string = self.__class__.__name__+"("
+        for key, val in self.__dict__.items():
+            string += key+"="+val.__repr__()+", "
+        return string[:-2]+")"
 
 def random_direction():
     """Generate an arbitrary 3D unit vector."""
@@ -87,7 +96,10 @@ class ShadowGenerator:
         self.count += 1
         rand_exponential = np.random.exponential()
         if rand_exponential > x:
-            return Particle(vtx, u, E)
+            p = Particle(vtx, u, E)
+            logger.debug("Successfully created %s", p)
+            return p
         else:
             # Particle was shadowed by the earth. Try again
+            logger.debug("Particle creation shadowed by the Earth")
             return self.create_particle()

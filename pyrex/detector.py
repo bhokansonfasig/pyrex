@@ -1,6 +1,9 @@
 """Module containing higher-level AntennaSystem and Detector classes"""
 
 import inspect
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AntennaSystem:

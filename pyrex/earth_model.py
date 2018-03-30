@@ -2,9 +2,13 @@
 and a simple integrator for calculation of the slant depth as a function of
 nadir angle."""
 
+import logging
 import numpy as np
 
+logger = logging.getLogger(__name__)
+
 EARTH_RADIUS = 6371e3
+
 
 def prem_density(r):
     """Returns the earth's density (g/cm^3) for a given radius r (m).

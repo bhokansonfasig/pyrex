@@ -1,7 +1,11 @@
 """Module containing ice models. Ice model classes contains static and class
 methods for convenience. IceModel class is set to the preferred ice model."""
 
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
 
 class AntarcticIce:
     """Class containing characteristics of ice at the south pole.

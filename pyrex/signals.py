@@ -1,9 +1,12 @@
 """Module containing classes for digital signal processing"""
 
 from enum import Enum
+import logging
 import numpy as np
 import scipy.signal
 import scipy.fftpack
+
+logger = logging.getLogger(__name__)
 
 
 class Signal:
@@ -151,10 +154,10 @@ class FunctionSignal(Signal):
 
 
 class SlowAskaryanSignal(Signal):
-    """Askaryan pulse binned to times from neutrino with given energy (GeV)
-    observed at angle theta (radians). Optional parameters are the index of
-    refraction n, and pulse offset to start time t0 (s). Returned signal
-    values are electric fields (V/m).\n
+    """Askaryan pulse binned to times from a particle shower with given energy
+    (GeV) observed at angle theta (radians) from the shower axis.
+    Optional parameters are the index of refraction n, and pulse offset
+    to start time t0 (s). Returned signal values are electric fields (V/m).\n
     Note that the amplitude of the pulse goes as 1/R, where R is the distance
     from source to observer. R is assumed to be 1 meter so that dividing by a
     different value produces the proper result."""
@@ -250,10 +253,10 @@ class SlowAskaryanSignal(Signal):
 
 
 class FastAskaryanSignal(Signal):
-    """Askaryan pulse binned to times from neutrino with given energy (GeV)
-    observed at angle theta (radians). Optional parameters are the index of
-    refraction n, and pulse offset to start time t0 (s). Returned signal
-    values are electric fields (V/m).\n
+    """Askaryan pulse binned to times from a particle shower with given energy
+    (GeV) observed at angle theta (radians) from the shower axis.
+    Optional parameters are the index of refraction n, and pulse offset
+    to start time t0 (s). Returned signal values are electric fields (V/m).\n
     Note that the amplitude of the pulse goes as 1/R, where R is the distance
     from source to observer. R is assumed to be 1 meter so that dividing by a
     different value produces the proper result."""

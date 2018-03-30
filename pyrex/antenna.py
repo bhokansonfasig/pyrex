@@ -1,11 +1,14 @@
 """Module containing antenna class capable of receiving signals"""
 
+import logging
 import numpy as np
 import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal, ThermalNoise, EmptySignal
 from pyrex.ice_model import IceModel
+
+logger = logging.getLogger(__name__)
 
 
 class Antenna:

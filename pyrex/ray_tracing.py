@@ -1,10 +1,12 @@
 """Module containing class for ray tracing through the ice."""
 
+import logging
 import numpy as np
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
 from pyrex.ice_model import AntarcticIce, IceModel
 
+logger = logging.getLogger(__name__)
 
 
 class BasicRayTracePath(LazyMutableClass):

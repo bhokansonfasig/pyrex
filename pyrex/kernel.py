@@ -1,10 +1,13 @@
 """Module for the simulation kernel. Includes neutrino generation,
 ray tracking (no raytracing yet), and hit generation."""
 
+import logging
 import numpy as np
 from pyrex.internal_functions import normalize
 from pyrex.signals import AskaryanSignal
 from pyrex.ray_tracing import RayTracer
+
+logger = logging.getLogger(__name__)
 
 
 class EventKernel:
@@ -40,6 +43,9 @@ class EventKernel:
                 # (low priority since these angles are far from cherenkov cone)
                 if psi>np.pi/2:
                     continue
+
+                # FIXME: Use shower energy for AskaryanSignal
+                # Dependent on shower type / neutrino type
 
                 times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False)
                 pulse = AskaryanSignal(times=times, energy=p.energy,
