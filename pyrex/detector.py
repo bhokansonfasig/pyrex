@@ -20,6 +20,10 @@ class AntennaSystem:
         self._all_waveforms = []
         self._triggers = []
 
+    def __str__(self):
+        return (self.__class__.__name__+"(position="+
+                repr(self.antenna.position)+")")
+
     def setup_antenna(self, *args, **kwargs):
         """Setup the antenna by passing along its init arguments.
         This function can be overwritten if desired, just make sure to assign

@@ -29,7 +29,7 @@ class EventKernel:
 
             # If no path(s) between the points, skip ahead
             if not rt.exists:
-                logger.debug("Ray paths do not exist")
+                logger.debug("Ray paths to %s do not exist", ant)
                 continue
 
             for path in rt.solutions:
@@ -41,7 +41,7 @@ class EventKernel:
                 # (antenna directly on shower axis), just let epol be all zeros
 
                 psi = np.arccos(np.vdot(p.direction, path.emitted_direction))
-                logger.debug("Angle to antenna is %f degrees", np.degrees(psi))
+                logger.debug("Angle to %s is %f degrees", ant, np.degrees(psi))
                 # TODO: Support angles larger than pi/2
                 # (low priority since these angles are far from cherenkov cone)
                 if psi>np.pi/2:

@@ -35,6 +35,9 @@ class Antenna:
         self._noises = []
         self._triggers = []
 
+    def __str__(self):
+        return self.__class__.__name__+"(position="+repr(self.position)+")"
+
     def set_orientation(self, z_axis=[0,0,1], x_axis=[1,0,0]):
         self.z_axis = normalize(z_axis)
         self.x_axis = normalize(x_axis)
