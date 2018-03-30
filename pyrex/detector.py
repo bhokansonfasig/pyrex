@@ -24,8 +24,6 @@ class AntennaSystem:
         """Setup the antenna by passing along its init arguments.
         This function can be overwritten if desired, just make sure to assign
         the self.antenna attribute in the function."""
-        logger.debug("Using default setup_antenna from "+
-                     "pyrex.detector.AntennaSystem")
         self.antenna = self._antenna_class(*args, **kwargs)
 
     def front_end(self, signal):
