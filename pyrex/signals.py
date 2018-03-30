@@ -337,7 +337,8 @@ class FastAskaryanSignal(Signal):
             if t_max <= t_tolerance:
                 n_extra_end += n_Q
         if n_extra_beginning!=0 or n_extra_end!=0:
-            logger.debug("t_RAC_vals bad, extra points added")
+            logger.debug("t_RAC_vals bad, %i extra points added",
+                         n_extra_beginning+n_extra_end)
         t_RAC_vals = np.arange(n_RAC) * dz * z_to_t + t_min
         RA_C = np.zeros(n_RAC)
         for i, t in enumerate(t_RAC_vals):
