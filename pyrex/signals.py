@@ -296,9 +296,10 @@ class FastAskaryanSignal(Signal):
         dt_divider = 1
         while np.abs(dz/self.max_length()) > 0.1:
             dt_divider *= 2
-            logger.debug("z-step of %g too small; dt_divider changed to %g",
-                         dz, dt_divider)
             dz = dt / dt_divider / z_to_t
+        if dt_divider!=1:
+            logger.debug("z-step of %g too large; dt_divider changed to %g",
+                         dt / z_to_t, dt_divider)
 
         # Create the charge-profile array up to 2.5 times the nominal
         # maximum shower length (to reduce errors)
@@ -327,7 +328,6 @@ class FastAskaryanSignal(Signal):
         n_extra_end = 0
         t_tolerance = 1e-9
         while t_min >= -t_tolerance or t_max <= t_tolerance:
-            logger.debug("t_RAC_vals bad, expanding RAC")
             n_RAC = (len(times)*dt_divider + 1 - n_Q
                      + n_extra_beginning + n_extra_end)
             t_min = times[0] - t0 - n_extra_beginning * dz * z_to_t
@@ -336,6 +336,8 @@ class FastAskaryanSignal(Signal):
                 n_extra_beginning += n_Q
             if t_max <= t_tolerance:
                 n_extra_end += n_Q
+        if n_extra_beginning!=0 or n_extra_end!=0:
+            logger.debug("t_RAC_vals bad, extra points added")
         t_RAC_vals = np.arange(n_RAC) * dz * z_to_t + t_min
         RA_C = np.zeros(n_RAC)
         for i, t in enumerate(t_RAC_vals):
