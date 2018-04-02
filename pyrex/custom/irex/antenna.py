@@ -352,3 +352,32 @@ class IREXCoxeterClusters(IREXDetector):
                     for k in range(n_z):
                         z = lowest_antenna + dz*k
                         self.antenna_positions.append((x,y,z))
+
+
+class IREXPairedGrid(IREXDetector):
+    """Class for (semi)automatically generating a rectangular grid of strings
+    of antennas, which can then be iterated over."""
+    def set_positions(self, number_of_strings=1, string_separation=500,
+                      antennas_per_string=16, antenna_separation=10,
+                      lowest_antenna=-95, antennas_per_clump=2,
+                      clump_separation=1):
+        """Generates antenna positions in a grid of strings.
+        Takes as arguments the number of strings, the distance between strings,
+        the number of antennas per string, the separation (in z) of the
+        antennas on the string, and the position of the lowest antenna."""
+        self.antenna_positions = []
+        n_x = int(np.sqrt(number_of_strings))
+        n_y = int(number_of_strings/n_x)
+        n_z = antennas_per_string
+        dx = string_separation
+        dy = string_separation
+        dz = antenna_separation
+        for i in range(n_x):
+            x = -dx*n_x/2 + dx/2 + dx*i
+            for j in range(n_y):
+                y = -dy*n_y/2 + dy/2 + dy*j
+                for k in range(int(n_z/antennas_per_clump)):
+                    z = lowest_antenna + dz*k
+                    for L in range(antennas_per_clump):
+                        self.antenna_positions.append((x, y,
+                                                       z+L*clump_separation))
