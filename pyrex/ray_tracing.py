@@ -83,9 +83,10 @@ class BasicRayTracePath(LazyMutableClass):
     def received_direction(self):
         """Direction ray is travelling when it is received."""
         if self.direct:
+            sign = np.sign(np.cos(self.theta0))
             return np.array([np.sin(self.theta(self.z1)) * np.cos(self.phi),
                              np.sin(self.theta(self.z1)) * np.sin(self.phi),
-                             np.cos(self.theta(self.z1))])
+                             sign*np.cos(self.theta(self.z1))])
         else:
             return np.array([np.sin(self.theta(self.z1)) * np.cos(self.phi),
                              np.sin(self.theta(self.z1)) * np.sin(self.phi),
@@ -337,6 +338,13 @@ class SpecializedRayTracePath(BasicRayTracePath):
         alpha = ice.n0**2 - beta**2
         n_z = ice.n0 - ice.k*np.exp(ice.a*z)
         gamma = n_z**2 - beta**2
+        # Prevent errors when gamma is a very small negative number due to
+        # numerical rounding errors. This could cause other problems for cases
+        # where a not-tiny negative gamma would have meant nans but now leads to
+        # non-nan values. It appears this only occurs when the launch angle
+        # is greater than the maximum value allowed in the ray tracer however,
+        # so it's likely alright. If problems arise, replace with gamma<0 and
+        # np.isclose(gamma, 0) or similar
         gamma = np.where(gamma<0, 0, gamma)
         log_term_1 = ice.n0*n_z - beta**2 - np.sqrt(alpha*gamma)
         log_term_2 = -n_z - np.sqrt(gamma)
@@ -492,6 +500,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
             n_zs = int(np.abs(self.z1-self.z0)/self.dz)
             zs = np.linspace(self.z0, self.z1, n_zs+1)
             rs = r_int(self.z0, zs)
+            rs *= np.sign(np.cos(self.theta0))
 
         else:
             n_zs_1 = int(np.abs(self.z_turn-self.z0)/self.dz)
