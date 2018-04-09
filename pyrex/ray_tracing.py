@@ -614,6 +614,8 @@ class BasicRayTracer(LazyMutableClass):
     def expected_solutions(self):
         """List of which types of solutions are expected to exist.
         0: direct path, 1: indirect path > peak, 2: indirect path < peak."""
+        if self.from_point[2]>0 or self.to_point[2]>0:
+            return [False, False, False]
         if self.rho<self.direct_r_max:
             return [True, False, True]
         elif self.rho<self.indirect_r_max:
