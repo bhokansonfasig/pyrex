@@ -35,6 +35,8 @@ def full_vertex_reconstruction(detector, threshold=None,
 
 
 def get_xcorr_times(waveforms):
+    if len(waveforms)==0:
+        raise ValueError("Need at least one waveform")
     delays = [0]
     time_delay = 0
     for a, b in zip(waveforms[:-1], waveforms[1:]):
