@@ -10,8 +10,11 @@ def quick_vertex_reconstruction(detector, threshold=None,
                                 get_waveform=lambda ant: ant.all_waveforms[0]):
     triggered_antennas = [ant for ant in detector
                           if ant.trigger(get_waveform(ant))]
-    reco_antennas = [ant for ant in triggered_antennas
-                     if np.max(get_waveform(ant).values)>threshold]
+    if threshold is None:
+        reco_antennas = triggered_antennas
+    else:
+        reco_antennas = [ant for ant in triggered_antennas
+                         if np.max(get_waveform(ant).values)>threshold]
     reco_positions = [np.array(ant.position) for ant in reco_antennas]
     reco_times = get_xcorr_times([get_waveform(ant) for ant in reco_antennas])
     return bancroft_scan_vertex(reco_positions, reco_times)
@@ -21,8 +24,11 @@ def full_vertex_reconstruction(detector, threshold=None,
                                get_waveform=lambda ant: ant.all_waveforms[0]):
     triggered_antennas = [ant for ant in detector
                           if ant.trigger(get_waveform(ant))]
-    reco_antennas = [ant for ant in triggered_antennas
-                     if np.max(get_waveform(ant).values)>threshold]
+    if threshold is None:
+        reco_antennas = triggered_antennas
+    else:
+        reco_antennas = [ant for ant in triggered_antennas
+                         if np.max(get_waveform(ant).values)>threshold]
     reco_positions = [np.array(ant.position) for ant in reco_antennas]
     reco_times = get_xcorr_times([get_waveform(ant) for ant in reco_antennas])
     return minimizer_vertex_reconstruction(reco_positions, reco_times)
