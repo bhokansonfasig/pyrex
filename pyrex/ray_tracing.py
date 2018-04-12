@@ -685,6 +685,10 @@ class BasicRayTracer(LazyMutableClass):
         except RuntimeError:
             # Failed to converge
             launch_angle = None
+        except ValueError:
+            logger.error("Error calculating launch angle between %s and %s",
+                         self.from_point, self.to_point)
+            raise
 
         # Convert to true launch angle from self.from_point
         # rather than from lower point (self.z0)
