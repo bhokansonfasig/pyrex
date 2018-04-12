@@ -65,7 +65,8 @@ class ShadowGenerator:
     """Class to generate UHE neutrino vertices in (relatively) shallow
     detectors. Takes into accout Earth shadowing (sort of).
     energy_generator should be a function that returns a particle energy
-    in GeV."""
+    in GeV. Note that the x and y ranges are (-dx/2, dx/2) and (-dy/2, dy/2)
+    while the z range is (-z, 0)."""
     def __init__(self, dx, dy, dz, energy_generator):
         self.dx = dx
         self.dy = dy
