@@ -1,0 +1,135 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Custom Sub-Package &#8212; PyREx 1.4.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PyREx API" href="pyrex.html" />
+    <link rel="prev" title="Code Examples" href="examples.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="custom-sub-package">
+<span id="custom-package"></span><h1>Custom Sub-Package<a class="headerlink" href="#custom-sub-package" title="Permalink to this headline">¶</a></h1>
+<p>While the PyREx package provides a basis for simulation, the real benefits come in customizing the analysis for different purposes. To this end the custom sub-package allows for plug-in style modules to be distributed for different collaborations.</p>
+<p>By default PyREx comes with a custom module for IREX (IceCube Radio Extension) accessible at <code class="docutils literal"><span class="pre">pyrex.custom.irex</span></code>. This module includes a more thorough <code class="docutils literal"><span class="pre">IREXAntennaSystem</span></code> class inheriting from the <code class="docutils literal"><span class="pre">AntennaSystem</span></code> class which adds a front-end for amplifying the signal, processing signal envelopes, and downsampling the result. It also includes an <code class="docutils literal"><span class="pre">IREXDetector</span></code> class designed to easily produce different geometries of <code class="docutils literal"><span class="pre">IREXAntennaSystem</span></code> objects.</p>
+<p>Other institutions and research groups are encouraged to create their own custom modules to integrate with PyREx. These modules have full access to PyREx as if they were a native part of the package. When PyREx is loaded it automatically scans for these custom modules in certain parts of the filesystem and includes any modules that it can find.
+The first place searched is the <code class="docutils literal"><span class="pre">custom</span></code> directory in the PyREx package itself. Next, if a <code class="docutils literal"><span class="pre">.pyrex-custom</span></code> directory exists in the user’s home directory (note the leading <code class="docutils literal"><span class="pre">.</span></code>), its subdirectories are searched for <code class="docutils literal"><span class="pre">custom</span></code> directories and any modules in these directories are included. Finally, if a <code class="docutils literal"><span class="pre">pyrex-custom</span></code> directory exists in the current working directory (this time without the leading <code class="docutils literal"><span class="pre">.</span></code>), its subdirectories are similarly scanned for modules inside <code class="docutils literal"><span class="pre">custom</span></code> directories. Note that if any name-clashing occurs, the first result found takes precedence (without warning). Additionally, none of these <code class="docutils literal"><span class="pre">custom</span></code> directories should contain an <code class="docutils literal"><span class="pre">__init__.py</span></code> file, or else the plug-in system may not work (For more information on the implementation, see PEP 420 and/or David Beazley’s 2015 PyCon talk on Modules and Packages at <a class="reference external" href="https://youtu.be/0oTh1CXRaQ0?t=1h25m45s">https://youtu.be/0oTh1CXRaQ0?t=1h25m45s</a>).</p>
+<p>As an example, in the following filesystem layout available custom modules are <code class="docutils literal"><span class="pre">pyrex.custom.pyspice</span></code>, <code class="docutils literal"><span class="pre">pyrex.custom.irex</span></code>, <code class="docutils literal"><span class="pre">pyrex.custom.ara</span></code>, <code class="docutils literal"><span class="pre">pyrex.custom.ariana</span></code>, and <code class="docutils literal"><span class="pre">pyrex.custom.my_analysis</span></code>:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>/path/to/site-packages/pyrex/
+|-- __init__.py
+|-- signals.py
+|-- antenna.py
+|-- ...
+|-- custom/
+|   |-- pyspice.py
+|   |-- irex/
+|   |   |-- __init__.py
+|   |   |-- antenna.py
+|   |   |-- ...
+
+/path/to/home_dir/.pyrex-custom/
+|-- ara/
+|   |-- custom/
+|   |   |-- ara/
+|   |   |   |-- __init__.py
+|   |   |   |-- antenna.py
+|   |   |   |-- ...
+|-- ariana/
+|   |-- custom/
+|   |   |-- ariana.py
+
+/path/to/cwd/pyrex-custom/
+|-- my_analysis_module/
+|   |-- custom/
+|   |   |-- my_analysis.py
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="examples.html" title="previous chapter">Code Examples</a></li>
+      <li>Next: <a href="pyrex.html" title="next chapter">PyREx API</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/customize.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Benjamin Hokanson-Fasig.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/customize.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

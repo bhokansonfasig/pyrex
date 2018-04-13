@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
 SPHINXPROJ    = PyREx
 SOURCEDIR     = .
-BUILDDIR      = _build
+BUILDDIR      = build
 
 PDF = ../PyREx Documentation.pdf
 

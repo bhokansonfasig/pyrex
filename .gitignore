@@ -17,8 +17,9 @@ __pycache__/
 tests/Bug*
 tests/bug*
 
-# Sphinx documentation build directory
-docs/_build/*
+# Sphinx documentation build directory (except html subdirectory)
+docs/build/*
+!docs/build/html
 
 # egg-related files
 *.egg*
