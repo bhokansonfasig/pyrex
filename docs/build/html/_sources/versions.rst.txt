@@ -1,8 +1,10 @@
 Version History
-===============
+***************
 
 Version 1.4.1
--------------
+=============
+
+.. rubric:: Changes
 
 * Improved ray tracing and defaulted to the almost completely analytical ``SpecializedRayTracer`` and ``SpecializedRayTracePath`` classes as ``RayTracer`` and ``RayTracePath``
 
@@ -11,45 +13,67 @@ Version 1.4.1
 
 
 Version 1.4.0
--------------
+=============
+
+.. rubric:: New Features
 
 * Implemented full ray tracing in the ``RayTracer`` and ``RayTracePath`` classes.
 
 
 
 Version 1.3.1
--------------
+=============
 
-* Changed neutrino interaction model to include all neutrino and anti-neutrino interactions rather than only charged-current neutrino (relevant for ``ShadowGenerator`` class).
+.. rubric:: New Features
 
 * Added diode bridge rectifier envelope circuit analytic model to ``irex.frontends`` and made it the default analytic envelope model in ``IREXAntennaSystem``.
 
 * Added ``allow_reflection`` attribute to ``EventKernel`` class to determine whether ``ReflectedPathFinder`` solutions should be allowed.
 
 
+.. rubric:: Changes
+
+* Changed neutrino interaction model to include all neutrino and anti-neutrino interactions rather than only charged-current neutrino (relevant for ``ShadowGenerator`` class).
+
+
 
 Version 1.3.0
--------------
+=============
+
+.. rubric:: New Features
 
 * Added and implemented ``ReflectedPathFinder`` class for rays which undergo total internal reflection and subsequently reach an antenna.
 
-* Improve performance of ice index calculated at many depths.
+
+.. rubric:: Changes
 
 * Change ``AksaryanSignal`` angle to always be positive and remove < 90 degree restriction (Alvarez-Muniz, Romero-Wolf, & Zas paper suggests the algorithm should work for all angles).
 
 
+.. rubric:: Performance Improvements
+
+* Improve performance of ice index calculated at many depths.
+
+
 
 Version 1.2.1
--------------
+=============
+
+.. rubric:: New Features
 
 * Added ``set_orientation`` function to ``Antenna`` class for setting the ``z_axis`` and ``x_axis`` attributes appropriately.
 
-* Fix bug where ``Antenna._convert_to_antenna_coordinates`` function was returning coordinates relative to (0,0,0) rather than the antenna's position.
+
+.. rubric:: Bug Fixes
+
+* Fixed bug where ``Antenna._convert_to_antenna_coordinates`` function was returning coordinates relative to (0,0,0) rather than the antenna's position.
 
 
 
 Version 1.2.0
--------------
+=============
+
+.. rubric:: Changes
 
 * Changed ``custom`` module to a package containing ``irex`` module.
 
@@ -58,22 +82,29 @@ Version 1.2.0
 
 
 Version 1.1.2
--------------
+=============
+
+.. rubric:: New Features
 
 * Added ``with_times`` method to ``Signal`` class for interpolation/extrapolation of signals to different times.
+
+* Added ``full_waveform`` and ``is_hit_during`` methods to ``Antenna`` class for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.
+
+* Added ``front_end_processing`` method to ``IREXAntenna`` for processing envelope, amplifying signal, and downsampling result (downsampling currently inactive).
+
+
+.. rubric:: Changes
 
 * Change ``Antenna.make_noise`` to use a single master noise object and use ``with_times`` to calculate noise at different times.
 
     * To ensure noise is not obviously periodic (for <100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.
 
-* Add ``full_waveform`` and ``is_hit_during`` methods to ``Antenna`` class for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.
-
-* Added ``front_end_processing`` method to ``IREXAntenna`` for processing envelope, amplifying signal, and downsampling result (downsampling currently inactive).
-
 
 
 Version 1.1.1
--------------
+=============
+
+.. rubric:: Changes
 
 * Moved ``ValueTypes`` inside ``Signal`` class. Now access as ``Signal.ValueTypes.voltage``, etc.
 
@@ -82,9 +113,9 @@ Version 1.1.1
 
 
 Version 1.1.0
--------------
+=============
 
-* Made units consistent across PyREx.
+.. rubric:: New Features
 
 * Added ``directional_gain`` and ``polarization_gain`` methods to base ``Antenna``.
 
@@ -94,29 +125,46 @@ Version 1.1.0
 
     * ``antenna_factor`` and ``efficiency`` attributes added to ``Antenna`` for more flexibility.
 
-* Added ability to define ``Antenna`` noise by RMS voltage rather than temperature and resistance if desired.
-
 * Added ``value_type`` attribute to ``Signal`` class and derived classes.
 
     * Current value types are ``ValueTypes.undefined``, ``ValueTypes.voltage``, ``ValueTypes.field``, and ``ValueTypes.power``.
 
     * ``Signal`` objects now must have the same ``value_type`` to be added (though those with ``ValueTypes.undefined`` can be coerced).
 
+
+.. rubric:: Changes
+
+* Made units consistent across PyREx.
+
+* Added ability to define ``Antenna`` noise by RMS voltage rather than temperature and resistance if desired.
+
 * Allow ``DipoleAntenna`` to guess at ``effective_height`` if not specified.
+
+
+.. rubric:: Performance Improvements
 
 * Increase speed of ``IceModel.__atten_coeffs`` method, resulting in increased speed of attenuation length calculations.
 
 
 
 Version 1.0.3
--------------
+=============
+
+.. rubric:: New Features
 
 * Added ``custom`` module to contain classes and functions specific to the IREX project.
 
 
 
 Version 1.0.2
--------------
+=============
+
+.. rubric:: New Features
+
+* Added ``Antenna.make_noise()`` method so custom antennas can use their own noise functions.
+
+
+.. rubric:: Changes
 
 * Allow passing of numpy arrays of depths and frequencies into most ``IceModel`` methods.
 
@@ -126,29 +174,33 @@ Version 1.0.2
 
 * Removed (deprecated) ``Antenna.isHit()``.
 
-* Added ``Antenna.make_noise()`` method so custom antennas can use their own noise functions.
 
-* Performance improvements:
+.. rubric:: Performance Improvements
 
-    * Allowing for ``IceModel`` to calculate many attenuation lengths at once improves speed of ``PathFinder.propagate()``.
+* Allowing for ``IceModel`` to calculate many attenuation lengths at once improves speed of ``PathFinder.propagate()``.
 
-    * Improved speed of ``PathFinder.time_of_flight()`` and ``PathFinder.attenuation()`` (and improved accuracy to boot).
+* Improved speed of ``PathFinder.time_of_flight()`` and ``PathFinder.attenuation()`` (and improved accuracy to boot).
 
 
 
 Version 1.0.1
--------------
+=============
 
-* Fixed bugs in ``AskaryanSignal`` that caused the convolution to fail.
+.. rubric:: Changes
 
 * Changed ``Antenna`` not require a temperature and frequency range if no noise is produced.
+
+
+.. rubric:: Bug Fixes
+
+* Fixed bugs in ``AskaryanSignal`` that caused the convolution to fail.
 
 * Fixed bugs resulting from converting ``IceModel.temperature()`` from Celsius to Kelvin.
 
 
 
 Version 1.0.0
--------------
+=============
 
 * Created PyREx package based on original notebook.
 
@@ -199,7 +251,7 @@ Version 1.0.0
 
 
 Version 0.0.0
--------------
+=============
 
 Original PyREx python notebook written by Kael Hanson:
 

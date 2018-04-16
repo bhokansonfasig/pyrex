@@ -1,7 +1,7 @@
 .. _custom-package:
 
 Custom Sub-Package
-==================
+******************
 
 While the PyREx package provides a basis for simulation, the real benefits come in customizing the analysis for different purposes. To this end the custom sub-package allows for plug-in style modules to be distributed for different collaborations.
 

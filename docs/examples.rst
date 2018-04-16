@@ -1,5 +1,5 @@
 Code Examples
-=============
+*************
 
 The following code examples assume these imports::
 
@@ -13,7 +13,7 @@ All of the following examples can also be found (and quickly run) in the Code Ex
 
 
 Working with Signal Objects
----------------------------
+===========================
 
 The base ``Signal`` class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The ``times`` array is assumed to be in units of seconds, but there are no general units for the ``values`` array. It is worth noting that the Signal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the ``Signal`` object. ::
 
@@ -159,7 +159,7 @@ Note that since ``ThermalNoise`` inherits from ``FunctionSignal``, it can be ext
 
 
 Antenna Class and Subclasses
-----------------------------
+============================
 
 The base ``Antenna`` class provided by PyREx is designed to be inherited from to match the needs of each project. At its core, an ``Antenna`` object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance for noise calculations and a boolean dictating whether or not noise should be added to the antenna's signals (note that if noise is to be added, a resistance must be specified). ::
 
@@ -285,7 +285,7 @@ PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provid
 
 
 AntennaSystem and Detector Classes
-----------------------------------
+==================================
 
 The ``AntennaSystem`` class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna's signals. It is designed to be subclassed, but by default it takes as an argument the ``Antenna`` class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the ``Antenna`` class, but where a ``front_end`` method (which by default does nothing) is applied to the extended antenna's signals.
 
@@ -407,7 +407,7 @@ Due to the parallels between ``Antenna`` and ``AntennaSystem``, an antenna syste
 
 
 Ice and Earth Models
---------------------
+====================
 
 PyREx provides a class ``IceModel``, which is an alias for whichever south pole ice model class is the preferred (currently just the basic ``AntarcticIce``). The ``IceModel`` class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below::
 
@@ -432,7 +432,7 @@ PyREx also provides two functions realted to its earth model: ``prem_density`` a
 
 
 Particle Generation
--------------------
+===================
 
 PyREx includes ``Particle`` as a container for information about neutrinos which are generated to produce Askaryan pulses. ``Particle`` contains three attributes: ``vertex``, ``direction``, and ``energy``::
 
@@ -455,7 +455,7 @@ PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos,
 
 
 Ray Tracing
------------
+===========
 
 PyREx provides ray tracing in the ``RayTracer`` and ``RayTracerPath`` classes. ``RayTracer`` takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as ``RayTracerPath`` objects). ::
 
@@ -500,7 +500,7 @@ Finally, ``RayTracePath.propagate()`` propagates a ``Signal`` object from the la
 
 
 Full Simulation
----------------
+===============
 
 PyREx provides the ``EventKernel`` class to control a basic simulation including the creation of neutrinos, the propagation of their pulses to the antennas, and the triggering of the antennas::
 
@@ -537,6 +537,6 @@ PyREx provides the ``EventKernel`` class to control a basic simulation including
 
 
 More Examples
--------------
+=============
 
 For more code examples, see the PyREx Demo python notebook.

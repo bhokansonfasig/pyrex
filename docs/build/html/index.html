@@ -24,9 +24,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction to PyREx" href="readme.html" />
+    <link rel="next" title="About PyREx" href="about.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -35,97 +36,36 @@
 
   </head>
   <body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="pyrex-documentation">
-<h1>PyREx Documentation<a class="headerlink" href="#pyrex-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">Introduction to PyREx</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#code-example">Code Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#units">Units</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#working-with-signal-objects">Working with Signal Objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#antenna-class-and-subclasses">Antenna Class and Subclasses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#antennasystem-and-detector-classes">AntennaSystem and Detector Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#ice-and-earth-models">Ice and Earth Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#particle-generation">Particle Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#ray-tracing">Ray Tracing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#full-simulation">Full Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#more-examples">More Examples</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pyrex.html">PyREx API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyrex.html#module-pyrex">Package contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyrex.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.signals">pyrex.signals module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.antenna">pyrex.antenna module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.detector">pyrex.detector module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.ice_model">pyrex.ice_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.earth_model">pyrex.earth_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.particle">pyrex.particle module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.ray_tracing">pyrex.ray_tracing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.kernel">pyrex.kernel module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.internal_functions">pyrex.internal_functions module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pyrex.html#pyrex-custom-subpackage">PyREx Custom Subpackage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pyrex.html#module-pyrex.custom.irex">pyrex.custom.irex module</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-4-1">Version 1.4.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-4-0">Version 1.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-3-1">Version 1.3.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-3-0">Version 1.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-2-1">Version 1.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-2-0">Version 1.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-1-2">Version 1.1.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-1-1">Version 1.1.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-1-0">Version 1.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-0-3">Version 1.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-0-2">Version 1.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-0-1">Version 1.0.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-1-0-0">Version 1.0.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="versions.html#version-0-0-0">Version 0.0.0</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-
-
-          </div>
-        </div>
-      </div>
+  <div class="document">
+    
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">PyREx</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
+</ul>
+
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="readme.html" title="next chapter">Introduction to PyREx</a></li>
+      <li>Next: <a href="about.html" title="next chapter">About PyREx</a></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -138,8 +78,70 @@
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pyrex-documentation">
+<h1>PyREx Documentation<a class="headerlink" href="#pyrex-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="id1">
+<h2>PyREx - (<strong>Py</strong>thon package for an IceCube <strong>R</strong>adio <strong>Ex</strong>tension)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>PyREx (<strong>Py</strong>thon package for an IceCube <strong>R</strong>adio <strong>Ex</strong>tension) is, as its name suggests, a Python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
+The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANA collaborations).</p>
+<div class="section" id="id2">
+<h3>Useful Links<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Source (GitHub): <a class="reference external" href="https://github.com/bhokansonfasig/pyrex">https://github.com/bhokansonfasig/pyrex</a></li>
+<li>Documentation: <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/">https://bhokansonfasig.github.io/pyrex/</a></li>
+<li>Release notes: <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/versions.html">https://bhokansonfasig.github.io/pyrex/build/html/versions.html</a></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>Getting Started<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h4>Requirements<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>PyREx requires python version 3.6+ as well as numpy version 1.13+ and scipy version 0.19+.
+After installing python from <a class="reference external" href="https://www.python.org/downloads/">https://www.python.org/downloads/</a>, numpy and scipy can be installed with <code class="docutils literal"><span class="pre">pip</span></code> as follows, or by simply installing pyrex as specified in the next section.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">numpy</span><span class="o">&gt;=</span><span class="mf">1.14</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">scipy</span><span class="o">&gt;=</span><span class="mf">0.19</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h4>Installing<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>The easiest way to get the PyREx package is using <code class="docutils literal"><span class="pre">pip</span></code> as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bhokansonfasig</span><span class="o">/</span><span class="n">pyrex</span><span class="c1">#egg=pyrex</span>
+</pre></div>
+</div>
+<p>Note that since PyREx is not currently available on PyPI, a simple <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyrex</span></code> will not have the intended effect.</p>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>For examples of how to use PyREx, see the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/examples.html">examples page</a> in the documentation, or the <code class="docutils literal"><span class="pre">PyREx</span> <span class="pre">Demo</span></code> <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/blob/master/PyREx%20Demo.ipynb">notebook</a>.</p>
+</div>
+<div class="section" id="id9">
+<h3>Authors<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Ben Hokanson-Fasig</li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h3>License<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/bhokansonfasig/pyrex/blob/master/LICENSE">MIT License</a></p>
+<p>Copyright (c) 2018 Ben Hokanson-Fasig</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Benjamin Hokanson-Fasig.
       

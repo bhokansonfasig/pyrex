@@ -24,10 +24,11 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Custom Sub-Package" href="customize.html" />
-    <link rel="prev" title="Introduction to PyREx" href="readme.html" />
+    <link rel="prev" title="About PyREx" href="about.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -36,9 +37,59 @@
 
   </head>
   <body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyREx</a></h1>
 
-    <div class="document">
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-signal-objects">Working with Signal Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#antenna-class-and-subclasses">Antenna Class and Subclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#antennasystem-and-detector-classes">AntennaSystem and Detector Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ice-and-earth-models">Ice and Earth Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#particle-generation">Particle Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ray-tracing">Ray Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#full-simulation">Full Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-examples">More Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="about.html" title="previous chapter">About PyREx</a></li>
+      <li>Next: <a href="customize.html" title="next chapter">Custom Sub-Package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -487,7 +538,7 @@
 <span class="n">my_ray_tracer</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">RayTracer</span><span class="p">(</span><span class="n">from_point</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">to_point</span><span class="o">=</span><span class="n">finish</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The two most useful properties of <code class="docutils literal"><span class="pre">RayTracer</span></code> are <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> and <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code>. <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> is a boolean value of whether or not path solutions exist between the launch and receiving points. <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code> is the list of (zero or two) <code class="docutils literal"><span class="pre">RayTracerPath</span></code> objects which exist between the launch and receiving points. There are many other properties available in <code class="docutils literal"><span class="pre">RayTracer</span></code>, outlined in the <a class="reference internal" href="pyrex.html#pyrex-api"><span class="std std-ref">PyREx API</span></a> section, which are mostly used internally and maybe not interesting otherwise.</p>
+<p>The two most useful properties of <code class="docutils literal"><span class="pre">RayTracer</span></code> are <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> and <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code>. <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> is a boolean value of whether or not path solutions exist between the launch and receiving points. <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code> is the list of (zero or two) <code class="docutils literal"><span class="pre">RayTracerPath</span></code> objects which exist between the launch and receiving points. There are many other properties available in <code class="docutils literal"><span class="pre">RayTracer</span></code>, outlined in the <a class="reference internal" href="api.html#pyrex-api"><span class="std std-ref">PyREx API</span></a> section, which are mostly used internally and maybe not interesting otherwise.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">exists</span>
 <span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">solutions</span>
 </pre></div>
@@ -566,52 +617,8 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Code Examples</a><ul>
-<li><a class="reference internal" href="#working-with-signal-objects">Working with Signal Objects</a></li>
-<li><a class="reference internal" href="#antenna-class-and-subclasses">Antenna Class and Subclasses</a></li>
-<li><a class="reference internal" href="#antennasystem-and-detector-classes">AntennaSystem and Detector Classes</a></li>
-<li><a class="reference internal" href="#ice-and-earth-models">Ice and Earth Models</a></li>
-<li><a class="reference internal" href="#particle-generation">Particle Generation</a></li>
-<li><a class="reference internal" href="#ray-tracing">Ray Tracing</a></li>
-<li><a class="reference internal" href="#full-simulation">Full Simulation</a></li>
-<li><a class="reference internal" href="#more-examples">More Examples</a></li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="readme.html" title="previous chapter">Introduction to PyREx</a></li>
-      <li>Next: <a href="customize.html" title="next chapter">Custom Sub-Package</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/examples.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Benjamin Hokanson-Fasig.
       

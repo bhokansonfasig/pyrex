@@ -16,6 +16,11 @@ help:
 
 .PHONY: help Makefile
 
+# Customize html command to place .nojekyll file in build/html directory
+html:
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	touch $(BUILDDIR)/html/.nojekyll
+
 # Customize latexpdf command to place pdf outside of build directory
 latexpdf:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

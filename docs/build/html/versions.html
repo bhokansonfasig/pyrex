@@ -24,9 +24,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="PyREx API" href="pyrex.html" />
+    <link rel="prev" title="PyREx API" href="api.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -35,9 +36,64 @@
 
   </head>
   <body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyREx</a></h1>
 
-    <div class="document">
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Version History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-4-1">Version 1.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-4-0">Version 1.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-3-1">Version 1.3.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-3-0">Version 1.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-2-1">Version 1.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-2-0">Version 1.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-1-2">Version 1.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-1-1">Version 1.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-1-0">Version 1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0-3">Version 1.0.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0-2">Version 1.0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0-1">Version 1.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0-0">Version 1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-0">Version 0.0.0</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">PyREx API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -46,6 +102,7 @@
 <h1>Version History<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="version-1-4-1">
 <h2>Version 1.4.1<a class="headerlink" href="#version-1-4-1" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Changes</p>
 <ul class="simple">
 <li>Improved ray tracing and defaulted to the almost completely analytical <code class="docutils literal"><span class="pre">SpecializedRayTracer</span></code> and <code class="docutils literal"><span class="pre">SpecializedRayTracePath</span></code> classes as <code class="docutils literal"><span class="pre">RayTracer</span></code> and <code class="docutils literal"><span class="pre">RayTracePath</span></code></li>
 <li>Added ray tracer into <code class="docutils literal"><span class="pre">EventKernel</span></code> to replace <code class="docutils literal"><span class="pre">PathFinder</span></code> completely</li>
@@ -53,35 +110,52 @@
 </div>
 <div class="section" id="version-1-4-0">
 <h2>Version 1.4.0<a class="headerlink" href="#version-1-4-0" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
 <ul class="simple">
 <li>Implemented full ray tracing in the <code class="docutils literal"><span class="pre">RayTracer</span></code> and <code class="docutils literal"><span class="pre">RayTracePath</span></code> classes.</li>
 </ul>
 </div>
 <div class="section" id="version-1-3-1">
 <h2>Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
 <ul class="simple">
-<li>Changed neutrino interaction model to include all neutrino and anti-neutrino interactions rather than only charged-current neutrino (relevant for <code class="docutils literal"><span class="pre">ShadowGenerator</span></code> class).</li>
 <li>Added diode bridge rectifier envelope circuit analytic model to <code class="docutils literal"><span class="pre">irex.frontends</span></code> and made it the default analytic envelope model in <code class="docutils literal"><span class="pre">IREXAntennaSystem</span></code>.</li>
 <li>Added <code class="docutils literal"><span class="pre">allow_reflection</span></code> attribute to <code class="docutils literal"><span class="pre">EventKernel</span></code> class to determine whether <code class="docutils literal"><span class="pre">ReflectedPathFinder</span></code> solutions should be allowed.</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li>Changed neutrino interaction model to include all neutrino and anti-neutrino interactions rather than only charged-current neutrino (relevant for <code class="docutils literal"><span class="pre">ShadowGenerator</span></code> class).</li>
 </ul>
 </div>
 <div class="section" id="version-1-3-0">
 <h2>Version 1.3.0<a class="headerlink" href="#version-1-3-0" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
 <ul class="simple">
 <li>Added and implemented <code class="docutils literal"><span class="pre">ReflectedPathFinder</span></code> class for rays which undergo total internal reflection and subsequently reach an antenna.</li>
-<li>Improve performance of ice index calculated at many depths.</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
 <li>Change <code class="docutils literal"><span class="pre">AksaryanSignal</span></code> angle to always be positive and remove &lt; 90 degree restriction (Alvarez-Muniz, Romero-Wolf, &amp; Zas paper suggests the algorithm should work for all angles).</li>
+</ul>
+<p class="rubric">Performance Improvements</p>
+<ul class="simple">
+<li>Improve performance of ice index calculated at many depths.</li>
 </ul>
 </div>
 <div class="section" id="version-1-2-1">
 <h2>Version 1.2.1<a class="headerlink" href="#version-1-2-1" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
 <ul class="simple">
 <li>Added <code class="docutils literal"><span class="pre">set_orientation</span></code> function to <code class="docutils literal"><span class="pre">Antenna</span></code> class for setting the <code class="docutils literal"><span class="pre">z_axis</span></code> and <code class="docutils literal"><span class="pre">x_axis</span></code> attributes appropriately.</li>
-<li>Fix bug where <code class="docutils literal"><span class="pre">Antenna._convert_to_antenna_coordinates</span></code> function was returning coordinates relative to (0,0,0) rather than the antenna’s position.</li>
+</ul>
+<p class="rubric">Bug Fixes</p>
+<ul class="simple">
+<li>Fixed bug where <code class="docutils literal"><span class="pre">Antenna._convert_to_antenna_coordinates</span></code> function was returning coordinates relative to (0,0,0) rather than the antenna’s position.</li>
 </ul>
 </div>
 <div class="section" id="version-1-2-0">
 <h2>Version 1.2.0<a class="headerlink" href="#version-1-2-0" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Changes</p>
 <ul class="simple">
 <li>Changed <code class="docutils literal"><span class="pre">custom</span></code> module to a package containing <code class="docutils literal"><span class="pre">irex</span></code> module.</li>
 <li><code class="docutils literal"><span class="pre">custom</span></code> package leverages “Implicit Namespace Package” structure to allow plug-in style additions to the package in either the user’s <code class="docutils literal"><span class="pre">~/.pyrex-custom/</span></code> directory or the <code class="docutils literal"><span class="pre">./pyrex-custom</span></code> directory.</li>
@@ -89,9 +163,14 @@
 </div>
 <div class="section" id="version-1-1-2">
 <h2>Version 1.1.2<a class="headerlink" href="#version-1-1-2" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
+<ul class="simple">
+<li>Added <code class="docutils literal"><span class="pre">with_times</span></code> method to <code class="docutils literal"><span class="pre">Signal</span></code> class for interpolation/extrapolation of signals to different times.</li>
+<li>Added <code class="docutils literal"><span class="pre">full_waveform</span></code> and <code class="docutils literal"><span class="pre">is_hit_during</span></code> methods to <code class="docutils literal"><span class="pre">Antenna</span></code> class for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.</li>
+<li>Added <code class="docutils literal"><span class="pre">front_end_processing</span></code> method to <code class="docutils literal"><span class="pre">IREXAntenna</span></code> for processing envelope, amplifying signal, and downsampling result (downsampling currently inactive).</li>
+</ul>
+<p class="rubric">Changes</p>
 <ul>
-<li><p class="first">Added <code class="docutils literal"><span class="pre">with_times</span></code> method to <code class="docutils literal"><span class="pre">Signal</span></code> class for interpolation/extrapolation of signals to different times.</p>
-</li>
 <li><p class="first">Change <code class="docutils literal"><span class="pre">Antenna.make_noise</span></code> to use a single master noise object and use <code class="docutils literal"><span class="pre">with_times</span></code> to calculate noise at different times.</p>
 <blockquote>
 <div><ul class="simple">
@@ -99,14 +178,11 @@
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">Add <code class="docutils literal"><span class="pre">full_waveform</span></code> and <code class="docutils literal"><span class="pre">is_hit_during</span></code> methods to <code class="docutils literal"><span class="pre">Antenna</span></code> class for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.</p>
-</li>
-<li><p class="first">Added <code class="docutils literal"><span class="pre">front_end_processing</span></code> method to <code class="docutils literal"><span class="pre">IREXAntenna</span></code> for processing envelope, amplifying signal, and downsampling result (downsampling currently inactive).</p>
-</li>
 </ul>
 </div>
 <div class="section" id="version-1-1-1">
 <h2>Version 1.1.1<a class="headerlink" href="#version-1-1-1" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Changes</p>
 <ul class="simple">
 <li>Moved <code class="docutils literal"><span class="pre">ValueTypes</span></code> inside <code class="docutils literal"><span class="pre">Signal</span></code> class. Now access as <code class="docutils literal"><span class="pre">Signal.ValueTypes.voltage</span></code>, etc.</li>
 <li>Changed signal envelope calculation in custom <code class="docutils literal"><span class="pre">IREXAntenna</span></code> from hilbert transform to a basic model. Spice model also available, but slower.</li>
@@ -114,9 +190,8 @@
 </div>
 <div class="section" id="version-1-1-0">
 <h2>Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
 <ul>
-<li><p class="first">Made units consistent across PyREx.</p>
-</li>
 <li><p class="first">Added <code class="docutils literal"><span class="pre">directional_gain</span></code> and <code class="docutils literal"><span class="pre">polarization_gain</span></code> methods to base <code class="docutils literal"><span class="pre">Antenna</span></code>.</p>
 <blockquote>
 <div><ul class="simple">
@@ -126,8 +201,6 @@
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">Added ability to define <code class="docutils literal"><span class="pre">Antenna</span></code> noise by RMS voltage rather than temperature and resistance if desired.</p>
-</li>
 <li><p class="first">Added <code class="docutils literal"><span class="pre">value_type</span></code> attribute to <code class="docutils literal"><span class="pre">Signal</span></code> class and derived classes.</p>
 <blockquote>
 <div><ul class="simple">
@@ -136,20 +209,32 @@
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">Allow <code class="docutils literal"><span class="pre">DipoleAntenna</span></code> to guess at <code class="docutils literal"><span class="pre">effective_height</span></code> if not specified.</p>
-</li>
-<li><p class="first">Increase speed of <code class="docutils literal"><span class="pre">IceModel.__atten_coeffs</span></code> method, resulting in increased speed of attenuation length calculations.</p>
-</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li>Made units consistent across PyREx.</li>
+<li>Added ability to define <code class="docutils literal"><span class="pre">Antenna</span></code> noise by RMS voltage rather than temperature and resistance if desired.</li>
+<li>Allow <code class="docutils literal"><span class="pre">DipoleAntenna</span></code> to guess at <code class="docutils literal"><span class="pre">effective_height</span></code> if not specified.</li>
+</ul>
+<p class="rubric">Performance Improvements</p>
+<ul class="simple">
+<li>Increase speed of <code class="docutils literal"><span class="pre">IceModel.__atten_coeffs</span></code> method, resulting in increased speed of attenuation length calculations.</li>
 </ul>
 </div>
 <div class="section" id="version-1-0-3">
 <h2>Version 1.0.3<a class="headerlink" href="#version-1-0-3" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
 <ul class="simple">
 <li>Added <code class="docutils literal"><span class="pre">custom</span></code> module to contain classes and functions specific to the IREX project.</li>
 </ul>
 </div>
 <div class="section" id="version-1-0-2">
 <h2>Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
+<ul class="simple">
+<li>Added <code class="docutils literal"><span class="pre">Antenna.make_noise()</span></code> method so custom antennas can use their own noise functions.</li>
+</ul>
+<p class="rubric">Changes</p>
 <ul>
 <li><p class="first">Allow passing of numpy arrays of depths and frequencies into most <code class="docutils literal"><span class="pre">IceModel</span></code> methods.</p>
 <blockquote>
@@ -162,23 +247,22 @@
 </li>
 <li><p class="first">Removed (deprecated) <code class="docutils literal"><span class="pre">Antenna.isHit()</span></code>.</p>
 </li>
-<li><p class="first">Added <code class="docutils literal"><span class="pre">Antenna.make_noise()</span></code> method so custom antennas can use their own noise functions.</p>
-</li>
-<li><p class="first">Performance improvements:</p>
-<blockquote>
-<div><ul class="simple">
+</ul>
+<p class="rubric">Performance Improvements</p>
+<ul class="simple">
 <li>Allowing for <code class="docutils literal"><span class="pre">IceModel</span></code> to calculate many attenuation lengths at once improves speed of <code class="docutils literal"><span class="pre">PathFinder.propagate()</span></code>.</li>
 <li>Improved speed of <code class="docutils literal"><span class="pre">PathFinder.time_of_flight()</span></code> and <code class="docutils literal"><span class="pre">PathFinder.attenuation()</span></code> (and improved accuracy to boot).</li>
-</ul>
-</div></blockquote>
-</li>
 </ul>
 </div>
 <div class="section" id="version-1-0-1">
 <h2>Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li>Changed <code class="docutils literal"><span class="pre">Antenna</span></code> not require a temperature and frequency range if no noise is produced.</li>
+</ul>
+<p class="rubric">Bug Fixes</p>
 <ul class="simple">
 <li>Fixed bugs in <code class="docutils literal"><span class="pre">AskaryanSignal</span></code> that caused the convolution to fail.</li>
-<li>Changed <code class="docutils literal"><span class="pre">Antenna</span></code> not require a temperature and frequency range if no noise is produced.</li>
 <li>Fixed bugs resulting from converting <code class="docutils literal"><span class="pre">IceModel.temperature()</span></code> from Celsius to Kelvin.</li>
 </ul>
 </div>
@@ -250,57 +334,8 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Version History</a><ul>
-<li><a class="reference internal" href="#version-1-4-1">Version 1.4.1</a></li>
-<li><a class="reference internal" href="#version-1-4-0">Version 1.4.0</a></li>
-<li><a class="reference internal" href="#version-1-3-1">Version 1.3.1</a></li>
-<li><a class="reference internal" href="#version-1-3-0">Version 1.3.0</a></li>
-<li><a class="reference internal" href="#version-1-2-1">Version 1.2.1</a></li>
-<li><a class="reference internal" href="#version-1-2-0">Version 1.2.0</a></li>
-<li><a class="reference internal" href="#version-1-1-2">Version 1.1.2</a></li>
-<li><a class="reference internal" href="#version-1-1-1">Version 1.1.1</a></li>
-<li><a class="reference internal" href="#version-1-1-0">Version 1.1.0</a></li>
-<li><a class="reference internal" href="#version-1-0-3">Version 1.0.3</a></li>
-<li><a class="reference internal" href="#version-1-0-2">Version 1.0.2</a></li>
-<li><a class="reference internal" href="#version-1-0-1">Version 1.0.1</a></li>
-<li><a class="reference internal" href="#version-1-0-0">Version 1.0.0</a></li>
-<li><a class="reference internal" href="#version-0-0-0">Version 0.0.0</a></li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="pyrex.html" title="previous chapter">PyREx API</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/versions.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Benjamin Hokanson-Fasig.
       

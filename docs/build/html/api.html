@@ -24,6 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Version History" href="versions.html" />
@@ -36,24 +37,81 @@
 
   </head>
   <body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyREx</a></h1>
 
-    <div class="document">
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PyREx API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#package-contents">Package contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.signals">pyrex.signals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.antenna">pyrex.antenna module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.detector">pyrex.detector module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.ice_model">pyrex.ice_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.earth_model">pyrex.earth_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.particle">pyrex.particle module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.ray_tracing">pyrex.ray_tracing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.kernel">pyrex.kernel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.internal_functions">pyrex.internal_functions module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyrex-custom-subpackage">PyREx Custom Subpackage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.custom.pyspice">pyrex.custom.pyspice module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.custom.irex">pyrex.custom.irex package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="customize.html" title="previous chapter">Custom Sub-Package</a></li>
+      <li>Next: <a href="versions.html" title="next chapter">Version History</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
             
   <div class="section" id="pyrex-api">
 <span id="id1"></span><h1>PyREx API<a class="headerlink" href="#pyrex-api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-pyrex">
-<span id="package-contents"></span><h2>Package contents<a class="headerlink" href="#module-pyrex" title="Permalink to this headline">¶</a></h2>
-<p>A Python package for simulation of Askaryan pulses and radio antennas in ice.</p>
-<p>PyREx (<strong>Py</strong>thon package for an IceCube <strong>R</strong>adio <strong>Ex</strong>tension) is,
-as its name suggests, a Python package designed to simulate the measurement of
-Askaryan pulses via a radio antenna array around the IceCube South Pole
-Neutrino Observatory.
-The code is designed to be modular so that it can also be applied to other
-askaryan radio antennas (e.g. the ARA and ARIANA collaborations).</p>
+<p>The API documentation here is split into three sections.
+First, the <a class="reference internal" href="#api-1"><span class="std std-ref">Package contents</span></a> section documents all classes and functions that are imported by PyREx under a <code class="docutils literal"><span class="pre">from</span> <span class="pre">pyrex</span> <span class="pre">import</span> <span class="pre">*</span></code> command.
+Next, the <a class="reference internal" href="#api-2"><span class="std std-ref">Submodules</span></a> section is a full documentation of all the modules which make up the base PyREx package.
+And finally, the <a class="reference internal" href="#api-3"><span class="std std-ref">PyREx Custom Subpackage</span></a> section documents the custom subpackages contained in PyREx by default.</p>
+<div class="section" id="package-contents">
+<span id="api-1"></span><h2>Package contents<a class="headerlink" href="#package-contents" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pyrex.Signal">
 <em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">Signal</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>value_type=&lt;ValueTypes.undefined: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Signal" title="Permalink to this definition">¶</a></dt>
@@ -651,7 +709,7 @@ process signal at antennas, and return the original particle.</p>
 
 </div>
 <div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<span id="api-2"></span><h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-pyrex.signals">
 <span id="pyrex-signals-module"></span><h3>pyrex.signals module<a class="headerlink" href="#module-pyrex.signals" title="Permalink to this headline">¶</a></h3>
 <p>Module containing classes for digital signal processing</p>
@@ -1806,11 +1864,270 @@ attributes of the class at the time of the init call.</p>
 </div>
 </div>
 <div class="section" id="pyrex-custom-subpackage">
-<h2>PyREx Custom Subpackage<a class="headerlink" href="#pyrex-custom-subpackage" title="Permalink to this headline">¶</a></h2>
-<p>More modules available as plug-ins, see <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a>.</p>
+<span id="api-3"></span><h2>PyREx Custom Subpackage<a class="headerlink" href="#pyrex-custom-subpackage" title="Permalink to this headline">¶</a></h2>
+<p>Note that more modules are available as plug-ins, see <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a>.</p>
+<div class="section" id="module-pyrex.custom.pyspice">
+<span id="pyrex-custom-pyspice-module"></span><h3>pyrex.custom.pyspice module<a class="headerlink" href="#module-pyrex.custom.pyspice" title="Permalink to this headline">¶</a></h3>
+<p>Module containing setup and wrappers for PySpice module into PyREx</p>
+<dl class="class">
+<dt id="pyrex.custom.pyspice.NgSpiceSharedSignal">
+<em class="property">class </em><code class="descclassname">pyrex.custom.pyspice.</code><code class="descname">NgSpiceSharedSignal</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.pyspice.NgSpiceSharedSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PySpice.Spice.NgSpice.Shared.NgSpiceShared</span></code></p>
+<p>Helper class for bridging gap between PyREx Signal and
+PySpice NgSpiceShared classes</p>
+<dl class="method">
+<dt id="pyrex.custom.pyspice.NgSpiceSharedSignal.get_vsrc_data">
+<code class="descname">get_vsrc_data</code><span class="sig-paren">(</span><em>voltage</em>, <em>time</em>, <em>node</em>, <em>ngspice_id</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.pyspice.NgSpiceSharedSignal.get_vsrc_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.custom.pyspice.SpiceSignal">
+<em class="property">class </em><code class="descclassname">pyrex.custom.pyspice.</code><code class="descname">SpiceSignal</code><span class="sig-paren">(</span><em>signal</em>, <em>shared=&lt;pyrex.custom.pyspice.NgSpiceSharedSignal object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.pyspice.SpiceSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class for passing PyREx Signal object into PySpice</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-pyrex.custom.irex">
-<span id="pyrex-custom-irex-module"></span><h3>pyrex.custom.irex module<a class="headerlink" href="#module-pyrex.custom.irex" title="Permalink to this headline">¶</a></h3>
+<span id="pyrex-custom-irex-package"></span><h3>pyrex.custom.irex package<a class="headerlink" href="#module-pyrex.custom.irex" title="Permalink to this headline">¶</a></h3>
 <p>Customizations of pyrex package specific to IREX (IceCube Radio Extension)</p>
+<div class="section" id="module-pyrex.custom.irex.antenna">
+<span id="pyrex-custom-irex-antenna-module"></span><h4>pyrex.custom.irex.antenna module<a class="headerlink" href="#module-pyrex.custom.irex.antenna" title="Permalink to this headline">¶</a></h4>
+<p>Module containing customized antenna classes for IREX</p>
+<dl class="class">
+<dt id="pyrex.custom.irex.antenna.IREXAntenna">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.antenna.</code><code class="descname">IREXAntenna</code><span class="sig-paren">(</span><em>position</em>, <em>center_frequency</em>, <em>bandwidth</em>, <em>resistance</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>effective_height=None</em>, <em>noisy=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.antenna.Antenna" title="pyrex.antenna.Antenna"><code class="xref py py-class docutils literal"><span class="pre">pyrex.antenna.Antenna</span></code></a></p>
+<p>Antenna to be used in IREX. Has a position (m),
+center frequency (Hz), bandwidth (Hz), resistance (ohm),
+effective height (m), and polarization direction.</p>
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntenna.response">
+<code class="descname">response</code><span class="sig-paren">(</span><em>frequencies</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna.response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Butterworth filter response for the antenna’s frequency range.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntenna.directional_gain">
+<code class="descname">directional_gain</code><span class="sig-paren">(</span><em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna.directional_gain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Power gain of dipole antenna goes as sin(theta)^2, so electric field
+gain goes as sin(theta).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntenna.polarization_gain">
+<code class="descname">polarization_gain</code><span class="sig-paren">(</span><em>polarization</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna.polarization_gain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Polarization gain is simply the dot product of the polarization
+with the antenna’s z-axis.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.antenna.</code><code class="descname">IREXAntennaSystem</code><span class="sig-paren">(</span><em>name</em>, <em>position</em>, <em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>amplification=1</em>, <em>amplifier_clipping=3</em>, <em>noisy=True</em>, <em>envelope_method=’analytic’</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.AntennaSystem" title="pyrex.detector.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.AntennaSystem</span></code></a></p>
+<p>IREX antenna system consisting of dipole antenna, low-noise amplifier,
+optional bandpass filter, and envelope circuit.</p>
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.setup_antenna">
+<code class="descname">setup_antenna</code><span class="sig-paren">(</span><em>center_frequency=250000000.0</em>, <em>bandwidth=300000000.0</em>, <em>resistance=100</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>effective_height=None</em>, <em>noisy=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.setup_antenna" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets attributes of the antenna including center frequency (Hz),
+bandwidth (Hz), resistance (ohms), orientation, and effective
+height (m).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.make_envelope">
+<code class="descname">make_envelope</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.make_envelope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the signal envelope based on the antenna’s envelope_method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.front_end">
+<code class="descname">front_end</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.front_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the front-end processing of the antenna signal, including
+amplification, clipping, and envelope processing.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.all_waveforms">
+<code class="descname">all_waveforms</code><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.all_waveforms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.full_waveform">
+<code class="descname">full_waveform</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.full_waveform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.trigger">
+<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyrex.custom.irex.detector">
+<span id="pyrex-custom-irex-detector-module"></span><h4>pyrex.custom.irex.detector module<a class="headerlink" href="#module-pyrex.custom.irex.detector" title="Permalink to this headline">¶</a></h4>
+<p>Module containing customized detector geometry classes for IREX</p>
+<dl class="class">
+<dt id="pyrex.custom.irex.detector.IREXDetector">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXDetector</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXDetector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
+<p>Base class for IREX detector classes which implements the build_antennas
+method, but not set_positions.</p>
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.IREXDetector.build_antennas">
+<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>amplification=1</em>, <em>naming_scheme=&lt;function IREXDetector.&lt;lambda&gt;&gt;</em>, <em>orientation_scheme=&lt;function IREXDetector.&lt;lambda&gt;&gt;</em>, <em>noisy=True</em>, <em>envelope_method=’analytic’</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXDetector.build_antennas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up IREXAntennas at the positions stored in the class.
+Takes as arguments the trigger threshold, optional time over
+threshold, and whether to add noise to the waveforms.
+Other optional arguments include a naming scheme and orientation scheme
+which are functions taking the antenna index i and the antenna object.
+The naming scheme should return the name and the orientation scheme
+should return the orientation z-axis and x-axis of the antenna.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.custom.irex.detector.IREXGrid">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXGrid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
+<p>Class for (semi)automatically generating a rectangular grid of strings
+of antennas, which can then be iterated over.</p>
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.IREXGrid.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_strings=1</em>, <em>string_separation=500</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=40</em>, <em>lowest_antenna=-200</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXGrid.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates antenna positions in a grid of strings.
+Takes as arguments the number of strings, the distance between strings,
+the number of antennas per string, the separation (in z) of the
+antennas on the string, and the position of the lowest antenna.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.custom.irex.detector.IREXClusteredGrid">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXClusteredGrid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXClusteredGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
+<p>Class for (semi)automatically generating a rectangular grid of clusters
+of strings of antennas, which can then be iterated over.</p>
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.IREXClusteredGrid.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_stations=1</em>, <em>station_separation=500</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=40</em>, <em>lowest_antenna=-200</em>, <em>strings_per_station=4</em>, <em>string_separation=50</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXClusteredGrid.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates antenna positions in a grid of strings.
+Takes as arguments the number of stations, the distance between
+stations, the number of antennas per string, the separation (in z) of the
+antennas on the string, the position of the lowest antenna, and the name
+of the geometry to use. Optional parameters (depending on the geometry)
+are the number of strings per station and the distance from station to
+string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.custom.irex.detector.IREXCoxeterClusters">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXCoxeterClusters</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXCoxeterClusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
+<p>Class for (semi)automatically generating a rectangular grid of 
+Coxeter-plane-like clusters (one string at center) of strings of antennas,
+which can then be iterated over.</p>
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.IREXCoxeterClusters.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_stations=1</em>, <em>station_separation=500</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=40</em>, <em>lowest_antenna=-200</em>, <em>strings_per_station=4</em>, <em>string_separation=25</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXCoxeterClusters.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates antenna positions in a grid of strings.
+Takes as arguments the number of stations, the distance between
+stations, the number of antennas per string, the separation (in z) of the
+antennas on the string, the position of the lowest antenna, and the name
+of the geometry to use. Optional parameters (depending on the geometry)
+are the number of strings per station and the distance from station to
+string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.custom.irex.detector.IREXPairedGrid">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXPairedGrid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXPairedGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
+<p>Class for (semi)automatically generating a rectangular grid of strings
+of antennas, which can then be iterated over.</p>
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.IREXPairedGrid.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_strings=1</em>, <em>string_separation=500</em>, <em>antennas_per_string=16</em>, <em>antenna_separation=10</em>, <em>lowest_antenna=-95</em>, <em>antennas_per_clump=2</em>, <em>clump_separation=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXPairedGrid.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates antenna positions in a grid of strings.
+Takes as arguments the number of strings, the distance between strings,
+the number of antennas per string, the separation (in z) of the
+antennas on the string, and the position of the lowest antenna.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyrex.custom.irex.frontends">
+<span id="pyrex-custom-irex-frontends-module"></span><h4>pyrex.custom.irex.frontends module<a class="headerlink" href="#module-pyrex.custom.irex.frontends" title="Permalink to this headline">¶</a></h4>
+<p>Module containing IREX front-end circuit models</p>
+<dl class="function">
+<dt id="pyrex.custom.irex.frontends.basic_envelope_model">
+<code class="descclassname">pyrex.custom.irex.frontends.</code><code class="descname">basic_envelope_model</code><span class="sig-paren">(</span><em>signal</em>, <em>cap=2e-11</em>, <em>res=500</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.frontends.basic_envelope_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model of a basic diode-capacitor-resistor envelope circuit. Takes a
+signal object as the input voltage and returns the output voltage signal
+object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyrex.custom.irex.frontends.bridge_rectifier_envelope_model">
+<code class="descclassname">pyrex.custom.irex.frontends.</code><code class="descname">bridge_rectifier_envelope_model</code><span class="sig-paren">(</span><em>signal</em>, <em>cap=2e-11</em>, <em>res=500</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.frontends.bridge_rectifier_envelope_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model of a diode bridge rectifier envelope circuit. Takes a
+signal object as the input voltage and returns the output voltage signal
+object.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyrex.custom.irex.reconstruction">
+<span id="pyrex-custom-irex-reconstruction-module"></span><h4>pyrex.custom.irex.reconstruction module<a class="headerlink" href="#module-pyrex.custom.irex.reconstruction" title="Permalink to this headline">¶</a></h4>
+<p>Module containing reconstruction methods for IREX</p>
+<dl class="function">
+<dt id="pyrex.custom.irex.reconstruction.quick_vertex_reconstruction">
+<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">quick_vertex_reconstruction</code><span class="sig-paren">(</span><em>detector</em>, <em>threshold=None</em>, <em>get_waveform=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.quick_vertex_reconstruction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyrex.custom.irex.reconstruction.full_vertex_reconstruction">
+<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">full_vertex_reconstruction</code><span class="sig-paren">(</span><em>detector</em>, <em>threshold=None</em>, <em>get_waveform=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.full_vertex_reconstruction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyrex.custom.irex.reconstruction.get_xcorr_times">
+<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">get_xcorr_times</code><span class="sig-paren">(</span><em>waveforms</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.get_xcorr_times" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyrex.custom.irex.reconstruction.minimizer_vertex_reconstruction">
+<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">minimizer_vertex_reconstruction</code><span class="sig-paren">(</span><em>positions</em>, <em>times</em>, <em>guess=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.minimizer_vertex_reconstruction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyrex.custom.irex.reconstruction.least_squares">
+<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">least_squares</code><span class="sig-paren">(</span><em>vertex</em>, <em>positions</em>, <em>times</em>, <em>method=’trace’</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.least_squares" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyrex.custom.irex.reconstruction.bancroft_vertex">
+<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">bancroft_vertex</code><span class="sig-paren">(</span><em>positions</em>, <em>times</em>, <em>velocity=170940170.94017094</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.bancroft_vertex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyrex.custom.irex.reconstruction.bancroft_scan_vertex">
+<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">bancroft_scan_vertex</code><span class="sig-paren">(</span><em>positions</em>, <em>times</em>, <em>velocity=170940170.94017094</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.bancroft_scan_vertex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 </div>
 </div>
@@ -1819,61 +2136,8 @@ attributes of the class at the time of the init call.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">PyREx API</a><ul>
-<li><a class="reference internal" href="#module-pyrex">Package contents</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a><ul>
-<li><a class="reference internal" href="#module-pyrex.signals">pyrex.signals module</a></li>
-<li><a class="reference internal" href="#module-pyrex.antenna">pyrex.antenna module</a></li>
-<li><a class="reference internal" href="#module-pyrex.detector">pyrex.detector module</a></li>
-<li><a class="reference internal" href="#module-pyrex.ice_model">pyrex.ice_model module</a></li>
-<li><a class="reference internal" href="#module-pyrex.earth_model">pyrex.earth_model module</a></li>
-<li><a class="reference internal" href="#module-pyrex.particle">pyrex.particle module</a></li>
-<li><a class="reference internal" href="#module-pyrex.ray_tracing">pyrex.ray_tracing module</a></li>
-<li><a class="reference internal" href="#module-pyrex.kernel">pyrex.kernel module</a></li>
-<li><a class="reference internal" href="#module-pyrex.internal_functions">pyrex.internal_functions module</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#pyrex-custom-subpackage">PyREx Custom Subpackage</a><ul>
-<li><a class="reference internal" href="#module-pyrex.custom.irex">pyrex.custom.irex module</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="customize.html" title="previous chapter">Custom Sub-Package</a></li>
-      <li>Next: <a href="versions.html" title="next chapter">Version History</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/pyrex.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Benjamin Hokanson-Fasig.
       
@@ -1882,7 +2146,7 @@ attributes of the class at the time of the init call.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/pyrex.rst.txt"
+      <a href="_sources/api.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

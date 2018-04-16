@@ -4,14 +4,25 @@
    contain the root `toctree` directive.
 
 PyREx Documentation
-*******************
+###################
 
 .. toctree::
    :maxdepth: 3
-   :caption: Contents:
+   :hidden:
 
-   readme
+   about
    examples
    customize
-   pyrex
+   api
    versions
+
+.. only:: latex
+
+    GitHub README
+    #############
+
+    .. include:: ../README.rst
+
+.. only:: html
+
+    .. include:: ../README.rst
