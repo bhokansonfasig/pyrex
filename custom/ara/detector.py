@@ -76,7 +76,7 @@ class ARADetector(Detector):
                     self.antenna_positions.append((x,y,z))
 
     def build_antennas(self, power_threshold, amplification=1,
-                       naming_scheme=lambda i, ant: "ant_"+str(i),
+                       naming_scheme=lambda i, ant: ant.name[:4]+"_"+str(i),
                        class_scheme=lambda i: VpolAntenna if i%2 else HpolAntenna,
                        noisy=True):
         """Sets up ARAAntennas at the positions stored in the class.
