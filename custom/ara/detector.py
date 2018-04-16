@@ -77,7 +77,7 @@ class ARADetector(Detector):
 
     def build_antennas(self, power_threshold, amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
-                       class_scheme=lambda i: HpolAntenna if i%2 else VpolAntenna,
+                       class_scheme=lambda i: VpolAntenna if i%2 else HpolAntenna,
                        noisy=True):
         """Sets up ARAAntennas at the positions stored in the class.
         Takes as arguments the power threshold, amplification, and whether to
