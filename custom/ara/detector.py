@@ -115,9 +115,9 @@ class ARATriangleDetector(Detector):
                       outrigger_strings_per_station=3, station_diameter=40,
                       outrigger_antenna_pairs=4, outrigger_pair_separation=30,
                       outrigger_inter_pair_separation=1,
-                      outrigger_highest_antenna=10,
-                      central_vpol_antennas=8, central_highest_vpol=60, central_vpol_separation=1, central_hpol_antennas=8,
-                      central_highest_hpol=40, central_hpol_separation=1):
+                      outrigger_highest_antenna=-10,
+                      central_vpol_antennas=8, central_highest_vpol=-60, central_vpol_separation=1, central_hpol_antennas=8,
+                      central_highest_hpol=-40, central_hpol_separation=1):
         self.antenna_positions = []
         self.antenna_types = []
 
