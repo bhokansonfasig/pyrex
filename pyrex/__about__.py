@@ -17,7 +17,7 @@ The code is designed to be modular so that it can also be applied to other
 askaryan radio antennas (e.g. the ARA and ARIANA collaborations).
 """
 
-__description__ = __long_description__.splitlines()[0]
+__description__ = __long_description__.splitlines()[1]
 
 __author__ = "Ben Hokanson-Fasig"
 

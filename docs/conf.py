@@ -104,7 +104,16 @@ html_theme = 'alabaster'
 # documentation.
 
 html_theme_options = {
+    "description": description+"\nVersion "+VERSION,
+    "description_font_style": "italic",
+    "github_user": "bhokansonfasig",
+    "github_repo": "pyrex",
+    "extra_nav_links": {
+        "Source (GitHub)": "https://github.com/bhokansonfasig/pyrex",
+        "Report an Issue": "https://github.com/bhokansonfasig/pyrex/issues",
+    },
     "fixed_sidebar": True,
+    "page_width": "1100px",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -119,7 +128,6 @@ html_sidebars = {
         'navigation.html',
         'relations.html',
         'searchbox.html',
-        'donate.html',
     ]
 }
 
