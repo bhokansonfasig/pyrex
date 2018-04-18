@@ -356,7 +356,7 @@ class FastAskaryanSignal(Signal):
         # Remove any extra values in the convolution as a result of adding
         # extra values to the beginning and/or end of RAC
         if n_extra_end!=0:
-            convolution = convolution[n_extra_beginning:n_extra_end]
+            convolution = convolution[n_extra_beginning:-n_extra_end]
         else:
             convolution = convolution[n_extra_beginning:]
 
