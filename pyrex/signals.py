@@ -288,15 +288,13 @@ class FastAskaryanSignal(Signal):
 
         # Calculate the time step and the corresponding z-step
         dt = times[1] - times[0]
-        dz = dt / z_to_t
 
+        # Calculate the corresponding z-step (dz = dt / z_to_t)
         # If the z-step is too large compared to the expected maximum shower
-        # length, then the result will be bad. Divide dz until it is adequately
-        # small compared to max_length
-        dt_divider = 1
-        while np.abs(dz/self.max_length()) > 0.1:
-            dt_divider *= 2
-            dz = dt / dt_divider / z_to_t
+        # length, then the result will be bad. Set dt_divider so that
+        # dz / max_length <= 0.1 (with dz=dt/z_to_t)
+        dt_divider = int(np.abs(10*dt/self.max_length()/z_to_t)) + 1
+        dz = dt / dt_divider / z_to_t
         if dt_divider!=1:
             logger.debug("z-step of %g too large; dt_divider changed to %g",
                          dt / z_to_t, dt_divider)
@@ -321,44 +319,46 @@ class FastAskaryanSignal(Signal):
         # when appropriately rescaled by dt_divider.
         # If t_RAC_vals does not include a reasonable range around zero
         # (typically because n_RAC is too small), errors occur. In that case
-        # extra points are added at the beginning and/or end of RAC
-        t_min = 0
-        t_max = 0
-        n_extra_beginning = 0
-        n_extra_end = 0
-        t_tolerance = 1e-9
-        while t_min >= -t_tolerance or t_max <= t_tolerance:
-            n_RAC = (len(times)*dt_divider + 1 - n_Q
-                     + n_extra_beginning + n_extra_end)
-            t_min = times[0] - t0 - n_extra_beginning * dz * z_to_t
-            t_max = (n_RAC-1) * dz * z_to_t + t_min
-            if t_min >= -t_tolerance:
-                n_extra_beginning += n_Q
-            if t_max <= t_tolerance:
-                n_extra_end += n_Q
-        if n_extra_beginning!=0 or n_extra_end!=0:
-            logger.debug("t_RAC_vals bad, %i extra points added",
-                         n_extra_beginning+n_extra_end)
-        t_RAC_vals = np.arange(n_RAC) * dz * z_to_t + t_min
+        # extra points are added at the beginning and/or end of RAC.
+        # If n_RAC is too large, the convolution can take a very long time.
+        # In that case, points are removed from the beginning and/or end of RAC.
+        t_tolerance = 10e-9
+        t_start = times[0] - t0
+        n_extra_beginning = int((t_start+t_tolerance)/dz/z_to_t) + 1
+        n_extra_end = (int((t_tolerance-t_start)/dz/z_to_t) + 1
+                       + n_Q - len(times)*dt_divider)
+        n_RAC = (len(times)*dt_divider + 1 - n_Q
+                 + n_extra_beginning + n_extra_end)
+        t_RAC_vals = (np.arange(n_RAC) * dz * z_to_t
+                      + t_start - n_extra_beginning * dz * z_to_t)
         RA_C = np.zeros(n_RAC)
         for i, t in enumerate(t_RAC_vals):
             RA_C[i] = self.RAC(t)
 
         # Convolve Q and RAC to get unnormalized vector potential
+        if n_Q*n_RAC>1e6:
+            logger.debug("convolving %i Q points with %i RA_C points",
+                         n_Q, n_RAC)
         convolution = scipy.signal.convolve(Q, RA_C, mode='full')
+
+        # Adjust convolution by zero-padding or removing values according to
+        # the values added/removed at the beginning and end of RA_C
+        if n_extra_beginning<0:
+            convolution = np.concatenate((np.zeros(-n_extra_beginning),
+                                          convolution))
+        else:
+            convolution = convolution[n_extra_beginning:]
+        if n_extra_end<=0:
+            convolution = np.concatenate((convolution,
+                                          np.zeros(-n_extra_end)))
+        else:
+            convolution = convolution[:-n_extra_end]
 
         # Reduce the number of values in the convolution based on the dt_divider
         # so that the number of values matches the length of the times array.
         # It's possible that this should be using scipy.signal.resample instead
         # TODO: Figure that out
         convolution = convolution[::dt_divider]
-
-        # Remove any extra values in the convolution as a result of adding
-        # extra values to the beginning and/or end of RAC
-        if n_extra_end!=0:
-            convolution = convolution[n_extra_beginning:n_extra_end]
-        else:
-            convolution = convolution[n_extra_beginning:]
 
         # Calculate LQ_tot (the excess longitudinal charge along the shower)
         LQ_tot = np.trapz(Q, dx=dz)
@@ -368,7 +368,7 @@ class FastAskaryanSignal(Signal):
 
         # Scale the convolution by the necessary factors to get the true
         # vector potential A
-        # z_to_t and dt_divider are divided out of trial and error to correct
+        # z_to_t and dt_divider are divided based on trial and error to correct
         # the normalization. They are not proven nicely like the other factors
         A = (convolution * -1 * np.sin(theta) / sin_theta_c / LQ_tot
              / z_to_t / dt_divider)
