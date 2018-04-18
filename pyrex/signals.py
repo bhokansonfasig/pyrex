@@ -336,7 +336,9 @@ class FastAskaryanSignal(Signal):
             RA_C[i] = self.RAC(t)
 
         # Convolve Q and RAC to get unnormalized vector potential
-        logger.debug("convolving %i Q points with %i RA_C points", n_Q, n_RAC)
+        if n_Q*n_RAC>1e6:
+            logger.debug("convolving %i Q points with %i RA_C points",
+                         n_Q, n_RAC)
         convolution = scipy.signal.convolve(Q, RA_C, mode='full')
 
         # Adjust convolution by zero-padding or removing values according to
