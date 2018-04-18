@@ -50,7 +50,7 @@ class EventKernel:
                 # FIXME: Use shower energy for AskaryanSignal
                 # Dependent on shower type / neutrino type
 
-                times = np.linspace(-20e-9, 80e-9, 2048, endpoint=False)
+                times = np.linspace(-20e-9, 80e-9, 2000, endpoint=False)
                 pulse = AskaryanSignal(times=times, energy=p.energy,
                                        theta=psi, n=n)
 
