@@ -1,5 +1,6 @@
 """Helper functions for use in PyREx modules."""
 
+import collections
 import copy
 import logging
 import numpy as np
@@ -16,6 +17,18 @@ def normalize(vector):
     else:
         return v / mag
 
+
+def flatten(iterator, dont_flatten=()):
+    """Flattens all iterable elements in the given iterator recursively and
+    returns the resulting flat iterator. Can optionally be passed a list of
+    classes to avoid flattening. Will not flatten strings or bytes due to
+    recursion errors."""
+    for element in iterator:
+        if (isinstance(element, collections.Iterable) and
+                not isinstance(element, dont_flatten+(str, bytes))):
+            yield from flatten(element, dont_flatten=dont_flatten)
+        else:
+            yield element
 
 
 # Note: using lazy_property decorator instead of simple python property
