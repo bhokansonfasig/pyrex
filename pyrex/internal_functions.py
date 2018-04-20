@@ -2,6 +2,7 @@
 
 import collections
 import copy
+import functools
 import logging
 import numpy as np
 
@@ -29,6 +30,20 @@ def flatten(iterator, dont_flatten=()):
             yield from flatten(element, dont_flatten=dont_flatten)
         else:
             yield element
+
+
+
+def mirror_func(match_func, run_func, self=None):
+    """Returns a function which operates like run_func, but has all the
+    attributes of match_func. If self argument is not None, it will be passed
+    as the first argument to run_func."""
+    @functools.wraps(match_func)
+    def wrapper(*args, **kwargs):
+        if self is not None:
+            return run_func(self, *args, **kwargs)
+        else:
+            return run_func(*args, **kwargs)
+    return wrapper
 
 
 # Note: using lazy_property decorator instead of simple python property

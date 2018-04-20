@@ -3,7 +3,7 @@
 import collections
 import inspect
 import logging
-from pyrex.internal_functions import flatten
+from pyrex.internal_functions import flatten, mirror_func
 
 logger = logging.getLogger(__name__)
 
@@ -121,26 +121,20 @@ class Detector:
             self._test_positions()
 
         # For a detector comprised of subsets which hasn't overwritten
-        # build_antennas, copy the function signature of build_antennas from
+        # build_antennas, mirror the function signature of build_antennas from
         # the base subset
         if (not self._is_base_subset and
                 self.build_antennas.__func__==Detector.build_antennas):
-            sub_sig = inspect.signature(self.subsets[0].build_antennas)
-            self_param = inspect.Parameter('self',
-                                           inspect.Parameter.POSITIONAL_ONLY)
-            new_sig = sub_sig.replace(
-                parameters=[self_param]+list(sub_sig.parameters.values())
-            )
-            self.build_antennas.__func__.__signature__ = new_sig
+            self.build_antennas = mirror_func(self.subsets[0].build_antennas,
+                                              Detector.build_antennas,
+                                              self=self)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        # When this class is sublassed, set the subclass's signature to that
-        # of its set_positions function (since all init arguments are
-        # passed to set_positions anyway)
-        sig = inspect.signature(cls.set_positions)
-        cls_sig = sig.replace(parameters=list(sig.parameters.values())[1:])
-        cls.__signature__ = cls_sig
+        # When this class is sublassed, set the subclass's __init__ to mirror
+        # its set_positions function (since all __init__ arguments are passed
+        # to set_positions anyway)
+        cls.__init__ = mirror_func(cls.set_positions, Detector.__init__)
 
     def set_positions(self, *args, **kwargs):
         """Not implemented. Should generate positions for the antennas based
