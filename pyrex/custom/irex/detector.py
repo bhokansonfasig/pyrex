@@ -39,6 +39,12 @@ class IREXString(Detector):
             ant.name = str(naming_scheme(i, ant))
             ant.antenna.set_orientation(*orientation_scheme(i, ant))
 
+    def triggered(self, antenna_requirement=1):
+        """Test whether the number of hit antennas meets the given antenna
+        trigger requirement."""
+        antennas_hit = sum(1 for ant in self if ant.is_hit)
+        return antennas_hit>=antenna_requirement
+
 
 
 class RegularStation(Detector):
@@ -57,6 +63,14 @@ class RegularStation(Detector):
             self.subsets.append(
                 string_type(x_str, y_str, **string_kwargs)
             )
+
+    def triggered(self, antenna_requirement=1, string_requirement=1):
+        """Test whether the number of hit antennas meets the given antenna
+        and string trigger requirements."""
+        antennas_hit = sum(1 for ant in self if ant.is_hit)
+        strings_hit = sum(1 for string in self.subsets if string.triggered(1))
+        return (antennas_hit>=antenna_requirement and
+                strings_hit>=string_requirement)
 
 
 
@@ -81,6 +95,14 @@ class CoxeterStation(Detector):
                 string_type(x_str, y_str, **string_kwargs)
             )
 
+    def triggered(self, antenna_requirement=1, string_requirement=1):
+        """Test whether the number of hit antennas meets the given antenna
+        and string trigger requirements."""
+        antennas_hit = sum(1 for ant in self if ant.is_hit)
+        strings_hit = sum(1 for string in self.subsets if string.triggered(1))
+        return (antennas_hit>=antenna_requirement and
+                strings_hit>=string_requirement)
+
 
 
 class StationGrid(Detector):
@@ -101,3 +123,14 @@ class StationGrid(Detector):
                 self.subsets.append(
                     station_type(x, y, **station_kwargs)
                 )
+
+    def triggered(self, station_requirement=1, **station_trigger_kwargs):
+        """Test whether the number of hit stations meets the given station
+        trigger requirement."""
+        stations_hit = 0
+        for station in self.subsets:
+            if station.triggered(**station_trigger_kwargs):
+                stations_hit += 1
+            if stations_hit>=station_requirement:
+                return True
+        return stations_hit>=station_requirement

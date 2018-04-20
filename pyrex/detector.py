@@ -171,6 +171,14 @@ class Detector:
             for sub in self.subsets:
                 sub.build_antennas(*args, **kwargs)
 
+    def triggered(self, *args, **kwargs):
+        """Test for whether the detector is triggered based on the current
+        state of the antennas."""
+        for ant in self:
+            if ant.is_hit:
+                return True
+        return False
+
     @property
     def _is_base_subset(self):
         return (len(self.subsets)==0 or
