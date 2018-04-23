@@ -1,6 +1,7 @@
 """Module containing customized detector geometry classes for ARA"""
 
 import numpy as np
+from pyrex.signals import Signal
 from pyrex.detector import Detector
 from .antenna import HpolAntenna, VpolAntenna
 
@@ -24,13 +25,13 @@ class ARAString(Detector):
         if hasattr(antenna_separation, '__len__'):
             if len(antenna_separation)!=antennas_per_string-1:
                 raise ValueError("Bad number of antenna separations given")
-            def separation():
-                return antenna_separation.pop(0)
+            def z_sep(i):
+                return antenna_separation[i-1]
         else:
-            def separation():
+            def z_sep(i):
                 return antenna_separation
         for i in range(antennas_per_string):
-            z = lowest_antenna + i*separation()
+            z = lowest_antenna if i==0 else z+z_sep(i)
             self.antenna_positions.append((x, y, z))
 
     def build_antennas(self, power_threshold, amplification=1,
@@ -97,10 +98,33 @@ class PhasedArrayString(Detector):
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))
 
-    def triggered(self, power_threshold):
+    def triggered(self, power_threshold, delays):
         """Test whether the phased array total waveform exceeds the given
         threshold."""
-        return True
+        # Get noise RMS from first antenna (assume they're all the same)
+        ant = self[0]
+        rms = ant._noise_master.rms * ant.amplification
+        # Center around strongest waveform
+        max_i = None
+        max_wave = 0
+        for i, ant in enumerate(self):
+            if (len(ant.waveforms)>0 and
+                    np.max(ant.waveforms[0].values**2)>max_wave):
+                max_i = i
+                max_wave = np.max(ant.waveforms[0].values**2)
+        for delay in delays:
+            center_wave = self[max_i].waveforms[0]
+            total_wave = Signal(center_wave.times, center_wave.values)
+            for i, ant in enumerate(self):
+                if i==max_i:
+                    continue
+                times = total_wave.times - (max_i-i)*delay
+                add_wave = ant.full_waveform(times)
+                add_wave.times += (max_i-i)*delay
+                total_wave += add_wave#.with_times(total_wave.times)
+            if np.max(total_wave.values**2) > -1 * power_threshold * rms**2:
+                return True
+        return False
 
 
 
@@ -141,11 +165,21 @@ class AlbrechtStation(Detector):
     def set_positions(self, x, y, station_diameter=40,
                       hpol_phased_antennas=10, vpol_phased_antennas=10,
                       hpol_phased_separation=1, vpol_phased_separation=1,
-                      hpol_phased_lowest=-70, vpol_phased_lowest=-50,
+                      hpol_phased_lowest=-69, vpol_phased_lowest=-49,
                       outrigger_strings_per_station=3,
                       outrigger_string_type=ARAString,
                       **outrigger_string_kwargs):
         """Generates string positions around the station."""
+        # Change defaults for outrigger strings
+        if "antennas_per_string" not in outrigger_string_kwargs:
+            outrigger_string_kwargs["antennas_per_string"] = 8
+        if "antenna_separation" not in outrigger_string_kwargs:
+            n = outrigger_string_kwargs["antennas_per_string"]
+            sep = [1, 29] * int(n/2)
+            outrigger_string_kwargs["antenna_separation"] = sep[:n-1]
+        if "lowest_antenna" not in outrigger_string_kwargs:
+            outrigger_string_kwargs["lowest_antenna"] = -100
+
         self.subsets.append(
             PhasedArrayString(x, y, antennas_per_string=hpol_phased_antennas,
                               antenna_separation=hpol_phased_separation,

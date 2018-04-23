@@ -214,8 +214,7 @@ class ARAAntennaSystem(AntennaSystem):
         amplified_values = np.clip(signal.values*self.amplification,
                                    a_min=-self.amplifier_clipping,
                                    a_max=self.amplifier_clipping)
-        copy = Signal(signal.times, amplified_values)
-        return self.tunnel_diode(copy)
+        return Signal(signal.times, amplified_values)
 
     def trigger(self, signal):
         if self.antenna._noise_master is None:
