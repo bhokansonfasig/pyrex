@@ -53,7 +53,7 @@ class AntennaSystem:
         while len(self._signals)<len(self.antenna.signals):
             signal = self.antenna.signals[len(self._signals)]
             self._signals.append(self.front_end(signal))
-        # Return envelopes of antenna signals
+        # Return processed antenna signals
         return self._signals
 
     @property
@@ -73,7 +73,7 @@ class AntennaSystem:
         while len(self._all_waveforms)<len(self.antenna.signals):
             wave = self.antenna.all_waveforms[len(self._all_waveforms)]
             self._all_waveforms.append(self.front_end(wave))
-        # Return envelopes of antenna waveforms
+        # Return processed antenna waveforms
         return self._all_waveforms
 
     def full_waveform(self, times):
