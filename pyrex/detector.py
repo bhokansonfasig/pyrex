@@ -173,6 +173,11 @@ class Detector:
                 return True
         return False
 
+    def clear(self):
+        """Convenience method for clearing all antennas in the detector."""
+        for ant in self:
+            ant.clear()
+
     @property
     def _is_base_subset(self):
         return (len(self.subsets)==0 or
