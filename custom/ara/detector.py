@@ -3,6 +3,7 @@
 import numpy as np
 from pyrex.signals import Signal
 from pyrex.detector import Detector
+from pyrex.ice_model import IceModel
 from .antenna import HpolAntenna, VpolAntenna
 
 
@@ -98,32 +99,63 @@ class PhasedArrayString(Detector):
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))
 
-    def triggered(self, power_threshold, delays):
+    def triggered(self, power_threshold, angles=None):
         """Test whether the phased array total waveform exceeds the given
-        threshold."""
+        threshold. Angles to test can optionally be specified (in degrees)."""
+        if angles is None:
+            # Estimate delays based on eleveation angles
+            angles = np.concatenate((
+                np.linspace(-90, -80, 2, endpoint=False),
+                np.linspace(-80, -60, 5, endpoint=False),
+                np.linspace(-60, -40, 8, endpoint=False),
+                np.linspace(-40, -20, 11, endpoint=False),
+                np.linspace(-20, 0, 12, endpoint=False),
+                np.linspace(0, 20, 12, endpoint=False),
+                np.linspace(20, 40, 11, endpoint=False),
+                np.linspace(40, 60, 8, endpoint=False),
+                np.linspace(60, 80, 5, endpoint=False),
+                np.linspace(80, 90, 3, endpoint=True)
+            ))
+        thetas = np.radians(angles)
+        dz = self[0].position[2] - self[1].position[2]
+        n = np.mean([IceModel.index(ant.position[2]) for ant in self])
+        v = 3e8 / n
+        delays = dz / v / np.sin(thetas)
+
         # Get noise RMS from first antenna (assume they're all the same)
         ant = self[0]
-        rms = ant._noise_master.rms * ant.amplification
-        # Center around strongest waveform
-        max_i = None
-        max_wave = 0
-        for i, ant in enumerate(self):
-            if (len(ant.waveforms)>0 and
-                    np.max(ant.waveforms[0].values**2)>max_wave):
-                max_i = i
-                max_wave = np.max(ant.waveforms[0].values**2)
-        for delay in delays:
-            center_wave = self[max_i].waveforms[0]
-            total_wave = Signal(center_wave.times, center_wave.values)
+        rms = ant.antenna._noise_master.rms * ant.amplification
+
+        # Iterate over all waveforms (assume that the antennas are close
+        # enough to all see the same rays, i.e. the same index of
+        # ant.all_waveforms will be from the same ray for each antenna)
+        j = -1
+        while True:
+            j += 1
+            # Center around strongest waveform
+            max_i = None
+            max_wave = 0
             for i, ant in enumerate(self):
-                if i==max_i:
-                    continue
-                times = total_wave.times - (max_i-i)*delay
-                add_wave = ant.full_waveform(times)
-                add_wave.times += (max_i-i)*delay
-                total_wave += add_wave#.with_times(total_wave.times)
-            if np.max(total_wave.values**2) > -1 * power_threshold * rms**2:
-                return True
+                if (len(ant.all_waveforms)>j and
+                        np.max(ant.all_waveforms[j].values**2)>max_wave):
+                    max_i = i
+                    max_wave = np.max(ant.all_waveforms[j].values**2)
+            # Stop once no more waveforms are available
+            if max_i is None:
+                break
+            # Check all delays for trigger
+            for delay in delays:
+                center_wave = self[max_i].all_waveforms[j]
+                total_wave = Signal(center_wave.times, center_wave.values)
+                for i, ant in enumerate(self):
+                    if i==max_i:
+                        continue
+                    times = total_wave.times - (max_i-i)*delay
+                    add_wave = ant.full_waveform(times)
+                    add_wave.times += (max_i-i)*delay
+                    total_wave += add_wave.with_times(total_wave.times)
+                if np.max(total_wave.values**2) > -1 * power_threshold * rms**2:
+                    return True
         return False
 
 
