@@ -2,6 +2,7 @@
 
 import os.path
 import numpy as np
+import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
@@ -178,12 +179,13 @@ class ARAAntennaSystem(AntennaSystem):
 
         self.name = str(name)
         self.position = position
-        self.setup_antenna(response_data=response_data,
-                           response_freqs=response_freqs,
-                           orientation=orientation, noisy=noisy)
 
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
+
+        self.setup_antenna(response_data=response_data,
+                           response_freqs=response_freqs,
+                           orientation=orientation, noisy=noisy)
 
         self.power_threshold = power_threshold
 
@@ -204,9 +206,61 @@ class ARAAntennaSystem(AntennaSystem):
                               response_freqs=response_freqs,
                               noisy=noisy)
 
+        # Prepare for antenna trigger by finding rms of noise waveform (1 us)
+        # convolved with tunnel diode response
+        long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
+        self._power_mean = np.mean(long_noise.values)
+        self._power_rms = np.sqrt(np.mean(long_noise.values**2))
+
+    # Tunnel diode response functions pulled from arasim
+    _td_args = {
+        'down1': (-0.8, 15e-9, 2.3e-9, 0),
+        'down2': (-0.2, 15e-9, 4e-9, 0),
+        'up': (1, 18e-9, 7e-9, 1e9)
+    }
+    # Set td_args['up'][0] based on the other args, like in arasim
+    _td_args['up'] = (-np.sqrt(2*np.pi) *
+                      (_td_args['down1'][0]*_td_args['down1'][2] +
+                       _td_args['down2'][0]*_td_args['down2'][2]) /
+                      (2e18*_td_args['up'][2]**3),) + _td_args['up'][1:]
+
+    # Set "down" and "up" functions as in arasim
+    @classmethod
+    def _td_fdown1(cls, x):
+        return (cls._td_args['down1'][3] + cls._td_args['down1'][0] *
+                np.exp(-(x-cls._td_args['down1'][1])**2 /
+                       (2*cls._td_args['down1'][2]**2)))
+
+    @classmethod
+    def _td_fdown2(cls, x):
+        return (cls._td_args['down2'][3] + cls._td_args['down2'][0] *
+                np.exp(-(x-cls._td_args['down2'][1])**2 /
+                       (2*cls._td_args['down2'][2]**2)))
+
+    @classmethod
+    def _td_fup(cls, x):
+        return (cls._td_args['up'][0] *
+                (cls._td_args['up'][3] * (x-cls._td_args['up'][1]))**2 *
+                np.exp(-(x-cls._td_args['up'][1])/cls._td_args['up'][2]))
+
     def tunnel_diode(self, signal):
         """Return the signal response from the tunnel diode."""
-        return signal
+        if signal.value_type!=Signal.ValueTypes.voltage:
+            raise ValueError("Tunnel diode only accepts voltage signals")
+        t_max = 1e-7
+        n_pts = int(t_max/signal.dt)
+        times = np.linspace(0, t_max, n_pts+1)
+        diode_resp = self._td_fdown1(times) + self._td_fdown2(times)
+        t_slice = times>self._td_args['up'][1]
+        diode_resp[t_slice] += self._td_fup(times[t_slice])
+        conv = scipy.signal.convolve(signal.values**2 / self.antenna.resistance,
+                                     diode_resp, mode='full')
+        # Signal class will automatically only take the first part of conv,
+        # which is what we want.
+        # conv multiplied by dt so that the amplitude stays constant for
+        # varying dts (determined emperically, see FastAskaryanSignal comments)
+        output = Signal(signal.times, conv*signal.dt)
+        return output
 
     def front_end(self, signal):
         """Apply the front-end processing of the antenna signal, including
@@ -217,10 +271,13 @@ class ARAAntennaSystem(AntennaSystem):
         return Signal(signal.times, amplified_values)
 
     def trigger(self, signal):
-        if self.antenna._noise_master is None:
-            self.antenna.make_noise([0,1])
-        rms = self.antenna._noise_master.rms * self.amplification
-        return np.max(signal.values**2) > -1 * self.power_threshold * rms**2
+        power_signal = self.tunnel_diode(signal)
+        low_trigger = (self._power_mean -
+                       self._power_rms*np.abs(self.power_threshold))
+        high_trigger = (self._power_mean +
+                        self._power_rms*np.abs(self.power_threshold))
+        return (np.min(power_signal.values)<low_trigger or
+                np.max(power_signal.values)>high_trigger)
 
 
 

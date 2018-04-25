@@ -122,11 +122,11 @@ class PhasedArrayString(Detector):
         v = 3e8 / n
         delays = dz / v * np.sin(thetas)
 
-        # Get noise RMS from first antenna (assume they're all the same)
-        ant = self[0]
-        if ant.antenna._noise_master is None:
-            ant.antenna.make_noise([0,1])
-        rms = ant.antenna._noise_master.rms * ant.amplification
+        # Get trigger info from first antenna (assume they're all the same)
+        power_mean = self[0]._power_mean
+        power_rms = self[0]._power_rms
+        low_trigger = power_mean - power_rms*np.abs(power_threshold)
+        high_trigger = power_mean + power_rms*np.abs(power_threshold)
 
         # Iterate over all waveforms (assume that the antennas are close
         # enough to all see the same rays, i.e. the same index of
@@ -156,7 +156,9 @@ class PhasedArrayString(Detector):
                     add_wave = ant.full_waveform(times)
                     add_wave.times += (max_i-i)*delay
                     total_wave += add_wave.with_times(total_wave.times)
-                if np.max(total_wave.values**2) > -1 * power_threshold * rms**2:
+                power_signal = self[0].tunnel_diode(total_wave)
+                if (np.min(power_signal.values)<low_trigger or
+                        np.max(power_signal.values)>high_trigger):
                     return True
         return False
 
