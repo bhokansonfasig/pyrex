@@ -120,10 +120,12 @@ class PhasedArrayString(Detector):
         dz = self[0].position[2] - self[1].position[2]
         n = np.mean([IceModel.index(ant.position[2]) for ant in self])
         v = 3e8 / n
-        delays = dz / v / np.sin(thetas)
+        delays = dz / v * np.sin(thetas)
 
         # Get noise RMS from first antenna (assume they're all the same)
         ant = self[0]
+        if ant.antenna._noise_master is None:
+            ant.antenna.make_noise([0,1])
         rms = ant.antenna._noise_master.rms * ant.amplification
 
         # Iterate over all waveforms (assume that the antennas are close
