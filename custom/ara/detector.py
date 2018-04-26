@@ -99,34 +99,37 @@ class PhasedArrayString(Detector):
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))
 
-    def triggered(self, power_threshold, angles=None):
+    def triggered(self, beam_threshold, delays=None, angles=None):
         """Test whether the phased array total waveform exceeds the given
-        threshold. Angles to test can optionally be specified (in degrees)."""
-        if angles is None:
-            # Estimate delays based on eleveation angles
-            angles = np.concatenate((
-                np.linspace(-90, -80, 2, endpoint=False),
-                np.linspace(-80, -60, 5, endpoint=False),
-                np.linspace(-60, -40, 8, endpoint=False),
-                np.linspace(-40, -20, 11, endpoint=False),
-                np.linspace(-20, 0, 12, endpoint=False),
-                np.linspace(0, 20, 12, endpoint=False),
-                np.linspace(20, 40, 11, endpoint=False),
-                np.linspace(40, 60, 8, endpoint=False),
-                np.linspace(60, 80, 5, endpoint=False),
-                np.linspace(80, 90, 3, endpoint=True)
-            ))
-        thetas = np.radians(angles)
-        dz = self[0].position[2] - self[1].position[2]
-        n = np.mean([IceModel.index(ant.position[2]) for ant in self])
-        v = 3e8 / n
-        delays = dz / v * np.sin(thetas)
-
-        # Get trigger info from first antenna (assume they're all the same)
-        power_mean = self[0]._power_mean
-        power_rms = self[0]._power_rms
-        low_trigger = power_mean - power_rms*np.abs(power_threshold)
-        high_trigger = power_mean + power_rms*np.abs(power_threshold)
+        threshold. Delays (in ns) or angles (in degrees) to test can optionally
+        be specified, with delays taking precedence."""
+        # Explanation of default delays:
+        # Delays from 5.94 ns to -5.94 ns cover the edge case of
+        # n=1.78 (z=inf) for elevation angles of 90 to -90 degrees.
+        # For another edge case of n=1.35 (z=0), only need to cover
+        # 4.5 ns to -4.5 ns really, but having extra won't hurt.
+        # (All this assuming a z-spacing of 1 m, otherwise multiply
+        # by the spacing to get true time bounds)
+        # 19 points in the larger range gives a delay resolution of
+        # 660 ps (phased array FPGA sampling rate from
+        # https://github.com/vPhase/fpga-sim/blob/master/config.py),
+        # or equivalently an angular resolution of about 8 or 6 degrees
+        # for the edge cases above.
+        # I think this is different from the true phased array trigger,
+        # which only looks down, so there are 15 positive (or neg?)
+        # delays from 0 to 9.24 ns.
+        if delays is None:
+            dz = self[0].position[2] - self[1].position[2]
+            if angles is None:
+                # Use default delays described above
+                t_max = 5.94e-9 * np.abs(dz)
+                delays = np.linspace(-t_max, t_max, 19)
+            else:
+                # Calculate delays based on elevation angles
+                thetas = np.radians(angles)
+                n = np.mean([IceModel.index(ant.position[2]) for ant in self])
+                v = 3e8 / n
+                delays = dz / v * np.sin(thetas)
 
         # Iterate over all waveforms (assume that the antennas are close
         # enough to all see the same rays, i.e. the same index of
@@ -142,10 +145,10 @@ class PhasedArrayString(Detector):
                         np.max(ant.all_waveforms[j].values**2)>max_wave):
                     max_i = i
                     max_wave = np.max(ant.all_waveforms[j].values**2)
-            # Stop once no more waveforms are available
+            # Stop waveform iteration once no more waveforms are available
             if max_i is None:
                 break
-            # Check all delays for trigger
+            # Check each delay for trigger
             for delay in delays:
                 center_wave = self[max_i].all_waveforms[j]
                 total_wave = Signal(center_wave.times, center_wave.values)
@@ -156,9 +159,7 @@ class PhasedArrayString(Detector):
                     add_wave = ant.full_waveform(times)
                     add_wave.times += (max_i-i)*delay
                     total_wave += add_wave.with_times(total_wave.times)
-                power_signal = self[0].tunnel_diode(total_wave)
-                if (np.min(power_signal.values)<low_trigger or
-                        np.max(power_signal.values)>high_trigger):
+                if np.max(np.abs(total_wave.values))>beam_threshold:
                     return True
         return False
 
