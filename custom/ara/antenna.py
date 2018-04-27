@@ -188,6 +188,8 @@ class ARAAntennaSystem(AntennaSystem):
                            orientation=orientation, noisy=noisy)
 
         self.power_threshold = power_threshold
+        self._power_mean = None
+        self._power_rms = None
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=700e6,
                       resistance=100, orientation=(0,0,1),
@@ -205,13 +207,6 @@ class ARAAntennaSystem(AntennaSystem):
                               response_data=response_data,
                               response_freqs=response_freqs,
                               noisy=noisy)
-
-        # Prepare for antenna trigger by finding rms of noise waveform (1 us)
-        # convolved with tunnel diode response
-        long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
-        power_noise = self.tunnel_diode(self.front_end(long_noise))
-        self._power_mean = np.mean(power_noise.values)
-        self._power_rms = np.sqrt(np.mean(power_noise.values**2))
 
     # Tunnel diode response functions pulled from arasim
     _td_args = {
@@ -274,6 +269,14 @@ class ARAAntennaSystem(AntennaSystem):
                       value_type=signal.value_type)
 
     def trigger(self, signal):
+        if self._power_mean is None or self._power_rms is None:
+            # Prepare for antenna trigger by finding rms of noise waveform
+            # (1 microsecond) convolved with tunnel diode response
+            long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
+            power_noise = self.tunnel_diode(self.front_end(long_noise))
+            self._power_mean = np.mean(power_noise.values)
+            self._power_rms = np.sqrt(np.mean(power_noise.values**2))
+
         power_signal = self.tunnel_diode(signal)
         low_trigger = (self._power_mean -
                        self._power_rms*np.abs(self.power_threshold))

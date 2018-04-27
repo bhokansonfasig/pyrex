@@ -131,8 +131,12 @@ class PhasedArrayString(Detector):
                 v = 3e8 / n
                 delays = dz / v * np.sin(thetas)
 
-        rms = sum(ant.antenna._noise_master.rms*ant.amplification
-                  for ant in self) / np.sqrt(len(self))
+        rms = 0
+        for ant in self:
+            if ant.antenna._noise_master is None:
+                ant.antenna.make_noise([0, 1])
+            rms += ant.antenna._noise_master.rms*ant.amplification
+        rms /= np.sqrt(len(self))
 
         # Iterate over all waveforms (assume that the antennas are close
         # enough to all see the same rays, i.e. the same index of
