@@ -131,6 +131,9 @@ class PhasedArrayString(Detector):
                 v = 3e8 / n
                 delays = dz / v * np.sin(thetas)
 
+        rms = sum(ant.antenna._noise_master.rms*ant.amplification
+                  for ant in self) / np.sqrt(len(self))
+
         # Iterate over all waveforms (assume that the antennas are close
         # enough to all see the same rays, i.e. the same index of
         # ant.all_waveforms will be from the same ray for each antenna)
@@ -151,15 +154,15 @@ class PhasedArrayString(Detector):
             # Check each delay for trigger
             for delay in delays:
                 center_wave = self[max_i].all_waveforms[j]
-                total_wave = Signal(center_wave.times, center_wave.values)
+                total = Signal(center_wave.times, center_wave.values)
                 for i, ant in enumerate(self):
                     if i==max_i:
                         continue
-                    times = total_wave.times - (max_i-i)*delay
+                    times = total.times - (max_i-i)*delay
                     add_wave = ant.full_waveform(times)
                     add_wave.times += (max_i-i)*delay
-                    total_wave += add_wave.with_times(total_wave.times)
-                if np.max(np.abs(total_wave.values))>beam_threshold:
+                    total += add_wave.with_times(total.times)
+                if np.max(np.abs(total.values))>np.abs(beam_threshold*rms):
                     return True
         return False
 

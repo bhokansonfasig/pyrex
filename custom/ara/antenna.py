@@ -209,8 +209,9 @@ class ARAAntennaSystem(AntennaSystem):
         # Prepare for antenna trigger by finding rms of noise waveform (1 us)
         # convolved with tunnel diode response
         long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
-        self._power_mean = np.mean(long_noise.values)
-        self._power_rms = np.sqrt(np.mean(long_noise.values**2))
+        power_noise = self.tunnel_diode(self.front_end(long_noise))
+        self._power_mean = np.mean(power_noise.values)
+        self._power_rms = np.sqrt(np.mean(power_noise.values**2))
 
     # Tunnel diode response functions pulled from arasim
     _td_args = {
@@ -259,7 +260,8 @@ class ARAAntennaSystem(AntennaSystem):
         # which is what we want.
         # conv multiplied by dt so that the amplitude stays constant for
         # varying dts (determined emperically, see FastAskaryanSignal comments)
-        output = Signal(signal.times, conv*signal.dt)
+        output = Signal(signal.times, conv*signal.dt,
+                        value_type=Signal.ValueTypes.power)
         return output
 
     def front_end(self, signal):
@@ -268,7 +270,8 @@ class ARAAntennaSystem(AntennaSystem):
         amplified_values = np.clip(signal.values*self.amplification,
                                    a_min=-self.amplifier_clipping,
                                    a_max=self.amplifier_clipping)
-        return Signal(signal.times, amplified_values)
+        return Signal(signal.times, amplified_values,
+                      value_type=signal.value_type)
 
     def trigger(self, signal):
         power_signal = self.tunnel_diode(signal)
