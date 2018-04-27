@@ -164,7 +164,8 @@ class IREXAntennaSystem(AntennaSystem):
         amplified_values = np.clip(signal.values*self.amplification,
                                    a_min=-self.amplifier_clipping,
                                    a_max=self.amplifier_clipping)
-        copy = Signal(signal.times, amplified_values)
+        copy = Signal(signal.times, amplified_values,
+                      value_type=signal.value_type)
         return self.make_envelope(copy)
 
         # # Two options for downsampling:
