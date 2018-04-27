@@ -1,6 +1,29 @@
 Version History
 ***************
 
+Version 1.5.0
+=============
+
+.. rubric:: Changes
+
+* Changed structure of ``Detector`` class so a detector can be built up from strings to stations to the full detector.
+
+* ``Detector.antennas`` attribute changed to ``Detector.subsets``, which contains the pieces which make up the detector (e.g. antennas on a string, strings in a station).
+
+* Iterating the ``Detector`` class directly retains its effect of iterating each antenna in the detector directly.
+
+.. rubric:: New Features
+
+* Added ``triggered()`` and ``clear()`` method to ``Detector`` class.
+
+* Added two new neutrino generators ``ListGenerator`` and ``FileGenerator`` designed to pull pre-generated ``Particle`` objects.
+
+.. rubric:: Bug Fixes
+
+* Preserve ``value_type`` of ``Signal`` objects passed to ``IREXAntennaSystem.front_end()``
+
+
+
 Version 1.4.2
 =============
 
