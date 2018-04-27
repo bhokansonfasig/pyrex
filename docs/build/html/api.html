@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PyREx API &#8212; PyREx 1.4.2 documentation</title>
+    <title>PyREx API &#8212; PyREx 1.5.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.2',
+        VERSION:     '1.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,7 +46,7 @@
 
 
 <p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.4.2</p>
+Version 1.5.0</p>
 
 
 
@@ -517,21 +517,39 @@ the build_antennas method is responsible for actually placing antennas
 at the generated positions. Once antennas are placed, the class can be
 directly iterated over to iterate over the antennas (as if it were just
 a list of antennas itself).</p>
+<dl class="attribute">
+<dt id="pyrex.Detector.test_antenna_positions">
+<code class="descname">test_antenna_positions</code><em class="property"> = True</em><a class="headerlink" href="#pyrex.Detector.test_antenna_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="pyrex.Detector.set_positions">
 <code class="descname">set_positions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Not implemented. Should generates positions for the antennas based
+<dd><p>Not implemented. Should generate positions for the antennas based
 on the given arguments and assign those positions to the
 antenna_positions attribute.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pyrex.Detector.build_antennas">
-<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>antenna_class</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.build_antennas" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.build_antennas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up antenna objects at the positions stored in the class.
 By default takes an antenna class and passes a position to the
-‘position’ argument, followed by the keyword arguments passed to this
-function.</p>
+‘position’ argument, followed by any other arguments to be passed to
+this class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.Detector.triggered">
+<code class="descname">triggered</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.triggered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for whether the detector is triggered based on the current
+state of the antennas.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.Detector.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method for clearing all antennas in the detector.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1174,21 +1192,39 @@ the build_antennas method is responsible for actually placing antennas
 at the generated positions. Once antennas are placed, the class can be
 directly iterated over to iterate over the antennas (as if it were just
 a list of antennas itself).</p>
+<dl class="attribute">
+<dt id="pyrex.detector.Detector.test_antenna_positions">
+<code class="descname">test_antenna_positions</code><em class="property"> = True</em><a class="headerlink" href="#pyrex.detector.Detector.test_antenna_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="pyrex.detector.Detector.set_positions">
 <code class="descname">set_positions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Not implemented. Should generates positions for the antennas based
+<dd><p>Not implemented. Should generate positions for the antennas based
 on the given arguments and assign those positions to the
 antenna_positions attribute.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pyrex.detector.Detector.build_antennas">
-<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>antenna_class</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.build_antennas" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.build_antennas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up antenna objects at the positions stored in the class.
 By default takes an antenna class and passes a position to the
-‘position’ argument, followed by the keyword arguments passed to this
-function.</p>
+‘position’ argument, followed by any other arguments to be passed to
+this class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.detector.Detector.triggered">
+<code class="descname">triggered</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.triggered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for whether the detector is triggered based on the current
+state of the antennas.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.detector.Detector.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method for clearing all antennas in the detector.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1384,6 +1420,40 @@ while the z range is (-dz, 0).</p>
 <code class="descname">create_particle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.ShadowGenerator.create_particle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a particle with random vertex in cube with a random
 direction.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.particle.ListGenerator">
+<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">ListGenerator</code><span class="sig-paren">(</span><em>particles</em>, <em>loop=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.ListGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class to generate neutrinos by simply pulling them from a list of
+Particle objects. By default returns to the start of the list once the end
+is reached, but can optionally fail after reaching the list’s end.</p>
+<dl class="method">
+<dt id="pyrex.particle.ListGenerator.create_particle">
+<code class="descname">create_particle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.ListGenerator.create_particle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulls next particle from the list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrex.particle.FileGenerator">
+<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">FileGenerator</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.FileGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class to generate neutrinos by pulling their vertex, direction, and
+energy from a (list of) .npz file(s). Each file must have three arrays,
+containing the vertices, directions, and energies respectively so the first
+particle will have properties given by the first elements of these three
+arrays. Tries to smartly figure out which array is which based on their
+names, but if the arrays are unnamed, assumes they are in the order used
+above.</p>
+<dl class="method">
+<dt id="pyrex.particle.FileGenerator.create_particle">
+<code class="descname">create_particle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.FileGenerator.create_particle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulls the next particle from the file(s).</p>
 </dd></dl>
 
 </dd></dl>
@@ -1865,6 +1935,23 @@ process signal at antennas, and return the original particle.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pyrex.internal_functions.flatten">
+<code class="descclassname">pyrex.internal_functions.</code><code class="descname">flatten</code><span class="sig-paren">(</span><em>iterator</em>, <em>dont_flatten=()</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flattens all iterable elements in the given iterator recursively and
+returns the resulting flat iterator. Can optionally be passed a list of
+classes to avoid flattening. Will not flatten strings or bytes due to
+recursion errors.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyrex.internal_functions.mirror_func">
+<code class="descclassname">pyrex.internal_functions.</code><code class="descname">mirror_func</code><span class="sig-paren">(</span><em>match_func</em>, <em>run_func</em>, <em>self=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.mirror_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a function which operates like run_func, but has all the
+attributes of match_func. If self argument is not None, it will be passed
+as the first argument to run_func.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyrex.internal_functions.lazy_property">
 <code class="descclassname">pyrex.internal_functions.</code><code class="descname">lazy_property</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.lazy_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator that makes a property lazily evaluated.</p>
@@ -1993,15 +2080,22 @@ amplification, clipping, and envelope processing.</p>
 <span id="pyrex-custom-irex-detector-module"></span><h4>pyrex.custom.irex.detector module<a class="headerlink" href="#module-pyrex.custom.irex.detector" title="Permalink to this headline">¶</a></h4>
 <p>Module containing customized detector geometry classes for IREX</p>
 <dl class="class">
-<dt id="pyrex.custom.irex.detector.IREXDetector">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXDetector</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXDetector" title="Permalink to this definition">¶</a></dt>
+<dt id="pyrex.custom.irex.detector.IREXString">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXString</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=50</em>, <em>lowest_antenna=-100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
-<p>Base class for IREX detector classes which implements the build_antennas
-method, but not set_positions.</p>
+<p>String of IREXAntennas. Sets positions of antennas on string based on
+the given arguments. Sets build_antennas method for setting antenna
+characteristics.</p>
 <dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXDetector.build_antennas">
-<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>amplification=1</em>, <em>naming_scheme=&lt;function IREXDetector.&lt;lambda&gt;&gt;</em>, <em>orientation_scheme=&lt;function IREXDetector.&lt;lambda&gt;&gt;</em>, <em>noisy=True</em>, <em>envelope_method=’analytic’</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXDetector.build_antennas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets up IREXAntennas at the positions stored in the class.
+<dt id="pyrex.custom.irex.detector.IREXString.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=50</em>, <em>lowest_antenna=-100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates antenna positions along the string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.IREXString.build_antennas">
+<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>amplification=1</em>, <em>naming_scheme=&lt;function IREXString.&lt;lambda&gt;&gt;</em>, <em>orientation_scheme=&lt;function IREXString.&lt;lambda&gt;&gt;</em>, <em>noisy=True</em>, <em>envelope_method=’analytic’</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString.build_antennas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up IREXAntennaSystems at the positions stored in the class.
 Takes as arguments the trigger threshold, optional time over
 threshold, and whether to add noise to the waveforms.
 Other optional arguments include a naming scheme and orientation scheme
@@ -2010,79 +2104,77 @@ The naming scheme should return the name and the orientation scheme
 should return the orientation z-axis and x-axis of the antenna.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.custom.irex.detector.IREXGrid">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXGrid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
-<p>Class for (semi)automatically generating a rectangular grid of strings
-of antennas, which can then be iterated over.</p>
 <dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXGrid.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_strings=1</em>, <em>string_separation=500</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=40</em>, <em>lowest_antenna=-200</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXGrid.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates antenna positions in a grid of strings.
-Takes as arguments the number of strings, the distance between strings,
-the number of antennas per string, the separation (in z) of the
-antennas on the string, and the position of the lowest antenna.</p>
+<dt id="pyrex.custom.irex.detector.IREXString.triggered">
+<code class="descname">triggered</code><span class="sig-paren">(</span><em>antenna_requirement=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString.triggered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether the number of hit antennas meets the given antenna
+trigger requirement.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="pyrex.custom.irex.detector.IREXClusteredGrid">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXClusteredGrid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXClusteredGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
-<p>Class for (semi)automatically generating a rectangular grid of clusters
-of strings of antennas, which can then be iterated over.</p>
+<dt id="pyrex.custom.irex.detector.RegularStation">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">RegularStation</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class ‘pyrex.custom.irex.detector.IREXString’&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
+<p>Station geometry with a number of strings evenly spaced radially around
+the station center. Supports any string type and passes extra keyword
+arguments on to the string class.</p>
 <dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXClusteredGrid.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_stations=1</em>, <em>station_separation=500</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=40</em>, <em>lowest_antenna=-200</em>, <em>strings_per_station=4</em>, <em>string_separation=50</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXClusteredGrid.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates antenna positions in a grid of strings.
-Takes as arguments the number of stations, the distance between
-stations, the number of antennas per string, the separation (in z) of the
-antennas on the string, the position of the lowest antenna, and the name
-of the geometry to use. Optional parameters (depending on the geometry)
-are the number of strings per station and the distance from station to
-string.</p>
+<dt id="pyrex.custom.irex.detector.RegularStation.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class ‘pyrex.custom.irex.detector.IREXString’&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates string positions around the station.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.RegularStation.triggered">
+<code class="descname">triggered</code><span class="sig-paren">(</span><em>antenna_requirement=1</em>, <em>string_requirement=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation.triggered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether the number of hit antennas meets the given antenna
+and string trigger requirements.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="pyrex.custom.irex.detector.IREXCoxeterClusters">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXCoxeterClusters</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXCoxeterClusters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
-<p>Class for (semi)automatically generating a rectangular grid of 
-Coxeter-plane-like clusters (one string at center) of strings of antennas,
-which can then be iterated over.</p>
+<dt id="pyrex.custom.irex.detector.CoxeterStation">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">CoxeterStation</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class ‘pyrex.custom.irex.detector.IREXString’&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
+<p>Station geometry with one string at the station center and the rest of
+the strings evenly spaced radially around the station center. Supports any
+string type and passes extra keyword arguments on to the string class.</p>
 <dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXCoxeterClusters.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_stations=1</em>, <em>station_separation=500</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=40</em>, <em>lowest_antenna=-200</em>, <em>strings_per_station=4</em>, <em>string_separation=25</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXCoxeterClusters.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates antenna positions in a grid of strings.
-Takes as arguments the number of stations, the distance between
-stations, the number of antennas per string, the separation (in z) of the
-antennas on the string, the position of the lowest antenna, and the name
-of the geometry to use. Optional parameters (depending on the geometry)
-are the number of strings per station and the distance from station to
-string.</p>
+<dt id="pyrex.custom.irex.detector.CoxeterStation.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class ‘pyrex.custom.irex.detector.IREXString’&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates string positions around the station.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.CoxeterStation.triggered">
+<code class="descname">triggered</code><span class="sig-paren">(</span><em>antenna_requirement=1</em>, <em>string_requirement=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation.triggered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether the number of hit antennas meets the given antenna
+and string trigger requirements.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="pyrex.custom.irex.detector.IREXPairedGrid">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXPairedGrid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXPairedGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.custom.irex.detector.IREXDetector" title="pyrex.custom.irex.detector.IREXDetector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.custom.irex.detector.IREXDetector</span></code></a></p>
-<p>Class for (semi)automatically generating a rectangular grid of strings
-of antennas, which can then be iterated over.</p>
+<dt id="pyrex.custom.irex.detector.StationGrid">
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">StationGrid</code><span class="sig-paren">(</span><em>stations=1</em>, <em>station_separation=500</em>, <em>station_type=&lt;class ‘pyrex.custom.irex.detector.IREXString’&gt;</em>, <em>**station_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.StationGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
+<p>Rectangular grid of stations or strings, in a square layout if possible,
+separated by the given distance. Supports any station or string type and
+passes extra keyword arguments on to the station or string class.</p>
 <dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXPairedGrid.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>number_of_strings=1</em>, <em>string_separation=500</em>, <em>antennas_per_string=16</em>, <em>antenna_separation=10</em>, <em>lowest_antenna=-95</em>, <em>antennas_per_clump=2</em>, <em>clump_separation=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXPairedGrid.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates antenna positions in a grid of strings.
-Takes as arguments the number of strings, the distance between strings,
-the number of antennas per string, the separation (in z) of the
-antennas on the string, and the position of the lowest antenna.</p>
+<dt id="pyrex.custom.irex.detector.StationGrid.set_positions">
+<code class="descname">set_positions</code><span class="sig-paren">(</span><em>stations=1</em>, <em>station_separation=500</em>, <em>station_type=&lt;class ‘pyrex.custom.irex.detector.IREXString’&gt;</em>, <em>**station_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.StationGrid.set_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates rectangular grid of stations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrex.custom.irex.detector.StationGrid.triggered">
+<code class="descname">triggered</code><span class="sig-paren">(</span><em>station_requirement=1</em>, <em>**station_trigger_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.StationGrid.triggered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether the number of hit stations meets the given station
+trigger requirement.</p>
 </dd></dl>
 
 </dd></dl>

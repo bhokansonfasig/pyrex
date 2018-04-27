@@ -1,6 +1,8 @@
 """Helper functions for use in PyREx modules."""
 
+import collections
 import copy
+import functools
 import logging
 import numpy as np
 
@@ -16,6 +18,32 @@ def normalize(vector):
     else:
         return v / mag
 
+
+def flatten(iterator, dont_flatten=()):
+    """Flattens all iterable elements in the given iterator recursively and
+    returns the resulting flat iterator. Can optionally be passed a list of
+    classes to avoid flattening. Will not flatten strings or bytes due to
+    recursion errors."""
+    for element in iterator:
+        if (isinstance(element, collections.Iterable) and
+                not isinstance(element, dont_flatten+(str, bytes))):
+            yield from flatten(element, dont_flatten=dont_flatten)
+        else:
+            yield element
+
+
+
+def mirror_func(match_func, run_func, self=None):
+    """Returns a function which operates like run_func, but has all the
+    attributes of match_func. If self argument is not None, it will be passed
+    as the first argument to run_func."""
+    @functools.wraps(match_func)
+    def wrapper(*args, **kwargs):
+        if self is not None:
+            return run_func(self, *args, **kwargs)
+        else:
+            return run_func(*args, **kwargs)
+    return wrapper
 
 
 # Note: using lazy_property decorator instead of simple python property

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &#8212; PyREx 1.4.2 documentation</title>
+    <title>Index &#8212; PyREx 1.5.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.2',
+        VERSION:     '1.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
 
 
 <p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.4.2</p>
+Version 1.5.0</p>
 
 
 
@@ -214,7 +214,7 @@ Version 1.4.2</p>
 </li>
       <li><a href="api.html#pyrex.custom.irex.frontends.bridge_rectifier_envelope_model">bridge_rectifier_envelope_model() (in module pyrex.custom.irex.frontends)</a>
 </li>
-      <li><a href="api.html#pyrex.custom.irex.detector.IREXDetector.build_antennas">build_antennas() (pyrex.custom.irex.detector.IREXDetector method)</a>
+      <li><a href="api.html#pyrex.custom.irex.detector.IREXString.build_antennas">build_antennas() (pyrex.custom.irex.detector.IREXString method)</a>
 
       <ul>
         <li><a href="api.html#pyrex.Detector.build_antennas">(pyrex.Detector method)</a>
@@ -239,9 +239,13 @@ Version 1.4.2</p>
       <ul>
         <li><a href="api.html#pyrex.AntennaSystem.clear">(pyrex.AntennaSystem method)</a>
 </li>
+        <li><a href="api.html#pyrex.Detector.clear">(pyrex.Detector method)</a>
+</li>
         <li><a href="api.html#pyrex.antenna.Antenna.clear">(pyrex.antenna.Antenna method)</a>
 </li>
         <li><a href="api.html#pyrex.detector.AntennaSystem.clear">(pyrex.detector.AntennaSystem method)</a>
+</li>
+        <li><a href="api.html#pyrex.detector.Detector.clear">(pyrex.detector.Detector method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -252,10 +256,16 @@ Version 1.4.2</p>
         <li><a href="api.html#pyrex.ray_tracing.SpecializedRayTracePath.coordinates">(pyrex.ray_tracing.SpecializedRayTracePath attribute)</a>, <a href="api.html#pyrex.ray_tracing.SpecializedRayTracePath.coordinates">[1]</a>
 </li>
       </ul></li>
-      <li><a href="api.html#pyrex.particle.ShadowGenerator.create_particle">create_particle() (pyrex.particle.ShadowGenerator method)</a>
+      <li><a href="api.html#pyrex.custom.irex.detector.CoxeterStation">CoxeterStation (class in pyrex.custom.irex.detector)</a>
+</li>
+      <li><a href="api.html#pyrex.particle.FileGenerator.create_particle">create_particle() (pyrex.particle.FileGenerator method)</a>
 
       <ul>
         <li><a href="api.html#pyrex.ShadowGenerator.create_particle">(pyrex.ShadowGenerator method)</a>
+</li>
+        <li><a href="api.html#pyrex.particle.ListGenerator.create_particle">(pyrex.particle.ListGenerator method)</a>
+</li>
+        <li><a href="api.html#pyrex.particle.ShadowGenerator.create_particle">(pyrex.particle.ShadowGenerator method)</a>
 </li>
       </ul></li>
       <li><a href="api.html#pyrex.particle.NeutrinoInteraction.cross_section">cross_section() (pyrex.particle.NeutrinoInteraction method)</a>
@@ -372,12 +382,16 @@ Version 1.4.2</p>
         <li><a href="api.html#pyrex.signals.Signal.ValueTypes.field">(pyrex.signals.Signal.ValueTypes attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#pyrex.particle.FileGenerator">FileGenerator (class in pyrex.particle)</a>
+</li>
       <li><a href="api.html#pyrex.Signal.filter_frequencies">filter_frequencies() (pyrex.Signal method)</a>
 
       <ul>
         <li><a href="api.html#pyrex.signals.Signal.filter_frequencies">(pyrex.signals.Signal method)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#pyrex.internal_functions.flatten">flatten() (in module pyrex.internal_functions)</a>
+</li>
       <li><a href="api.html#pyrex.Signal.frequencies">frequencies (pyrex.Signal attribute)</a>
 
       <ul>
@@ -386,6 +400,8 @@ Version 1.4.2</p>
       </ul></li>
       <li><a href="api.html#pyrex.ray_tracing.BasicRayTracePath.fresnel">fresnel (pyrex.ray_tracing.BasicRayTracePath attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.AntennaSystem.front_end">front_end() (pyrex.AntennaSystem method)</a>
 
       <ul>
@@ -394,8 +410,6 @@ Version 1.4.2</p>
         <li><a href="api.html#pyrex.detector.AntennaSystem.front_end">(pyrex.detector.AntennaSystem method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.custom.irex.reconstruction.full_vertex_reconstruction">full_vertex_reconstruction() (in module pyrex.custom.irex.reconstruction)</a>
 </li>
       <li><a href="api.html#pyrex.Antenna.full_waveform">full_waveform() (pyrex.Antenna method)</a>
@@ -460,17 +474,9 @@ Version 1.4.2</p>
 </li>
       <li><a href="api.html#pyrex.custom.irex.antenna.IREXAntennaSystem">IREXAntennaSystem (class in pyrex.custom.irex.antenna)</a>
 </li>
-      <li><a href="api.html#pyrex.custom.irex.detector.IREXClusteredGrid">IREXClusteredGrid (class in pyrex.custom.irex.detector)</a>
-</li>
-      <li><a href="api.html#pyrex.custom.irex.detector.IREXCoxeterClusters">IREXCoxeterClusters (class in pyrex.custom.irex.detector)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pyrex.custom.irex.detector.IREXDetector">IREXDetector (class in pyrex.custom.irex.detector)</a>
-</li>
-      <li><a href="api.html#pyrex.custom.irex.detector.IREXGrid">IREXGrid (class in pyrex.custom.irex.detector)</a>
-</li>
-      <li><a href="api.html#pyrex.custom.irex.detector.IREXPairedGrid">IREXPairedGrid (class in pyrex.custom.irex.detector)</a>
+      <li><a href="api.html#pyrex.custom.irex.detector.IREXString">IREXString (class in pyrex.custom.irex.detector)</a>
 </li>
       <li><a href="api.html#pyrex.Antenna.is_hit">is_hit (pyrex.Antenna attribute)</a>
 
@@ -512,11 +518,13 @@ Version 1.4.2</p>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.internal_functions.lazy_property">lazy_property() (in module pyrex.internal_functions)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.internal_functions.LazyMutableClass">LazyMutableClass (class in pyrex.internal_functions)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.custom.irex.reconstruction.least_squares">least_squares() (in module pyrex.custom.irex.reconstruction)</a>
+</li>
+      <li><a href="api.html#pyrex.particle.ListGenerator">ListGenerator (class in pyrex.particle)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -532,10 +540,10 @@ Version 1.4.2</p>
         <li><a href="api.html#pyrex.antenna.Antenna.make_noise">(pyrex.antenna.Antenna method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.ray_tracing.BasicRayTracer.max_angle">max_angle (pyrex.ray_tracing.BasicRayTracer attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.signals.FastAskaryanSignal.max_length">max_length() (pyrex.signals.FastAskaryanSignal method)</a>, <a href="api.html#pyrex.signals.FastAskaryanSignal.max_length">[1]</a>
 
       <ul>
@@ -543,6 +551,8 @@ Version 1.4.2</p>
 </li>
       </ul></li>
       <li><a href="api.html#pyrex.custom.irex.reconstruction.minimizer_vertex_reconstruction">minimizer_vertex_reconstruction() (in module pyrex.custom.irex.reconstruction)</a>
+</li>
+      <li><a href="api.html#pyrex.internal_functions.mirror_func">mirror_func() (in module pyrex.internal_functions)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -722,6 +732,8 @@ Version 1.4.2</p>
       </ul></li>
       <li><a href="api.html#pyrex.ray_tracing.ReflectedPathFinder">ReflectedPathFinder (class in pyrex.ray_tracing)</a>
 </li>
+      <li><a href="api.html#pyrex.custom.irex.detector.RegularStation">RegularStation (class in pyrex.custom.irex.detector)</a>
+</li>
       <li><a href="api.html#pyrex.Signal.resample">resample() (pyrex.Signal method)</a>
 
       <ul>
@@ -758,16 +770,16 @@ Version 1.4.2</p>
         <li><a href="api.html#pyrex.antenna.Antenna.set_orientation">(pyrex.antenna.Antenna method)</a>
 </li>
       </ul></li>
-      <li><a href="api.html#pyrex.custom.irex.detector.IREXClusteredGrid.set_positions">set_positions() (pyrex.custom.irex.detector.IREXClusteredGrid method)</a>
+      <li><a href="api.html#pyrex.custom.irex.detector.CoxeterStation.set_positions">set_positions() (pyrex.custom.irex.detector.CoxeterStation method)</a>
 
       <ul>
         <li><a href="api.html#pyrex.Detector.set_positions">(pyrex.Detector method)</a>
 </li>
-        <li><a href="api.html#pyrex.custom.irex.detector.IREXCoxeterClusters.set_positions">(pyrex.custom.irex.detector.IREXCoxeterClusters method)</a>
+        <li><a href="api.html#pyrex.custom.irex.detector.IREXString.set_positions">(pyrex.custom.irex.detector.IREXString method)</a>
 </li>
-        <li><a href="api.html#pyrex.custom.irex.detector.IREXGrid.set_positions">(pyrex.custom.irex.detector.IREXGrid method)</a>
+        <li><a href="api.html#pyrex.custom.irex.detector.RegularStation.set_positions">(pyrex.custom.irex.detector.RegularStation method)</a>
 </li>
-        <li><a href="api.html#pyrex.custom.irex.detector.IREXPairedGrid.set_positions">(pyrex.custom.irex.detector.IREXPairedGrid method)</a>
+        <li><a href="api.html#pyrex.custom.irex.detector.StationGrid.set_positions">(pyrex.custom.irex.detector.StationGrid method)</a>
 </li>
         <li><a href="api.html#pyrex.detector.Detector.set_positions">(pyrex.detector.Detector method)</a>
 </li>
@@ -834,6 +846,8 @@ Version 1.4.2</p>
       </ul></li>
       <li><a href="api.html#pyrex.custom.pyspice.SpiceSignal">SpiceSignal (class in pyrex.custom.pyspice)</a>
 </li>
+      <li><a href="api.html#pyrex.custom.irex.detector.StationGrid">StationGrid (class in pyrex.custom.irex.detector)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -842,6 +856,12 @@ Version 1.4.2</p>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.ice_model.AntarcticIce.temperature">temperature() (pyrex.ice_model.AntarcticIce static method)</a>
 </li>
+      <li><a href="api.html#pyrex.Detector.test_antenna_positions">test_antenna_positions (pyrex.Detector attribute)</a>
+
+      <ul>
+        <li><a href="api.html#pyrex.detector.Detector.test_antenna_positions">(pyrex.detector.Detector attribute)</a>
+</li>
+      </ul></li>
       <li><a href="api.html#pyrex.ThermalNoise">ThermalNoise (class in pyrex)</a>
 
       <ul>
@@ -884,6 +904,20 @@ Version 1.4.2</p>
         <li><a href="api.html#pyrex.custom.irex.antenna.IREXAntennaSystem.trigger">(pyrex.custom.irex.antenna.IREXAntennaSystem method)</a>
 </li>
         <li><a href="api.html#pyrex.detector.AntennaSystem.trigger">(pyrex.detector.AntennaSystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="api.html#pyrex.custom.irex.detector.CoxeterStation.triggered">triggered() (pyrex.custom.irex.detector.CoxeterStation method)</a>
+
+      <ul>
+        <li><a href="api.html#pyrex.Detector.triggered">(pyrex.Detector method)</a>
+</li>
+        <li><a href="api.html#pyrex.custom.irex.detector.IREXString.triggered">(pyrex.custom.irex.detector.IREXString method)</a>
+</li>
+        <li><a href="api.html#pyrex.custom.irex.detector.RegularStation.triggered">(pyrex.custom.irex.detector.RegularStation method)</a>
+</li>
+        <li><a href="api.html#pyrex.custom.irex.detector.StationGrid.triggered">(pyrex.custom.irex.detector.StationGrid method)</a>
+</li>
+        <li><a href="api.html#pyrex.detector.Detector.triggered">(pyrex.detector.Detector method)</a>
 </li>
       </ul></li>
   </ul></td>

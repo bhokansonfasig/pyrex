@@ -452,6 +452,8 @@ PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos,
                                          energy_generator=const_energy_generator)
     my_generator.create_particle()
 
+Lastly, PyREx includes ``ListGenerator`` and ``FileGenerator`` classes which can be used to reproduce pre-generated particles from either a list or from numpy files, respectively.
+
 
 
 Ray Tracing
