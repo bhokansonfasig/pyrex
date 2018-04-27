@@ -106,6 +106,26 @@ class ShadowGenerator:
             return self.create_particle()
 
 
+class ListGenerator:
+    """Class to generate neutrinos by simply pulling them from a list of
+    Particle objects. By default returns to the start of the list once the end
+    is reached, but can optionally fail after reaching the list's end."""
+    def __init__(self, particles, loop=True):
+        if isinstance(particles, Particle):
+            self.particles = [particles]
+        else:
+            self.particles = particles
+        self.loop = loop
+        self._index = -1
+
+    def create_particle(self):
+        """Pulls next particle from the list."""
+        self._index += 1
+        if not self.loop and self._index>=len(self.particles):
+            raise StopIteration("No more particles to be generated")
+        return self.particles[self._index%len(self.particles)]
+
+
 class FileGenerator:
     """Class to generate neutrinos by pulling their vertex, direction, and
     energy from a (list of) .npz file(s). Each file must have three arrays,
