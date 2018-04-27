@@ -12,7 +12,7 @@ from .antenna import Antenna, DipoleAntenna
 from .detector import AntennaSystem, Detector
 from .ice_model import IceModel
 from .earth_model import prem_density, slant_depth
-from .particle import Particle, ShadowGenerator
+from .particle import Particle, ShadowGenerator, ListGenerator, FileGenerator
 from .ray_tracing import RayTracer, RayTracePath
 from .kernel import EventKernel
 
