@@ -242,10 +242,10 @@ class AlbrechtStation(Detector):
                 outrigger_string_type(x_str, y_str, **outrigger_string_kwargs)
             )
 
-    def triggered(self, power_threshold):
+    def triggered(self, beam_threshold):
         """Test whether the phased array strings triggered at some threshold."""
-        return (self.subsets[0].triggered(power_threshold=power_threshold) or
-                self.subsets[1].triggered(power_threshold=power_threshold))
+        return (self.subsets[0].triggered(beam_threshold=beam_threshold) or
+                self.subsets[1].triggered(beam_threshold=beam_threshold))
 
 
 
