@@ -155,19 +155,36 @@ class PhasedArrayString(Detector):
             # Stop waveform iteration once no more waveforms are available
             if max_i is None:
                 break
+
+            # Preset the waveforms since the ant.full_waveform call can be
+            # computationally expensive
+            center_wave = self[max_i].all_waveforms[j]
+            waveforms = []
+            for i, ant in enumerate(self):
+                if i==max_i:
+                    waveforms.append(center_wave)
+                    continue
+                tmin = min(center_wave.times[0] - (max_i-i)*delay
+                           for delay in delays)
+                tmax = min(center_wave.times[-1] - (max_i-i)*delay
+                           for delay in delays)
+                n_pts = int((tmax-tmin)/center_wave.dt)
+                times = np.linspace(tmin, tmax, n_pts+1)
+                waveforms.append(ant.full_waveform(times))
+
             # Check each delay for trigger
             for delay in delays:
-                center_wave = self[max_i].all_waveforms[j]
                 total = Signal(center_wave.times, center_wave.values)
-                for i, ant in enumerate(self):
+                for i, wave in enumerate(waveforms):
                     if i==max_i:
                         continue
                     times = total.times - (max_i-i)*delay
-                    add_wave = ant.full_waveform(times)
+                    add_wave = wave.with_times(times)
                     add_wave.times += (max_i-i)*delay
                     total += add_wave.with_times(total.times)
                 if np.max(np.abs(total.values))>np.abs(beam_threshold*rms):
                     return True
+
         return False
 
 
