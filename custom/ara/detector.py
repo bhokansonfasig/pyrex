@@ -226,7 +226,7 @@ class AlbrechtStation(Detector):
     def set_positions(self, x, y, station_diameter=40,
                       hpol_phased_antennas=10, vpol_phased_antennas=10,
                       hpol_phased_separation=1, vpol_phased_separation=1,
-                      hpol_phased_lowest=-69, vpol_phased_lowest=-49,
+                      hpol_phased_lowest=-49, vpol_phased_lowest=-69,
                       outrigger_strings_per_station=3,
                       outrigger_string_type=ARAString,
                       **outrigger_string_kwargs):
