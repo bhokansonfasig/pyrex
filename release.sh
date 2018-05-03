@@ -49,7 +49,9 @@ if [ $action == "new" ]; then
     echo "${GRN}Making new release branch $fullname$NC" &&
     echo "${BLU}git checkout -b $fullname develop$NC" &&
     git checkout -b $fullname develop &&
-    echo "${GRN}Now change the version number to $version and git commit with the message \"Bumped version number to $version\"$NC"
+    echo "${GRN}Now change the version number to $version and git commit with the message \"Bumped version number to $version\".$NC"
+    echo "${GRN}Then make sure to document the following changes:$NC"
+    git log master..$fullname --oneline --no-merges
 elif [ $action == "merge" ]; then
     echo "${GRN}Merging release branch $fullname to master$NC" &&
     echo "${BLU}git checkout master$NC" &&
