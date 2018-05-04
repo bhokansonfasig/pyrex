@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage="Usage: $0 ACTION NAME\n  ACTION = new, merge\n  NAME = name of the feature"
+usage="Usage: $0 ACTION NAME\n  ACTION = new, merge, private\n  NAME = name of the feature"
 
 if [ $# -ne 2 ]; then
     echo $usage
@@ -33,6 +33,11 @@ if [ $action == "new" ]; then
     git checkout -b $name develop &&
     echo "${BLU}git push origin $name$NC" &&
     git push origin &&
+    echo "${GRN}Now add your new feature$NC"
+elif [ $action == "private" ]; then
+    echo "${GRN}Making new feature branch $name$NC" &&
+    echo "${BLU}git checkout -b $name develop$NC" &&
+    git checkout -b $name develop &&
     echo "${GRN}Now add your new feature$NC"
 elif [ $action == "merge" ]; then
     echo "${GRN}Merging feature branch $name to develop$NC" &&
