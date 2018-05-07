@@ -173,8 +173,8 @@ class ARAAntennaSystem(AntennaSystem):
     """ARA antenna system consisting of antenna, amplification,
     and tunnel diode response."""
     def __init__(self, name, position, power_threshold, response_data=None,
-                 response_freqs=None, orientation=(0,0,1), amplification=1,
-                 amplifier_clipping=3, noisy=True):
+                 response_freqs=None, orientation=(0,0,1), amplification=1e4,
+                 amplifier_clipping=1, noisy=True):
         super().__init__(ARAAntenna)
 
         self.name = str(name)
@@ -192,12 +192,14 @@ class ARAAntennaSystem(AntennaSystem):
         self._power_rms = None
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=700e6,
-                      resistance=100, orientation=(0,0,1),
+                      resistance=1.87, orientation=(0,0,1),
                       response_data=None, response_freqs=None,
                       effective_height=None, noisy=True):
         """Sets attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
+        # Noise rms should be about 0.4, satisfied for most instrumented ice
+        # temperatures with an effective resistance of ~1.87 Ohm
         super().setup_antenna(position=self.position,
                               center_frequency=center_frequency,
                               bandwidth=bandwidth,
@@ -291,7 +293,7 @@ class HpolAntenna(ARAAntennaSystem):
     """ARA Hpol ("quad-slot") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
-                 amplification=1, amplifier_clipping=3, noisy=True):
+                 amplification=1e4, amplifier_clipping=1, noisy=True):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
                          response_data=HPOL_RESPONSE,
@@ -306,7 +308,7 @@ class VpolAntenna(ARAAntennaSystem):
     """ARA Vpol ("bicone" or "birdcage") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
-                 amplification=1, amplifier_clipping=3, noisy=True):
+                 amplification=1e4, amplifier_clipping=1, noisy=True):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
                          response_data=VPOL_RESPONSE,
