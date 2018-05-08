@@ -17,18 +17,17 @@ def antenna():
                    freq_range=[500e6, 750e6], resistance=100)
 
 @pytest.fixture
-def dipole():
-    """Fixture for forming basic DipoleAntenna object"""
-    return DipoleAntenna(name="ant", position=[0,0,-250],
-                         center_frequency=250e6, bandwidth=300e6,
-                         resistance=100, orientation=[0,0,1],
-                         trigger_threshold=75e-6)
+def triggerable_antenna():
+    """Fixture for an antenna with a real trigger"""
+    ant = Antenna(position=[0,0,-200], noisy=False)
+    ant.trigger = lambda signal: np.max(np.abs(signal.values))>1
+    return ant
 
 
 class TestAntenna:
     """Tests for Antenna class"""
     def test_creation(self, antenna):
-        """Test that the antenna's creation goes as expected"""
+        """Test initialization of antenna"""
         assert np.array_equal(antenna.position, [0,0,-250])
         assert np.array_equal(antenna.z_axis, [0,0,1])
         assert np.array_equal(antenna.x_axis, [1,0,0])
@@ -39,9 +38,24 @@ class TestAntenna:
         assert antenna.resistance == 100
         assert antenna.noisy
 
+    def test_set_orientation(self, antenna):
+        """Test that set_orientation properly sets x and z axes,
+        and fails when they aren't orthogonal"""
+        antenna.set_orientation(z_axis=[1,0,0], x_axis=[0,1,0])
+        assert np.array_equal(antenna.z_axis, [1,0,0])
+        assert np.array_equal(antenna.x_axis, [0,1,0])
+        antenna.set_orientation()
+        assert np.array_equal(antenna.z_axis, [0,0,1])
+        assert np.array_equal(antenna.x_axis, [1,0,0])
+        antenna.set_orientation(z_axis=[0,0,5])
+        assert np.array_equal(antenna.z_axis, [0,0,1])
+        assert np.array_equal(antenna.x_axis, [1,0,0])
+        with pytest.raises(ValueError):
+            antenna.set_orientation(z_axis=[2,0,0], x_axis=[1,1,0])
+
     def test_is_hit(self, antenna):
         """Test that is_hit is true when there is a signal and false otherwise"""
-        assert not(antenna.is_hit)
+        assert not antenna.is_hit
         antenna.signals.append(Signal([0],[0]))
         assert antenna.is_hit
 
@@ -50,9 +64,17 @@ class TestAntenna:
         with pytest.raises(AttributeError):
             antenna.is_hit = True
 
+    def test_is_hit_during(self, triggerable_antenna):
+        """Test that is_hit_during works as expected"""
+        triggerable_antenna.signals.append(Signal([1], [2]))
+        assert triggerable_antenna.is_hit_during([0, 1, 2])
+        assert not triggerable_antenna.is_hit_during([-2, -1, 0])
+        assert not triggerable_antenna.is_hit_during([2, 3, 4])
+
     def test_clear(self, antenna):
         """Test that clear emptys signals list"""
         antenna.signals.append(Signal([0],[0]))
+        assert antenna.signals != []
         antenna.clear()
         assert antenna.signals == []
 
@@ -94,11 +116,13 @@ class TestAntenna:
     def test_no_waveforms(self, antenna):
         """Test that waveforms returns an empty list if there are no signals"""
         assert antenna.waveforms == []
+        assert antenna.all_waveforms == []
 
     def test_waveforms_exist(self, antenna):
         """Test that waveforms returns a waveform when a signal has been received"""
         antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.ValueTypes.voltage))
         assert antenna.waveforms != []
+        assert antenna.all_waveforms != []
         assert isinstance(antenna.waveforms[0], Signal)
         assert antenna._noises != []
         assert antenna._triggers == [True]
@@ -138,6 +162,41 @@ class TestAntenna:
         noise = antenna.make_noise(np.linspace(0, 50e-9))
         assert antenna._noise_master == old_noise_master
 
+    def test_noise_master_failure(self):
+        """Test that creation of _noise_master fails if not enough values are
+        specified"""
+        with pytest.raises(ValueError):
+            antenna = Antenna(position=[0,0,-250])
+            antenna.make_noise([0,1,2])
+        with pytest.raises(ValueError):
+            antenna = Antenna(position=[0,0,-250], freq_range=[500e6, 750e6])
+            antenna.make_noise([0,1,2])
+        with pytest.raises(ValueError):
+            antenna = Antenna(position=[0,0,-250], freq_range=[500e6, 750e6],
+                              temperature=300)
+            antenna.make_noise([0,1,2])
+        with pytest.raises(ValueError):
+            antenna = Antenna(position=[0,0,-250], freq_range=[500e6, 750e6],
+                              resistance=100)
+            antenna.make_noise([0,1,2])
+
+    def test_full_waveform(self, triggerable_antenna):
+        """Test that full_waveform incorporates all waveforms (even untriggered)"""
+        triggerable_antenna.signals.append(Signal([1], [2]))
+        triggerable_antenna.signals.append(Signal([0], [0.5]))
+        triggerable_antenna.signals.append(Signal([0, 1, 2], [0.1, 0.1, 0.1]))
+        full = triggerable_antenna.full_waveform([-1, 0, 1, 2, 3])
+        assert np.array_equal(full.values, [0, 0.6, 2.1, 0.1, 0])
+
+
+
+@pytest.fixture
+def dipole():
+    """Fixture for forming basic DipoleAntenna object"""
+    return DipoleAntenna(name="ant", position=[0,0,-250],
+                         center_frequency=250e6, bandwidth=300e6,
+                         resistance=100, orientation=[0,0,1],
+                         trigger_threshold=75e-6)
 
 
 class TestDipoleAntenna:
@@ -185,3 +244,10 @@ class TestDipoleAntenna:
         dot product of the antenna axis with the polarization direction
         (i.e. the z-component)"""
         assert dipole.polarization_gain((x,y,z)) == pytest.approx(z)
+
+    def test_trigger(self, dipole):
+        dipole.noisy = False
+        assert not dipole.is_hit
+        dipole.signals.append(Signal([0], [dipole.threshold*1.01]))
+        assert dipole.is_hit
+
