@@ -107,7 +107,7 @@ class Signal:
         try:
             responses = np.array(freq_response(self.frequencies))
         # Otherwise evaluate responses one at a time
-        except ValueError:
+        except (TypeError, ValueError):
             logger.debug("Frequency response function %r could not be "+
                          "evaluated for multiple frequencies at once",
                          freq_response)
