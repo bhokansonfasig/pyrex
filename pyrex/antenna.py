@@ -17,7 +17,7 @@ class Antenna:
     noise, and whether or not to include noise in the antenna's waveforms.
     Defines default trigger, frequency response, and signal reception functions
     that can be overwritten in base classes to customize the antenna."""
-    def __init__(self, position, z_axis=[0,0,1], x_axis=[1,0,0],
+    def __init__(self, position, z_axis=(0,0,1), x_axis=(1,0,0),
                  antenna_factor=1, efficiency=1, freq_range=None,
                  noise_rms=None, temperature=None, resistance=None, noisy=True):
         self.position = position
@@ -38,7 +38,7 @@ class Antenna:
     def __str__(self):
         return self.__class__.__name__+"(position="+repr(self.position)+")"
 
-    def set_orientation(self, z_axis=[0,0,1], x_axis=[1,0,0]):
+    def set_orientation(self, z_axis=(0,0,1), x_axis=(1,0,0)):
         self.z_axis = normalize(z_axis)
         self.x_axis = normalize(x_axis)
         if np.dot(self.z_axis, self.x_axis)!=0:
@@ -224,7 +224,7 @@ class DipoleAntenna(Antenna):
     bandwidth (Hz), resistance (ohm), effective height (m), polarization
     direction, and trigger threshold (V)."""
     def __init__(self, name, position, center_frequency, bandwidth, resistance,
-                 orientation=[0,0,1], trigger_threshold=0,
+                 orientation=(0,0,1), trigger_threshold=0,
                  effective_height=None, noisy=True):
         self.name = name
         self.threshold = trigger_threshold
