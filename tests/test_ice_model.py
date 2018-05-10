@@ -70,6 +70,12 @@ attenuations = {(-100, 1e3):  160759,   (-200, 1e3):  155437,
 
 class TestAntarcticIce:
     """Tests for AntarcticIce class"""
+    def test_parameters(self):
+        """Tests the parameters of the ice"""
+        assert AntarcticIce.k == 0.438
+        assert AntarcticIce.a == 0.0132
+        assert AntarcticIce.n0 == 1.758
+
     @pytest.mark.parametrize("depth, index", other_indices)
     def test_index(self, depth, index):
         """Tests the index of refraction in the ice at different depths.
@@ -91,6 +97,14 @@ class TestAntarcticIce:
         for i, d in enumerate(depths):
             indices[i] = AntarcticIce.index(d)
         assert np.array_equal(AntarcticIce.index(depths), indices)
+
+    def test_depth_with_index(self):
+        """Tests the depth_with_index method properly inverts the index method
+        (beneath/at surface only)."""
+        depths = -1*np.linspace(0, 1000, 11)
+        for depth, index in zip(depths, AntarcticIce.index(depths)):
+            assert AntarcticIce.depth_with_index(index) == pytest.approx(depth)
+        assert AntarcticIce.depth_with_index(1) == 0
 
     @pytest.mark.parametrize("depth, temp", KW_amanda_temps+KW_icecube_temps)
     def test_temperature(self, depth, temp):
