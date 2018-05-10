@@ -6,17 +6,18 @@ import numpy as np
 from pyrex.internal_functions import normalize
 from pyrex.signals import AskaryanSignal
 from pyrex.ray_tracing import RayTracer
+from pyrex.ice_model import IceModel
 
 logger = logging.getLogger(__name__)
 
 
 class EventKernel:
     """Kernel for generation of events with a given particle generator,
-    ice model, and list of antennas."""
-    def __init__(self, generator, ice_model, antennas):
+    list of antennas, and optionally a non-default ice_model."""
+    def __init__(self, generator, antennas, ice_model=IceModel):
         self.gen = generator
         self.ice = ice_model
-        self.ant_array = antennas
+        self.antennas = antennas
 
     def event(self):
         """Generate particle, propagate signal through ice to antennas,
@@ -24,7 +25,7 @@ class EventKernel:
         p = self.gen.create_particle()
         logger.info("Processing event for %s", p)
         n = self.ice.index(p.vertex[2])
-        for ant in self.ant_array:
+        for ant in self.antennas:
             rt = RayTracer(p.vertex, ant.position, ice_model=self.ice)
 
             # If no path(s) between the points, skip ahead
