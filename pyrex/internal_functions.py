@@ -26,7 +26,7 @@ def flatten(iterator, dont_flatten=()):
     recursion errors."""
     for element in iterator:
         if (isinstance(element, collections.Iterable) and
-                not isinstance(element, dont_flatten+(str, bytes))):
+                not isinstance(element, tuple(dont_flatten)+(str, bytes))):
             yield from flatten(element, dont_flatten=dont_flatten)
         else:
             yield element
