@@ -13,6 +13,9 @@ __pycache__/
 # IPython notebook helper files
 .ipynb_checkpoints/
 
+# Visual Studio Code settings
+.vscode/
+
 # Bug testing items
 tests/Bug*
 tests/bug*
