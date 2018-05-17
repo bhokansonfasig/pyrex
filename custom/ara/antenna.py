@@ -10,7 +10,7 @@ from pyrex.detector import AntennaSystem
 from pyrex.ice_model import IceModel
 
 
-def read_response_data(filename):
+def _read_response_data(filename):
     """Gather antenna response data from a data file. Returns the data as a
     dictionary with keys (freq, theta, phi) and values (gain, phase).
     Also returns a set of the frequencies appearing in the keys."""
@@ -47,11 +47,45 @@ def read_response_data(filename):
     return data, freqs
 
 
+def _read_filter_data(filename):
+    """Gather electronics chain filtering data from a data file. Returns the
+    data as a dictionary with frequency keys and values (gain, phase)."""
+    data = {}
+    freq_scale = 0
+    with open(filename) as f:
+        for line in f:
+            words = line.split()
+            if line.startswith('Freq'):
+                _, scale = words[0].split("(")
+                scale = scale.rstrip(")")
+                if scale=="Hz":
+                    freq_scale = 1
+                elif scale=="kHz":
+                    freq_scale = 1e3
+                elif scale=="MHz":
+                    freq_scale = 1e6
+                elif scale=="GHz":
+                    freq_scale = 1e9
+                else:
+                    raise ValueError("Cannot parse line: '"+line+"'")
+            elif len(words)==3 and words[0]!="Total":
+                f, g, p = line.split(",")
+                freq = float(f) * freq_scale
+                gain = float(g)
+                phase = float(p)
+                data[freq] = (gain, phase)
+
+    return data
+
+
 ARA_DATA_DIR = os.path.dirname(__file__)
 VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output_MY.txt")
 HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output_MY.txt")
-VPOL_RESPONSE, VPOL_FREQS = read_response_data(VPOL_DATA_FILE)
-HPOL_RESPONSE, HPOL_FREQS = read_response_data(HPOL_DATA_FILE)
+FILTER_DATA_FILE = os.path.join(ARA_DATA_DIR,
+                                "ARA_Electronics_TotalGain_TwoFilters.txt")
+VPOL_RESPONSE, VPOL_FREQS = _read_response_data(VPOL_DATA_FILE)
+HPOL_RESPONSE, HPOL_FREQS = _read_response_data(HPOL_DATA_FILE)
+ALL_FILTERS = _read_filter_data(FILTER_DATA_FILE)
 
 
 class ARAAntenna(Antenna):
@@ -86,10 +120,13 @@ class ARAAntenna(Antenna):
 
         self._response_data = response_data
         self._response_freqs = response_freqs
+        # Just in case the frequencies don't get set, set them now
         if self._response_freqs is None and self._response_data is not None:
             self._response_freqs = set()
             for key in self._response_data:
                 self._response_freqs.add(key[0])
+
+        self._filter_data = ALL_FILTERS
 
 
     def polarization_gain(self, polarization):
@@ -120,18 +157,27 @@ class ARAAntenna(Antenna):
         gain_i1j = np.zeros(nfreqs)
         gain_ij1 = np.zeros(nfreqs)
         gain_i1j1 = np.zeros(nfreqs)
-        for f, freq in enumerate(self._response_freqs):
+        for f, freq in enumerate(sorted(self._response_freqs)):
             # TODO: Implement phase shift as imaginary part of gain
             gain_ij[f] = self._response_data[(freq, theta_under, phi_under)][0]
             gain_i1j[f] = self._response_data[(freq, theta_over, phi_under)][0]
             gain_ij1[f] = self._response_data[(freq, theta_under, phi_over)][0]
             gain_i1j1[f] = self._response_data[(freq, theta_over, phi_over)][0]
 
-        freqs = np.array(list(self._response_freqs))
+        freqs = np.array(sorted(self._response_freqs))
         gains = ((1-t)*(1-u)*gain_ij + t*(1-u)*gain_i1j +
                  (1-t)*u*gain_ij1 + t*u*gain_i1j1)
 
         return freqs, gains
+
+    def interpolate_filter(self, frequencies):
+        """Generate interpolated filter values for given frequencies."""
+        freqs = sorted(self._filter_data.keys())
+        gains = []
+        for f in freqs:
+            # TODO: Implement phase shift as imaginary part of gain
+            gains.append(self._filter_data[f][0])
+        return np.interp(frequencies, freqs, gains, left=0, right=0)
 
 
     def receive(self, signal, origin=None, polarization=None):
@@ -173,7 +219,7 @@ class ARAAntennaSystem(AntennaSystem):
     """ARA antenna system consisting of antenna, amplification,
     and tunnel diode response."""
     def __init__(self, name, position, power_threshold, response_data=None,
-                 response_freqs=None, orientation=(0,0,1), amplification=1e4,
+                 response_freqs=None, orientation=(0,0,1), amplification=1,
                  amplifier_clipping=1, noisy=True):
         super().__init__(ARAAntenna)
 
@@ -198,7 +244,7 @@ class ARAAntennaSystem(AntennaSystem):
         """Sets attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
-        # Noise rms should be about 0.4, satisfied for most instrumented ice
+        # Noise rms should be about 0.4 microvolts, satisfied for most ice
         # temperatures with an effective resistance of ~1.87 Ohm
         super().setup_antenna(position=self.position,
                               center_frequency=center_frequency,
@@ -263,11 +309,13 @@ class ARAAntennaSystem(AntennaSystem):
 
     def front_end(self, signal):
         """Apply the front-end processing of the antenna signal, including
-        amplification, clipping, and envelope processing."""
-        amplified_values = np.clip(signal.values*self.amplification,
-                                   a_min=-self.amplifier_clipping,
-                                   a_max=self.amplifier_clipping)
-        return Signal(signal.times, amplified_values,
+        electronics chain filters/amplification and clipping."""
+        copy = Signal(signal.times, signal.values)
+        copy.filter_frequencies(self.antenna.interpolate_filter)
+        clipped_values = np.clip(copy.values,
+                                 a_min=-self.amplifier_clipping,
+                                 a_max=self.amplifier_clipping)
+        return Signal(signal.times, clipped_values,
                       value_type=signal.value_type)
 
     def trigger(self, signal):
@@ -293,7 +341,7 @@ class HpolAntenna(ARAAntennaSystem):
     """ARA Hpol ("quad-slot") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
-                 amplification=1e4, amplifier_clipping=1, noisy=True):
+                 amplification=1, amplifier_clipping=1, noisy=True):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
                          response_data=HPOL_RESPONSE,
@@ -308,7 +356,7 @@ class VpolAntenna(ARAAntennaSystem):
     """ARA Vpol ("bicone" or "birdcage") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
-                 amplification=1e4, amplifier_clipping=1, noisy=True):
+                 amplification=1, amplifier_clipping=1, noisy=True):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
                          response_data=VPOL_RESPONSE,
