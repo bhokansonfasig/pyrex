@@ -191,9 +191,9 @@ class ARAAntenna(Antenna):
             # Calculate theta and phi relative to the orientation
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
             freq_data, gain_data = self.generate_freq_gains(theta, phi)
-            def interpolated_response(frequencies):
+            def interpolate_response(frequencies):
                 return np.interp(frequencies, freq_data, gain_data)
-            copy.filter_frequencies(interpolated_response)
+            copy.filter_frequencies(interpolate_response, force_causality=True)
 
         if polarization is None:
             p_gain = 1
@@ -237,15 +237,19 @@ class ARAAntennaSystem(AntennaSystem):
         self._power_mean = None
         self._power_rms = None
 
-    def setup_antenna(self, center_frequency=500e6, bandwidth=700e6,
-                      resistance=1.87, orientation=(0,0,1),
+    def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
+                      resistance=5.45, orientation=(0,0,1),
                       response_data=None, response_freqs=None,
                       effective_height=None, noisy=True):
         """Sets attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
-        # Noise rms should be about 0.4 microvolts, satisfied for most ice
-        # temperatures with an effective resistance of ~1.87 Ohm
+        # Noise rms should be about 40 mV (after filtering with gain of ~5000).
+        # This is satisfied for most ice temperatures by using an effective
+        # resistance of ~5.45 Ohm
+        # Additionally, the bandwidth of the antenna is set slightly larger
+        # than the nominal bandwidth of the true ARA antenna system (700 MHz),
+        # but the extra frequencies should be killed by the front-end filter
         super().setup_antenna(position=self.position,
                               center_frequency=center_frequency,
                               bandwidth=bandwidth,
@@ -311,7 +315,8 @@ class ARAAntennaSystem(AntennaSystem):
         """Apply the front-end processing of the antenna signal, including
         electronics chain filters/amplification and clipping."""
         copy = Signal(signal.times, signal.values)
-        copy.filter_frequencies(self.antenna.interpolate_filter)
+        copy.filter_frequencies(self.antenna.interpolate_filter,
+                                force_causality=True)
         clipped_values = np.clip(copy.values,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
