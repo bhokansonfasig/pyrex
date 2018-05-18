@@ -99,24 +99,52 @@ class Signal:
         """Returns the FFT frequencies of the signal."""
         return scipy.fftpack.fftfreq(n=len(self.values), d=self.dt)
 
-    def filter_frequencies(self, freq_response):
-        """Applies the given frequency response function to the signal."""
-        filtered_spectrum = self.spectrum
+    def filter_frequencies(self, freq_response, force_causality=False):
+        """Applies the given frequency response function to the signal.
+        Optionally can attempt to force causality manually if the filter is
+        expected to be non-causal."""
+        # Zero-pad the signal so the filter doesn't cause the resulting
+        # signal to wrap around the end of the time array
+        vals = np.concatenate((self.values, np.zeros(len(self.values))))
+        spectrum = scipy.fftpack.fft(vals)
+        freqs = scipy.fftpack.fftfreq(n=2*len(self.values), d=self.dt)
+        if force_causality:
+            freqs = np.abs(freqs)
 
         # Attempt to evaluate all responses in one function call
         try:
-            responses = np.array(freq_response(self.frequencies))
+            responses = np.array(freq_response(freqs))
         # Otherwise evaluate responses one at a time
         except (TypeError, ValueError):
             logger.debug("Frequency response function %r could not be "+
                          "evaluated for multiple frequencies at once",
                          freq_response)
-            responses = np.zeros(len(filtered_spectrum))
-            for i, f in enumerate(self.frequencies):
+            responses = np.zeros(len(spectrum))
+            for i, f in enumerate(freqs):
                 responses[i] = freq_response(f)
 
-        filtered_spectrum *= responses
-        self.values = np.real(scipy.fftpack.ifft(filtered_spectrum))
+        # Causality requires the response function to be even (enforced above)
+        # and requires the imaginary part of the response function to be the
+        # Hilbert transform of the real part, i.e.
+        # H(f) = real(H) - i*hilbert(real(H))
+        if force_causality:
+            responses = scipy.signal.hilbert(responses.real)
+            responses.imag *= -1
+
+        filtered_vals = scipy.fftpack.ifft(responses*spectrum)
+        self.values = np.real(filtered_vals[:len(self.times)])
+
+        # Issue a warning if there was significant signal in the (discarded)
+        # imaginary part of the filtered values
+        if np.any(np.imag(filtered_vals[:len(self.times)]) >
+                  np.max(self.values) * 1e-5):
+            msg = ("Significant signal amplitude was lost when forcing the "+
+                   "signal values to be real after applying the frequency "+
+                   "filter '%s'. This may be avoided by making sure the "+
+                   "filter being used is causal, or by passing "+
+                   "force_causality=True to the Signal.filter_frequencies "+
+                   "function.")
+            logger.warning(msg, freq_response.__name__)
 
 
 
