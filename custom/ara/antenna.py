@@ -10,9 +10,9 @@ from pyrex.detector import AntennaSystem
 from pyrex.ice_model import IceModel
 
 
-def _read_response_data(filename):
-    """Gather antenna response data from a data file. Returns the data as a
-    dictionary with keys (freq, theta, phi) and values (gain, phase).
+def _read_directionality_data(filename):
+    """Gather antenna directionality data from a data file. Returns the data as
+    a dictionary with keys (freq, theta, phi) and values (gain, phase).
     Also returns a set of the frequencies appearing in the keys."""
     data = {}
     freqs = set()
@@ -40,8 +40,9 @@ def _read_response_data(filename):
                 theta = int(words[0])
                 phi = int(words[1])
                 db_gain = float(words[2])
-                gain = float(words[3])
-                phase = float(words[4])
+                # AraSim actually only seems to use the sqrt of the gain
+                gain = np.sqrt(float(words[3]))
+                phase = np.radians(float(words[4]))
                 data[(freq, theta, phi)] = (gain, phase)
 
     return data, freqs
@@ -83,8 +84,8 @@ VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output_MY.txt")
 HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output_MY.txt")
 FILTER_DATA_FILE = os.path.join(ARA_DATA_DIR,
                                 "ARA_Electronics_TotalGain_TwoFilters.txt")
-VPOL_RESPONSE, VPOL_FREQS = _read_response_data(VPOL_DATA_FILE)
-HPOL_RESPONSE, HPOL_FREQS = _read_response_data(HPOL_DATA_FILE)
+VPOL_DIRECTIONALITY, VPOL_FREQS = _read_directionality_data(VPOL_DATA_FILE)
+HPOL_DIRECTIONALITY, HPOL_FREQS = _read_directionality_data(HPOL_DATA_FILE)
 ALL_FILTERS = _read_filter_data(FILTER_DATA_FILE)
 
 
@@ -93,14 +94,8 @@ class ARAAntenna(Antenna):
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), effective_height=None,
-                 response_data=None, response_freqs=None, noisy=True):
-        if effective_height is None:
-            # Calculate length of half-wave dipole
-            self.effective_height = 3e8 / center_frequency / 2
-        else:
-            self.effective_height = effective_height
-
+                 orientation=(0,0,1), efficiency=1, noisy=True,
+                 directionality_data=None, directionality_freqs=None):
         # Get the critical frequencies in Hz
         f_low = center_frequency - bandwidth/2
         f_high = center_frequency + bandwidth/2
@@ -113,18 +108,17 @@ class ARAAntenna(Antenna):
         # Note: ortho is not normalized, but will be normalized by Antenna's init
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
-                         antenna_factor=1/self.effective_height,
+                         efficiency=efficiency, freq_range=(f_low, f_high),
                          temperature=IceModel.temperature(position[2]),
-                         freq_range=(f_low, f_high), resistance=resistance,
-                         noisy=noisy)
+                         resistance=resistance, noisy=noisy)
 
-        self._response_data = response_data
-        self._response_freqs = response_freqs
+        self._dir_data = directionality_data
+        self._dir_freqs = directionality_freqs
         # Just in case the frequencies don't get set, set them now
-        if self._response_freqs is None and self._response_data is not None:
-            self._response_freqs = set()
-            for key in self._response_data:
-                self._response_freqs.add(key[0])
+        if self._dir_freqs is None and self._dir_data is not None:
+            self._dir_freqs = set()
+            for key in self._dir_data:
+                self._dir_freqs.add(key[0])
 
         self._filter_data = ALL_FILTERS
 
@@ -135,9 +129,9 @@ class ARAAntenna(Antenna):
         return np.vdot(self.z_axis, polarization)
 
 
-    def generate_freq_gains(self, theta, phi):
+    def generate_directionality_gains(self, theta, phi):
         """Generate arrays of frequencies and gains for given angles."""
-        if self._response_data is None:
+        if self._dir_data is None:
             return np.array([1]), np.array([1])
 
         theta = np.degrees(theta) % 180
@@ -152,48 +146,75 @@ class ARAAntenna(Antenna):
         theta_over %= 180
         phi_over %= 360
 
-        nfreqs = len(self._response_freqs)
-        gain_ij = np.zeros(nfreqs)
-        gain_i1j = np.zeros(nfreqs)
-        gain_ij1 = np.zeros(nfreqs)
-        gain_i1j1 = np.zeros(nfreqs)
-        for f, freq in enumerate(sorted(self._response_freqs)):
-            # TODO: Implement phase shift as imaginary part of gain
-            gain_ij[f] = self._response_data[(freq, theta_under, phi_under)][0]
-            gain_i1j[f] = self._response_data[(freq, theta_over, phi_under)][0]
-            gain_ij1[f] = self._response_data[(freq, theta_under, phi_over)][0]
-            gain_i1j1[f] = self._response_data[(freq, theta_over, phi_over)][0]
+        nfreqs = len(self._dir_freqs)
+        gain_ij = np.zeros(nfreqs, dtype=np.complex_)
+        gain_i1j = np.zeros(nfreqs, dtype=np.complex_)
+        gain_ij1 = np.zeros(nfreqs, dtype=np.complex_)
+        gain_i1j1 = np.zeros(nfreqs, dtype=np.complex_)
+        for f, freq in enumerate(sorted(self._dir_freqs)):
+            gain_ij[f] = (
+                self._dir_data[(freq, theta_under, phi_under)][0] *
+                np.exp(1j * self._dir_data[(freq, theta_under, phi_under)][1])
+            )
+            gain_i1j[f] = (
+                self._dir_data[(freq, theta_over, phi_under)][0] *
+                np.exp(1j * self._dir_data[(freq, theta_over, phi_under)][1])
+            )
+            gain_ij1[f] = (
+                self._dir_data[(freq, theta_under, phi_over)][0] *
+                np.exp(1j * self._dir_data[(freq, theta_under, phi_over)][1])
+            )
+            gain_i1j1[f] = (
+                self._dir_data[(freq, theta_over, phi_over)][0] *
+                np.exp(1j * self._dir_data[(freq, theta_over, phi_over)][1])
+            )
 
-        freqs = np.array(sorted(self._response_freqs))
+        freqs = np.array(sorted(self._dir_freqs))
         gains = ((1-t)*(1-u)*gain_ij + t*(1-u)*gain_i1j +
                  (1-t)*u*gain_ij1 + t*u*gain_i1j1)
 
         return freqs, gains
 
     def interpolate_filter(self, frequencies):
-        """Generate interpolated filter values for given frequencies."""
+        """Generate interpolated filter values for given frequencies (Hz)."""
         freqs = sorted(self._filter_data.keys())
         gains = []
         for f in freqs:
-            # TODO: Implement phase shift as imaginary part of gain
-            gains.append(self._filter_data[f][0])
+            gains.append(self._filter_data[f][0] *
+                         np.exp(1j * self._filter_data[f][1]))
         return np.interp(frequencies, freqs, gains, left=0, right=0)
 
+    def response(self, frequencies):
+        """Frequency response of the antenna for given frequencies (Hz)
+        incorporating effective height and some electronics gains."""
+        # From AraSim GaintoHeight function, removing gain to receive function.
+        # gain=4*pi*A_eff/lambda^2 and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
+        heff = np.zeros(len(frequencies))
+        n = IceModel.index(self.position[2])
+        heff[frequencies!=0] = 2*np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
+                                         * n*50/377 /(4*np.pi))
+        # From AraSim ApplyAntFactors function, removing polarization.
+        # sqrt(2) for 3dB splitter for TURF, SURF,
+        # 0.5 to calculate power with heff
+        return heff * 0.5 / np.sqrt(2)
 
-    def receive(self, signal, origin=None, polarization=None):
+
+    def receive(self, signal, origin=None, polarization=None,
+                force_causality=True):
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
         but should end with super().receive(signal)."""
         copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
-        copy.filter_frequencies(self.response)
+        copy.filter_frequencies(self.response, force_causality=force_causality)
 
         if origin is not None:
             # Calculate theta and phi relative to the orientation
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
-            freq_data, gain_data = self.generate_freq_gains(theta, phi)
-            def interpolate_response(frequencies):
+            freq_data, gain_data = self.generate_directionality_gains(theta, phi)
+            def interpolate_directionality(frequencies):
                 return np.interp(frequencies, freq_data, gain_data)
-            copy.filter_frequencies(interpolate_response, force_causality=True)
+            copy.filter_frequencies(interpolate_directionality,
+                                    force_causality=True)
 
         if polarization is None:
             p_gain = 1
@@ -218,9 +239,10 @@ class ARAAntenna(Antenna):
 class ARAAntennaSystem(AntennaSystem):
     """ARA antenna system consisting of antenna, amplification,
     and tunnel diode response."""
-    def __init__(self, name, position, power_threshold, response_data=None,
-                 response_freqs=None, orientation=(0,0,1), amplification=1,
-                 amplifier_clipping=1, noisy=True):
+    def __init__(self, name, position, power_threshold,
+                 directionality_data=None, directionality_freqs=None,
+                 orientation=(0,0,1), amplification=1, amplifier_clipping=1,
+                 noisy=True):
         super().__init__(ARAAntenna)
 
         self.name = str(name)
@@ -229,8 +251,8 @@ class ARAAntennaSystem(AntennaSystem):
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
 
-        self.setup_antenna(response_data=response_data,
-                           response_freqs=response_freqs,
+        self.setup_antenna(directionality_data=directionality_data,
+                           directionality_freqs=directionality_freqs,
                            orientation=orientation, noisy=noisy)
 
         self.power_threshold = power_threshold
@@ -239,8 +261,8 @@ class ARAAntennaSystem(AntennaSystem):
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=5.45, orientation=(0,0,1),
-                      response_data=None, response_freqs=None,
-                      effective_height=None, noisy=True):
+                      directionality_data=None, directionality_freqs=None,
+                      efficiency=1, noisy=True):
         """Sets attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
@@ -255,9 +277,9 @@ class ARAAntennaSystem(AntennaSystem):
                               bandwidth=bandwidth,
                               resistance=resistance,
                               orientation=orientation,
-                              effective_height=effective_height,
-                              response_data=response_data,
-                              response_freqs=response_freqs,
+                              efficiency=efficiency,
+                              directionality_data=directionality_data,
+                              directionality_freqs=directionality_freqs,
                               noisy=noisy)
 
     # Tunnel diode response functions pulled from arasim
@@ -349,8 +371,8 @@ class HpolAntenna(ARAAntennaSystem):
                  amplification=1, amplifier_clipping=1, noisy=True):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
-                         response_data=HPOL_RESPONSE,
-                         response_freqs=HPOL_FREQS,
+                         directionality_data=HPOL_DIRECTIONALITY,
+                         directionality_freqs=HPOL_FREQS,
                          orientation=(0,0,1),
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
@@ -364,8 +386,8 @@ class VpolAntenna(ARAAntennaSystem):
                  amplification=1, amplifier_clipping=1, noisy=True):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
-                         response_data=VPOL_RESPONSE,
-                         response_freqs=VPOL_FREQS,
+                         directionality_data=VPOL_DIRECTIONALITY,
+                         directionality_freqs=VPOL_FREQS,
                          orientation=(0,0,1),
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
