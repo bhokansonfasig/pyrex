@@ -178,19 +178,23 @@ class Antenna:
     def response(self, frequencies):
         """Function to return the frequency response of the antenna at the
         given frequencies (Hz). This function should return the response as
-        imaginary numbers, where the real part is the amplitude response and
-        the imaginary part is the phase response."""
+        imaginary numbers of the form A*exp(i*phi), where A is the amplitude
+        response and phi is the phase shift."""
         logger.debug("Using default response from "+
                      "pyrex.antenna.Antenna")
         return np.ones(len(frequencies))
 
-    def receive(self, signal, origin=None, polarization=None):
+    def receive(self, signal, origin=None, polarization=None,
+                force_causality=False):
         """Process incoming signal according to the filter function and
-        store it to the signals list. Subclasses may extend this fuction,
-        but should likely end with super().receive(signal)."""
+        store it to the signals list. Optionally applies directional gain if
+        origin is specified, applies polarization gain if polarization is
+        specified, and forces causality in the frequency response if specified.
+        Subclasses may extend this fuction, but should likely end with
+        super().receive(signal)."""
         copy = Signal(signal.times, signal.values,
                       value_type=Signal.ValueTypes.voltage)
-        copy.filter_frequencies(self.response)
+        copy.filter_frequencies(self.response, force_causality=force_causality)
 
         if origin is None:
             d_gain = 1
