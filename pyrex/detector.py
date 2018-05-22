@@ -81,9 +81,11 @@ class AntennaSystem:
         preprocessed = self.antenna.full_waveform(times)
         return self.front_end(preprocessed)
 
-    def receive(self, signal, origin=None, polarization=None):
-        return self.antenna.receive(signal, origin=origin,
-                                    polarization=polarization)
+    def receive(self, signal, direction=None, polarization=None,
+                force_causality=False):
+        return self.antenna.receive(signal, direction=direction,
+                                    polarization=polarization,
+                                    force_causality=force_causality)
 
     def clear(self):
         """Reset the antenna system to a state of having received no signals."""

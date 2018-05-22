@@ -34,12 +34,14 @@ class EventKernel:
                 continue
 
             for path in rt.solutions:
-                # p.direction and k should both be unit vectors
-                # epol is (negative) vector rejection of k onto p.direction
-                k = path.received_direction
-                epol = normalize(np.vdot(k, p.direction) * k - p.direction)
-                # In case k and p.direction are equal
-                # (antenna directly on shower axis), just let epol be all zeros
+                # epol is (negative) vector rejection of
+                # path.received_direction onto p.direction,
+                # making epol orthogonal to path.recieved_direction in the same
+                # plane as p.direction and path.received_direction
+                epol = normalize(np.vdot(path.received_direction, p.direction)
+                                 * path.received_direction - p.direction)
+                # In case path.received_direction and p.direction are equal,
+                # just let epol be all zeros
 
                 psi = np.arccos(np.vdot(p.direction, path.emitted_direction))
                 logger.debug("Angle to %s is %f degrees", ant, np.degrees(psi))
@@ -59,6 +61,7 @@ class EventKernel:
                 # Dividing by path length scales Askaryan pulse properly
                 pulse.values /= path.path_length
 
-                ant.receive(pulse, origin=p.vertex, polarization=epol)
+                ant.receive(pulse, direction=path.received_direction,
+                            polarization=epol)
 
         return p

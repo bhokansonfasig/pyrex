@@ -184,11 +184,11 @@ class Antenna:
                      "pyrex.antenna.Antenna")
         return np.ones(len(frequencies))
 
-    def receive(self, signal, origin=None, polarization=None,
+    def receive(self, signal, direction=None, polarization=None,
                 force_causality=False):
         """Process incoming signal according to the filter function and
         store it to the signals list. Optionally applies directional gain if
-        origin is specified, applies polarization gain if polarization is
+        direction is specified, applies polarization gain if polarization is
         specified, and forces causality in the frequency response if specified.
         Subclasses may extend this fuction, but should likely end with
         super().receive(signal)."""
@@ -196,10 +196,11 @@ class Antenna:
                       value_type=Signal.ValueTypes.voltage)
         copy.filter_frequencies(self.response, force_causality=force_causality)
 
-        if origin is None:
+        if direction is None:
             d_gain = 1
         else:
-            # Calculate theta and phi relative to the orientation
+            # Calculate theta and phi relative to the antenna's orientation
+            origin = self.position - normalize(direction)
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
             d_gain = self.directional_gain(theta=theta, phi=phi)
 
