@@ -199,7 +199,7 @@ class ARAAntenna(Antenna):
         return heff * 0.5 / np.sqrt(2)
 
 
-    def receive(self, signal, origin=None, polarization=None,
+    def receive(self, signal, direction=None, polarization=None,
                 force_causality=True):
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
@@ -207,8 +207,9 @@ class ARAAntenna(Antenna):
         copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
         copy.filter_frequencies(self.response, force_causality=force_causality)
 
-        if origin is not None:
+        if direction is not None:
             # Calculate theta and phi relative to the orientation
+            origin = self.position - normalize(direction)
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
             freq_data, gain_data = self.generate_directionality_gains(theta, phi)
             def interpolate_directionality(frequencies):
@@ -260,7 +261,7 @@ class ARAAntennaSystem(AntennaSystem):
         self._power_rms = None
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
-                      resistance=5.45, orientation=(0,0,1),
+                      resistance=8.5, orientation=(0,0,1),
                       directionality_data=None, directionality_freqs=None,
                       efficiency=1, noisy=True):
         """Sets attributes of the antenna including center frequency (Hz),
@@ -268,7 +269,7 @@ class ARAAntennaSystem(AntennaSystem):
         height (m)."""
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
         # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~5.45 Ohm
+        # resistance of ~8.5 Ohm
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
