@@ -1,7 +1,7 @@
 """Module containing customized detector geometry classes for ARA"""
 
 import numpy as np
-from pyrex.signals import Signal, ThermalNoise
+from pyrex.signals import Signal
 from pyrex.detector import Detector
 from pyrex.ice_model import IceModel
 from .antenna import HpolAntenna, VpolAntenna
@@ -156,20 +156,6 @@ class PhasedArrayString(Detector):
             if max_i is None:
                 break
 
-            # Set up for a tunnel diode trigger
-            long_noise = ThermalNoise(np.linspace(0, 1e-6, 10001),
-                                      f_band=self[0].antenna.freq_range,
-                                      rms_voltage=rms,
-                                      n_freqs=len(self[0].antenna._noise_master.freqs))
-            long_noise.values *= np.sqrt(len(self))
-            power_noise = self[0].tunnel_diode(self[0].front_end(long_noise))
-            beam_power_mean = np.mean(power_noise.values)
-            beam_power_rms = np.sqrt(np.mean(power_noise.values**2))
-            beam_low_trigger = (beam_power_mean -
-                                beam_power_rms*np.abs(beam_threshold))
-            beam_high_trigger = (beam_power_mean +
-                                 beam_power_rms*np.abs(beam_threshold))
-
             # Preset the waveforms since the ant.full_waveform call can be
             # computationally expensive
             center_wave = self[max_i].all_waveforms[j]
@@ -196,11 +182,7 @@ class PhasedArrayString(Detector):
                     add_wave = wave.with_times(times)
                     add_wave.times += (max_i-i)*delay
                     total += add_wave.with_times(total.times)
-                # if np.max(np.abs(total.values))>np.abs(beam_threshold*rms):
-                #     return True
-                tunnel_total = self[0].tunnel_diode(total)
-                if (np.min(tunnel_total.values)<beam_low_trigger or
-                        np.max(tunnel_total.values)>beam_high_trigger):
+                if np.max(np.abs(total.values))>np.abs(beam_threshold*rms):
                     return True
 
         return False
