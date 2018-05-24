@@ -131,11 +131,6 @@ class PhasedArrayString(Detector):
                 delays = dz / v * np.sin(thetas)
 
         rms = 0
-        for ant in self:
-            if ant.antenna._noise_master is None:
-                ant.antenna.make_noise([0, 1])
-            rms += ant.antenna._noise_master.rms*ant.amplification
-        rms /= np.sqrt(len(self))
 
         # Iterate over all waveforms (assume that the antennas are close
         # enough to all see the same rays, i.e. the same index of
@@ -171,6 +166,16 @@ class PhasedArrayString(Detector):
                 n_pts = int((tmax-tmin)/center_wave.dt)
                 times = np.linspace(tmin, tmax, n_pts+1)
                 waveforms.append(ant.full_waveform(times))
+
+            # Set rms value (if first time around) after noise_masters have
+            # been set for the antennas. Pass through front end to ensure
+            # more accurate rms values
+            if rms==0:
+                for ant in self:
+                    noise = ant.antenna.make_noise(center_wave.times)
+                    processed_noise = ant.front_end(noise)
+                    rms += np.sqrt(np.mean(processed_noise.values**2))
+                rms /= np.sqrt(len(self))
 
             # Check each delay for trigger
             for delay in delays:
