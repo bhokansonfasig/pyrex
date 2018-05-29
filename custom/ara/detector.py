@@ -267,30 +267,31 @@ class AlbrechtStation(Detector):
                 outrigger_string_type(x_str, y_str, **outrigger_string_kwargs)
             )
 
-    def triggered(self, beam_threshold, outrigger_antenna_requirement=0,
+    def triggered(self, beam_threshold, outrigger_antenna_requirement=None,
                   beam_delays=None, beam_angles=None):
         """Test whether the phased array strings triggered at some threshold."""
-        phased_trigger = (
+        # If outrigger strings can trigger, check those first
+        if outrigger_antenna_requirement is not None:
+            hpol_outriggers_hit = 0
+            vpol_outriggers_hit = 0
+            for string in self.subsets[2:]:
+                hpol_outriggers_hit += sum(1 for ant in string
+                                           if isinstance(ant, HpolAntenna)
+                                           and ant.is_hit)
+                vpol_outriggers_hit += sum(1 for ant in string
+                                           if isinstance(ant, VpolAntenna)
+                                           and ant.is_hit)
+            if (hpol_outriggers_hit>=outrigger_antenna_requirement or
+                    vpol_outriggers_hit>=outrigger_antenna_requirement):
+                return True
+
+        # Check for phased array trigger
+        return (
             self.subsets[0].triggered(beam_threshold=beam_threshold,
                                       delays=beam_delays, angles=beam_angles) or
             self.subsets[1].triggered(beam_threshold=beam_threshold,
                                       delays=beam_delays, angles=beam_angles)
         )
-        if outrigger_antenna_requirement==0:
-            return phased_trigger
-        # Add trigger possibility for outrigger strings
-        hpol_outriggers_hit = 0
-        vpol_outriggers_hit = 0
-        for string in self.subsets[2:]:
-            hpol_outriggers_hit += sum(1 for ant in string
-                                       if isinstance(ant, HpolAntenna)
-                                       and ant.is_hit)
-            vpol_outriggers_hit += sum(1 for ant in string
-                                       if isinstance(ant, VpolAntenna)
-                                       and ant.is_hit)
-        return (phased_trigger or
-                hpol_outriggers_hit>=outrigger_antenna_requirement or
-                vpol_outriggers_hit>=outrigger_antenna_requirement)
 
 
 
