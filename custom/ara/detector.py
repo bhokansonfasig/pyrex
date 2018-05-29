@@ -135,33 +135,32 @@ class PhasedArrayString(Detector):
         # Iterate over all waveforms (assume that the antennas are close
         # enough to all see the same rays, i.e. the same index of
         # ant.all_waveforms will be from the same ray for each antenna)
-        # FIXME: This may not be the best idea
+        # TODO: Warn if this assumption will cause problems (shouldn't be often)
         j = -1
         while True:
             j += 1
-            # Center around strongest waveform
-            max_i = None
-            max_wave = 0
-            for i, ant in enumerate(self):
-                if (len(ant.all_waveforms)>j and
-                        np.max(ant.all_waveforms[j].values**2)>max_wave):
-                    max_i = i
-                    max_wave = np.max(ant.all_waveforms[j].values**2)
+            # Center around most central antenna that sees ray
+            center_i = None
+            for i in sorted(range(len(self)),
+                            key=lambda x: np.abs(x-len(self)/2)):
+                if len(self[i].all_waveforms)>j:
+                    center_i = i
+                    break
             # Stop waveform iteration once no more waveforms are available
-            if max_i is None:
+            if center_i is None:
                 break
 
             # Preset the waveforms since the ant.full_waveform call can be
             # computationally expensive
-            center_wave = self[max_i].all_waveforms[j]
+            center_wave = self[center_i].all_waveforms[j]
             waveforms = []
             for i, ant in enumerate(self):
-                if i==max_i:
+                if i==center_i:
                     waveforms.append(center_wave)
                     continue
-                tmin = min(center_wave.times[0] - (max_i-i)*delay
+                tmin = min(center_wave.times[0] - (center_i-i)*delay
                            for delay in delays)
-                tmax = min(center_wave.times[-1] - (max_i-i)*delay
+                tmax = max(center_wave.times[-1] - (center_i-i)*delay
                            for delay in delays)
                 n_pts = int((tmax-tmin)/center_wave.dt)
                 times = np.linspace(tmin, tmax, n_pts+1)
@@ -181,11 +180,11 @@ class PhasedArrayString(Detector):
             for delay in delays:
                 total = Signal(center_wave.times, center_wave.values)
                 for i, wave in enumerate(waveforms):
-                    if i==max_i:
+                    if i==center_i:
                         continue
-                    times = total.times - (max_i-i)*delay
+                    times = total.times - (center_i-i)*delay
                     add_wave = wave.with_times(times)
-                    add_wave.times += (max_i-i)*delay
+                    add_wave.times += (center_i-i)*delay
                     total += add_wave.with_times(total.times)
                 if np.max(np.abs(total.values))>np.abs(beam_threshold*rms):
                     return True

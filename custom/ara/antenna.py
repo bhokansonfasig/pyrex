@@ -215,7 +215,7 @@ class ARAAntenna(Antenna):
             def interpolate_directionality(frequencies):
                 return np.interp(frequencies, freq_data, gain_data)
             copy.filter_frequencies(interpolate_directionality,
-                                    force_causality=True)
+                                    force_causality=force_causality)
 
         if polarization is None:
             p_gain = 1
@@ -362,6 +362,14 @@ class ARAAntennaSystem(AntennaSystem):
                         self._power_rms*np.abs(self.power_threshold))
         return (np.min(power_signal.values)<low_trigger or
                 np.max(power_signal.values)>high_trigger)
+
+    def receive(self, signal, direction=None, polarization=None,
+                force_causality=True):
+        """Process incoming signal according to the filter function and
+        store it to the signals list. Forces causality by default."""
+        super().receive(signal=signal, direction=direction,
+                        polarization=polarization,
+                        force_causality=force_causality)
 
 
 
