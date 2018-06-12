@@ -41,6 +41,7 @@ def _read_directionality_data(filename):
                 phi = int(words[1])
                 db_gain = float(words[2])
                 # AraSim actually only seems to use the sqrt of the gain
+                # (must be gain in power, not voltage)
                 gain = np.sqrt(float(words[3]))
                 phase = np.radians(float(words[4]))
                 data[(freq, theta, phi)] = (gain, phase)
@@ -132,7 +133,7 @@ class ARAAntenna(Antenna):
     def generate_directionality_gains(self, theta, phi):
         """Generate arrays of frequencies and gains for given angles."""
         if self._dir_data is None:
-            return np.array([1]), np.array([1])
+            return np.array([1]), np.array([1]), np.array([0])
 
         theta = np.degrees(theta) % 180
         phi = np.degrees(phi) % 360
@@ -147,42 +148,40 @@ class ARAAntenna(Antenna):
         phi_over %= 360
 
         nfreqs = len(self._dir_freqs)
-        gain_ij = np.zeros(nfreqs, dtype=np.complex_)
-        gain_i1j = np.zeros(nfreqs, dtype=np.complex_)
-        gain_ij1 = np.zeros(nfreqs, dtype=np.complex_)
-        gain_i1j1 = np.zeros(nfreqs, dtype=np.complex_)
+        gain_ij = np.zeros(nfreqs)
+        phase_ij = np.zeros(nfreqs)
+        gain_i1j = np.zeros(nfreqs)
+        phase_i1j = np.zeros(nfreqs)
+        gain_ij1 = np.zeros(nfreqs)
+        phase_ij1 = np.zeros(nfreqs)
+        gain_i1j1 = np.zeros(nfreqs)
+        phase_i1j1 = np.zeros(nfreqs)
         for f, freq in enumerate(sorted(self._dir_freqs)):
-            gain_ij[f] = (
-                self._dir_data[(freq, theta_under, phi_under)][0] *
-                np.exp(1j * self._dir_data[(freq, theta_under, phi_under)][1])
-            )
-            gain_i1j[f] = (
-                self._dir_data[(freq, theta_over, phi_under)][0] *
-                np.exp(1j * self._dir_data[(freq, theta_over, phi_under)][1])
-            )
-            gain_ij1[f] = (
-                self._dir_data[(freq, theta_under, phi_over)][0] *
-                np.exp(1j * self._dir_data[(freq, theta_under, phi_over)][1])
-            )
-            gain_i1j1[f] = (
-                self._dir_data[(freq, theta_over, phi_over)][0] *
-                np.exp(1j * self._dir_data[(freq, theta_over, phi_over)][1])
-            )
+            gain_ij[f] = self._dir_data[(freq, theta_under, phi_under)][0]
+            phase_ij[f] = self._dir_data[(freq, theta_under, phi_under)][1]
+            gain_i1j[f] = self._dir_data[(freq, theta_over, phi_under)][0]
+            phase_i1j[f] = self._dir_data[(freq, theta_over, phi_under)][1]
+            gain_ij1[f] = self._dir_data[(freq, theta_under, phi_over)][0]
+            phase_ij1[f] = self._dir_data[(freq, theta_under, phi_over)][1]
+            gain_i1j1[f] = self._dir_data[(freq, theta_over, phi_over)][0]
+            phase_i1j1[f] = self._dir_data[(freq, theta_over, phi_over)][1]
 
         freqs = np.array(sorted(self._dir_freqs))
         gains = ((1-t)*(1-u)*gain_ij + t*(1-u)*gain_i1j +
                  (1-t)*u*gain_ij1 + t*u*gain_i1j1)
+        phases = ((1-t)*(1-u)*phase_ij + t*(1-u)*phase_i1j +
+                  (1-t)*u*phase_ij1 + t*u*phase_i1j1)
 
-        return freqs, gains
+        return freqs, gains, phases
 
     def interpolate_filter(self, frequencies):
         """Generate interpolated filter values for given frequencies (Hz)."""
         freqs = sorted(self._filter_data.keys())
-        gains = []
-        for f in freqs:
-            gains.append(self._filter_data[f][0] *
-                         np.exp(1j * self._filter_data[f][1]))
-        return np.interp(frequencies, freqs, gains, left=0, right=0)
+        gains = [self._filter_data[f][0] for f in freqs]
+        phases = [self._filter_data[f][1] for f in freqs]
+        interp_gains = np.interp(frequencies, freqs, gains, left=0, right=0)
+        interp_phases = np.interp(frequencies, freqs, phases, left=0, right=0)
+        return interp_gains * np.exp(1j * interp_phases)
 
     def response(self, frequencies):
         """Frequency response of the antenna for given frequencies (Hz)
@@ -200,22 +199,26 @@ class ARAAntenna(Antenna):
 
 
     def receive(self, signal, direction=None, polarization=None,
-                force_causality=True):
+                force_real=True):
         """Process incoming signal according to the filter function and
         store it to the signals list. Subclasses may extend this fuction,
         but should end with super().receive(signal)."""
         copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
-        copy.filter_frequencies(self.response, force_causality=force_causality)
+        copy.filter_frequencies(self.response, force_real=force_real)
 
         if direction is not None:
             # Calculate theta and phi relative to the orientation
             origin = self.position - normalize(direction)
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
-            freq_data, gain_data = self.generate_directionality_gains(theta, phi)
+            freq_data, gain_data, phase_data = self.generate_directionality_gains(theta, phi)
             def interpolate_directionality(frequencies):
-                return np.interp(frequencies, freq_data, gain_data)
+                interp_gains = np.interp(frequencies, freq_data, gain_data,
+                                         left=0, right=0)
+                interp_phases = np.interp(frequencies, freq_data, phase_data,
+                                          left=0, right=0)
+                return interp_gains * np.exp(1j * interp_phases)
             copy.filter_frequencies(interpolate_directionality,
-                                    force_causality=force_causality)
+                                    force_real=force_real)
 
         if polarization is None:
             p_gain = 1
@@ -339,7 +342,7 @@ class ARAAntennaSystem(AntennaSystem):
         electronics chain filters/amplification and clipping."""
         copy = Signal(signal.times, signal.values)
         copy.filter_frequencies(self.antenna.interpolate_filter,
-                                force_causality=True)
+                                force_real=True)
         clipped_values = np.clip(copy.values,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
@@ -364,12 +367,13 @@ class ARAAntennaSystem(AntennaSystem):
                 np.max(power_signal.values)>high_trigger)
 
     def receive(self, signal, direction=None, polarization=None,
-                force_causality=True):
+                force_real=True):
         """Process incoming signal according to the filter function and
-        store it to the signals list. Forces causality by default."""
+        store it to the signals list. Forces real filtered signals by
+        default."""
         super().receive(signal=signal, direction=direction,
                         polarization=polarization,
-                        force_causality=force_causality)
+                        force_real=force_real)
 
 
 
