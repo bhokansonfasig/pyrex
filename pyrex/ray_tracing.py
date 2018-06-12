@@ -186,7 +186,7 @@ class BasicRayTracePath(LazyMutableClass):
 
     def propagate(self, signal):
         """Applies attenuation to the signal along the path."""
-        signal.filter_frequencies(self.attenuation, force_causality=True)
+        signal.filter_frequencies(self.attenuation)
         signal.times += self.tof
 
     @lazy_property

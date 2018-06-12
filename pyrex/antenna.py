@@ -185,16 +185,17 @@ class Antenna:
         return np.ones(len(frequencies))
 
     def receive(self, signal, direction=None, polarization=None,
-                force_causality=False):
+                force_real=False):
         """Process incoming signal according to the filter function and
         store it to the signals list. Optionally applies directional gain if
         direction is specified, applies polarization gain if polarization is
-        specified, and forces causality in the frequency response if specified.
+        specified, and forces any frequency response filters to return real
+        signals if specified.
         Subclasses may extend this fuction, but should likely end with
         super().receive(signal)."""
         copy = Signal(signal.times, signal.values,
                       value_type=Signal.ValueTypes.voltage)
-        copy.filter_frequencies(self.response, force_causality=force_causality)
+        copy.filter_frequencies(self.response, force_real=force_real)
 
         if direction is None:
             d_gain = 1

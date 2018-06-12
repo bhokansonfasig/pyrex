@@ -82,10 +82,10 @@ class AntennaSystem:
         return self.front_end(preprocessed)
 
     def receive(self, signal, direction=None, polarization=None,
-                force_causality=False):
+                force_real=False):
         return self.antenna.receive(signal, direction=direction,
                                     polarization=polarization,
-                                    force_causality=force_causality)
+                                    force_real=force_real)
 
     def clear(self):
         """Reset the antenna system to a state of having received no signals."""
