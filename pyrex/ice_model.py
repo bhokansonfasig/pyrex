@@ -88,25 +88,21 @@ class AntarcticIce:
         if isinstance(t, np.ndarray) and isinstance(f, np.ndarray):
             # t and f are both arrays, so return 2-D array of coefficients
             # where each row is a single t and each column is a single f.
-            a = np.zeros((len(t),len(f)))
+            a = np.broadcast_to(b1[:,np.newaxis], (len(t), len(f)))
             b = np.zeros((len(t),len(f)))
-            # Use numpy slicing to calculate different values when
+            # Use numpy slicing to calculate different values for b when
             # f<1e9 and f>=1e9. Transpose b0, b1, b2 into column vectors
             # so numpy multiplies properly
-            a[:,f<1e9] += b1[:,np.newaxis]
             b[:,f<1e9] += (b0[:,np.newaxis] - b1[:,np.newaxis]) / w0
-            a[:,f>=1e9] += b1[:,np.newaxis]
             b[:,f>=1e9] += (b2[:,np.newaxis] - b1[:,np.newaxis]) / w2
 
         elif isinstance(f, np.ndarray):
             # t is a scalar, so return an array of coefficients based
             # on the frequencies
-            a = np.zeros(len(f))
+            a = np.full(len(f), b1)
             b = np.zeros(len(f))
             # Again use numpy slicing to differentiate f<1e9 and f>=1e9
-            a[f<1e9] += b1
             b[f<1e9] += (b0 - b1) / w0
-            a[f>=1e9] += b1
             b[f>=1e9] += (b2 - b1) / w2
 
         # Past this point, f must be a scalar
