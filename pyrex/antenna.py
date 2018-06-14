@@ -18,17 +18,19 @@ class Antenna:
     Defines default trigger, frequency response, and signal reception functions
     that can be overwritten in base classes to customize the antenna."""
     def __init__(self, position, z_axis=(0,0,1), x_axis=(1,0,0),
-                 antenna_factor=1, efficiency=1, freq_range=None,
-                 noise_rms=None, temperature=None, resistance=None, noisy=True):
+                 antenna_factor=1, efficiency=1, noisy=True,
+                 unique_noise_waveforms=10, freq_range=None,
+                 temperature=None, resistance=None, noise_rms=None):
         self.position = position
         self.set_orientation(z_axis=z_axis, x_axis=x_axis)
         self.antenna_factor = antenna_factor
         self.efficiency = efficiency
+        self.noisy = noisy
+        self.unique_noises = unique_noise_waveforms
         self.freq_range = freq_range
         self.noise_rms = noise_rms
         self.temperature = temperature
         self.resistance = resistance
-        self.noisy = noisy
 
         self.signals = []
         self._noise_master = None
@@ -55,11 +57,15 @@ class Antenna:
         times array."""
         return self.trigger(self.full_waveform(times))
 
-    def clear(self):
-        """Reset the antenna to a state of having received no signals."""
+    def clear(self, reset_noise=False):
+        """Reset the antenna to a state of having received no signals.
+        Can optionally reset noise, which will reset the noise waveform so that
+        a new signal arriving at the same time does not have the same noise."""
         self.signals.clear()
         self._noises.clear()
         self._triggers.clear()
+        if reset_noise:
+            self._noise_master = None
 
     @property
     def waveforms(self):
@@ -122,9 +128,10 @@ class Antenna:
                     duration = signal_duration
             n_freqs = (self.freq_range[1] - self.freq_range[0]) * duration
 
-            # Multiply n_freqs by 100 so up to about 100 signals can be stored
-            # without the noise being obviously periodic
-            n_freqs *= 100
+            # Multiply n_freqs by the number of unique noise waveforms needed
+            # so that up to about that many signals can be stored without the
+            # noise being obviously periodic
+            n_freqs *= self.unique_noises
 
             if self.noise_rms is None:
                 self._noise_master = ThermalNoise(times, f_band=self.freq_range,
@@ -231,7 +238,8 @@ class DipoleAntenna(Antenna):
     direction, and trigger threshold (V)."""
     def __init__(self, name, position, center_frequency, bandwidth, resistance,
                  orientation=(0,0,1), trigger_threshold=0,
-                 effective_height=None, noisy=True):
+                 effective_height=None, noisy=True,
+                 unique_noise_waveforms=10):
         self.name = name
         self.threshold = trigger_threshold
         if effective_height is None:
@@ -255,6 +263,7 @@ class DipoleAntenna(Antenna):
                          antenna_factor=1/self.effective_height,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
+                         unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)
 
         # Build scipy butterworth filter to speed up response function

@@ -87,12 +87,14 @@ class AntennaSystem:
                                     polarization=polarization,
                                     force_real=force_real)
 
-    def clear(self):
-        """Reset the antenna system to a state of having received no signals."""
+    def clear(self, reset_noise=False):
+        """Reset the antenna system to a state of having received no signals.
+        Can optionally reset noise, which will reset the noise waveform so that
+        a new signal arriving at the same time does not have the same noise."""
         self._signals.clear()
         self._all_waveforms.clear()
         self._triggers.clear()
-        self.antenna.clear()
+        self.antenna.clear(reset_noise=reset_noise)
 
     def trigger(self, signal):
         """Antenna system trigger. Should return True or False for whether the
@@ -175,10 +177,12 @@ class Detector:
                 return True
         return False
 
-    def clear(self):
-        """Convenience method for clearing all antennas in the detector."""
+    def clear(self, reset_noise=False):
+        """Convenience method for clearing all antennas in the detector.
+        Can optionally reset noise, which will reset the noise waveforms so that
+        new signals arriving at the same time do not have the same noise."""
         for ant in self:
-            ant.clear()
+            ant.clear(reset_noise=reset_noise)
 
     @property
     def _is_base_subset(self):
