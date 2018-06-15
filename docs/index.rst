@@ -11,7 +11,7 @@ PyREx Documentation
    :hidden:
 
    about
-   examples
+   usage
    customize
    api
    versions

@@ -1,7 +1,7 @@
-Code Examples
-*************
+How to Use PyREx
+****************
 
-The following code examples assume these imports::
+This section describes in detail how to use a majority of the functions and classes included in the base PyREx package, along with short example code segments. The code in each section is designed to run sequentially, and the code examples all assume these imports::
 
     import numpy as np
     import matplotlib.pyplot as plt
