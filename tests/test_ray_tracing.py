@@ -5,7 +5,7 @@ import pytest
 from pyrex.ray_tracing import (BasicRayTracer, BasicRayTracePath,
                                SpecializedRayTracer, SpecializedRayTracePath,
                                PathFinder)
-from pyrex.ice_model import AntarcticIce, ArasimIce
+from pyrex.ice_model import AntarcticIce, IceModel
 
 import numpy as np
 
@@ -16,35 +16,35 @@ def ray_tracer():
     """Fixture for forming basic SpecializedRayTracer object"""
     return SpecializedRayTracer(from_point=[100, 200, -500],
                                 to_point=[0, 0, -100],
-                                ice_model=ArasimIce)
+                                ice_model=IceModel)
 
 @pytest.fixture
 def ray_tracer2():
     """Fixture for forming basic SpecializedRayTracer object"""
     return SpecializedRayTracer(from_point=[100, 1000, -200],
                                 to_point=[-100, -100, -300],
-                                ice_model=ArasimIce)
+                                ice_model=IceModel)
 
 @pytest.fixture
 def ray_tracer3():
     """Fixture for forming basic SpecializedRayTracer object"""
     return SpecializedRayTracer(from_point=[0, 0, -1500],
                                 to_point=[-100, -100, -200],
-                                ice_model=ArasimIce)
+                                ice_model=IceModel)
 
 @pytest.fixture
 def bad_tracer():
     """Fixture for forming SpecializedRayTracer object with no solutions"""
     return SpecializedRayTracer(from_point=[500, 500, -100],
                                 to_point=[0, 0, -100],
-                                ice_model=ArasimIce)
+                                ice_model=IceModel)
 
 @pytest.fixture
 def out_tracer():
     """Fixture for forming SpecializedRayTracer object with point above ice"""
     return SpecializedRayTracer(from_point=[100, 200, -500],
                                 to_point=[0, 0, 100],
-                                ice_model=ArasimIce)
+                                ice_model=IceModel)
 
 
 class TestSpecializedRayTracer:
@@ -54,7 +54,7 @@ class TestSpecializedRayTracer:
         assert isinstance(ray_tracer, BasicRayTracer)
         assert np.array_equal(ray_tracer.from_point, [100, 200, -500])
         assert np.array_equal(ray_tracer.to_point, [0, 0, -100])
-        assert ray_tracer.ice == ArasimIce
+        assert ray_tracer.ice == IceModel
         assert ray_tracer.dz == 1
         assert issubclass(ray_tracer.solution_class, BasicRayTracePath)
         assert ray_tracer._static_attrs == ['from_point', 'to_point',
@@ -65,7 +65,7 @@ class TestSpecializedRayTracer:
         assert ray_tracer.z_turn_proximity == 1 / 10
         assert ray_tracer.z0 == -500
         assert ray_tracer.z1 == -100
-        assert ray_tracer.n0 == ArasimIce.index(-500)
+        assert ray_tracer.n0 == IceModel.index(-500)
         assert ray_tracer.rho == np.sqrt(100**2 + 200**2)
 
     def test_special_properties(self, ray_tracer):
@@ -77,11 +77,11 @@ class TestSpecializedRayTracer:
 
     def test_max_angle(self, ray_tracer, ray_tracer2, ray_tracer3):
         """Test the maximum launch angle between the ray_tracer points"""
-        expected = np.arcsin(ArasimIce.index(-100)/ArasimIce.index(-500))
+        expected = np.arcsin(IceModel.index(-100)/IceModel.index(-500))
         assert ray_tracer.max_angle == expected
-        expected2 = np.arcsin(ArasimIce.index(-200)/ArasimIce.index(-300))
+        expected2 = np.arcsin(IceModel.index(-200)/IceModel.index(-300))
         assert ray_tracer2.max_angle == expected2
-        expected3 = np.arcsin(ArasimIce.index(-200)/ArasimIce.index(-1500))
+        expected3 = np.arcsin(IceModel.index(-200)/IceModel.index(-1500))
         assert ray_tracer3.max_angle == expected3
 
     def test_peak_angle(self, ray_tracer, ray_tracer2, ray_tracer3,
@@ -187,35 +187,35 @@ def basic_ray_tracer():
     """Fixture for forming basic SpecializedRayTracer object"""
     return BasicRayTracer(from_point=[100, 200, -500],
                           to_point=[0, 0, -100],
-                          ice_model=ArasimIce)
+                          ice_model=IceModel)
 
 @pytest.fixture
 def basic_ray_tracer2():
     """Fixture for forming basic SpecializedRayTracer object"""
     return BasicRayTracer(from_point=[100, 1000, -200],
                           to_point=[-100, -100, -300],
-                          ice_model=ArasimIce)
+                          ice_model=IceModel)
 
 @pytest.fixture
 def basic_ray_tracer3():
     """Fixture for forming basic SpecializedRayTracer object"""
     return BasicRayTracer(from_point=[0, 0, -1500],
                           to_point=[-100, -100, -200],
-                          ice_model=ArasimIce)
+                          ice_model=IceModel)
 
 @pytest.fixture
 def basic_bad_tracer():
     """Fixture for forming SpecializedRayTracer object with no solutions"""
     return BasicRayTracer(from_point=[500, 500, -100],
                           to_point=[0, 0, -100],
-                          ice_model=ArasimIce)
+                          ice_model=IceModel)
 
 @pytest.fixture
 def basic_out_tracer():
     """Fixture for forming SpecializedRayTracer object with point above ice"""
     return BasicRayTracer(from_point=[100, 200, -500],
                           to_point=[0, 0, 100],
-                          ice_model=ArasimIce)
+                          ice_model=IceModel)
 
 
 class TestBasicRayTracer(TestSpecializedRayTracer):
@@ -320,13 +320,13 @@ class TestSpecializedRayTracePath:
         assert path_1.z_turn_proximity == ray_tracer.z_turn_proximity
         assert path_1.z0 == -500
         assert path_1.z1 == -100
-        assert path_1.n0 == ArasimIce.index(-500)
+        assert path_1.n0 == IceModel.index(-500)
         assert path_1.rho == ray_tracer.rho
         assert path_1.phi == np.arctan2(-200, -100)
         assert path_2.z_turn_proximity == ray_tracer.z_turn_proximity
         assert path_2.z0 == -500
         assert path_2.z1 == -100
-        assert path_2.n0 == ArasimIce.index(-500)
+        assert path_2.n0 == IceModel.index(-500)
         assert path_2.rho == ray_tracer.rho
         assert path_2.phi == np.arctan2(-200, -100)
 
@@ -568,12 +568,12 @@ class TestPathFinder:
         """Test that the detailed time of flight gives the expected value
         within 0.01%"""
         assert (path_finder.time_of_flight(n_steps=10000)
-                == pytest.approx(5.643462e-7, rel=0.0001))
+                == pytest.approx(5.720750e-7, rel=0.0001))
 
     def test_tof(self, path_finder):
         """Test that the tof parameter gives the correct time of flight
         within 1%"""
-        assert path_finder.tof == pytest.approx(5.643462e-7, rel=0.01)
+        assert path_finder.tof == pytest.approx(5.720750e-7, rel=0.01)
 
     def test_tof_not_writable(self, path_finder):
         """Test that the tof parameter is not assignable"""

@@ -167,7 +167,7 @@ class TestSignal:
     def test_filter_frequencies(self, signal):
         """Test that the filter_frequencies method returns expected values"""
         resp = lambda f: int(np.abs(f)==0.2)
-        expected = Signal(signal.times, [-0.2,0.0763932,0.2472136,0.0763932,-0.2],
+        expected = Signal(signal.times, [-0.1,0.0381966,0.1236068,0.0381966,-0.1],
                           value_type=signal.value_type)
         signal.filter_frequencies(resp)
         assert np.array_equal(signal.times, expected.times)

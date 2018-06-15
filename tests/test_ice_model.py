@@ -19,8 +19,8 @@ MN_indices = [
 # Data from internal calculation
 # (i.e. just to confirm no change to code behavior)
 other_indices = [
-    (1,    1),      (-500, 1.7574), (-450, 1.7568), (-400, 1.7558),
-    (-350, 1.7537), (-300, 1.7497), (-250, 1.7418), (-200, 1.7267)
+    (1,    1),      (-500, 1.7794), (-450, 1.7789), (-400, 1.7778),
+    (-350, 1.7758), (-300, 1.7718), (-250, 1.7641), (-200, 1.7493)
 ]
 
 # Data from https://icecube.wisc.edu/~mnewcomb/radio/temp/
@@ -80,9 +80,9 @@ class TestAntarcticIce:
     """Tests for AntarcticIce class"""
     def test_parameters(self):
         """Tests the parameters of the ice"""
-        assert AntarcticIce.k == 0.438
+        assert AntarcticIce.k == 0.43
         assert AntarcticIce.a == 0.0132
-        assert AntarcticIce.n0 == 1.758
+        assert AntarcticIce.n0 == 1.78
 
     @pytest.mark.parametrize("depth, index", other_indices)
     def test_index(self, depth, index):
