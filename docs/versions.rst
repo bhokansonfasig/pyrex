@@ -1,6 +1,51 @@
 Version History
 ***************
 
+Version 1.6.0
+=============
+
+.. rubric:: New Features
+
+* ``EventKernel`` can now take arguments to specify the ray tracer to be used and the times array to be used in signal generation.
+
+* Added shell scripts to more easily work with git branching model.
+
+.. rubric:: Changes
+
+* ``ShadowGenerator`` ``energy_generator`` argument changed to ``energy`` and can now take a function or a scalar value, in which case all particles will have that scalar value for their energy.
+
+* ``EventKernel`` now uses ``pyrex.IceModel`` as its ice model by default.
+
+* ``Antenna.receive`` function (and ``receive`` function of all inheriting antennas) now uses ``direction`` argument instead of ``origin`` argument to calculate directional gain.
+
+* ``Antenna.clear`` and ``Detector.clear`` functions can now optionally reset the noise calculation by using the ``reset_noise`` argument.
+
+* ``Antenna`` classes can now set the ``unique_noise_waveforms`` argument to specify the expected number of unique noise waveforms needed.
+
+* ``ArasimIce`` ``attenuation_length`` changed to more closely match AraSim.
+
+* ``IceModel`` reverted to ``AntarcticIce`` with new index of refraction coefficients matching those of ``ArasimIce``.
+
+* ``prem_density`` can now be calculated for an array of radii.
+
+.. rubric:: Performance Improvements
+
+* Improved performance of ``slant_depth`` calculation.
+
+* Improved performance of ``IceModel.attenuation_length`` calculation.
+
+* Using the ``Antenna`` ``unique_noise_waveforms`` argument can improve noise waveform calculation speed (previously assumed 100 unique waveforms were necessary).
+
+.. rubric:: Bug Fixes
+
+* Fixed received direction bug in ``EventKernel``, which had still been assuming a straight-ray path.
+
+* Lists in function keyword arguments were changed to tuples to prevent unexpected mutability issues.
+
+* Fixed potential errors in ``BasicRayTracer`` and ``BasicRayTracePath``.
+
+
+
 Version 1.5.0
 =============
 
