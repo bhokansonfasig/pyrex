@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrex.ice_model import AntarcticIce
+from pyrex.ice_model import AntarcticIce, ArasimIce
 
 import numpy as np
 
@@ -157,5 +157,106 @@ class TestAntarcticIce:
             for j, f in enumerate(freq):
                 a_lens[i,j] = AntarcticIce.attenuation_length(d, f)
         assert np.array_equal(AntarcticIce.attenuation_length(depth, freq),
+                              a_lens)
+
+
+
+
+# Data from internal calculation
+# (i.e. just to confirm no change to code behavior)
+arasim_attenuations = {
+    (-100, 1e3):  1773, (-200, 1e3):  1530, (-300, 1e3):  1474,
+    (-400, 1e3):  1440, (-500, 1e3):  1401, (-600, 1e3):  1351,
+    (-700, 1e3):  1292, (-800, 1e3):  1232, (-900, 1e3):  1168,
+    (-1000,1e3):  1093,
+    (-100, 1e6):  1773, (-200, 1e6):  1530, (-300, 1e6):  1474,
+    (-400, 1e6):  1440, (-500, 1e6):  1401, (-600, 1e6):  1351,
+    (-700, 1e6):  1292, (-800, 1e6):  1232, (-900, 1e6):  1168,
+    (-1000,1e6):  1093,
+    (-100, 1e9):  1773, (-200, 1e9):  1530, (-300, 1e9):  1474,
+    (-400, 1e9):  1440, (-500, 1e9):  1401, (-600, 1e9):  1351,
+    (-700, 1e9):  1292, (-800, 1e9):  1232, (-900, 1e9):  1168,
+    (-1000,1e9):  1093,
+    (-100, 1e12): 1773, (-200, 1e12): 1530, (-300, 1e12): 1474,
+    (-400, 1e12): 1440, (-500, 1e12): 1401, (-600, 1e12): 1351,
+    (-700, 1e12): 1292, (-800, 1e12): 1232, (-900, 1e12): 1168,
+    (-1000,1e12): 1093
+}
+
+
+class TestArasimIce:
+    """Tests for ArasimIce class"""
+    def test_parameters(self):
+        """Tests the parameters of the ice"""
+        assert ArasimIce.k == 0.43
+        assert ArasimIce.a == 0.0132
+        assert ArasimIce.n0 == 1.78
+
+    @pytest.mark.parametrize("depth, index", other_indices)
+    def test_index(self, depth, index):
+        """Tests the index of refraction in the ice at different depths.
+        Make sure indices match expected within 1%."""
+        assert ArasimIce.index(depth) == pytest.approx(index, rel=0.01)
+
+    def test_index_match(self):
+        """Tests the index of refraction in the ice calculated for many depths
+        at once matches the individual calculation."""
+        depths = -1*np.linspace(-100, 1000, 12)
+        indices = np.zeros(len(depths))
+        for i, d in enumerate(depths):
+            indices[i] = ArasimIce.index(d)
+        assert np.array_equal(ArasimIce.index(depths), indices)
+
+    def test_depth_with_index(self):
+        """Tests the depth_with_index method properly inverts the index method
+        (beneath/at surface only)."""
+        depths = -1*np.linspace(0, 1000, 11)
+        for depth, index in zip(depths, ArasimIce.index(depths)):
+            assert ArasimIce.depth_with_index(index) == pytest.approx(depth)
+        assert ArasimIce.depth_with_index(1) == 0
+
+    @pytest.mark.parametrize("depth, temp", KW_amanda_temps+KW_icecube_temps)
+    def test_temperature(self, depth, temp):
+        """Tests the temperature in the ice at different depths
+        (within 3%) according to Kurt Woschnagg's data here:
+        http://icecube.wisc.edu/~mnewcomb/radio/temp/"""
+        assert ArasimIce.temperature(depth) == pytest.approx(temp+273.15, rel=0.03)
+
+    @pytest.mark.parametrize("depth", list(-1*np.linspace(100,1000,10)))
+    @pytest.mark.parametrize("freq", list(np.logspace(3,12,4)))
+    def test_attenuation_length(self, depth, freq):
+        """Tests the attenuation length in the ice at different depths and
+        frequencies. Make sure attenuations match expected within 1%."""
+        assert(ArasimIce.attenuation_length(depth, freq) == 
+               pytest.approx(arasim_attenuations[(depth,freq)], rel=0.01))
+
+    @pytest.mark.parametrize("depth", list(-1*np.linspace(100,1000,10)))
+    def test_attenuation_length_freq_match(self, depth):
+        """Tests the attenuation length in the ice calculated for many freqs
+        at once matches the individual calculation."""
+        freq = np.logspace(3, 12, 4)
+        a_lens = [ArasimIce.attenuation_length(depth, f) for f in freq]
+        assert np.array_equal(ArasimIce.attenuation_length(depth, freq),
+                              a_lens)
+
+    @pytest.mark.parametrize("freq", list(np.logspace(3,12,4)))
+    def test_attenuation_length_depth_match(self, freq):
+        """Tests the attenuation length in the ice calculated for many depths
+        at once matches the individual calculation."""
+        depth = -1*np.linspace(100,1000,10)
+        a_lens = [ArasimIce.attenuation_length(d, freq) for d in depth]
+        assert np.array_equal(ArasimIce.attenuation_length(depth, freq),
+                              a_lens)
+
+    def test_attenuation_length_both_match(self):
+        """Tests the attenuation length in the ice calculated for many depths
+        and freqs at once matches the individual calculation."""
+        depth = -1*np.linspace(100,1000,10)
+        freq = np.logspace(3, 12, 4)
+        a_lens = np.zeros((len(depth),len(freq)))
+        for i, d in enumerate(depth):
+            for j, f in enumerate(freq):
+                a_lens[i,j] = ArasimIce.attenuation_length(d, f)
+        assert np.array_equal(ArasimIce.attenuation_length(depth, freq),
                               a_lens)
     

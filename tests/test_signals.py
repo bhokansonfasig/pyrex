@@ -175,6 +175,21 @@ class TestSignal:
             assert signal.values[i] == pytest.approx(expected.values[i])
         assert signal.value_type == expected.value_type
 
+    def test_filter_frequencies_force_real(self, signal):
+        """Test that the filter_frequencies force_real option works"""
+        resp = lambda f: int(f==0.2)
+        copy = Signal(signal.times, signal.values)
+        expected = Signal(signal.times, [-0.05,0.0190983,0.0618034,0.0190983,-0.05],
+                          value_type=signal.value_type)
+        copy.filter_frequencies(resp, force_real=False)
+        for i in range(5):
+            assert copy.values[i] == pytest.approx(expected.values[i])
+        expected = Signal(signal.times, [-0.1,0.0381966,0.1236068,0.0381966,-0.1],
+                          value_type=signal.value_type)
+        signal.filter_frequencies(resp, force_real=True)
+        for i in range(5):
+            assert signal.values[i] == pytest.approx(expected.values[i])
+
 
 
 @pytest.fixture

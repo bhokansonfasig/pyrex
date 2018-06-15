@@ -8,6 +8,7 @@ import numpy as np
 
 
 # Data from http://ds.iris.edu/ds/products/emc-prem/
+# Removed repeated data points at boundaries
 prem_data = [
     (0.0e3, 13.08850),    (100.0e3, 13.08632),  (200.0e3, 13.07979),
     (300.0e3, 13.06890),  (400.0e3, 13.05366),  (500.0e3, 13.03406),
@@ -85,7 +86,14 @@ prem_data = [
 
 @pytest.mark.parametrize("radius, density", prem_data)
 def test_prem_density(radius, density):
+    """Test that prem_density function matches data"""
     assert prem_density(radius) == pytest.approx(density, rel=1e-5)
+
+def test_prem_mutliple():
+    """Test prem_density for multiple values at once"""
+    radii = np.linspace(0, 6500e3, 6501)
+    expected = [prem_density(r) for r in radii]
+    assert np.array_equal(prem_density(radii), expected)
 
 
 # TODO: Add tests for slant depth
