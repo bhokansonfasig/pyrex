@@ -13,6 +13,7 @@ PyREx Documentation
    about
    usage
    customize
+   examples
    api
    versions
 
