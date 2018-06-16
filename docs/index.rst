@@ -14,6 +14,7 @@ PyREx Documentation
    usage
    customize
    examples
+   contributing
    api
    versions
 
