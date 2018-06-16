@@ -1,0 +1,221 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Contributing to PyREx &#8212; PyREx 1.6.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.6.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PyREx API" href="api.html" />
+    <link rel="prev" title="Example Code" href="examples.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
+Version 1.6.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing to PyREx</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#branching-model">Branching Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-via-pull-request">Contributing via Pull Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-with-direct-access">Contributing with Direct Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#releasing-a-new-version">Releasing a New Version</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="examples.html" title="previous chapter">Example Code</a></li>
+      <li>Next: <a href="api.html" title="next chapter">PyREx API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="contributing-to-pyrex">
+<h1>Contributing to PyREx<a class="headerlink" href="#contributing-to-pyrex" title="Permalink to this headline">¶</a></h1>
+<p>PyREx is currently being maintained by <a class="reference external" href="mailto:fasig&#37;&#52;&#48;icecube&#46;wisc&#46;edu">Ben Hokanson-Fasig</a>. Any direct contributions to the code base should be made through GitHub as described in the following sections, and will be reviewed by the maintainer or another approved reviewer. Note that contributions are also possible less formally through the creation of custom plug-ins, as described in <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a>.</p>
+<div class="section" id="branching-model">
+<h2>Branching Model<a class="headerlink" href="#branching-model" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-right" style="width: 43%">
+<a class="reference external image-reference" href="https://nvie.com/posts/a-successful-git-branching-model/"><img alt="_images/branch-model.png" src="_images/branch-model.png" /></a>
+</div>
+<p>PyREx code contributions should follow a specific git branching model sometimes referred to as the <a class="reference external" href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Gitflow Workflow</a>. In this model the <code class="docutils literal"><span class="pre">master</span></code> branch is reserved for release versions of the code, and most development takes place in feature branches which merge back to the <code class="docutils literal"><span class="pre">develop</span></code> branch.</p>
+<p>The basic steps to add a feature are as follows:</p>
+<ol class="arabic simple">
+<li>From the <code class="docutils literal"><span class="pre">develop</span></code> branch, create a new feature branch.</li>
+<li>In your feature branch, write the code.</li>
+<li>Merge the feature branch back into the <code class="docutils literal"><span class="pre">develop</span></code> branch.</li>
+<li>Delete the feature branch.</li>
+</ol>
+<p>Then when it comes time for the next release, the maintainer will:</p>
+<ol class="arabic simple">
+<li>Create a release branch from the <code class="docutils literal"><span class="pre">develop</span></code> branch.</li>
+<li>Document the changes for the new version.</li>
+<li>Make any bug fixes necessary.</li>
+<li>Merge the release branch into the <code class="docutils literal"><span class="pre">master</span></code> branch.</li>
+<li>Tag the release with the version number.</li>
+<li>Merge the release branch back into the <code class="docutils literal"><span class="pre">develop</span></code> branch.</li>
+<li>Delete the release branch.</li>
+</ol>
+<p>In order to make these processes easier, two shell scripts <code class="docutils literal"><span class="pre">feature.sh</span></code> and <code class="docutils literal"><span class="pre">release.sh</span></code> were created to automate the steps of the above processes respectively. The use of these scripts is defined in the following sections.</p>
+</div>
+<div class="section" id="contributing-via-pull-request">
+<h2>Contributing via Pull Request<a class="headerlink" href="#contributing-via-pull-request" title="Permalink to this headline">¶</a></h2>
+<p>The preferred method of contributing code to PyREx is to submit a pull request on GitHub. The general process for doing this is as follows:</p>
+<p>First, if you haven’t already you will need to fork the repository so that you have a copy of the code in which you can make your changes. This can be done by visiting <a class="reference external" href="https://github.com/bhokansonfasig/pyrex">https://github.com/bhokansonfasig/pyrex</a> and clicking the <code class="docutils literal"><span class="pre">Fork</span></code> button in the upper-right.</p>
+<p>Next you likely want to clone the repository onto your computer to edit the code. To do this, visit your fork on GitHub and click the <code class="docutils literal"><span class="pre">Clone</span> <span class="pre">or</span> <span class="pre">download</span></code> button and in your terminal run the git clone command with the copied link.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>git clone https://github.com/YOUR-USERNAME/NAME-OF-FORKED-REPO
+</pre></div>
+</div>
+<p>If you want your local clone to stay synced with the main PyREx repository, then you can set up an <a class="reference external" href="https://help.github.com/articles/configuring-a-remote-for-a-fork/">upstream remote</a>.</p>
+<p>Now before changing the code, you need to create a feature branch in which you can work. To do this, use the <code class="docutils literal"><span class="pre">feature.sh</span></code> script with the <code class="docutils literal"><span class="pre">new</span></code> action:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>./feature.sh new feature-branch-name
+</pre></div>
+</div>
+<p>This will create a new branch for you with the name you give it, and it will push the branch to GitHub. The name you use for your feature branch (in place of <code class="docutils literal"><span class="pre">feature-branch-name</span></code> above) should be a relatively short name, all lowercase with hyphens between words, and descriptive of the feature you are adding. If you would prefer that the branch not be pushed to GitHub immediately, you can use the <code class="docutils literal"><span class="pre">private</span></code> action in place of <code class="docutils literal"><span class="pre">new</span></code> in the command above.</p>
+<p>Now that you have a feature branch set up, you can write the code for the new feature in this branch. One you’ve implemented (and tested!) the feature and you’re ready for it to be added to PyREx, submit a pull request to the PyREx repository. To do this, go back to <a class="reference external" href="https://github.com/bhokansonfasig/pyrex">https://github.com/bhokansonfasig/pyrex</a> and click the <code class="docutils literal"><span class="pre">New</span> <span class="pre">pull</span> <span class="pre">request</span></code> button. On the <code class="docutils literal"><span class="pre">Compare</span> <span class="pre">changes</span></code> page, click <code class="docutils literal"><span class="pre">compare</span> <span class="pre">across</span> <span class="pre">forks</span></code>. The <code class="docutils literal"><span class="pre">base</span> <span class="pre">fork</span></code> should be the main PyREx repository, the <code class="docutils literal"><span class="pre">base</span> <span class="pre">branch</span></code> should be <code class="docutils literal"><span class="pre">develop</span></code>, the <code class="docutils literal"><span class="pre">head</span> <span class="pre">fork</span></code> should be your fork of PyREx, and the <code class="docutils literal"><span class="pre">compare</span> <span class="pre">branch</span></code> should be your newly finished feature branch. Then after adding a title and description of your new feature, click <code class="docutils literal"><span class="pre">Create</span> <span class="pre">pull</span> <span class="pre">request</span></code>.</p>
+<p>The last step is for the maintainer and other reviewers to review your code and either suggest changes or accept the pull request, at which point your code will be integrated for the next PyREx release!</p>
+</div>
+<div class="section" id="contributing-with-direct-access">
+<h2>Contributing with Direct Access<a class="headerlink" href="#contributing-with-direct-access" title="Permalink to this headline">¶</a></h2>
+<p>If you have direct access to the PyREx repository on GitHub, you can make changes without the need for a pull request. In this case the first step is to create a new feature branch with <code class="docutils literal"><span class="pre">feature.sh</span></code> as described above:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>./feature.sh new feature-branch-name
+</pre></div>
+</div>
+<p>Now in the feature branch, write and test your new code. Once that’s finished you can merge the feature branch back using the <code class="docutils literal"><span class="pre">merge</span></code> action of <code class="docutils literal"><span class="pre">feature.sh</span></code>:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>./feature.sh merge feature-branch-name
+</pre></div>
+</div>
+<p>Note that (as long as the merge is successful) this also deletes the feature branch locally and on GitHub.</p>
+</div>
+<div class="section" id="releasing-a-new-version">
+<h2>Releasing a New Version<a class="headerlink" href="#releasing-a-new-version" title="Permalink to this headline">¶</a></h2>
+<p>If you are the maintainer of the code base (or were appointed by the maintainer to handle releases), then you will be responsible for creating and merging release branches to the <code class="docutils literal"><span class="pre">master</span></code> branch. This process is streamlined using the <code class="docutils literal"><span class="pre">release.sh</span></code> script. When it’s time for a new release of the code, start by using the script to create a new release branch:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>./release.sh new X.Y.Z
+</pre></div>
+</div>
+<p>This creates a new branch named <code class="docutils literal"><span class="pre">release-X.Y.Z</span></code> where <code class="docutils literal"><span class="pre">X.Y.Z</span></code> is the release version number. Note that version numbers should follow <a class="reference external" href="https://semver.org">Semantic Versioning</a>, and if alpha, beta, release candidate, or other pre-release versions are necessary, lowercase letters may be added to the end of the version number. Additionally if creating a hotfix branch rather than a proper release, that can be specified at the end of the <code class="docutils literal"><span class="pre">release.sh</span></code> call:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>./release.sh new X.Y.Z hotfix
+</pre></div>
+</div>
+<p>Once the new release branch is created, the first commit to the branch should consist only of a change to the version number in the code so that it matches the release version number. This commit should have the message “Bumped version number to X.Y.Z”.</p>
+<p>The next step is to document all changes in the new release in the version history documentation. To help with this, <code class="docutils literal"><span class="pre">release.sh</span></code> prints out a list of all the commits since the last release. If you need to see this list again, you can use</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>git log master..release-X.Y.Z --oneline --no-merges
+</pre></div>
+</div>
+<p>Once the documentation is up to date with all the changes (including updating any places in the usage or the examples which may have become outdated), do some bug testing and be sure that all code tests are passing. Then when you’re sure the release is ready you can merge the release branch into the <code class="docutils literal"><span class="pre">master</span></code> and <code class="docutils literal"><span class="pre">develop</span></code> branches with</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>./release.sh merge X.Y.Z
+</pre></div>
+</div>
+<p>This script will handle tagging the release and will delete the local release branch. If the release branch ended up pushed to GitHub at some point, it will need to be deleted there either through their interface or using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>git push -d origin release-X.Y.Z
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2018, Benjamin Hokanson-Fasig.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/contributing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

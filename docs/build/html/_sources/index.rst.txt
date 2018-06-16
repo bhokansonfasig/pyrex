@@ -11,8 +11,10 @@ PyREx Documentation
    :hidden:
 
    about
-   examples
+   usage
    customize
+   examples
+   contributing
    api
    versions
 

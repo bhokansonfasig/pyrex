@@ -5,16 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Code Examples &#8212; PyREx 1.5.0 documentation</title>
-    
+    <title>Example Code &#8212; PyREx 1.6.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.0',
+        VERSION:     '1.6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,8 +24,8 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Custom Sub-Package" href="customize.html" />
-    <link rel="prev" title="About PyREx" href="about.html" />
+    <link rel="next" title="Contributing to PyREx" href="contributing.html" />
+    <link rel="prev" title="Custom Sub-Package" href="customize.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -41,12 +38,17 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">PyREx</a></h1>
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
 <p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.5.0</p>
+Version 1.6.0</p>
 
 
 
@@ -63,18 +65,16 @@ Version 1.5.0</p>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-signal-objects">Working with Signal Objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#antenna-class-and-subclasses">Antenna Class and Subclasses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#antennasystem-and-detector-classes">AntennaSystem and Detector Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ice-and-earth-models">Ice and Earth Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#particle-generation">Particle Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ray-tracing">Ray Tracing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#full-simulation">Full Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#more-examples">More Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#plot-detector-geometry">Plot Detector Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#askaryan-frequency-content">Askaryan Frequency Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calculate-effective-area">Calculate Effective Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examine-a-single-event">Examine a Single Event</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
 </ul>
@@ -92,8 +92,8 @@ Version 1.5.0</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="about.html" title="previous chapter">About PyREx</a></li>
-      <li>Next: <a href="customize.html" title="next chapter">Custom Sub-Package</a></li>
+      <li>Previous: <a href="customize.html" title="previous chapter">Custom Sub-Package</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing to PyREx</a></li>
   </ul></li>
 </ul>
 </div>
@@ -113,523 +113,393 @@ Version 1.5.0</p>
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="code-examples">
-<h1>Code Examples<a class="headerlink" href="#code-examples" title="Permalink to this headline">¶</a></h1>
-<p>The following code examples assume these imports:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">scipy.fftpack</span>
+  <div class="section" id="example-code">
+<span id="id1"></span><h1>Example Code<a class="headerlink" href="#example-code" title="Permalink to this headline">¶</a></h1>
+<p>This section includes a number of more complete code examples for performing various tasks with PyREx. Each example includes a description of what it does, comments throughout describing the proccess, and a reference to the corresponding example script or notebook which can be run independent of one another. The examples are orgainzed roughly from more basic to more complex.</p>
+<div class="section" id="plot-detector-geometry">
+<h2>Plot Detector Geometry<a class="headerlink" href="#plot-detector-geometry" title="Permalink to this headline">¶</a></h2>
+<p>In this example we will make a few simple plots of the geometry of a detector object, handy for presentations or for visualizing your work. This code can be run from the Plot Detector notebook in the examples directory.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
-</pre></div>
-</div>
-<p>All of the following examples can also be found (and quickly run) in the Code Examples python notebook.</p>
-<div class="section" id="working-with-signal-objects">
-<h2>Working with Signal Objects<a class="headerlink" href="#working-with-signal-objects" title="Permalink to this headline">¶</a></h2>
-<p>The base <code class="docutils literal"><span class="pre">Signal</span></code> class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The <code class="docutils literal"><span class="pre">times</span></code> array is assumed to be in units of seconds, but there are no general units for the <code class="docutils literal"><span class="pre">values</span></code> array. It is worth noting that the Signal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the <code class="docutils literal"><span class="pre">Signal</span></code> object.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">value_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
-<span class="n">my_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">value_array</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Plotting the <code class="docutils literal"><span class="pre">Signal</span></code> object is as simple as plotting the times vs the values:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>While there are no specified units for a <code class="docutils literal"><span class="pre">Signal.values</span></code>, there is the option to specify the <code class="docutils literal"><span class="pre">value_type</span></code> of the <code class="docutils literal"><span class="pre">values</span></code>. This is done using the <code class="docutils literal"><span class="pre">Signal.ValueTypes</span></code> enum. By default, a <code class="docutils literal"><span class="pre">Signal</span></code> object has <code class="docutils literal"><span class="pre">value_type=ValueTypes.unknown</span></code>. However, if the signal represents a voltage, electric field, or electric power; <code class="docutils literal"><span class="pre">value_type</span></code> can be set to <code class="docutils literal"><span class="pre">Signal.ValueTypes.voltage</span></code>, <code class="docutils literal"><span class="pre">Signal.ValueTypes.field</span></code>, or <code class="docutils literal"><span class="pre">Signal.ValueTypes.power</span></code> respectively:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_voltage_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">value_array</span><span class="p">,</span>
-                                 <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal"><span class="pre">Signal</span></code> objects can be added as long as they have the same time array and <code class="docutils literal"><span class="pre">value_type</span></code>. <code class="docutils literal"><span class="pre">Signal</span></code> objects also support the python <code class="docutils literal"><span class="pre">sum</span></code> function:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">values1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
-<span class="n">values2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
-<span class="n">signal1</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal1</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">signal1</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;signal1 = sin(t)&quot;</span><span class="p">)</span>
-<span class="n">signal2</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal2</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">signal2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;signal2 = cos(t)&quot;</span><span class="p">)</span>
-<span class="n">signal3</span> <span class="o">=</span> <span class="n">signal1</span> <span class="o">+</span> <span class="n">signal2</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal3</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">signal3</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;signal3 = sin(t)+cos(t)&quot;</span><span class="p">)</span>
-<span class="n">all_signals</span> <span class="o">=</span> <span class="p">[</span><span class="n">signal1</span><span class="p">,</span> <span class="n">signal2</span><span class="p">,</span> <span class="n">signal3</span><span class="p">]</span>
-<span class="n">signal4</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">all_signals</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal4</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">signal4</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;signal4 = 2*(sin(t)+cos(t))&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">Signal</span></code> class provides many convenience attributes for dealing with signals:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_signal</span><span class="o">.</span><span class="n">dt</span> <span class="o">==</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">spectrum</span> <span class="o">==</span> <span class="n">scipy</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">==</span> <span class="n">scipy</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
-                                               <span class="n">d</span><span class="o">=</span><span class="n">my_signal</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">envelope</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">hilbert</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">Signal</span></code> class also provides functions for manipulating the signal. The <code class="docutils literal"><span class="pre">resample</span></code> function will resample the times and values arrays to the given number of points (with the same endpoints):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_signal</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">1001</span><span class="p">)</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1001</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">with_times</span></code> function will interpolate/extrapolate the signal’s values onto a new times array:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">new_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
-<span class="n">new_signal</span> <span class="o">=</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">with_times</span><span class="p">(</span><span class="n">new_times</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">new_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">new_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;new signal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;original signal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">filter_frequencies</span></code> function will apply a frequency-domain filter to the values array based on the passed frequency response function:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lowpass_filter</span><span class="p">(</span><span class="n">frequency</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">frequency</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">1</span>
+<span class="kn">import</span> <span class="nn">pyrex.custom.irex</span> <span class="kn">as</span> <span class="nn">irex</span>
+
+<span class="c1"># First we need to initialize the detector object and build its antennas.</span>
+<span class="c1"># For this example we&#39;ll just use a basic station geometry. Since we won&#39;t be</span>
+<span class="c1"># throwing any particles at it, the arguments of the antennas are largely</span>
+<span class="c1"># unimportant, but we will set up the antennas to alternatingly be oriented</span>
+<span class="c1"># vertically or horizontally.</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">irex</span><span class="o">.</span><span class="n">StationGrid</span><span class="p">(</span><span class="n">stations</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">station_type</span><span class="o">=</span><span class="n">irex</span><span class="o">.</span><span class="n">RegularStation</span><span class="p">,</span>
+                            <span class="n">antennas_per_string</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">antenna_separation</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">alternating_orientation</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">antenna</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">index</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">trigger_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">orientation_scheme</span><span class="o">=</span><span class="n">alternating_orientation</span><span class="p">)</span>
 
-<span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
-<span class="n">value_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.1</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">time_array</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">time_array</span><span class="p">)</span>
-<span class="n">my_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">value_array</span><span class="p">)</span>
+<span class="c1"># Let&#39;s also define a function which will highlight certain antennas in red.</span>
+<span class="c1"># This one will highlight all antennas which are oriented horizontally.</span>
+<span class="k">def</span> <span class="nf">highlight</span><span class="p">(</span><span class="n">antenna_system</span><span class="p">):</span>
+    <span class="c1"># Since the antennas in our detector are technically AntennaSystems,</span>
+    <span class="c1"># to access the orientation we need to get the antenna object</span>
+    <span class="c1"># which is a member of the AntennaSystem</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">antenna_system</span><span class="o">.</span><span class="n">antenna</span><span class="o">.</span><span class="n">z_axis</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">filter_frequencies</span><span class="p">(</span><span class="n">lowpass_filter</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="c1"># For our first plot, let&#39;s make a 3-D image of the whole detector.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot the antennas which satisfy the highlight condition in red</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot the other antennas in black</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>A number of classes which inherit from the Signal class are included in PyREx: <code class="docutils literal"><span class="pre">EmptySignal</span></code>, <code class="docutils literal"><span class="pre">FunctionSignal</span></code>, <code class="docutils literal"><span class="pre">AskaryanSignal</span></code>, and <code class="docutils literal"><span class="pre">ThermalNoise</span></code>. <code class="docutils literal"><span class="pre">EmptySignal</span></code> is simply a signal whose values are all zero:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">empty</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EmptySignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">empty</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">empty</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="c1"># Now let&#39;s plot the detector in a couple different 2-D angles.</span>
+<span class="c1"># First, a top-down view of the entire detector.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Detector Geometry (Top View)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y-position&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p><code class="docutils literal"><span class="pre">FunctionSignal</span></code> takes a function of time and creates a signal based on that function:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">101</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">square_wave</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-<span class="n">square_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="n">square_wave</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">square_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">square_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Additionally, <code class="docutils literal"><span class="pre">FunctionSignal</span></code> leverages its knowledge of the function to more accurately interpolate and extrapolate values for the <code class="docutils literal"><span class="pre">with_times</span></code> function:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">new_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
-<span class="n">long_square_signal</span> <span class="o">=</span> <span class="n">square_signal</span><span class="o">.</span><span class="n">with_times</span><span class="p">(</span><span class="n">new_times</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">long_square_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">long_square_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;new signal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">square_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">square_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;original signal&quot;</span><span class="p">)</span>
+
+<span class="c1"># Next, let&#39;s take an x-z view of a single station. Let&#39;s also add in some</span>
+<span class="c1"># string graphics by drawing lines from bottom antennas to the top of the ice.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">detector</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">station</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
+        <span class="n">lowest_antenna</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span>
+                                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ant</span><span class="p">:</span> <span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                 <span class="p">[</span><span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Horizontal&quot;</span><span class="p">)</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Vertical&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Single-Station Geometry (Side View)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;z-position&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">AskaryanSignal</span></code> produces an Askaryan pulse (in V/m) on a time array due to a neutrino of given energy observed at a given angle from the shower axis:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10e-9</span><span class="p">,</span> <span class="mf">40e-9</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
-<span class="n">neutrino_energy</span> <span class="o">=</span> <span class="mf">1e8</span> <span class="c1"># GeV</span>
-<span class="n">observation_angle</span> <span class="o">=</span> <span class="mi">45</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span> <span class="c1"># radians</span>
-<span class="n">askaryan</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">neutrino_energy</span><span class="p">,</span>
-                                <span class="n">theta</span><span class="o">=</span><span class="n">observation_angle</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">askaryan</span><span class="o">.</span><span class="n">value_type</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">askaryan</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">askaryan</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">ThermalNoise</span></code> produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10e-9</span><span class="p">,</span> <span class="mf">40e-9</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
-<span class="n">noise_temp</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># K</span>
-<span class="n">system_resistance</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># ohm</span>
-<span class="n">frequency_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">550e6</span><span class="p">,</span> <span class="mf">750e6</span><span class="p">)</span> <span class="c1"># Hz</span>
-<span class="n">noise</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ThermalNoise</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">noise_temp</span><span class="p">,</span>
-                           <span class="n">resistance</span><span class="o">=</span><span class="n">system_resistance</span><span class="p">,</span>
-                           <span class="n">f_band</span><span class="o">=</span><span class="n">frequency_range</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">value_type</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">noise</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Note that since <code class="docutils literal"><span class="pre">ThermalNoise</span></code> inherits from <code class="docutils literal"><span class="pre">FunctionSignal</span></code>, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a large number of frequencies is requested on initialization.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">short_noise</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ThermalNoise</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">noise_temp</span><span class="p">,</span>
-                                 <span class="n">resistance</span><span class="o">=</span><span class="n">system_resistance</span><span class="p">,</span>
-                                 <span class="n">f_band</span><span class="o">=</span><span class="p">(</span><span class="mf">100e6</span><span class="p">,</span> <span class="mf">400e6</span><span class="p">))</span>
-<span class="n">long_noise</span> <span class="o">=</span> <span class="n">short_noise</span><span class="o">.</span><span class="n">with_times</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10e-9</span><span class="p">,</span> <span class="mf">90e-9</span><span class="p">,</span> <span class="mi">2001</span><span class="p">))</span>
+<div class="section" id="askaryan-frequency-content">
+<h2>Askaryan Frequency Content<a class="headerlink" href="#askaryan-frequency-content" title="Permalink to this headline">¶</a></h2>
+<p>In this example we explore how the freqeuncy spectrum of an Askaryan pulse changes as a function of the off-cone angle (i.e. the angular distance between the Cherenkov angle and the observation angle). This code can be run from the Frequency Content notebook in the examples directory.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pyrex</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">short_noise</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">short_noise</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">long_noise</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">long_noise</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="antenna-class-and-subclasses">
-<h2>Antenna Class and Subclasses<a class="headerlink" href="#antenna-class-and-subclasses" title="Permalink to this headline">¶</a></h2>
-<p>The base <code class="docutils literal"><span class="pre">Antenna</span></code> class provided by PyREx is designed to be inherited from to match the needs of each project. At its core, an <code class="docutils literal"><span class="pre">Antenna</span></code> object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance for noise calculations and a boolean dictating whether or not noise should be added to the antenna’s signals (note that if noise is to be added, a resistance must be specified).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Please note that some values are unrealistic in order to simplify demonstration</span>
-<span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span> <span class="c1"># m</span>
-<span class="n">temperature</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># K</span>
-<span class="n">resistance</span> <span class="o">=</span> <span class="mf">1e17</span> <span class="c1"># ohm</span>
-<span class="n">frequency_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># Hz</span>
-<span class="n">basic_antenna</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-                              <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span>
-                              <span class="n">freq_range</span><span class="o">=</span><span class="n">frequency_range</span><span class="p">)</span>
-<span class="n">noiseless_antenna</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The basic properties of an <code class="docutils literal"><span class="pre">Antenna</span></code> object are <code class="docutils literal"><span class="pre">is_hit</span></code> and <code class="docutils literal"><span class="pre">waveforms</span></code>. <code class="docutils literal"><span class="pre">is_hit</span></code> specifies whether or not the antenna has been triggered by an event. <code class="docutils literal"><span class="pre">waveforms</span></code> is a list of all the waveforms which have triggered the antenna. The antenna also defines <code class="docutils literal"><span class="pre">signals</span></code>, which is a list of all signals the antenna has received, and <code class="docutils literal"><span class="pre">all_waveforms</span></code> which is a list of all waveforms (signal plus noise) the antenna has received including those which didn’t trigger.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">waveforms</span> <span class="o">==</span> <span class="p">[]</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">Antenna</span></code> class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are <code class="docutils literal"><span class="pre">efficiency</span></code> and <code class="docutils literal"><span class="pre">antenna_factor</span></code>, and the methods are <code class="docutils literal"><span class="pre">response</span></code>, <code class="docutils literal"><span class="pre">directional_gain</span></code>, and <code class="docutils literal"><span class="pre">polarization_gain</span></code>. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. <code class="docutils literal"><span class="pre">efficiency</span></code> is simply a scalar which multiplies the signal the antenna receives (default value is <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">antenna_factor</span></code> is a factor used in converting received electric fields into voltages (<code class="docutils literal"><span class="pre">antenna_factor</span></code> = E / V; default value is <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">response</span></code> takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">directional_gain</span></code> takes angles theta and phi in the antenna’s coordinates and returns the antenna’s gain for a signal coming from that direction (default always returns <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">directional_gain</span></code> is dependent on the antenna’s orientation, which is defined by its <code class="docutils literal"><span class="pre">z_axis</span></code> and <code class="docutils literal"><span class="pre">x_axis</span></code> attributes. To change the antenna’s orientation, use the <code class="docutils literal"><span class="pre">set_orientation</span></code> method which takes <code class="docutils literal"><span class="pre">z_axis</span></code> and <code class="docutils literal"><span class="pre">x_axis</span></code> arguments. Finally, <code class="docutils literal"><span class="pre">polarization_gain</span></code> takes a polarization vector and returns the antenna’s gain for a signal with that polarization (default always returns <code class="docutils literal"><span class="pre">1</span></code>).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">==</span> <span class="mi">1</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">antenna_factor</span> <span class="o">==</span> <span class="mi">1</span>
-<span class="n">freqs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">response</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">directional_gain</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">polarization_gain</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">Antenna</span></code> class defines a <code class="docutils literal"><span class="pre">trigger</span></code> method which is also expected to be overwritten. <code class="docutils literal"><span class="pre">trigger</span></code> takes a <code class="docutils literal"><span class="pre">Signal</span></code> object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns <code class="docutils literal"><span class="pre">True</span></code>).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">([</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">==</span> <span class="kc">True</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">Antenna</span></code> class also defines a <code class="docutils literal"><span class="pre">receive</span></code> method which takes a <code class="docutils literal"><span class="pre">Signal</span></code> object and processes the signal according to the antenna’s attributes (<code class="docutils literal"><span class="pre">efficiency</span></code>, <code class="docutils literal"><span class="pre">antenna_factor</span></code>, <code class="docutils literal"><span class="pre">response</span></code>, <code class="docutils literal"><span class="pre">directional_gain</span></code>, and <code class="docutils literal"><span class="pre">polarization_gain</span></code> as described above). To use the <code class="docutils literal"><span class="pre">receive</span></code> function, simply pass it the <code class="docutils literal"><span class="pre">Signal</span></code> object the antenna sees, and the <code class="docutils literal"><span class="pre">Antenna</span></code> class will handle the rest. You can also optionally specify the origin point of the signal (used in <code class="docutils literal"><span class="pre">directional_gain</span></code> calculation) and the polarization direction of the signal (used in <code class="docutils literal"><span class="pre">polarization_gain</span></code> calculation). If either of these is unspecified, the corresponding gain will simply be set to <code class="docutils literal"><span class="pre">1</span></code>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">incoming_signal_1</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
-<span class="n">incoming_signal_2</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">6</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_1</span><span class="p">)</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_2</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">300</span><span class="p">],</span> <span class="n">polarization</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">True</span>
-<span class="k">for</span> <span class="n">waveform</span><span class="p">,</span> <span class="n">pure_signal</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">,</span> <span class="n">basic_antenna</span><span class="o">.</span><span class="n">signals</span><span class="p">):</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">waveform</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">waveform</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Waveform&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pure_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">pure_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Pure Signal&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="c1"># First, set the depth of the neutrino source and find the index of refraction</span>
+<span class="c1"># at that depth.</span>
+<span class="c1"># Then use that index of refraction to calculate the Cherenkov angle.</span>
+<span class="n">depth</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
+<span class="n">ch_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1"># Now, for a range of dthetas, generate an Askaryan pulse dtheta away from the</span>
+<span class="c1"># Chereknov angle and plot its frequency spectrum.</span>
+<span class="k">for</span> <span class="n">dtheta</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)):</span>
+    <span class="n">n_pts</span> <span class="o">=</span> <span class="mi">10001</span>
+    <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">20e-9</span><span class="p">,</span> <span class="mf">80e-9</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span>
+                                 <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="c1"># Convert from Hz to MHz</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Frequency Spectrum of Askaryan Pulse</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
+              <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">dtheta</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; Degrees Off-Cone&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency (MHz)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Beyond <code class="docutils literal"><span class="pre">Antenna.waveforms</span></code>, the <code class="docutils literal"><span class="pre">Antenna</span></code> object also provides methods for checking the waveform and trigger status for arbitrary times: <code class="docutils literal"><span class="pre">full_waveform</span></code> and <code class="docutils literal"><span class="pre">is_hit_during</span></code>. Both of these methods take a time array as an argument and return the waveform <code class="docutils literal"><span class="pre">Signal</span></code> object for those times and whether said waveform triggered the antenna, respectively.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">total_waveform</span> <span class="o">=</span> <span class="n">basic_antenna</span><span class="o">.</span><span class="n">full_waveform</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_waveform</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">total_waveform</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Total Waveform&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">incoming_signal_1</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">incoming_signal_1</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Pure Signals&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">incoming_signal_2</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">incoming_signal_2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit_during</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">200e-9</span><span class="p">))</span> <span class="o">==</span> <span class="kc">True</span>
-</pre></div>
-</div>
-<p>Finally, the <code class="docutils literal"><span class="pre">Antenna</span></code> class defines a <code class="docutils literal"><span class="pre">clear</span></code> method which will reset the antenna to a state of having received no signals:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-</pre></div>
-</div>
-<p>To create a custom antenna, simply inherit from the <code class="docutils literal"><span class="pre">Antenna</span></code> class:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NoiselessThresholdAntenna</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+<span class="c1"># Actually, we probably really want to see the frequency content after the</span>
+<span class="c1"># signal has propagated through the ice a bit. So first set up the ray tracer</span>
+<span class="c1"># from our neutrino source to some other point where our antenna might be</span>
+<span class="c1"># (and make sure a path between those two points exists).</span>
+<span class="n">rt</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">RayTracer</span><span class="p">(</span><span class="n">from_point</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">depth</span><span class="p">),</span> <span class="n">to_point</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">))</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">rt</span><span class="o">.</span><span class="n">exists</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Path to antenna doesn&#39;t exist!&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
+<span class="c1"># Finally, plot the signal spectrum as it appears at the antenna position by</span>
+<span class="c1"># propagating it along the (first solution) path.</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">solutions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">dtheta</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)):</span>
+    <span class="n">n_pts</span> <span class="o">=</span> <span class="mi">2048</span>
+    <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">20e-9</span><span class="p">,</span> <span class="mf">80e-9</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span>
+                                 <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">pulse</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="c1"># Convert from Hz to MHz</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Frequency Spectrum of Askaryan Pulse</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
+              <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">dtheta</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; Degrees Off-Cone&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency (MHz)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># You may notice the sharp cutoff in the frequency spectrum above 1 GHz.</span>
+<span class="c1"># This is due to the ice model, which defines the attenuation length in a</span>
+<span class="c1"># piecewise manner for frequencies above or below 1 GHz.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calculate-effective-area">
+<h2>Calculate Effective Area<a class="headerlink" href="#calculate-effective-area" title="Permalink to this headline">¶</a></h2>
+<p>In this example we will calculate the effective area of a detector over a range of energies. This code can be run from the Effective Area notebook in the examples directory.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In order to finish reasonably quickly, the number of events thrown in this example is low. This means that there are likely not enough events to accurately represent the effective area of the detector. For an accurate measurement, the number of events must be increased, but this will need much more time to run in that case.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pyrex</span>
+<span class="kn">import</span> <span class="nn">pyrex.custom.ara</span> <span class="kn">as</span> <span class="nn">ara</span>
+
+<span class="c1"># First let&#39;s set the number of events that we will be throwing at each energy,</span>
+<span class="c1"># and the energies we will be using. As stated in the warning, the number of</span>
+<span class="c1"># events is set low to speed up the example, but that means the results are</span>
+<span class="c1"># likely inaccurate.</span>
+<span class="n">n_events</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e8</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">]</span> <span class="c1"># GeV</span>
+
+<span class="c1"># Next, set up the detector to be measured. Here we use a single standard</span>
+<span class="c1"># ARA station.</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">ara</span><span class="o">.</span><span class="n">HexagonalGrid</span><span class="p">(</span><span class="n">station_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">RegularStation</span><span class="p">,</span>
+                             <span class="n">stations</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">power_threshold</span><span class="o">=-</span><span class="mf">6.15</span><span class="p">)</span>
+
+<span class="c1"># Now set up a neutrino generator for each energy. Let&#39;s scale the generation</span>
+<span class="c1"># volume by energy so that we&#39;re not wasting too much time generating neutrinos</span>
+<span class="c1"># that will surely never trigger.</span>
+<span class="n">dimensions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]</span>
+<span class="n">generators</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">2800</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">energy</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">)]</span>
+
+<span class="c1"># And then set up the event kernels for each energy. Let&#39;s use the ArasimIce</span>
+<span class="c1"># class as our ice model since it calculates attenuations faster at the loss</span>
+<span class="c1"># of some accuracy.</span>
+<span class="n">kernels</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">gen</span><span class="p">,</span> <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+                             <span class="n">ice_model</span><span class="o">=</span><span class="n">pryex</span><span class="o">.</span><span class="n">ice_model</span><span class="o">.</span><span class="n">ArasimIce</span><span class="p">)</span>
+           <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">]</span>
+
+<span class="c1"># Now run each kernel and record the number of events from each that triggered</span>
+<span class="c1"># the detector. In this case we&#39;ll set our trigger condition to 3/8 antennas</span>
+<span class="c1"># triggering in a single polarization.</span>
+<span class="n">triggers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">energies</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kernels</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Running energy&quot;</span><span class="p">,</span> <span class="n">energies</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_events</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">detector</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">reset_noise</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">particle</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
+        <span class="n">triggered</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">triggered</span><span class="p">(</span><span class="n">station_requirement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                       <span class="n">polarized_antenna_requirement</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">triggered</span><span class="p">:</span>
+            <span class="n">triggers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">10</span><span class="o">==</span><span class="mi">9</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
+
+<span class="c1"># Now that we have the trigger counts for each energy, we can calculate the</span>
+<span class="c1"># effective volumes by scaling the trigger probability by the generation volume.</span>
+<span class="c1"># Errors are calculated assuming poisson counting statistics.</span>
+<span class="n">generation_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">)</span><span class="o">*</span><span class="mi">2800</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">dimensions</span><span class="p">])</span>
+<span class="n">effective_volumes</span> <span class="o">=</span> <span class="n">triggers</span> <span class="o">/</span> <span class="n">n_events</span> <span class="o">*</span> <span class="n">generation_volumes</span>
+<span class="n">volume_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">triggers</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_events</span> <span class="o">*</span> <span class="n">generation_volumes</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">effective_volumes</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">volume_errors</span><span class="p">,</span>
+             <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Detector Effective Volume&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Shower Energy (GeV)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Effective Volume (km^3)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Then from the effecitve volumes, we can calculate the effective areas.</span>
+<span class="c1"># First we need to account for the fact that our energy is the shower energy</span>
+<span class="c1"># and convert to the neutrino energy. Then the effective area is the probability</span>
+<span class="c1"># of interaction in the ice volume times the effective volume. The probability</span>
+<span class="c1"># of interaction in the ice volume is given by the interaction cross section</span>
+<span class="c1"># times the density of the ice. Since the neutrino type is not specified in the</span>
+<span class="c1"># simulation, calculate the cross section as a weighted average of neutrino</span>
+<span class="c1"># cross sections.</span>
+<span class="n">nu_energies</span> <span class="o">=</span> <span class="mi">9</span><span class="o">/</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span>
+<span class="n">ice_density</span> <span class="o">=</span> <span class="mf">0.92</span> <span class="c1"># g/cm^3</span>
+<span class="n">ice_density</span> <span class="o">*=</span> <span class="mf">1e15</span> <span class="c1"># converted to g/km^3 = nucleons/km^3</span>
+<span class="n">cross_sections</span> <span class="o">=</span> <span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">CC_NU</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="mi">3</span><span class="o">*</span><span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">NC_NU</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">CC_NUBAR</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="mi">3</span><span class="o">*</span><span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">NC_NUBAR</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">))</span> <span class="o">/</span> <span class="mi">8</span>
+<span class="n">effective_areas</span> <span class="o">=</span> <span class="mf">6.022e23</span> <span class="o">*</span> <span class="n">ice_density</span> <span class="o">*</span> <span class="n">cross_sections</span> <span class="o">*</span> <span class="n">effective_volumes</span>
+<span class="n">effective_areas</span> <span class="o">*=</span> <span class="mf">1e-4</span> <span class="c1"># converted from cm^2 to m^2</span>
+<span class="n">area_errors</span> <span class="o">=</span> <span class="mf">6.022e23</span> <span class="o">*</span> <span class="n">ice_density</span> <span class="o">*</span> <span class="n">cross_sections</span> <span class="o">*</span> <span class="n">volume_errors</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">,</span> <span class="n">effective_areas</span><span class="p">,</span> <span class="n">area_errors</span><span class="p">,</span>
+             <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Detector Effective Area&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Neutrino Energy (GeV)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Effective Area (m^2)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Our custom <code class="docutils literal"><span class="pre">NoiselessThresholdAntenna</span></code> should only trigger when the amplitude of a signal exceeds its threshold value:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_antenna</span> <span class="o">=</span> <span class="n">NoiselessThresholdAntenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</div>
+<div class="section" id="examine-a-single-event">
+<h2>Examine a Single Event<a class="headerlink" href="#examine-a-single-event" title="Permalink to this headline">¶</a></h2>
+<p>In this example we will generate a single event with a given vertex, direction, and energy, and then we’ll examine the event by plotting the waveforms. This is typically useful for auditing events from a larger simulation. This code can be run from the Examine Event notebook in the examples directory.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pyrex</span>
+<span class="kn">import</span> <span class="nn">pyrex.custom.ara</span> <span class="kn">as</span> <span class="nn">ara</span>
 
-<span class="n">incoming_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                       <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
-<span class="n">my_antenna</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal</span><span class="p">)</span>
-<span class="n">my_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">my_antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">my_antenna</span><span class="o">.</span><span class="n">all_waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="c1"># First let&#39;s rebuild our detector that was used in the simulation.</span>
+<span class="n">det</span> <span class="o">=</span> <span class="n">ara</span><span class="o">.</span><span class="n">HexagonalGrid</span><span class="p">(</span><span class="n">station_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">RegularStation</span><span class="p">,</span>
+                        <span class="n">stations</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lowest_antenna</span><span class="o">=-</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">det</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">power_threshold</span><span class="o">=-</span><span class="mf">6.15</span><span class="p">)</span>
 
-<span class="n">incoming_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">incoming_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
-                               <span class="mi">5</span><span class="o">*</span><span class="n">incoming_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-                               <span class="n">incoming_signal</span><span class="o">.</span><span class="n">value_type</span><span class="p">)</span>
-<span class="n">my_antenna</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal</span><span class="p">)</span>
-<span class="n">my_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">True</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">my_antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">my_antenna</span><span class="o">.</span><span class="n">all_waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="c1"># Then let&#39;s plot a couple views of it just to be sure everything looks right.</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Detector Top View&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Detector Side View&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;z-position&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">my_antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">:</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">wave</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="c1"># Now set up a particle generator that will just throw the one event we&#39;re</span>
+<span class="c1"># interested in, and create an event kernel with our detector and our generator.</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="n">vertex</span><span class="o">=</span><span class="p">[</span><span class="mf">1002.65674195</span><span class="p">,</span> <span class="o">-</span><span class="mf">421.95118348</span><span class="p">,</span> <span class="o">-</span><span class="mf">586.0953201</span><span class="p">],</span>
+                   <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.90615395</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.41800062</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.06450191</span><span class="p">],</span>
+                   <span class="n">energy</span><span class="o">=</span><span class="mf">1e9</span><span class="p">)</span>
+<span class="n">gen</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ListGenerator</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">kern</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">antennas</span><span class="o">=</span><span class="n">det</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">gen</span><span class="p">)</span>
+
+<span class="c1"># Then make sure our detector is cleared out and throw the event!</span>
+<span class="c1"># reset_noise will make sure we get new noise waveforms every time.</span>
+<span class="n">det</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">reset_noise</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">kern</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
+
+<span class="c1"># Now let&#39;s take a look at the waveforms of the event. Since each event has a</span>
+<span class="c1"># first and second ray, plot their waveforms side-by-side for each antenna.</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ant</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">wave</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">all_waveforms</span><span class="p">):</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">times</span><span class="o">*</span><span class="mf">1e9</span><span class="p">,</span> <span class="n">wave</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time (ns)&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude (V)&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;First Ray&quot;</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;Second Ray&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;String &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">ant</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>For more on customizing PyREx, see the <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a> section.</p>
-<p>PyREx defines <code class="docutils literal"><span class="pre">DipoleAntenna</span></code> which as a subclass of <code class="docutils literal"><span class="pre">Antenna</span></code>, which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A <code class="docutils literal"><span class="pre">DipoleAntenna</span></code> object is created as follows:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">antenna_identifier</span> <span class="o">=</span> <span class="s2">&quot;antenna 1&quot;</span>
-<span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">center_frequency</span> <span class="o">=</span> <span class="mf">250e6</span> <span class="c1"># Hz</span>
-<span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">300e6</span> <span class="c1"># Hz</span>
-<span class="n">resistance</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># ohm</span>
-<span class="n">antenna_length</span> <span class="o">=</span> <span class="mf">3e8</span><span class="o">/</span><span class="n">center_frequency</span><span class="o">/</span><span class="mi">2</span> <span class="c1"># m</span>
-<span class="n">polarization_direction</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">trigger_threshold</span> <span class="o">=</span> <span class="mf">1e-5</span> <span class="c1"># V</span>
-<span class="n">dipole</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">DipoleAntenna</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">antenna_identifier</span><span class="p">,</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span>
-                             <span class="n">center_frequency</span><span class="o">=</span><span class="n">center_frequency</span><span class="p">,</span>
-                             <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">,</span> <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span>
-                             <span class="n">effective_height</span><span class="o">=</span><span class="n">antenna_length</span><span class="p">,</span>
-                             <span class="n">orientation</span><span class="o">=</span><span class="n">polarization_direction</span><span class="p">,</span>
-                             <span class="n">trigger_threshold</span><span class="o">=</span><span class="n">trigger_threshold</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="antennasystem-and-detector-classes">
-<h2>AntennaSystem and Detector Classes<a class="headerlink" href="#antennasystem-and-detector-classes" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">AntennaSystem</span></code> class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna’s signals. It is designed to be subclassed, but by default it takes as an argument the <code class="docutils literal"><span class="pre">Antenna</span></code> class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the <code class="docutils literal"><span class="pre">Antenna</span></code> class, but where a <code class="docutils literal"><span class="pre">front_end</span></code> method (which by default does nothing) is applied to the extended antenna’s signals.</p>
-<p>To extend an <code class="docutils literal"><span class="pre">Antenna</span></code> class or subclass into a full antenna system, subclass the <code class="docutils literal"><span class="pre">AntennaSystem</span></code> class and define the <code class="docutils literal"><span class="pre">front_end</span></code> method. Optionally a trigger can be defined for the antenna system (by default it uses the antenna’s trigger):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PowerAntennaSystem</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">AntennaSystem</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Antenna system whose signals and waveforms are powers instead of</span>
-<span class="sd">    voltages.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">resistance</span><span class="p">,</span> <span class="n">frequency_range</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">)</span>
-        <span class="c1"># The setup_antenna method simply passes all arguments on to the</span>
-        <span class="c1"># antenna class passed to super.__init__() and stores the resulting</span>
-        <span class="c1"># antenna to self.antenna</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setup_antenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-                           <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span>
-                           <span class="n">freq_range</span><span class="o">=</span><span class="n">frequency_range</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">front_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">values</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-                            <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">power</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Objects of this class can then, for the most part, be interacted with as though they were regular antenna objects:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span> <span class="c1"># m</span>
-<span class="n">temperature</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># K</span>
-<span class="n">resistance</span> <span class="o">=</span> <span class="mf">1e17</span> <span class="c1"># ohm</span>
-<span class="n">frequency_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># Hz</span>
+<span class="c1"># From the plots it looks like the first ray is the one that triggered the</span>
+<span class="c1"># detector. Let&#39;s calculate a signal-to-noise ratio of the first-ray waveform</span>
+<span class="c1"># for each antenna.</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Signal-to-noise ratios:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ant</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">ant</span><span class="o">.</span><span class="n">all_waveforms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">signal_pp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">ant</span><span class="o">.</span><span class="n">front_end</span><span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">antenna</span><span class="o">.</span><span class="n">make_noise</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">times</span><span class="p">))</span>
+    <span class="n">noise_rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">values</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  String &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">ant</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">signal_pp</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">noise_rms</span><span class="p">))</span>
 
-<span class="n">basic_antenna_system</span> <span class="o">=</span> <span class="n">PowerAntennaSystem</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span>
-                                          <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-                                          <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span>
-                                          <span class="n">frequency_range</span><span class="o">=</span><span class="n">frequency_range</span><span class="p">)</span>
-
-<span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">([</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">==</span> <span class="kc">True</span>
-
-<span class="n">incoming_signal_1</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
-<span class="n">incoming_signal_2</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">6</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
-<span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_1</span><span class="p">)</span>
-<span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_2</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">300</span><span class="p">],</span>
-                             <span class="n">polarization</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">True</span>
-<span class="k">for</span> <span class="n">waveform</span><span class="p">,</span> <span class="n">pure_signal</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">waveforms</span><span class="p">,</span>
-                                 <span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">signals</span><span class="p">):</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">waveform</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">waveform</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Waveform&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pure_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">pure_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Pure Signal&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="c1"># Let&#39;s also take a look at the trigger condition, which passes the waveform</span>
+<span class="c1"># through a tunnel diode. Again we can plot the tunnel diode&#39;s integrated</span>
+<span class="c1"># waveform for each ray side-by-side. The red lines indicate the trigger level.</span>
+<span class="c1"># If the integrated waveform goes beyond those lines the antenna is triggered.</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ant</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">wave</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">all_waveforms</span><span class="p">):</span>
+        <span class="n">triggered</span> <span class="o">=</span> <span class="n">ant</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
+        <span class="n">trigger_wave</span> <span class="o">=</span> <span class="n">ant</span><span class="o">.</span><span class="n">tunnel_diode</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
+        <span class="c1"># The first time ant.trigger is run for an antenna, the power mean and</span>
+        <span class="c1"># rms are calculated which will determine the trigger condition.</span>
+        <span class="n">low_trigger</span> <span class="o">=</span> <span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">_power_mean</span> <span class="o">-</span>
+                       <span class="n">ant</span><span class="o">.</span><span class="n">_power_rms</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">power_threshold</span><span class="p">))</span>
+        <span class="n">high_trigger</span> <span class="o">=</span> <span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">_power_mean</span> <span class="o">+</span>
+                        <span class="n">ant</span><span class="o">.</span><span class="n">_power_rms</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">power_threshold</span><span class="p">))</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">trigger_wave</span><span class="o">.</span><span class="n">times</span><span class="o">*</span><span class="mf">1e9</span><span class="p">,</span> <span class="n">trigger_wave</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">low_trigger</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">high_trigger</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Triggered&quot;</span> <span class="k">if</span> <span class="n">triggered</span> <span class="k">else</span> <span class="s2">&quot;Missed&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time (ns)&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Integrated Power (V^2)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;String &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">ant</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="n">total_waveform</span> <span class="o">=</span> <span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">full_waveform</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_waveform</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">total_waveform</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Total Waveform&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">incoming_signal_1</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">incoming_signal_1</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Pure Signals&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">incoming_signal_2</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">incoming_signal_2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># Finally, let&#39;s look at the relative trigger times to make sure they look</span>
+<span class="c1"># reasonable. We could get the true relative trigger times from the waveforms</span>
+<span class="c1"># by just taking the differences of their first times, but instead let&#39;s</span>
+<span class="c1"># pretend we&#39;re doing an analysis and just use the times of the maxima.</span>
+<span class="n">trig_times</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">:</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">ant</span><span class="o">.</span><span class="n">all_waveforms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">trig_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">values</span><span class="p">))])</span>
 
-<span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">is_hit_during</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">200e-9</span><span class="p">))</span> <span class="o">==</span> <span class="kc">True</span>
-
-<span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">Detector</span></code> class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used to build a detector). Subclasses must define a <code class="docutils literal"><span class="pre">set_positions</span></code> method to assign vector positions to the self.antenna_positions attribute. By default <code class="docutils literal"><span class="pre">set_positions</span></code> will raise a <code class="docutils literal"><span class="pre">NotImplementedError</span></code>. Additionally subclasses may extend the default <code class="docutils literal"><span class="pre">build_antennas</span></code> method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the <code class="docutils literal"><span class="pre">Detector</span></code> class is that once the <code class="docutils literal"><span class="pre">build_antennas</span></code> method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the <code class="docutils literal"><span class="pre">Detector</span></code> class is shown below:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AntennaGrid</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Detector</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A detector composed of a plane of antennas in a rectangular grid layout</span>
-<span class="sd">    some distance below the ice.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">set_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">separation</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">depth</span><span class="o">=-</span><span class="mi">50</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">antenna_positions</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">n_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">number</span><span class="p">))</span>
-        <span class="n">n_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="o">/</span><span class="n">n_x</span><span class="p">)</span>
-        <span class="n">dx</span> <span class="o">=</span> <span class="n">separation</span>
-        <span class="n">dy</span> <span class="o">=</span> <span class="n">separation</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_x</span><span class="p">):</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="o">-</span><span class="n">dx</span><span class="o">*</span><span class="n">n_x</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx</span><span class="o">*</span><span class="n">i</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_y</span><span class="p">):</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="n">dy</span><span class="o">*</span><span class="n">n_y</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">j</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">antenna_positions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">depth</span><span class="p">))</span>
-
-<span class="n">grid_detector</span> <span class="o">=</span> <span class="n">AntennaGrid</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
-
-<span class="c1"># Build the antennas</span>
-<span class="n">temperature</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># K</span>
-<span class="n">resistance</span> <span class="o">=</span> <span class="mf">1e17</span> <span class="c1"># ohm</span>
-<span class="n">frequency_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># Hz</span>
-<span class="n">grid_detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-                             <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span>
-                             <span class="n">freq_range</span><span class="o">=</span><span class="n">frequency_range</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">antenna</span> <span class="ow">in</span> <span class="n">grid_detector</span><span class="p">:</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;kD&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">())</span>
+<span class="c1"># Then we can plot the progression of the event by coloring the antennas where</span>
+<span class="c1"># red is the earliest time and blue/purple is the latest time.</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="n">c</span><span class="o">=</span><span class="n">trig_times</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;rainbow_r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Detector Top View&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="n">c</span><span class="o">=</span><span class="n">trig_times</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;rainbow_r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Detector Side View&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;z-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">],</span>
+              <span class="n">c</span><span class="o">=</span><span class="n">trig_times</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;rainbow_r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Detector Side View 2&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;y-position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;z-position&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Due to the parallels between <code class="docutils literal"><span class="pre">Antenna</span></code> and <code class="docutils literal"><span class="pre">AntennaSystem</span></code>, an antenna system may also be used in the custom detector class. Note however, that the antenna positions must be accessed as <code class="docutils literal"><span class="pre">antenna.antenna.position</span></code> since we didn’t define a position attribute for the <code class="docutils literal"><span class="pre">PowerAntennaSystem</span></code>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">grid_detector</span> <span class="o">=</span> <span class="n">AntennaGrid</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
-
-<span class="c1"># Build the antennas</span>
-<span class="n">temperature</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># K</span>
-<span class="n">resistance</span> <span class="o">=</span> <span class="mf">1e17</span> <span class="c1"># ohm</span>
-<span class="n">frequency_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># Hz</span>
-<span class="n">grid_detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">PowerAntennaSystem</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-                            <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span>
-                            <span class="n">frequency_range</span><span class="o">=</span><span class="n">frequency_range</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">antenna</span> <span class="ow">in</span> <span class="n">grid_detector</span><span class="p">:</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">antenna</span><span class="o">.</span><span class="n">antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">antenna</span><span class="o">.</span><span class="n">antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;kD&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="ice-and-earth-models">
-<h2>Ice and Earth Models<a class="headerlink" href="#ice-and-earth-models" title="Permalink to this headline">¶</a></h2>
-<p>PyREx provides a class <code class="docutils literal"><span class="pre">IceModel</span></code>, which is an alias for whichever south pole ice model class is the preferred (currently just the basic <code class="docutils literal"><span class="pre">AntarcticIce</span></code>). The <code class="docutils literal"><span class="pre">IceModel</span></code> class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">depth</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span> <span class="c1"># m</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">temperature</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
-<span class="n">frequency</span> <span class="o">=</span> <span class="mf">1e8</span> <span class="c1"># Hz</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">attenuation_length</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">frequency</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>PyREx also provides two functions realted to its earth model: <code class="docutils literal"><span class="pre">prem_density</span></code> and <code class="docutils literal"><span class="pre">slant_depth</span></code>. <code class="docutils literal"><span class="pre">prem_density</span></code> calculates the density in grams per cubic centimeter of the earth at a given radius:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">radius</span> <span class="o">=</span> <span class="mi">6360000</span> <span class="c1"># m</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">prem_density</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal"><span class="pre">slant_depth</span></code> calculates the material thickness in grams per square centimeter of a chord cutting through the earth at a given nadir angle, starting from a given depth:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">nadir_angle</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span> <span class="c1"># radians</span>
-<span class="n">depth</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># m</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">slant_depth</span><span class="p">(</span><span class="n">nadir_angle</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="particle-generation">
-<h2>Particle Generation<a class="headerlink" href="#particle-generation" title="Permalink to this headline">¶</a></h2>
-<p>PyREx includes <code class="docutils literal"><span class="pre">Particle</span></code> as a container for information about neutrinos which are generated to produce Askaryan pulses. <code class="docutils literal"><span class="pre">Particle</span></code> contains three attributes: <code class="docutils literal"><span class="pre">vertex</span></code>, <code class="docutils literal"><span class="pre">direction</span></code>, and <code class="docutils literal"><span class="pre">energy</span></code>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># m</span>
-<span class="n">direction_vector</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">particle_energy</span> <span class="o">=</span> <span class="mf">1e8</span> <span class="c1"># GeV</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="n">vertex</span><span class="o">=</span><span class="n">initial_position</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction_vector</span><span class="p">,</span>
-               <span class="n">energy</span><span class="o">=</span><span class="n">particle_energy</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>PyREx also includes a <code class="docutils literal"><span class="pre">ShadowGenerator</span></code> class for generating random neutrinos, taking into account some Earth shadowing. The neutrinos are generated in a box of given size, and with an energy given by an energy generation function:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">box_width</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># m</span>
-<span class="n">box_depth</span> <span class="o">=</span> <span class="mi">500</span> <span class="c1"># m</span>
-<span class="n">const_energy_generator</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="mf">1e8</span> <span class="c1"># GeV</span>
-<span class="n">my_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="n">box_width</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="n">box_width</span><span class="p">,</span>
-                                     <span class="n">dz</span><span class="o">=</span><span class="n">box_depth</span><span class="p">,</span>
-                                     <span class="n">energy_generator</span><span class="o">=</span><span class="n">const_energy_generator</span><span class="p">)</span>
-<span class="n">my_generator</span><span class="o">.</span><span class="n">create_particle</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Lastly, PyREx includes <code class="docutils literal"><span class="pre">ListGenerator</span></code> and <code class="docutils literal"><span class="pre">FileGenerator</span></code> classes which can be used to reproduce pre-generated particles from either a list or from numpy files, respectively.</p>
-</div>
-<div class="section" id="ray-tracing">
-<h2>Ray Tracing<a class="headerlink" href="#ray-tracing" title="Permalink to this headline">¶</a></h2>
-<p>PyREx provides ray tracing in the <code class="docutils literal"><span class="pre">RayTracer</span></code> and <code class="docutils literal"><span class="pre">RayTracerPath</span></code> classes. <code class="docutils literal"><span class="pre">RayTracer</span></code> takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as <code class="docutils literal"><span class="pre">RayTracerPath</span></code> objects).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">250</span><span class="p">)</span> <span class="c1"># m</span>
-<span class="n">finish</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span> <span class="c1"># m</span>
-<span class="n">my_ray_tracer</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">RayTracer</span><span class="p">(</span><span class="n">from_point</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">to_point</span><span class="o">=</span><span class="n">finish</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The two most useful properties of <code class="docutils literal"><span class="pre">RayTracer</span></code> are <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> and <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code>. <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> is a boolean value of whether or not path solutions exist between the launch and receiving points. <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code> is the list of (zero or two) <code class="docutils literal"><span class="pre">RayTracerPath</span></code> objects which exist between the launch and receiving points. There are many other properties available in <code class="docutils literal"><span class="pre">RayTracer</span></code>, outlined in the <a class="reference internal" href="api.html#pyrex-api"><span class="std std-ref">PyREx API</span></a> section, which are mostly used internally and maybe not interesting otherwise.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">exists</span>
-<span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">solutions</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">RayTracerPath</span></code> class contains the attributes of the paths between points. The most useful properties of <code class="docutils literal"><span class="pre">RayTracerPath</span></code> are <code class="docutils literal"><span class="pre">RayTracerPath.tof</span></code>, <code class="docutils literal"><span class="pre">RayTracerPath.path_length</span></code>, <code class="docutils literal"><span class="pre">RayTracerPath.emitted_direction</span></code>, and <code class="docutils literal"><span class="pre">RayTracerPath.received_direction</span></code>. These properties provide the time of flight, path length, and direction of rays at the launch and receiving points respectively.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_path</span> <span class="o">=</span> <span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">solutions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">my_path</span><span class="o">.</span><span class="n">tof</span>
-<span class="n">my_path</span><span class="o">.</span><span class="n">path_length</span>
-<span class="n">my_path</span><span class="o">.</span><span class="n">emitted_direction</span>
-<span class="n">my_path</span><span class="o">.</span><span class="n">received_direction</span>
-</pre></div>
-</div>
-<p><code class="docutils literal"><span class="pre">RayTracePath</span></code> also provides the <code class="docutils literal"><span class="pre">RayTracePath.attenuation()</span></code> method which gives the attenuation of the signal at a given frequency (or frequencies), and the <code class="docutils literal"><span class="pre">RayTracePath.coordinates</span></code> property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not garuanteed to be accurate for other purposes).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">frequency</span> <span class="o">=</span> <span class="mf">500e6</span> <span class="c1"># Hz</span>
-<span class="n">my_path</span><span class="o">.</span><span class="n">attenuation</span><span class="p">(</span><span class="mf">100e6</span><span class="p">)</span>
-<span class="n">my_path</span><span class="o">.</span><span class="n">attenuation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e8</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_path</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">my_path</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Finally, <code class="docutils literal"><span class="pre">RayTracePath.propagate()</span></code> propagates a <code class="docutils literal"><span class="pre">Signal</span></code> object from the launch point to the receiving point by applying the frequency-dependent attenuation of <code class="docutils literal"><span class="pre">RayTracePath.attenuation()</span></code>, and shifting the signal times by <code class="docutils literal"><span class="pre">RayTracePath.tof</span></code>. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">5e-9</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
-<span class="n">my_signal</span> <span class="o">=</span> <span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e9</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
-            <span class="o">+</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e10</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-<span class="n">my_path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">my_signal</span><span class="p">)</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">values</span> <span class="o">/=</span> <span class="n">my_path</span><span class="o">.</span><span class="n">path_length</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="full-simulation">
-<h2>Full Simulation<a class="headerlink" href="#full-simulation" title="Permalink to this headline">¶</a></h2>
-<p>PyREx provides the <code class="docutils literal"><span class="pre">EventKernel</span></code> class to control a basic simulation including the creation of neutrinos, the propagation of their pulses to the antennas, and the triggering of the antennas:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-                                           <span class="n">energy_generator</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="mf">1e8</span><span class="p">)</span>
-<span class="n">detector</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">150</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">250</span><span class="p">]):</span>
-    <span class="n">detector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="n">pyrex</span><span class="o">.</span><span class="n">DipoleAntenna</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;antenna_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span>
-                            <span class="n">center_frequency</span><span class="o">=</span><span class="mf">250e6</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mf">300e6</span><span class="p">,</span>
-                            <span class="n">resistance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">effective_height</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
-                            <span class="n">trigger_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="p">)</span>
-<span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">particle_generator</span><span class="p">,</span>
-                           <span class="n">ice_model</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="p">,</span>
-                           <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">)</span>
-
-<span class="n">triggered</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="n">triggered</span><span class="p">:</span>
-    <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">antenna</span> <span class="ow">in</span> <span class="n">detector</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">antenna</span><span class="o">.</span><span class="n">is_hit</span><span class="p">:</span>
-            <span class="n">triggered</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">break</span>
-
-<span class="k">for</span> <span class="n">antenna</span> <span class="ow">in</span> <span class="n">detector</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wave</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">):</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">times</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span> <span class="n">wave</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (ns)&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Voltage (V)&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">antenna</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; - waveform &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="more-examples">
-<h2>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
-<p>For more code examples, see the PyREx Demo python notebook.</p>
 </div>
 </div>
 
@@ -643,7 +513,7 @@ Version 1.5.0</p>
       &copy;2018, Benjamin Hokanson-Fasig.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

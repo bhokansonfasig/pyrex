@@ -5,16 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>About PyREx &#8212; PyREx 1.5.0 documentation</title>
-    
+    <title>About PyREx &#8212; PyREx 1.6.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.0',
+        VERSION:     '1.6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +24,7 @@
     <link rel="author" title="About these documents" href="#" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Code Examples" href="examples.html" />
+    <link rel="next" title="How to Use PyREx" href="usage.html" />
     <link rel="prev" title="PyREx Documentation" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -41,12 +38,17 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">PyREx</a></h1>
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
 <p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.5.0</p>
+Version 1.6.0</p>
 
 
 
@@ -68,8 +70,10 @@ Version 1.5.0</p>
 <li class="toctree-l2"><a class="reference internal" href="#units">Units</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">How to Use PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
 </ul>
@@ -88,7 +92,7 @@ Version 1.5.0</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">PyREx Documentation</a></li>
-      <li>Next: <a href="examples.html" title="next chapter">Code Examples</a></li>
+      <li>Next: <a href="usage.html" title="next chapter">How to Use PyREx</a></li>
   </ul></li>
 </ul>
 </div>
@@ -131,7 +135,7 @@ PyREx is not currently available on PyPI, so a simple <code class="docutils lite
 </div>
 <p>Then, create a particle generator object that will produce random particles in  a cube of 1 km on each side with a fixed energy of 100 PeV:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-                                           <span class="n">energy_generator</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="mf">1e8</span><span class="p">)</span>
+                                           <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>An array of antennas that represent the detector is also needed. The base <code class="docutils literal"><span class="pre">Antenna</span></code> class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical “string” of four antennas with no noise:</p>
@@ -144,7 +148,7 @@ PyREx is not currently available on PyPI, so a simple <code class="docutils lite
 </div>
 <p>Finally, we want to pass these into the <code class="docutils literal"><span class="pre">EventKernel</span></code> and produce an event:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">particle_generator</span><span class="p">,</span>
-                           <span class="n">ice_model</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="p">,</span> <span class="n">antennas</span><span class="o">=</span><span class="n">antenna_array</span><span class="p">)</span>
+                           <span class="n">antennas</span><span class="o">=</span><span class="n">antenna_array</span><span class="p">)</span>
 <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -217,7 +221,7 @@ PyREx is not currently available on PyPI, so a simple <code class="docutils lite
       &copy;2018, Benjamin Hokanson-Fasig.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
