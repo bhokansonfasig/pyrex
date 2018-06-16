@@ -175,8 +175,13 @@ class BasicRayTracePath(LazyMutableClass):
         traveling along the path. Supports passing a list of frequencies."""
         fa = np.abs(f)
         def integrand(z):
-            return (1 / np.vstack(np.cos(self.theta(z))) /
-                    self.ice.attenuation_length(z, fa))
+            partial_integrand = 1 / np.cos(self.theta(z))
+            alen = self.ice.attenuation_length(z, fa)
+            if alen.ndim<2:
+                return np.vstack(partial_integrand / alen)
+            else:
+                return np.vstack(partial_integrand) / alen
+
         return np.exp(-np.abs(self.z_integral(integrand))) * self.fresnel
 
     def propagate(self, signal):
@@ -578,20 +583,24 @@ class BasicRayTracer(LazyMutableClass):
     def peak_angle(self):
         """Angle at which indirect solutions curve (in r vs angle) peaks.
         Separates angle intervals for indirect solution root-finding."""
-        for angle_step in np.logspace(-3, 0, num=4):
-            r_func = (lambda angle, brent_arg:
-                      self._indirect_r_prime(angle, brent_arg,
-                                             d_angle=angle_step))
-            try:
-                peak_angle = self.angle_search(0, r_func,
-                                               angle_step, self.max_angle)
-            except (RuntimeError, ValueError):
-                # Failed to converge
-                continue
-            else:
-                if peak_angle>np.pi/2:
-                    peak_angle = np.pi - peak_angle
-                return peak_angle
+        for tolerance in np.logspace(-12, -4, num=3):
+            for angle_step in np.logspace(-3, 0, num=4):
+                r_func = (lambda angle, brent_arg:
+                          self._indirect_r_prime(angle, brent_arg,
+                                                 d_angle=angle_step))
+                try:
+                    peak_angle = self.angle_search(0, r_func,
+                                                   angle_step, self.max_angle,
+                                                   tolerance=tolerance)
+                except (RuntimeError, ValueError):
+                    # Failed to converge
+                    continue
+                else:
+                    if peak_angle>np.pi/2:
+                        peak_angle = np.pi - peak_angle
+                    return peak_angle
+        # If all else fails, just use the max_angle
+        return self.max_angle
 
     @lazy_property
     def direct_r_max(self):

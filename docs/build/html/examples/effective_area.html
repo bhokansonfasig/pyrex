@@ -1,0 +1,238 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Calculate Effective Area &#8212; PyREx 1.6.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.6.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
+Version 1.6.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">PyREx API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="calculate-effective-area">
+<h1>Calculate Effective Area<a class="headerlink" href="#calculate-effective-area" title="Permalink to this headline">¶</a></h1>
+<p>In this example we will calculate the effective area of a detector over a range of energies. This code can be run from the Effective Area notebook in the examples directory.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In order to finish reasonably quickly, the number of events thrown in this example is low. This means that there are likely not enough events to accurately represent the effective area of the detector. For an accurate measurement, the number of events must be increased, but this will need much more time to run in that case.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pyrex</span>
+<span class="kn">import</span> <span class="nn">pyrex.custom.ara</span> <span class="kn">as</span> <span class="nn">ara</span>
+
+<span class="c1"># First let&#39;s set the number of events that we will be throwing at each energy,</span>
+<span class="c1"># and the energies we will be using. As stated in the warning, the number of</span>
+<span class="c1"># events is set low to speed up the example, but that means the results are</span>
+<span class="c1"># likely inaccurate.</span>
+<span class="n">n_events</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e8</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">]</span> <span class="c1"># GeV</span>
+
+<span class="c1"># Next, set up the detector to be measured. Here we use a single standard</span>
+<span class="c1"># ARA station.</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">ara</span><span class="o">.</span><span class="n">HexagonalGrid</span><span class="p">(</span><span class="n">station_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">RegularStation</span><span class="p">,</span>
+                             <span class="n">stations</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">power_threshold</span><span class="o">=-</span><span class="mf">6.15</span><span class="p">)</span>
+
+<span class="c1"># Now set up a neutrino generator for each energy. Let&#39;s scale the generation</span>
+<span class="c1"># volume by energy so that we&#39;re not wasting too much time generating neutrinos</span>
+<span class="c1"># that will surely never trigger.</span>
+<span class="n">dimensions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]</span>
+<span class="n">generators</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">2800</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">energy</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">)]</span>
+
+<span class="c1"># And then set up the event kernels for each energy. Let&#39;s use the ArasimIce</span>
+<span class="c1"># class as our ice model since it calculates attenuations faster at the loss</span>
+<span class="c1"># of some accuracy.</span>
+<span class="n">kernels</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">gen</span><span class="p">,</span> <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+                             <span class="n">ice_model</span><span class="o">=</span><span class="n">pryex</span><span class="o">.</span><span class="n">ice_model</span><span class="o">.</span><span class="n">ArasimIce</span><span class="p">)</span>
+           <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">]</span>
+
+<span class="c1"># Now run each kernel and record the number of events from each that triggered</span>
+<span class="c1"># the detector. In this case we&#39;ll set our trigger condition to 3/8 antennas</span>
+<span class="c1"># triggering in a single polarization.</span>
+<span class="n">triggers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">energies</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kernels</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Running energy&quot;</span><span class="p">,</span> <span class="n">energies</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_events</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">detector</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">reset_noise</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">particle</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
+        <span class="n">triggered</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">triggered</span><span class="p">(</span><span class="n">station_requirement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                       <span class="n">polarized_antenna_requirement</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">triggered</span><span class="p">:</span>
+            <span class="n">triggers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">10</span><span class="o">==</span><span class="mi">9</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
+
+<span class="c1"># Now that we have the trigger counts for each energy, we can calculate the</span>
+<span class="c1"># effective volumes by scaling the trigger probability by the generation volume.</span>
+<span class="c1"># Errors are calculated assuming poisson counting statistics.</span>
+<span class="n">generation_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dim</span><span class="p">)</span><span class="o">*</span><span class="mi">2800</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">dimensions</span><span class="p">])</span>
+<span class="n">effective_volumes</span> <span class="o">=</span> <span class="n">triggers</span> <span class="o">/</span> <span class="n">n_events</span> <span class="o">*</span> <span class="n">generation_volumes</span>
+<span class="n">volume_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">triggers</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_events</span> <span class="o">*</span> <span class="n">generation_volumes</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">effective_volumes</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">volume_errors</span><span class="p">,</span>
+             <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Detector Effective Volume&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Shower Energy (GeV)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Effective Volume (km^3)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Then from the effecitve volumes, we can calculate the effective areas.</span>
+<span class="c1"># First we need to account for the fact that our energy is the shower energy</span>
+<span class="c1"># and convert to the neutrino energy. Then the effective area is the probability</span>
+<span class="c1"># of interaction in the ice volume times the effective volume. The probability</span>
+<span class="c1"># of interaction in the ice volume is given by the interaction cross section</span>
+<span class="c1"># times the density of the ice. Since the neutrino type is not specified in the</span>
+<span class="c1"># simulation, calculate the cross section as a weighted average of neutrino</span>
+<span class="c1"># cross sections.</span>
+<span class="n">nu_energies</span> <span class="o">=</span> <span class="mi">9</span><span class="o">/</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span>
+<span class="n">ice_density</span> <span class="o">=</span> <span class="mf">0.92</span> <span class="c1"># g/cm^3</span>
+<span class="n">ice_density</span> <span class="o">*=</span> <span class="mf">1e15</span> <span class="c1"># converted to g/km^3 = nucleons/km^3</span>
+<span class="n">cross_sections</span> <span class="o">=</span> <span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">CC_NU</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="mi">3</span><span class="o">*</span><span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">NC_NU</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">CC_NUBAR</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="mi">3</span><span class="o">*</span><span class="n">pyrex</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">NC_NUBAR</span><span class="o">.</span><span class="n">cross_section</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">))</span> <span class="o">/</span> <span class="mi">8</span>
+<span class="n">effective_areas</span> <span class="o">=</span> <span class="mf">6.022e23</span> <span class="o">*</span> <span class="n">ice_density</span> <span class="o">*</span> <span class="n">cross_sections</span> <span class="o">*</span> <span class="n">effective_volumes</span>
+<span class="n">effective_areas</span> <span class="o">*=</span> <span class="mf">1e-4</span> <span class="c1"># converted from cm^2 to m^2</span>
+<span class="n">area_errors</span> <span class="o">=</span> <span class="mf">6.022e23</span> <span class="o">*</span> <span class="n">ice_density</span> <span class="o">*</span> <span class="n">cross_sections</span> <span class="o">*</span> <span class="n">volume_errors</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">nu_energies</span><span class="p">,</span> <span class="n">effective_areas</span><span class="p">,</span> <span class="n">area_errors</span><span class="p">,</span>
+             <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Detector Effective Area&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Neutrino Energy (GeV)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Effective Area (m^2)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2018, Benjamin Hokanson-Fasig.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/examples/effective_area.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

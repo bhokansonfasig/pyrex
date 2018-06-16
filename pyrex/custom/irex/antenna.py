@@ -16,7 +16,8 @@ class IREXAntenna(Antenna):
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), effective_height=None, noisy=True):
+                 orientation=(0,0,1), effective_height=None, noisy=True,
+                 unique_noise_waveforms=10):
         if effective_height is None:
             # Calculate length of half-wave dipole
             self.effective_height = 3e8 / center_frequency / 2
@@ -38,6 +39,7 @@ class IREXAntenna(Antenna):
                          antenna_factor=1/self.effective_height,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
+                         unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)
 
         # Build scipy butterworth filter to speed up response function
@@ -69,12 +71,14 @@ class IREXAntennaSystem(AntennaSystem):
     optional bandpass filter, and envelope circuit."""
     def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
                  orientation=(0,0,1), amplification=1, amplifier_clipping=3,
-                 noisy=True, envelope_method="analytic"):
+                 noisy=True, unique_noise_waveforms=10,
+                 envelope_method="analytic"):
         super().__init__(IREXAntenna)
 
         self.name = str(name)
         self.position = position
-        self.setup_antenna(orientation=orientation, noisy=noisy)
+        self.setup_antenna(orientation=orientation, noisy=noisy,
+                           unique_noise_waveforms=unique_noise_waveforms)
 
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
@@ -86,7 +90,8 @@ class IREXAntennaSystem(AntennaSystem):
 
     def setup_antenna(self, center_frequency=250e6, bandwidth=300e6,
                       resistance=100, orientation=(0,0,1),
-                      effective_height=None, noisy=True):
+                      effective_height=None, noisy=True,
+                      unique_noise_waveforms=10):
         """Sets attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
@@ -96,7 +101,8 @@ class IREXAntennaSystem(AntennaSystem):
                               resistance=resistance,
                               orientation=orientation,
                               effective_height=effective_height,
-                              noisy=noisy)
+                              noisy=noisy,
+                              unique_noise_waveforms=unique_noise_waveforms)
 
     def make_envelope(self, signal):
         """Return the signal envelope based on the antenna's envelope_method."""

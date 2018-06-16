@@ -20,7 +20,8 @@ class IREXString(Detector):
                        amplification=1,
                        naming_scheme=lambda i, ant: "ant_"+str(i),
                        orientation_scheme=lambda i, ant: ((0,0,1), (1,0,0)),
-                       noisy=True, envelope_method="analytic"):
+                       noisy=True, unique_noise_waveforms=10,
+                       envelope_method="analytic"):
         """Sets up IREXAntennaSystems at the positions stored in the class.
         Takes as arguments the trigger threshold, optional time over
         threshold, and whether to add noise to the waveforms.
@@ -34,6 +35,7 @@ class IREXString(Detector):
                                time_over_threshold=time_over_threshold,
                                amplification=amplification,
                                orientation=(0, 0, 1), noisy=noisy,
+                               unique_noise_waveforms=unique_noise_waveforms,
                                envelope_method=envelope_method)
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))

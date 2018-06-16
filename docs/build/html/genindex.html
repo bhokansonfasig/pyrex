@@ -6,16 +6,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Index &#8212; PyREx 1.5.0 documentation</title>
-    
+    <title>Index &#8212; PyREx 1.6.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.0',
+        VERSION:     '1.6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -40,12 +37,17 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">PyREx</a></h1>
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
 <p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.5.0</p>
+Version 1.6.0</p>
 
 
 
@@ -62,8 +64,10 @@ Version 1.5.0</p>
 <h3>Navigation</h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">How to Use PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
 </ul>
@@ -135,6 +139,8 @@ Version 1.5.0</p>
       <ul>
         <li><a href="api.html#pyrex.ice_model.ArasimIce.a">(pyrex.ice_model.ArasimIce attribute)</a>, <a href="api.html#pyrex.ice_model.ArasimIce.a">[1]</a>
 </li>
+        <li><a href="api.html#pyrex.ice_model.NewcombIce.a">(pyrex.ice_model.NewcombIce attribute)</a>
+</li>
       </ul></li>
       <li><a href="api.html#pyrex.Antenna.all_waveforms">all_waveforms (pyrex.Antenna attribute)</a>
 
@@ -158,14 +164,14 @@ Version 1.5.0</p>
         <li><a href="api.html#pyrex.antenna.Antenna">(class in pyrex.antenna)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.AntennaSystem">AntennaSystem (class in pyrex)</a>
 
       <ul>
         <li><a href="api.html#pyrex.detector.AntennaSystem">(class in pyrex.detector)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pyrex.ice_model.ArasimIce">ArasimIce (class in pyrex.ice_model)</a>, <a href="api.html#pyrex.ice_model.ArasimIce">[1]</a>
 </li>
       <li><a href="api.html#pyrex.AskaryanSignal">AskaryanSignal (in module pyrex)</a>
@@ -174,6 +180,10 @@ Version 1.5.0</p>
         <li><a href="api.html#pyrex.signals.AskaryanSignal">(in module pyrex.signals)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#pyrex.ice_model.ArasimIce.atten_depths">atten_depths (pyrex.ice_model.ArasimIce attribute)</a>, <a href="api.html#pyrex.ice_model.ArasimIce.atten_depths">[1]</a>
+</li>
+      <li><a href="api.html#pyrex.ice_model.ArasimIce.atten_lengths">atten_lengths (pyrex.ice_model.ArasimIce attribute)</a>, <a href="api.html#pyrex.ice_model.ArasimIce.atten_lengths">[1]</a>
+</li>
       <li><a href="api.html#pyrex.ray_tracing.BasicRayTracePath.attenuation">attenuation() (pyrex.ray_tracing.BasicRayTracePath method)</a>
 
       <ul>
@@ -187,6 +197,8 @@ Version 1.5.0</p>
       <li><a href="api.html#pyrex.ice_model.AntarcticIce.attenuation_length">attenuation_length() (pyrex.ice_model.AntarcticIce class method)</a>
 
       <ul>
+        <li><a href="api.html#pyrex.ice_model.ArasimIce.attenuation_length">(pyrex.ice_model.ArasimIce class method)</a>, <a href="api.html#pyrex.ice_model.ArasimIce.attenuation_length">[1]</a>
+</li>
         <li><a href="api.html#pyrex.ice_model.NewcombIce.attenuation_length">(pyrex.ice_model.NewcombIce class method)</a>
 </li>
       </ul></li>
@@ -442,8 +454,6 @@ Version 1.5.0</p>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pyrex.custom.pyspice.NgSpiceSharedSignal.get_vsrc_data">get_vsrc_data() (pyrex.custom.pyspice.NgSpiceSharedSignal method)</a>
-</li>
       <li><a href="api.html#pyrex.custom.irex.reconstruction.get_xcorr_times">get_xcorr_times() (in module pyrex.custom.irex.reconstruction)</a>
 </li>
       <li><a href="api.html#pyrex.ice_model.AntarcticIce.gradient">gradient() (pyrex.ice_model.AntarcticIce class method)</a>
@@ -509,6 +519,8 @@ Version 1.5.0</p>
       <ul>
         <li><a href="api.html#pyrex.ice_model.ArasimIce.k">(pyrex.ice_model.ArasimIce attribute)</a>, <a href="api.html#pyrex.ice_model.ArasimIce.k">[1]</a>
 </li>
+        <li><a href="api.html#pyrex.ice_model.NewcombIce.k">(pyrex.ice_model.NewcombIce attribute)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -565,6 +577,8 @@ Version 1.5.0</p>
       <ul>
         <li><a href="api.html#pyrex.ice_model.ArasimIce.n0">(pyrex.ice_model.ArasimIce attribute)</a>, <a href="api.html#pyrex.ice_model.ArasimIce.n0">[1]</a>
 </li>
+        <li><a href="api.html#pyrex.ice_model.NewcombIce.n0">(pyrex.ice_model.NewcombIce attribute)</a>
+</li>
         <li><a href="api.html#pyrex.ray_tracing.BasicRayTracePath.n0">(pyrex.ray_tracing.BasicRayTracePath attribute)</a>
 </li>
         <li><a href="api.html#pyrex.ray_tracing.BasicRayTracer.n0">(pyrex.ray_tracing.BasicRayTracer attribute)</a>
@@ -575,8 +589,6 @@ Version 1.5.0</p>
       <li><a href="api.html#pyrex.particle.NeutrinoInteraction">NeutrinoInteraction (class in pyrex.particle)</a>
 </li>
       <li><a href="api.html#pyrex.ice_model.NewcombIce">NewcombIce (class in pyrex.ice_model)</a>
-</li>
-      <li><a href="api.html#pyrex.custom.pyspice.NgSpiceSharedSignal">NgSpiceSharedSignal (class in pyrex.custom.pyspice)</a>
 </li>
       <li><a href="api.html#pyrex.internal_functions.normalize">normalize() (in module pyrex.internal_functions)</a>
 </li>
@@ -844,8 +856,6 @@ Version 1.5.0</p>
         <li><a href="api.html#pyrex.signals.Signal.spectrum">(pyrex.signals.Signal attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api.html#pyrex.custom.pyspice.SpiceSignal">SpiceSignal (class in pyrex.custom.pyspice)</a>
-</li>
       <li><a href="api.html#pyrex.custom.irex.detector.StationGrid">StationGrid (class in pyrex.custom.irex.detector)</a>
 </li>
   </ul></td>
@@ -1042,7 +1052,7 @@ Version 1.5.0</p>
       &copy;2018, Benjamin Hokanson-Fasig.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>

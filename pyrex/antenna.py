@@ -17,18 +17,20 @@ class Antenna:
     noise, and whether or not to include noise in the antenna's waveforms.
     Defines default trigger, frequency response, and signal reception functions
     that can be overwritten in base classes to customize the antenna."""
-    def __init__(self, position, z_axis=[0,0,1], x_axis=[1,0,0],
-                 antenna_factor=1, efficiency=1, freq_range=None,
-                 noise_rms=None, temperature=None, resistance=None, noisy=True):
+    def __init__(self, position, z_axis=(0,0,1), x_axis=(1,0,0),
+                 antenna_factor=1, efficiency=1, noisy=True,
+                 unique_noise_waveforms=10, freq_range=None,
+                 temperature=None, resistance=None, noise_rms=None):
         self.position = position
         self.set_orientation(z_axis=z_axis, x_axis=x_axis)
         self.antenna_factor = antenna_factor
         self.efficiency = efficiency
+        self.noisy = noisy
+        self.unique_noises = unique_noise_waveforms
         self.freq_range = freq_range
         self.noise_rms = noise_rms
         self.temperature = temperature
         self.resistance = resistance
-        self.noisy = noisy
 
         self.signals = []
         self._noise_master = None
@@ -38,7 +40,7 @@ class Antenna:
     def __str__(self):
         return self.__class__.__name__+"(position="+repr(self.position)+")"
 
-    def set_orientation(self, z_axis=[0,0,1], x_axis=[1,0,0]):
+    def set_orientation(self, z_axis=(0,0,1), x_axis=(1,0,0)):
         self.z_axis = normalize(z_axis)
         self.x_axis = normalize(x_axis)
         if np.dot(self.z_axis, self.x_axis)!=0:
@@ -55,11 +57,15 @@ class Antenna:
         times array."""
         return self.trigger(self.full_waveform(times))
 
-    def clear(self):
-        """Reset the antenna to a state of having received no signals."""
+    def clear(self, reset_noise=False):
+        """Reset the antenna to a state of having received no signals.
+        Can optionally reset noise, which will reset the noise waveform so that
+        a new signal arriving at the same time does not have the same noise."""
         self.signals.clear()
         self._noises.clear()
         self._triggers.clear()
+        if reset_noise:
+            self._noise_master = None
 
     @property
     def waveforms(self):
@@ -122,9 +128,10 @@ class Antenna:
                     duration = signal_duration
             n_freqs = (self.freq_range[1] - self.freq_range[0]) * duration
 
-            # Multiply n_freqs by 100 so up to about 100 signals can be stored
-            # without the noise being obviously periodic
-            n_freqs *= 100
+            # Multiply n_freqs by the number of unique noise waveforms needed
+            # so that up to about that many signals can be stored without the
+            # noise being obviously periodic
+            n_freqs *= self.unique_noises
 
             if self.noise_rms is None:
                 self._noise_master = ThermalNoise(times, f_band=self.freq_range,
@@ -178,24 +185,30 @@ class Antenna:
     def response(self, frequencies):
         """Function to return the frequency response of the antenna at the
         given frequencies (Hz). This function should return the response as
-        imaginary numbers, where the real part is the amplitude response and
-        the imaginary part is the phase response."""
+        imaginary numbers of the form A*exp(i*phi), where A is the amplitude
+        response and phi is the phase shift."""
         logger.debug("Using default response from "+
                      "pyrex.antenna.Antenna")
         return np.ones(len(frequencies))
 
-    def receive(self, signal, origin=None, polarization=None):
+    def receive(self, signal, direction=None, polarization=None,
+                force_real=False):
         """Process incoming signal according to the filter function and
-        store it to the signals list. Subclasses may extend this fuction,
-        but should likely end with super().receive(signal)."""
+        store it to the signals list. Optionally applies directional gain if
+        direction is specified, applies polarization gain if polarization is
+        specified, and forces any frequency response filters to return real
+        signals if specified.
+        Subclasses may extend this fuction, but should likely end with
+        super().receive(signal)."""
         copy = Signal(signal.times, signal.values,
                       value_type=Signal.ValueTypes.voltage)
-        copy.filter_frequencies(self.response)
+        copy.filter_frequencies(self.response, force_real=force_real)
 
-        if origin is None:
+        if direction is None:
             d_gain = 1
         else:
-            # Calculate theta and phi relative to the orientation
+            # Calculate theta and phi relative to the antenna's orientation
+            origin = self.position - normalize(direction)
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
             d_gain = self.directional_gain(theta=theta, phi=phi)
 
@@ -224,8 +237,9 @@ class DipoleAntenna(Antenna):
     bandwidth (Hz), resistance (ohm), effective height (m), polarization
     direction, and trigger threshold (V)."""
     def __init__(self, name, position, center_frequency, bandwidth, resistance,
-                 orientation=[0,0,1], trigger_threshold=0,
-                 effective_height=None, noisy=True):
+                 orientation=(0,0,1), trigger_threshold=0,
+                 effective_height=None, noisy=True,
+                 unique_noise_waveforms=10):
         self.name = name
         self.threshold = trigger_threshold
         if effective_height is None:
@@ -249,6 +263,7 @@ class DipoleAntenna(Antenna):
                          antenna_factor=1/self.effective_height,
                          temperature=IceModel.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
+                         unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)
 
         # Build scipy butterworth filter to speed up response function

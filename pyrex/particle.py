@@ -64,16 +64,22 @@ def random_direction():
 class ShadowGenerator:
     """Class to generate UHE neutrino vertices in (relatively) shallow
     detectors. Takes into accout Earth shadowing (sort of).
-    energy_generator should be a function that returns a particle energy
-    in GeV. Note that the x and y ranges are (-dx/2, dx/2) and (-dy/2, dy/2)
-    while the z range is (-dz, 0)."""
-    def __init__(self, dx, dy, dz, energy_generator):
+    energy should be either an energy in GeV or a function that returns an
+    energy in GeV. Note that the x and y ranges in which particles are created
+    are (-dx/2, dx/2) and (-dy/2, dy/2) while the z range is (-dz, 0)."""
+    def __init__(self, dx, dy, dz, energy):
         self.dx = dx
         self.dy = dy
         self.dz = dz
-        if not callable(energy_generator):
-            raise ValueError("energy_generator must be a function")
-        self.egen = energy_generator
+        if not callable(energy):
+            try:
+                e = float(energy)
+            except TypeError:
+                raise ValueError("energy_generator must be a function "+
+                                 "or a number")
+            else:
+                energy = lambda: e
+        self.energy_generator = energy
         self.count = 0
 
     def create_particle(self):
@@ -85,7 +91,7 @@ class ShadowGenerator:
         nadir = np.arccos(u[2])
         depth = -vtx[2]
         t = earth_model.slant_depth(nadir, depth)
-        E = self.egen()
+        E = self.energy_generator()
         # Interaction length is average of neutrino and antineutrino
         # interaction lengths. Each of those is the inverted-sum of the
         # CC and NC interaction lengths.
@@ -156,21 +162,21 @@ class FileGenerator:
                 self.vertices = data['arr_0']
                 self.directions = data['arr_1']
                 self.energies = data['arr_2']
-                return
-            for key, val in data.items():
-                key = key.lower()
-                if 'vert' in key:
-                    self.vertices = val
-                elif key.startswith('v'):
-                    self.vertices = val
-                if 'dir' in key:
-                    self.directions = val
-                elif key.startswith('d'):
-                    self.directions = val
-                if 'en' in key:
-                    self.energies = val
-                elif key.startswith('e'):
-                    self.energies = val
+            else:
+                for key, val in data.items():
+                    key = key.lower()
+                    if 'vert' in key:
+                        self.vertices = val
+                    elif key.startswith('v'):
+                        self.vertices = val
+                    if 'dir' in key:
+                        self.directions = val
+                    elif key.startswith('d'):
+                        self.directions = val
+                    if 'en' in key:
+                        self.energies = val
+                    elif key.startswith('e'):
+                        self.energies = val
         if (self.vertices is None or self.directions is None
                 or self.energies is None):
             raise KeyError("Could not interpret data keys of file "+
@@ -186,7 +192,6 @@ class FileGenerator:
         if self.vertices is None or self._index>=len(self.vertices):
             self._next_file()
             return self.create_particle()
-        v = self.vertices[self._index]
-        d = self.directions[self._index]
-        e = self.energies[self._index]
-        return Particle(vertex=v, direction=d, energy=e)
+        return Particle(vertex=self.vertices[self._index],
+                        direction=self.directions[self._index],
+                        energy=self.energies[self._index])

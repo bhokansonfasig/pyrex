@@ -126,7 +126,7 @@ pyrex\.internal\_functions module
 PyREx Custom Subpackage
 =======================
 
-Note that more modules are available as plug-ins, see `custom-package`.
+Note that more modules may be available as plug-ins, see `custom-package`.
 
 pyrex\.custom\.pyspice module
 -----------------------------

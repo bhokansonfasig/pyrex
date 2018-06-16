@@ -99,24 +99,51 @@ class Signal:
         """Returns the FFT frequencies of the signal."""
         return scipy.fftpack.fftfreq(n=len(self.values), d=self.dt)
 
-    def filter_frequencies(self, freq_response):
-        """Applies the given frequency response function to the signal."""
-        filtered_spectrum = self.spectrum
+    def filter_frequencies(self, freq_response, force_real=False):
+        """Applies the given frequency response function to the signal.
+        Optionally can attempt to force real results manually if the filter is
+        only specified in positive frequencies."""
+        # Zero-pad the signal so the filter doesn't cause the resulting
+        # signal to wrap around the end of the time array
+        vals = np.concatenate((self.values, np.zeros(len(self.values))))
+        spectrum = scipy.fftpack.fft(vals)
+        freqs = scipy.fftpack.fftfreq(n=2*len(self.values), d=self.dt)
+        if force_real:
+            true_freqs = np.array(freqs)
+            freqs = np.abs(freqs)
 
         # Attempt to evaluate all responses in one function call
         try:
-            responses = np.array(freq_response(self.frequencies))
+            responses = np.array(freq_response(freqs), dtype=np.complex_)
         # Otherwise evaluate responses one at a time
-        except ValueError:
+        except (TypeError, ValueError):
             logger.debug("Frequency response function %r could not be "+
                          "evaluated for multiple frequencies at once",
                          freq_response)
-            responses = np.zeros(len(filtered_spectrum))
-            for i, f in enumerate(self.frequencies):
+            responses = np.zeros(len(spectrum), dtype=np.complex_)
+            for i, f in enumerate(freqs):
                 responses[i] = freq_response(f)
 
-        filtered_spectrum *= responses
-        self.values = np.real(scipy.fftpack.ifft(filtered_spectrum))
+        # To make the filtered signal real, mirror the positive frequency
+        # response into the negative frequencies, making the real part even
+        # (done above) and the imaginary part odd (below)
+        if force_real:
+            responses.imag[true_freqs<0] *= -1
+
+        filtered_vals = scipy.fftpack.ifft(responses*spectrum)
+        self.values = np.real(filtered_vals[:len(self.times)])
+
+        # Issue a warning if there was significant signal in the (discarded)
+        # imaginary part of the filtered values
+        if np.any(np.imag(filtered_vals[:len(self.times)]) >
+                  np.max(self.values) * 1e-5):
+            msg = ("Significant signal amplitude was lost when forcing the "+
+                   "signal values to be real after applying the frequency "+
+                   "filter '%s'. This may be avoided by making sure the "+
+                   "filter being used is properly defined for negative "+
+                   "frequencies, or by passing force_real=True to the "+
+                   "Signal.filter_frequencies function.")
+            logger.warning(msg, freq_response.__name__)
 
 
 
@@ -472,6 +499,9 @@ class ThermalNoise(FunctionSignal):
         # https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps
 
         self.f_min, self.f_max = f_band
+        if self.f_min>=self.f_max:
+            raise ValueError("Frequency band must have smaller frequency as "+
+                             "first value and larger frequency as second value")
         # If number of frequencies is unspecified (or invalid),
         # determine based on the FFT bin size of the times array
         if n_freqs<1:
@@ -494,6 +524,10 @@ class ThermalNoise(FunctionSignal):
             self.amps = [f_amplitude(f) for f in self.freqs]
         else:
             self.amps = np.full(len(self.freqs), f_amplitude, dtype="float64")
+            # If the frequency range extends to zero, force the zero-frequency
+            # (DC) amplitude to zero
+            if 0 in self.freqs:
+                self.amps[np.where(self.freqs==0)[0]] = 0
 
         self.phases = np.random.rand(len(self.freqs)) * 2*np.pi
 
@@ -508,14 +542,16 @@ class ThermalNoise(FunctionSignal):
                              " must be provided to calculate noise amplitude")
 
         def f(ts):
-            # Set the time-domain signal by adding sinusoidal signals of each
-            # frequency with the corresponding phase
-            values = np.zeros(len(ts))
-            for freq, amp, phase in zip(self.freqs, self.amps, self.phases):
-                # Skip zero-frequency component if it exists
-                if freq==0:
-                    continue
-                values += amp * np.cos(2*np.pi*freq * ts + phase)
+            """Set the time-domain signal by adding sinusoidal signals of each
+            frequency with the corresponding phase."""
+            # This method is nicer than an inverse fourier transform because
+            # results are consistant for differing ranges of ts around the same
+            # time. The price payed is that the fft would be an order of
+            # magnitude faster, but not reproducible for a slightly different
+            # time array.
+            values = sum(amp * np.cos(2*np.pi*freq * ts + phase)
+                         for freq, amp, phase
+                         in zip(self.freqs, self.amps, self.phases))
 
             # Normalization calculated by guess-and-check,
             # but seems to work fine
