@@ -8,7 +8,7 @@ This section describes in detail how to use a majority of the functions and clas
     import scipy.fftpack
     import pyrex
 
-All of the following examples can also be found (and quickly run) in the Code Examples python notebook.
+All of the following examples can also be found (and quickly run) in the Code Examples python notebook found in the examples directory.
 
 
 
@@ -74,7 +74,7 @@ The ``with_times`` function will interpolate/extrapolate the signal's values ont
     plt.legend()
     plt.show()
 
-The ``filter_frequencies`` function will apply a frequency-domain filter to the values array based on the passed frequency response function::
+The ``filter_frequencies`` function will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive freqeuncies (as below) the filtered frequency may have strange behavior including having an imaginary part. To resolve that issue, pass ``force_real=True`` to the ``filter_frequencies`` function which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal. ::
 
     def lowpass_filter(frequency):
         if frequency < 1:
@@ -87,7 +87,7 @@ The ``filter_frequencies`` function will apply a frequency-domain filter to the 
     my_signal = pyrex.Signal(times=time_array, values=value_array)
 
     plt.plot(my_signal.times, my_signal.values)
-    my_signal.filter_frequencies(lowpass_filter)
+    my_signal.filter_frequencies(lowpass_filter, force_real=True)
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
@@ -191,14 +191,14 @@ The ``Antenna`` class defines a ``trigger`` method which is also expected to be 
 
     basic_antenna.trigger(pyrex.Signal([0],[0])) == True
 
-The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal`` object and processes the signal according to the antenna's attributes (``efficiency``, ``antenna_factor``, ``response``, ``directional_gain``, and ``polarization_gain`` as described above). To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest. You can also optionally specify the origin point of the signal (used in ``directional_gain`` calculation) and the polarization direction of the signal (used in ``polarization_gain`` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
+The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal`` object and processes the signal according to the antenna's attributes (``efficiency``, ``antenna_factor``, ``response``, ``directional_gain``, and ``polarization_gain`` as described above). To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest. You can also optionally specify the direction of travel of the signal (used in ``directional_gain`` calculation) and the polarization direction of the signal (used in ``polarization_gain`` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
 
     incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), np.sin,
                                              value_type=pyrex.Signal.ValueTypes.voltage)
     incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), np.sin,
                                              value_type=pyrex.Signal.ValueTypes.voltage)
     basic_antenna.receive(incoming_signal_1)
-    basic_antenna.receive(incoming_signal_2, origin=[0,0,-300], polarization=[1,0,0])
+    basic_antenna.receive(incoming_signal_2, direction=[0,0,1], polarization=[1,0,0])
     basic_antenna.is_hit == True
     for waveform, pure_signal in zip(basic_antenna.waveforms, basic_antenna.signals):
         plt.figure()
@@ -223,6 +223,16 @@ Finally, the ``Antenna`` class defines a ``clear`` method which will reset the a
     basic_antenna.clear()
     basic_antenna.is_hit == False
     len(basic_antenna.waveforms) == 0
+
+The ``clear`` method can also optionally reset the source of noise waveforms by passing ``reset_noise=True`` so that if the same signals are given after the antenna is cleared, the noise waveforms will be different::
+
+    noise_before = basic_antenna.make_noise(np.linspace(0, 20))
+    plt.plot(noise_before.times, noise_before.values, label="Noise Before Clear")
+    basic_antenna.clear(reset_noise=True)
+    noise_after = basic_antenna.make_noise(np.linspace(0, 20))
+    plt.plot(noise_after.times, noise_after.values, label="Noise After Clear")
+    plt.legend()
+    plt.show()
 
 
 To create a custom antenna, simply inherit from the ``Antenna`` class::
@@ -265,7 +275,7 @@ Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude 
 For more on customizing PyREx, see the `custom-package` section.
 
 
-PyREx defines ``DipoleAntenna`` which as a subclass of ``Antenna``, which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A ``DipoleAntenna`` object is created as follows::
+PyREx defines ``DipoleAntenna``, a subclass of ``Antenna`` which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A ``DipoleAntenna`` object is created as follows::
 
     antenna_identifier = "antenna 1"
     position = (0, 0, -100)
@@ -326,7 +336,7 @@ Objects of this class can then, for the most part, be interacted with as though 
     incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), np.sin,
                                              value_type=pyrex.Signal.ValueTypes.voltage)
     basic_antenna_system.receive(incoming_signal_1)
-    basic_antenna_system.receive(incoming_signal_2, origin=[0,0,-300],
+    basic_antenna_system.receive(incoming_signal_2, direction=[0,0,1],
                                  polarization=[1,0,0])
     basic_antenna_system.is_hit == True
     for waveform, pure_signal in zip(basic_antenna_system.waveforms,
@@ -442,14 +452,13 @@ PyREx includes ``Particle`` as a container for information about neutrinos which
     pyrex.Particle(vertex=initial_position, direction=direction_vector,
                    energy=particle_energy)
 
-PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos, taking into account some Earth shadowing. The neutrinos are generated in a box of given size, and with an energy given by an energy generation function::
+PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos, taking into account some Earth shadowing. The neutrinos are generated in a box of given size, and with a given energy (which can be a scalar value or a function returning scalar values)::
 
     box_width = 1000 # m
     box_depth = 500 # m
-    const_energy_generator = lambda: 1e8 # GeV
     my_generator = pyrex.ShadowGenerator(dx=box_width, dy=box_width,
                                          dz=box_depth,
-                                         energy_generator=const_energy_generator)
+                                         energy=particle_energy)
     my_generator.create_particle()
 
 Lastly, PyREx includes ``ListGenerator`` and ``FileGenerator`` classes which can be used to reproduce pre-generated particles from either a list or from numpy files, respectively.
@@ -504,10 +513,10 @@ Finally, ``RayTracePath.propagate()`` propagates a ``Signal`` object from the la
 Full Simulation
 ===============
 
-PyREx provides the ``EventKernel`` class to control a basic simulation including the creation of neutrinos, the propagation of their pulses to the antennas, and the triggering of the antennas::
+PyREx provides the ``EventKernel`` class to control a basic simulation including the creation of neutrinos, the propagation of their pulses to the antennas, and the triggering of the antennas. The ``EventKernel`` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
 
     particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
-                                               energy_generator=lambda: 1e8)
+                                               energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
@@ -517,8 +526,11 @@ PyREx provides the ``EventKernel`` class to control a basic simulation including
                                 trigger_threshold=0, noisy=False)
         )
     kernel = pyrex.EventKernel(generator=particle_generator,
+                               antennas=detector,
                                ice_model=pyrex.IceModel,
-                               antennas=detector)
+                               ray_tracer=pyrex.RayTracer,
+                               signal_times=np.linspace(-20e-9, 80e-9, 2000,
+                                                        endpoint=False))
 
     triggered = False
     while not triggered:
@@ -541,4 +553,4 @@ PyREx provides the ``EventKernel`` class to control a basic simulation including
 More Examples
 =============
 
-For more code examples, see the PyREx Demo python notebook.
+For more code examples, see the `example-code` section and the python notebooks in the examples directory.

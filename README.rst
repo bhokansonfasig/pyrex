@@ -38,7 +38,7 @@ Note that since PyREx is not currently available on PyPI, a simple ``pip install
 Examples
 ========
 
-For examples of how to use PyREx, see the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the ``PyREx Demo`` `notebook <https://github.com/bhokansonfasig/pyrex/blob/master/PyREx%20Demo.ipynb>`_.
+For examples of how to use PyREx, see the `usage page <https://bhokansonfasig.github.io/pyrex/build/html/usage.html>`_ and the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the python notebooks in the `examples <https://github.com/bhokansonfasig/pyrex/tree/master/examples>`_ directory.
 
 
 Contributing
