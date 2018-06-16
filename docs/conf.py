@@ -108,6 +108,7 @@ html_theme_options = {
     "description_font_style": "italic",
     "github_user": "bhokansonfasig",
     "github_repo": "pyrex",
+    "logo": "logo.png",
     "extra_nav_links": {
         "Source (GitHub)": "https://github.com/bhokansonfasig/pyrex",
         "Report an Issue": "https://github.com/bhokansonfasig/pyrex/issues",
@@ -159,6 +160,9 @@ latex_elements = {
 
     'classoptions': ',openany,oneside'
 }
+
+# File containing project logo for title page
+latex_logo = './_static/logo_wide.png'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,

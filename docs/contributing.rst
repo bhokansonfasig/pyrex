@@ -8,16 +8,15 @@ Branching Model
 ===============
 
 .. figure:: _static/branch-model.png
-   :width: 300px
-   :height: 400px
-   :align: right
-   :target: https://nvie.com/posts/a-successful-git-branching-model/
+    :figwidth: 43%
+    :align: right
+    :target: https://nvie.com/posts/a-successful-git-branching-model/
 
 PyREx code contributions should follow a specific git branching model sometimes referred to as the `Gitflow Workflow <https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow>`_. In this model the ``master`` branch is reserved for release versions of the code, and most development takes place in feature branches which merge back to the ``develop`` branch.
 
 The basic steps to add a feature are as follows:
 
-1. From the ``develop`` branch, create a new branch for the feature.
+1. From the ``develop`` branch, create a new feature branch.
 2. In your feature branch, write the code.
 3. Merge the feature branch back into the ``develop`` branch.
 4. Delete the feature branch.
