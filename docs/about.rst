@@ -30,7 +30,7 @@ First, import the package::
 Then, create a particle generator object that will produce random particles in  a cube of 1 km on each side with a fixed energy of 100 PeV::
 
     particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=1000,
-                                               energy_generator=lambda: 1e8)
+                                               energy=1e8)
 
 An array of antennas that represent the detector is also needed. The base ``Antenna`` class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical "string" of four antennas with no noise::
 
@@ -43,7 +43,7 @@ An array of antennas that represent the detector is also needed. The base ``Ante
 Finally, we want to pass these into the ``EventKernel`` and produce an event::
 
     kernel = pyrex.EventKernel(generator=particle_generator,
-                               ice_model=pyrex.IceModel, antennas=antenna_array)
+                               antennas=antenna_array)
     kernel.event()
 
 Now the signals received by each antenna can be accessed by their ``waveforms`` parameter::

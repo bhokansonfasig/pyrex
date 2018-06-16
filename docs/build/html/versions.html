@@ -5,16 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Version History &#8212; PyREx 1.5.0 documentation</title>
-    
+    <title>Version History &#8212; PyREx 1.6.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.0',
+        VERSION:     '1.6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -40,12 +37,17 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">PyREx</a></h1>
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
 <p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.5.0</p>
+Version 1.6.0</p>
 
 
 
@@ -62,10 +64,13 @@ Version 1.5.0</p>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">How to Use PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Version History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-6-0">Version 1.6.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-5-0">Version 1.5.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-4-2">Version 1.4.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-4-1">Version 1.4.1</a></li>
@@ -121,6 +126,37 @@ Version 1.5.0</p>
             
   <div class="section" id="version-history">
 <h1>Version History<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-6-0">
+<h2>Version 1.6.0<a class="headerlink" href="#version-1-6-0" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">EventKernel</span></code> can now take arguments to specify the ray tracer to be used and the times array to be used in signal generation.</li>
+<li>Added shell scripts to more easily work with git branching model.</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">ShadowGenerator</span></code> <code class="docutils literal"><span class="pre">energy_generator</span></code> argument changed to <code class="docutils literal"><span class="pre">energy</span></code> and can now take a function or a scalar value, in which case all particles will have that scalar value for their energy.</li>
+<li><code class="docutils literal"><span class="pre">EventKernel</span></code> now uses <code class="docutils literal"><span class="pre">pyrex.IceModel</span></code> as its ice model by default.</li>
+<li><code class="docutils literal"><span class="pre">Antenna.receive</span></code> function (and <code class="docutils literal"><span class="pre">receive</span></code> function of all inheriting antennas) now uses <code class="docutils literal"><span class="pre">direction</span></code> argument instead of <code class="docutils literal"><span class="pre">origin</span></code> argument to calculate directional gain.</li>
+<li><code class="docutils literal"><span class="pre">Antenna.clear</span></code> and <code class="docutils literal"><span class="pre">Detector.clear</span></code> functions can now optionally reset the noise calculation by using the <code class="docutils literal"><span class="pre">reset_noise</span></code> argument.</li>
+<li><code class="docutils literal"><span class="pre">Antenna</span></code> classes can now set the <code class="docutils literal"><span class="pre">unique_noise_waveforms</span></code> argument to specify the expected number of unique noise waveforms needed.</li>
+<li><code class="docutils literal"><span class="pre">ArasimIce</span></code> <code class="docutils literal"><span class="pre">attenuation_length</span></code> changed to more closely match AraSim.</li>
+<li><code class="docutils literal"><span class="pre">IceModel</span></code> reverted to <code class="docutils literal"><span class="pre">AntarcticIce</span></code> with new index of refraction coefficients matching those of <code class="docutils literal"><span class="pre">ArasimIce</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">prem_density</span></code> can now be calculated for an array of radii.</li>
+</ul>
+<p class="rubric">Performance Improvements</p>
+<ul class="simple">
+<li>Improved performance of <code class="docutils literal"><span class="pre">slant_depth</span></code> calculation.</li>
+<li>Improved performance of <code class="docutils literal"><span class="pre">IceModel.attenuation_length</span></code> calculation.</li>
+<li>Using the <code class="docutils literal"><span class="pre">Antenna</span></code> <code class="docutils literal"><span class="pre">unique_noise_waveforms</span></code> argument can improve noise waveform calculation speed (previously assumed 100 unique waveforms were necessary).</li>
+</ul>
+<p class="rubric">Bug Fixes</p>
+<ul class="simple">
+<li>Fixed received direction bug in <code class="docutils literal"><span class="pre">EventKernel</span></code>, which had still been assuming a straight-ray path.</li>
+<li>Lists in function keyword arguments were changed to tuples to prevent unexpected mutability issues.</li>
+<li>Fixed potential errors in <code class="docutils literal"><span class="pre">BasicRayTracer</span></code> and <code class="docutils literal"><span class="pre">BasicRayTracePath</span></code>.</li>
+</ul>
+</div>
 <div class="section" id="version-1-5-0">
 <h2>Version 1.5.0<a class="headerlink" href="#version-1-5-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">Changes</p>
@@ -390,7 +426,7 @@ Version 1.5.0</p>
       &copy;2018, Benjamin Hokanson-Fasig.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

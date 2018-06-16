@@ -22,7 +22,7 @@ Requirements
 PyREx requires python version 3.6+ as well as numpy version 1.13+ and scipy version 0.19+.
 After installing python from https://www.python.org/downloads/, numpy and scipy can be installed with ``pip`` as follows, or by simply installing pyrex as specified in the next section. ::
 
-    pip install numpy>=1.14
+    pip install numpy>=1.13
     pip install scipy>=0.19
 
 Installing
@@ -38,7 +38,13 @@ Note that since PyREx is not currently available on PyPI, a simple ``pip install
 Examples
 ========
 
-For examples of how to use PyREx, see the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the ``PyREx Demo`` `notebook <https://github.com/bhokansonfasig/pyrex/blob/master/PyREx%20Demo.ipynb>`_.
+For examples of how to use PyREx, see the `usage page <https://bhokansonfasig.github.io/pyrex/build/html/usage.html>`_ and the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the python notebooks in the `examples <https://github.com/bhokansonfasig/pyrex/tree/master/examples>`_ directory.
+
+
+Contributing
+============
+
+Contributions to the code base are mostly handled through pull requests. Before contributing, for more information please read the `contribution page <https://bhokansonfasig.github.io/pyrex/build/html/contributing.html>`_ in the documentation.
 
 
 Authors

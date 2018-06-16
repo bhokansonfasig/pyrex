@@ -71,12 +71,14 @@ class IREXAntennaSystem(AntennaSystem):
     optional bandpass filter, and envelope circuit."""
     def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
                  orientation=(0,0,1), amplification=1, amplifier_clipping=3,
-                 noisy=True, envelope_method="analytic"):
+                 noisy=True, unique_noise_waveforms=10,
+                 envelope_method="analytic"):
         super().__init__(IREXAntenna)
 
         self.name = str(name)
         self.position = position
-        self.setup_antenna(orientation=orientation, noisy=noisy)
+        self.setup_antenna(orientation=orientation, noisy=noisy,
+                           unique_noise_waveforms=unique_noise_waveforms)
 
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
