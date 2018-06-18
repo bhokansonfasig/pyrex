@@ -38,7 +38,7 @@ class ARAString(Detector):
     def build_antennas(self, power_threshold, amplification=1,
                        naming_scheme=lambda i, ant: ant.name[:4]+"_"+str(i),
                        class_scheme=lambda i: HpolAntenna if i%2 else VpolAntenna,
-                       noisy=True):
+                       noisy=True, unique_noise_waveforms=10):
         """Sets up ARA antennas at the positions stored in the class.
         Takes as arguments the power threshold, amplification, and whether to
         add noise to the waveforms.
@@ -52,7 +52,8 @@ class ARAString(Detector):
                 AntennaClass(name=AntennaClass.__name__, position=pos,
                              power_threshold=power_threshold,
                              amplification=amplification,
-                             noisy=noisy)
+                             noisy=noisy,
+                             unique_noise_waveforms=unique_noise_waveforms)
             )
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))
@@ -80,7 +81,7 @@ class PhasedArrayString(Detector):
 
     def build_antennas(self, power_threshold, amplification=1,
                        naming_scheme=lambda i, ant: ant.name[:4]+"_"+str(i),
-                       noisy=True):
+                       noisy=True, unique_noise_waveforms=10):
         """Sets up ARA antennas at the positions stored in the class.
         Takes as arguments the power threshold, amplification, antenna type,
         and whether to add noise to the waveforms.
@@ -93,7 +94,8 @@ class PhasedArrayString(Detector):
                 self.antenna_type(name=self.antenna_type.__name__, position=pos,
                                   power_threshold=power_threshold,
                                   amplification=amplification,
-                                  noisy=noisy)
+                                  noisy=noisy,
+                                  unique_noise_waveforms=unique_noise_waveforms)
             )
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))

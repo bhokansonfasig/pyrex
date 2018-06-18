@@ -16,6 +16,8 @@ def _read_directionality_data(filename):
     Also returns a set of the frequencies appearing in the keys."""
     data = {}
     freqs = set()
+    thetas = set()
+    phis = set()
     freq = 0
     with open(filename) as f:
         for line in f:
@@ -38,13 +40,31 @@ def _read_directionality_data(filename):
                 swr = float(words[-1])
             elif len(words)==5 and words[0]!="Theta":
                 theta = int(words[0])
+                thetas.add(theta)
                 phi = int(words[1])
+                phis.add(phi)
                 db_gain = float(words[2])
                 # AraSim actually only seems to use the sqrt of the gain
                 # (must be gain in power, not voltage)
-                gain = np.sqrt(float(words[3]))
+                # gain = np.sqrt(float(words[3]))
+                gain = np.sqrt(10**(db_gain/10))
                 phase = np.radians(float(words[4]))
                 data[(freq, theta, phi)] = (gain, phase)
+
+    for theta in thetas:
+        for phi in phis:
+            phase_offset = 0
+            prev_phase = 0
+            for freq in sorted(freqs):
+                # In order to smoothly interpolate phases, don't allow the phase
+                # to wrap from -pi to +pi, but instead apply an offset
+                gain, phase = data[(freq, theta, phi)]
+                if phase-prev_phase>np.pi:
+                    phase_offset -= 2*np.pi
+                elif prev_phase-phase>np.pi:
+                    phase_offset += 2*np.pi
+                prev_phase = phase
+                data[(freq, theta, phi)] = (gain, phase+phase_offset)
 
     return data, freqs
 
@@ -54,6 +74,8 @@ def _read_filter_data(filename):
     data as a dictionary with frequency keys and values (gain, phase)."""
     data = {}
     freq_scale = 0
+    phase_offset = 0
+    prev_phase = 0
     with open(filename) as f:
         for line in f:
             words = line.split()
@@ -75,14 +97,21 @@ def _read_filter_data(filename):
                 freq = float(f) * freq_scale
                 gain = float(g)
                 phase = float(p)
-                data[freq] = (gain, phase)
+                # In order to smoothly interpolate phases, don't allow the phase
+                # to wrap from -pi to +pi, but instead apply an offset
+                if phase-prev_phase>np.pi:
+                    phase_offset -= 2*np.pi
+                elif prev_phase-phase>np.pi:
+                    phase_offset += 2*np.pi
+                prev_phase = phase
+                data[freq] = (gain, phase+phase_offset)
 
     return data
 
 
 ARA_DATA_DIR = os.path.dirname(__file__)
-VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output_MY.txt")
-HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output_MY.txt")
+VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output.txt")
+HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output.txt")
 FILTER_DATA_FILE = os.path.join(ARA_DATA_DIR,
                                 "ARA_Electronics_TotalGain_TwoFilters.txt")
 VPOL_DIRECTIONALITY, VPOL_FREQS = _read_directionality_data(VPOL_DATA_FILE)
@@ -96,6 +125,7 @@ class ARAAntenna(Antenna):
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
                  orientation=(0,0,1), efficiency=1, noisy=True,
+                 unique_noise_waveforms=10,
                  directionality_data=None, directionality_freqs=None):
         # Get the critical frequencies in Hz
         f_low = center_frequency - bandwidth/2
@@ -111,7 +141,8 @@ class ARAAntenna(Antenna):
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          efficiency=efficiency, freq_range=(f_low, f_high),
                          temperature=IceModel.temperature(position[2]),
-                         resistance=resistance, noisy=noisy)
+                         resistance=resistance, noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
 
         self._dir_data = directionality_data
         self._dir_freqs = directionality_freqs
@@ -246,7 +277,7 @@ class ARAAntennaSystem(AntennaSystem):
     def __init__(self, name, position, power_threshold,
                  directionality_data=None, directionality_freqs=None,
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
-                 noisy=True):
+                 noisy=True, unique_noise_waveforms=10):
         super().__init__(ARAAntenna)
 
         self.name = str(name)
@@ -257,7 +288,8 @@ class ARAAntennaSystem(AntennaSystem):
 
         self.setup_antenna(directionality_data=directionality_data,
                            directionality_freqs=directionality_freqs,
-                           orientation=orientation, noisy=noisy)
+                           orientation=orientation, noisy=noisy,
+                           unique_noise_waveforms=unique_noise_waveforms)
 
         self.power_threshold = power_threshold
         self._power_mean = None
@@ -266,7 +298,7 @@ class ARAAntennaSystem(AntennaSystem):
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=8.5, orientation=(0,0,1),
                       directionality_data=None, directionality_freqs=None,
-                      efficiency=1, noisy=True):
+                      efficiency=1, noisy=True, unique_noise_waveforms=10):
         """Sets attributes of the antenna including center frequency (Hz),
         bandwidth (Hz), resistance (ohms), orientation, and effective
         height (m)."""
@@ -284,7 +316,8 @@ class ARAAntennaSystem(AntennaSystem):
                               efficiency=efficiency,
                               directionality_data=directionality_data,
                               directionality_freqs=directionality_freqs,
-                              noisy=noisy)
+                              noisy=noisy,
+                              unique_noise_waveforms=unique_noise_waveforms)
 
     # Tunnel diode response functions pulled from arasim
     _td_args = {
@@ -381,7 +414,8 @@ class HpolAntenna(ARAAntennaSystem):
     """ARA Hpol ("quad-slot") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
-                 amplification=1, amplifier_clipping=1, noisy=True):
+                 amplification=1, amplifier_clipping=1, noisy=True,
+                 unique_noise_waveforms=10):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
                          directionality_data=HPOL_DIRECTIONALITY,
@@ -389,14 +423,16 @@ class HpolAntenna(ARAAntennaSystem):
                          orientation=(0,0,1),
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
-                         noisy=noisy)
+                         noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
 
 
 class VpolAntenna(ARAAntennaSystem):
     """ARA Vpol ("bicone" or "birdcage") antenna system consisting of antenna,
     amplification, and tunnel diode response."""
     def __init__(self, name, position, power_threshold,
-                 amplification=1, amplifier_clipping=1, noisy=True):
+                 amplification=1, amplifier_clipping=1, noisy=True,
+                 unique_noise_waveforms=10):
         super().__init__(name=name, position=position,
                          power_threshold=power_threshold,
                          directionality_data=VPOL_DIRECTIONALITY,
@@ -404,4 +440,5 @@ class VpolAntenna(ARAAntennaSystem):
                          orientation=(0,0,1),
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
-                         noisy=noisy)
+                         noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
