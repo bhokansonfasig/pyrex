@@ -109,11 +109,11 @@ def _read_filter_data(filename):
     return data
 
 
-ARA_DATA_DIR = os.path.join(os.path.dirname(__file__), "gain_data")
+ARA_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR,
-                              "ARA_bicone6in_output_fixed.txt")
+                              "ARA_bicone6in_output_MY_fixed.txt")
 HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR,
-                              "ARA_dipoletest1_output_fixed.txt")
+                              "ARA_dipoletest1_output_MY_fixed.txt")
 FILT_DATA_FILE = os.path.join(ARA_DATA_DIR,
                               "ARA_Electronics_TotalGain_TwoFilters.txt")
 VPOL_DIRECTIONALITY, VPOL_FREQS = _read_directionality_data(VPOL_DATA_FILE)
