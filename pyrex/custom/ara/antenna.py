@@ -109,14 +109,16 @@ def _read_filter_data(filename):
     return data
 
 
-ARA_DATA_DIR = os.path.dirname(__file__)
-VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_bicone6in_output.txt")
-HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR, "ARA_dipoletest1_output.txt")
-FILTER_DATA_FILE = os.path.join(ARA_DATA_DIR,
-                                "ARA_Electronics_TotalGain_TwoFilters.txt")
+ARA_DATA_DIR = os.path.join(os.path.dirname(__file__), "gain_data")
+VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR,
+                              "ARA_bicone6in_output_fixed.txt")
+HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR,
+                              "ARA_dipoletest1_output_fixed.txt")
+FILT_DATA_FILE = os.path.join(ARA_DATA_DIR,
+                              "ARA_Electronics_TotalGain_TwoFilters.txt")
 VPOL_DIRECTIONALITY, VPOL_FREQS = _read_directionality_data(VPOL_DATA_FILE)
 HPOL_DIRECTIONALITY, HPOL_FREQS = _read_directionality_data(HPOL_DATA_FILE)
-ALL_FILTERS = _read_filter_data(FILTER_DATA_FILE)
+ALL_FILTERS = _read_filter_data(FILT_DATA_FILE)
 
 
 class ARAAntenna(Antenna):
