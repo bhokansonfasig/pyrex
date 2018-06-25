@@ -2,11 +2,11 @@
 
 import numpy as np
 from pyrex.detector import Detector
-from .antenna import IREXAntennaSystem
+from .antenna import EnvelopeVpol
 
 
 class IREXString(Detector):
-    """String of IREXAntennas. Sets positions of antennas on string based on
+    """String of IREX antennas. Sets positions of antennas on string based on
     the given arguments. Sets build_antennas method for setting antenna
     characteristics."""
     def set_positions(self, x, y, antennas_per_string=2,
@@ -22,15 +22,15 @@ class IREXString(Detector):
                        orientation_scheme=lambda i, ant: ((0,0,1), (1,0,0)),
                        noisy=True, unique_noise_waveforms=10,
                        envelope_method="analytic"):
-        """Sets up IREXAntennaSystems at the positions stored in the class.
+        """Sets up EnvelopeVpols at the positions stored in the class.
         Takes as arguments the trigger threshold, optional time over
         threshold, and whether to add noise to the waveforms.
         Other optional arguments include a naming scheme and orientation scheme
         which are functions taking the antenna index i and the antenna object.
         The naming scheme should return the name and the orientation scheme
         should return the orientation z-axis and x-axis of the antenna."""
-        super().build_antennas(antenna_class=IREXAntennaSystem,
-                               name="IREX antenna",
+        super().build_antennas(antenna_class=EnvelopeVpol,
+                               name="Vpol Envelope Antenna",
                                trigger_threshold=trigger_threshold,
                                time_over_threshold=time_over_threshold,
                                amplification=amplification,

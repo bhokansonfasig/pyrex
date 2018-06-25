@@ -4,15 +4,17 @@ import numpy as np
 import scipy.signal
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
-from pyrex.detector import AntennaSystem
 from pyrex.ice_model import IceModel
 
+from pyrex.custom.ara.antenna import (ARAAntennaSystem,
+                                      HPOL_DIRECTIONALITY, HPOL_FREQS,
+                                      VPOL_DIRECTIONALITY, VPOL_FREQS)
 from .frontends import (pyspice, spice_circuits,
                         basic_envelope_model, bridge_rectifier_envelope_model)
 
 
-class IREXAntenna(Antenna):
-    """Antenna to be used in IREX. Has a position (m),
+class DipoleTester(Antenna):
+    """Dipole antenna for IREX testing. Has a position (m),
     center frequency (Hz), bandwidth (Hz), resistance (ohm),
     effective height (m), and polarization direction."""
     def __init__(self, position, center_frequency, bandwidth, resistance,
@@ -66,43 +68,30 @@ class IREXAntenna(Antenna):
 
 
 
-class IREXAntennaSystem(AntennaSystem):
-    """IREX antenna system consisting of dipole antenna, low-noise amplifier,
-    optional bandpass filter, and envelope circuit."""
+class EnvelopeSystem(ARAAntennaSystem):
+    """Antenna system consisting of ARA antenna, amplification, and envelope
+    circuit."""
     def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
-                 orientation=(0,0,1), amplification=1, amplifier_clipping=3,
-                 noisy=True, unique_noise_waveforms=10,
-                 envelope_method="analytic"):
-        super().__init__(IREXAntenna)
+                 directionality_data=None, directionality_freqs=None,
+                 orientation=(0,0,1), amplification=1, amplifier_clipping=1,
+                 envelope_amplification=1, envelope_method="analytic",
+                 noisy=True, unique_noise_waveforms=10):
+        super().__init__(name=name, position=position,
+                         power_threshold=0,
+                         directionality_data=directionality_data,
+                         directionality_freqs=directionality_freqs,
+                         orientation=orientation,
+                         amplification=amplification,
+                         amplifier_clipping=amplifier_clipping,
+                         noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
 
-        self.name = str(name)
-        self.position = position
-        self.setup_antenna(orientation=orientation, noisy=noisy,
-                           unique_noise_waveforms=unique_noise_waveforms)
-
-        self.amplification = amplification
-        self.amplifier_clipping = amplifier_clipping
+        self.envelope_amplification = envelope_amplification
 
         self.trigger_threshold = trigger_threshold
         self.time_over_threshold = time_over_threshold
 
         self.envelope_method = envelope_method
-
-    def setup_antenna(self, center_frequency=250e6, bandwidth=300e6,
-                      resistance=100, orientation=(0,0,1),
-                      effective_height=None, noisy=True,
-                      unique_noise_waveforms=10):
-        """Sets attributes of the antenna including center frequency (Hz),
-        bandwidth (Hz), resistance (ohms), orientation, and effective
-        height (m)."""
-        super().setup_antenna(position=self.position,
-                              center_frequency=center_frequency,
-                              bandwidth=bandwidth,
-                              resistance=resistance,
-                              orientation=orientation,
-                              effective_height=effective_height,
-                              noisy=noisy,
-                              unique_noise_waveforms=unique_noise_waveforms)
 
     def make_envelope(self, signal):
         """Return the signal envelope based on the antenna's envelope_method."""
@@ -166,13 +155,11 @@ class IREXAntennaSystem(AntennaSystem):
 
     def front_end(self, signal):
         """Apply the front-end processing of the antenna signal, including
-        amplification, clipping, and envelope processing."""
-        amplified_values = np.clip(signal.values*self.amplification,
-                                   a_min=-self.amplifier_clipping,
-                                   a_max=self.amplifier_clipping)
-        copy = Signal(signal.times, amplified_values,
-                      value_type=signal.value_type)
-        return self.make_envelope(copy)
+        electronics chain filters/amplification, clipping, and envelope
+        processing."""
+        amplified = super().front_end(signal)
+        amplified.values *= self.envelope_amplification
+        return self.make_envelope(amplified)
 
         # # Two options for downsampling:
         # envelope = self.make_envelope(copy)
@@ -188,6 +175,11 @@ class IREXAntennaSystem(AntennaSystem):
         # # Option 2
         # envelope.resample(npts)
         # return envelope
+
+    def envelopeless_front_end(self, signal):
+        """Apply the front-end processing without including the envelope
+        circuit."""
+        return super().front_end(signal)
 
     @property
     def all_waveforms(self):
@@ -225,3 +217,46 @@ class IREXAntennaSystem(AntennaSystem):
                     return True
             i += 1
         return False
+
+
+
+class EnvelopeHpol(EnvelopeSystem):
+    """ARA Hpol ("quad-slot") antenna system consisting of antenna,
+    amplification, and additional envelope circuit."""
+    def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
+                 orientation=(0,0,1), amplification=1, amplifier_clipping=1,
+                 envelope_amplification=1, envelope_method="analytic",
+                 noisy=True, unique_noise_waveforms=10):
+        super().__init__(name=name, position=position,
+                         trigger_threshold=trigger_threshold,
+                         time_over_threshold=time_over_threshold,
+                         directionality_data=HPOL_DIRECTIONALITY,
+                         directionality_freqs=HPOL_FREQS,
+                         orientation=orientation,
+                         amplification=amplification,
+                         amplifier_clipping=amplifier_clipping,
+                         envelope_amplification=envelope_amplification,
+                         envelope_method=envelope_method,
+                         noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
+
+
+class EnvelopeVpol(EnvelopeSystem):
+    """ARA Vpol ("bicone" or "birdcage") antenna system consisting of antenna,
+    amplification, and additional envelope circuit."""
+    def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
+                 orientation=(0,0,1), amplification=1, amplifier_clipping=1,
+                 envelope_amplification=1, envelope_method="analytic",
+                 noisy=True, unique_noise_waveforms=10):
+        super().__init__(name=name, position=position,
+                         trigger_threshold=trigger_threshold,
+                         time_over_threshold=time_over_threshold,
+                         directionality_data=VPOL_DIRECTIONALITY,
+                         directionality_freqs=VPOL_FREQS,
+                         orientation=orientation,
+                         amplification=amplification,
+                         amplifier_clipping=amplifier_clipping,
+                         envelope_amplification=envelope_amplification,
+                         envelope_method=envelope_method,
+                         noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
