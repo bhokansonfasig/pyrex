@@ -1,4 +1,12 @@
-"""Module containing class for ray tracing through the ice."""
+"""
+Module containing classes for ray tracing through the ice.
+
+Ray tracer classes correspond to ray trace path classes, where the ray
+tracer is responsible for calculating the existance and launch angle of
+paths between points, and the ray tracer path objects are responsible for
+returning information about propagation along their respective path.
+
+"""
 
 import logging
 import numpy as np

@@ -1,4 +1,11 @@
-"""Module containing higher-level AntennaSystem and Detector classes"""
+"""
+Module containing higher-level detector-related classes.
+
+The classes in this module are responsible for higher-level operations of
+the antennas and detectors than in the antenna module. This includes
+functions like front-end electronics chains and trigger systems.
+
+"""
 
 import collections
 import inspect

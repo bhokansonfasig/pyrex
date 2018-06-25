@@ -1,5 +1,10 @@
-"""Module containing ice models. Ice model classes contains static and class
-methods for convenience. IceModel class is set to the preferred ice model."""
+"""
+Module containing ice model classes.
+
+The ice model classes contain static and class methods for convenience,
+and parameters of the ice model are set as class attributes.
+
+"""
 
 import logging
 import numpy as np

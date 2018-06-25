@@ -1,5 +1,12 @@
-"""Module for the simulation kernel. Includes neutrino generation,
-ray tracking (no raytracing yet), and hit generation."""
+"""
+Module for the simulation kernel.
+
+The simulation kernel is responsible for running through the simulation
+chain by controlling classes and objects which will independently produce
+neutrinos, create corresponding signals, propagate the signals to antennas,
+and handle antenna processing of the signals.
+
+"""
 
 import logging
 import numpy as np

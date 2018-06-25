@@ -1,4 +1,13 @@
-"""Module containing antenna class capable of receiving signals"""
+"""
+Module containing antenna classes responsible of receiving signals.
+
+These classes are intended to model the properties of antennas including
+how signals are received as well as the production of noise. A number of
+attributes like directional gain, frequency response, and antenna factor
+may be necessary to calculate how signals are manipulated upon reception by
+an antenna.
+
+"""
 
 import logging
 import numpy as np

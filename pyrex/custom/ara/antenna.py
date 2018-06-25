@@ -1,4 +1,10 @@
-"""Module containing customized antenna classes for ARA"""
+"""
+    Module containing customized antenna classes for ARA.
+
+    Many of the methods here mirror methods used in the antennas in AraSim, to
+    ensure that AraSim results can be matched.
+
+"""
 
 import os.path
 import numpy as np

@@ -1,4 +1,7 @@
-"""Module containing customized detector geometry classes for IREX"""
+"""
+Module containing customized detector geometry classes for IREX.
+
+"""
 
 import numpy as np
 from pyrex.detector import Detector

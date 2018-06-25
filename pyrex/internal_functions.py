@@ -1,4 +1,12 @@
-"""Helper functions for use in PyREx modules."""
+"""
+Helper functions and classes for use in PyREx modules.
+
+This module is intended as a container for functions, typically used in more
+than one PyREx module, which are not physics-motivated and are instead used
+mainly to clean up code. Functions and classes in this module may also be
+computer-science-motivated structures that python doesn't include naturally.
+
+"""
 
 import collections
 import copy

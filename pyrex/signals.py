@@ -1,4 +1,11 @@
-"""Module containing classes for digital signal processing"""
+"""
+Module containing classes for digital signal processing.
+
+All classes in this module hold time-domain information about some signals,
+and have methods for manipulating this data as it relates to digital signal
+processing and general physics.
+
+"""
 
 from enum import Enum
 import logging

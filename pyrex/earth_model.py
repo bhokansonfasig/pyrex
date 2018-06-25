@@ -1,6 +1,11 @@
-"""Module containing earth model. Uses PREM for density as a function of radius
-and a simple integrator for calculation of the slant depth as a function of
-nadir angle."""
+"""
+Module containing earth model functions.
+
+The earth model uses the Preliminary Earth Model (PREM) for density as a
+function of radius and a simple integrator for calculation of the slant
+depth along a straight path through the Earth.
+
+"""
 
 import logging
 import numpy as np

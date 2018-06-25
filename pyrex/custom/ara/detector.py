@@ -1,4 +1,7 @@
-"""Module containing customized detector geometry classes for ARA"""
+"""
+Module containing customized detector geometry classes for ARA.
+
+"""
 
 import numpy as np
 from pyrex.signals import Signal

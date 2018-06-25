@@ -1,4 +1,11 @@
-"""Module containing customized antenna classes for IREX"""
+"""
+Module containing customized antenna classes for IREX.
+
+The IREX antennas are based around existing ARA antennas with an extra
+envelope circuit applied in the front-end, designed to reduce power
+consumption and the amount of digitized information.
+
+"""
 
 import numpy as np
 import scipy.signal

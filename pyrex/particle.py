@@ -1,5 +1,10 @@
-"""Module for particles (namely neutrinos) and neutrino interactions in the ice.
-Interactions include Earth shadowing (absorption) effect."""
+"""
+Module for particles (neutrinos) and neutrino interactions in the ice.
+
+Included in the module are Particle and NeutrinoInteraction classes, as
+well as different particle generators.
+
+"""
 
 import logging
 import numpy as np
