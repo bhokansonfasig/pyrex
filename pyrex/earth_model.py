@@ -16,9 +16,31 @@ EARTH_RADIUS = 6371.0e3 # meters
 
 
 def prem_density(r):
-    """Returns the earth's density (g/cm^3) for a given radius r (m).
-    Calculated by the Preliminary Earth Model (PREM).
-    Supports passing a list of radii."""
+    """
+    Calculates the Earth's density at a given radius.
+
+    Density from the Preliminary Earth Model (PREM). Supports passing an array
+    of radii or a single radius.
+
+    Parameters
+    ----------
+    r : array_like
+        Radius (m) at which to calculate density.
+
+    Returns
+    -------
+    array_like
+        Density (g/cm^3) of the Earth at the given radii.
+
+    Notes
+    -----
+    The density calculation is based on the Preliminary Earth Model [1]_.
+
+    References
+    ----------
+    .. [1] PREM MODEL REFERENCE
+
+    """
     r = np.array(r)
     return np.piecewise(
         r/EARTH_RADIUS,
@@ -47,9 +69,28 @@ def prem_density(r):
 
 
 def slant_depth(angle, depth, step=500):
-    """Returns the material thickness (g/cm^2) for a chord cutting through
-    earth at Nadir angle and starting at (positive-valued) depth (m).
-    Can optionally specify the step size (m)."""
+    """
+    Calculates the material thickness of a chord cutting through Earth.
+
+    Integrates the Earth's density along the chord. Uses the PREM model for
+    density.
+
+    Parameters
+    ----------
+    angle : float
+        Nadir angle (radians) of the chord's direction.
+    depth : float
+        (Positive-valued) depth (m) of the chord endpoint.
+    step : float, optional
+        Step size (m) for the integration.
+
+    Returns
+    -------
+    float
+        Material thickness (g/cm^2) along the chord starting from `depth` and
+        passing through the Earth at `angle`.
+
+    """
     # Starting point (x0, z0)
     x0 = 0
     z0 = EARTH_RADIUS - depth
