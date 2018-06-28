@@ -58,7 +58,7 @@ class AntennaSystem:
         """
         Setup the antenna by passing along its init arguments.
 
-        Any arguments passed to this argument are directly passed to the
+        Any arguments passed to this method are directly passed to the
         ``__init__`` methods of the ``antenna``'s class. This function can be
         overridden if desired, just make sure to assign the self.antenna
         attribute in the function.
@@ -68,7 +68,7 @@ class AntennaSystem:
 
     def front_end(self, signal):
         """
-        Apply front-end processes to a signal.
+        Apply front-end processes to a signal and return the output.
 
         This function defines the front end of the antenna (e.g. electronics
         chain). It is expected to be overridden in subclasses, as for the base

@@ -48,14 +48,14 @@ class Antenna:
         The frequency band in which the antenna operates (used for noise
         production).
     temperature : float, optional
-        The noise temperature of the antenna. Used in combination with
+        The noise temperature (K) of the antenna. Used in combination with
         `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float, optional
-        The noise resistance of the antenna. Used in combination with
+        The noise resistance (ohm) of the antenna. Used in combination with
         `temperature` to calculate the RMS voltage of the antenna noise.
     noise_rms : float, optional
-        The RMS voltage of the antenna noise. If specified, this value will be
-        used instead of the RMS voltage calculated from the values of
+        The RMS voltage (V) of the antenna noise. If specified, this value will
+        be used instead of the RMS voltage calculated from the values of
         `temperature` and `resistance`.
 
     Attributes
@@ -79,14 +79,14 @@ class Antenna:
         The frequency band in which the antenna operates (used for noise
         production).
     temperature : float or None
-        The noise temperature of the antenna. Used in combination with
+        The noise temperature (K) of the antenna. Used in combination with
         `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float or None
-        The noise resistance of the antenna. Used in combination with
+        The noise resistance (ohm) of the antenna. Used in combination with
         `temperature` to calculate the RMS voltage of the antenna noise.
     noise_rms : float or None
-        The RMS voltage of the antenna noise. If not ``None``, this value will
-        be used instead of the RMS voltage calculated from the values of
+        The RMS voltage (v) of the antenna noise. If not ``None``, this value
+        will be used instead of the RMS voltage calculated from the values of
         `temperature` and `resistance`.
     signals : list of Signal
         The signals which have been received by the antenna.
@@ -424,13 +424,13 @@ class Antenna:
 
         Parameters
         ----------
-        frequency : array_like
-            1D array of frequencies at which to calculate gains.
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
 
         Returns
         -------
         array_like
-            Complex gains in voltage for the given frequencies.
+            Complex gains in voltage for the given `frequencies`.
 
         """
         logger.debug("Using default response from "+
@@ -524,8 +524,8 @@ class DipoleAntenna(Antenna):
     bandwidth : float
         Bandwidth (Hz) of the antenna.
     resistance : float
-        The noise resistance of the antenna. Used to calculate the RMS voltage
-        of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used to calculate the RMS
+        voltage of the antenna noise.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     trigger_threshold : float, optional
@@ -570,14 +570,14 @@ class DipoleAntenna(Antenna):
         The frequency band in which the antenna operates (used for noise
         production).
     temperature : float or None
-        The noise temperature of the antenna. Used in combination with
+        The noise temperature (K) of the antenna. Used in combination with
         `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float or None
-        The noise resistance of the antenna. Used in combination with
+        The noise resistance (ohm) of the antenna. Used in combination with
         `temperature` to calculate the RMS voltage of the antenna noise.
     noise_rms : float or None
-        The RMS voltage of the antenna noise. If not ``None``, this value will
-        be used instead of the RMS voltage calculated from the values of
+        The RMS voltage (V) of the antenna noise. If not ``None``, this value
+        will be used instead of the RMS voltage calculated from the values of
         `temperature` and `resistance`.
     signals : list of Signal
         The signals which have been received by the antenna.
@@ -651,13 +651,13 @@ class DipoleAntenna(Antenna):
 
         Parameters
         ----------
-        frequency : array_like
-            1D array of frequencies at which to calculate gains.
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
 
         Returns
         -------
         array_like
-            Complex gains in voltage for the given frequencies.
+            Complex gains in voltage for the given `frequencies`.
 
         """
         angular_freqs = np.array(frequencies) * 2*np.pi
