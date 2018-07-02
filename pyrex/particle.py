@@ -49,7 +49,8 @@ class NeutrinoInteraction:
 
     References
     ----------
-    .. [1] NEUTRINO INTERACTIONS REFERENCE
+    .. [1] R. Gandhi et al, "Ultrahigh-Energy Neutrino Interactions."
+        Physical Review D **58**, 093009 (1998).
 
     """
     def __init__(self, c, p):

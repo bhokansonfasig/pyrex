@@ -19,8 +19,8 @@ def prem_density(r):
     """
     Calculates the Earth's density at a given radius.
 
-    Density from the Preliminary Earth Model (PREM). Supports passing an array
-    of radii or a single radius.
+    Density from the Preliminary reference Earth Model (PREM). Supports passing
+    an array of radii or a single radius.
 
     Parameters
     ----------
@@ -34,11 +34,14 @@ def prem_density(r):
 
     Notes
     -----
-    The density calculation is based on the Preliminary Earth Model [1]_.
+    The density calculation is based on the Preliminary reference Earth Model
+    [1]_.
 
     References
     ----------
-    .. [1] PREM MODEL REFERENCE
+    .. [1] Dziewonski, Adam M.; Anderson, Don L. (June 1981), "Preliminary
+        reference Earth model." Physics of the Earth and Planetary Interiors.
+        **25** (4), 297–356 (1981).
 
     """
     r = np.array(r)
