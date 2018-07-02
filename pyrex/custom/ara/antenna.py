@@ -1,4 +1,10 @@
-"""Module containing customized antenna classes for ARA"""
+"""
+Module containing customized antenna classes for ARA.
+
+Many of the methods here mirror methods used in the antennas in AraSim, to
+ensure that AraSim results can be matched.
+
+"""
 
 import os.path
 import numpy as np
@@ -11,9 +17,28 @@ from pyrex.ice_model import IceModel
 
 
 def _read_directionality_data(filename):
-    """Gather antenna directionality data from a data file. Returns the data as
-    a dictionary with keys (freq, theta, phi) and values (gain, phase).
-    Also returns a set of the frequencies appearing in the keys."""
+    """
+    Gather antenna directionality data from a data file.
+
+    The data file should have columns for theta, phi, dB gain, non-dB gain, and
+    phase (in degrees). This should be divided into sections for each frequency
+    with a header line "freq : X MHz", optionally followed by a second line
+    "trans : Y".
+
+    Parameters
+    ----------
+    filename : str
+        Name of the data file.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the data with keys (freq, theta, phi) and values
+        (gain, phase).
+    set
+        Set of unique frequencies appearing in the data keys.
+
+    """
     data = {}
     freqs = set()
     thetas = set()
@@ -70,8 +95,24 @@ def _read_directionality_data(filename):
 
 
 def _read_filter_data(filename):
-    """Gather electronics chain filtering data from a data file. Returns the
-    data as a dictionary with frequency keys and values (gain, phase)."""
+    """
+    Gather frequency-dependent filtering data from a data file.
+
+    The data file should have columns for frequency, non-dB gain, and phase
+    (in radians).
+
+    Parameters
+    ----------
+    filename : str
+        Name of the data file.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the data with keys (freq) and values
+        (gain, phase).
+
+    """
     data = {}
     freq_scale = 0
     phase_offset = 0
@@ -122,9 +163,80 @@ ALL_FILTERS = _read_filter_data(FILT_DATA_FILE)
 
 
 class ARAAntenna(Antenna):
-    """Antenna to be used in ARA antenna systems. Has a position (m),
-    center frequency (Hz), bandwidth (Hz), resistance (ohm),
-    effective height (m), and polarization direction."""
+    """
+    Antenna class to be used for ARA antennas.
+
+    Stores the attributes of an antenna as well as handling receiving,
+    processing, and storing signals and adding noise.
+
+    Parameters
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    center_frequency : float
+        Frequency (Hz) at the center of the antenna's frequency range.
+    bandwidth : float
+        Bandwidth (Hz) of the antenna.
+    resistance : float
+        The noise resistance (ohm) of the antenna. Used to calculate the RMS
+        voltage of the antenna noise.
+    orientation : array_like, optional
+        Vector direction of the z-axis of the antenna.
+    efficiency : float, optional
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+    directionality_data : None or dict, optional
+        Dictionary containing data on the directionality of the antenna. If
+        ``None``, behavior is undefined.
+    directionality_freqs : None or set, optional
+        Set of frequencies in the directionality data ``dict`` keys. If
+        ``None``, calculated automatically from `directionality_data`.
+
+    Attributes
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    z_axis : ndarray
+        Vector direction of the z-axis of the antenna.
+    x_axis : ndarray
+        Vector direction of the x-axis of the antenna.
+    antenna_factor : float
+        Antenna factor used for converting fields to voltages.
+    efficiency : float
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noises : int
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+    freq_range : array_like
+        The frequency band in which the antenna operates (used for noise
+        production).
+    temperature : float or None
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
+    resistance : float or None
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
+    noise_rms : float or None
+        The RMS voltage (v) of the antenna noise. If not ``None``, this value
+        will be used instead of the RMS voltage calculated from the values of
+        `temperature` and `resistance`.
+    signals : list of Signal
+        The signals which have been received by the antenna.
+    is_hit
+    waveforms
+    all_waveforms
+
+    See Also
+    --------
+    pyrex.Antenna : Base class for antennas.
+
+    """
     def __init__(self, position, center_frequency, bandwidth, resistance,
                  orientation=(0,0,1), efficiency=1, noisy=True,
                  unique_noise_waveforms=10,
@@ -158,13 +270,51 @@ class ARAAntenna(Antenna):
 
 
     def polarization_gain(self, polarization):
-        """Polarization gain is simply the dot product of the polarization
-        with the antenna's z-axis."""
+        """
+        Calculate the (complex) polarization gain of the antenna.
+
+        Polarization gain is simply the dot product of the polarization
+        with the antenna's z-axis.
+
+        Parameters
+        ----------
+        polarization : array_like
+            Vector polarization direction of the signal.
+
+        Returns
+        -------
+        complex
+            Complex gain in voltage for the given signal polarization.
+
+        """
         return np.vdot(self.z_axis, polarization)
 
 
     def generate_directionality_gains(self, theta, phi):
-        """Generate arrays of frequencies and gains for given angles."""
+        """
+        Generate the (complex) frequency-dependent directional gains.
+
+        For given angles, calculate arrays of frequencies and their
+        corresponding gains and phases, based on the directionality data of the
+        antenna.
+
+        Parameters
+        ----------
+        theta : float
+            Polar angle (radians) from which a signal is arriving.
+        phi : float
+            Azimuthal angle (radians) from which a signal is arriving.
+
+        Returns
+        -------
+        freqs : array_like
+            Frequencies over which the directionality was defined.
+        gains : array_like
+            Magnitudes of gains at the corrseponding frequencies.
+        phases : array_like
+            Phases of gains at the corresponding frequencies.
+
+        """
         if self._dir_data is None:
             return np.array([1]), np.array([1]), np.array([0])
 
@@ -208,7 +358,23 @@ class ARAAntenna(Antenna):
         return freqs, gains, phases
 
     def interpolate_filter(self, frequencies):
-        """Generate interpolated filter values for given frequencies (Hz)."""
+        """
+        Generate interpolated filter values for given frequencies.
+
+        Calculate the interpolated values of the antenna's filter gain data
+        for some frequencies.
+
+        Parameters
+        ----------
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
+
+        Returns
+        -------
+        array_like
+            Complex filter gain in voltage for the given `frequencies`.
+
+        """
         freqs = sorted(self._filter_data.keys())
         gains = [self._filter_data[f][0] for f in freqs]
         phases = [self._filter_data[f][1] for f in freqs]
@@ -217,8 +383,25 @@ class ARAAntenna(Antenna):
         return interp_gains * np.exp(1j * interp_phases)
 
     def response(self, frequencies):
-        """Frequency response of the antenna for given frequencies (Hz)
-        incorporating effective height and some electronics gains."""
+        """
+        Calculate the (complex) frequency response of the antenna.
+
+        Frequency response of the antenna is based on the effective height
+        calculation with some electronics gains thrown in. The frequency
+        dependence of the directional gain is handled in the
+        `generate_directionality_gains` method.
+
+        Parameters
+        ----------
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
+
+        Returns
+        -------
+        array_like
+            Complex gains in voltage for the given `frequencies`.
+
+        """
         # From AraSim GaintoHeight function, removing gain to receive function.
         # gain=4*pi*A_eff/lambda^2 and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
         heff = np.zeros(len(frequencies))
@@ -233,9 +416,36 @@ class ARAAntenna(Antenna):
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=True):
-        """Process incoming signal according to the filter function and
-        store it to the signals list. Subclasses may extend this fuction,
-        but should end with super().receive(signal)."""
+        """
+        Process and store an incoming signal.
+
+        Processes the incoming signal according to the frequency response of
+        the antenna, the efficiency, and the antenna factor. May also apply the
+        directionality and the polarization gain depending on the provided
+        parameters. Finally stores the processed signal to the signals list.
+
+        Parameters
+        ----------
+        signal : Signal
+            Incoming ``Signal`` object to process and store.
+        direction : array_like, optional
+            Vector denoting the direction of travel of the signal as it reaches
+            the antenna. If ``None`` no directional response will be applied.
+        polarization : array_like, optional
+            Vector denoting the signal's polarization direction. If ``None``
+            no polarization gain will be applied.
+        force_real : boolean, optional
+            Whether or not the frequency response should be redefined in the
+            negative-frequency domain to keep the values of the filtered signal
+            real.
+
+        Raises
+        ------
+        ValueError
+            If the given `signal` does not have a ``value_type`` of ``voltage``
+            or ``field``.
+
+        """
         copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
         copy.filter_frequencies(self.response, force_real=force_real)
 
@@ -245,6 +455,20 @@ class ARAAntenna(Antenna):
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
             freq_data, gain_data, phase_data = self.generate_directionality_gains(theta, phi)
             def interpolate_directionality(frequencies):
+                """
+                Generate interpolated directionality for given frequencies.
+
+                Parameters
+                ----------
+                frequencies : array_like
+                    1D array of frequencies (Hz) at which to calculate gains.
+
+                Returns
+                -------
+                array_like
+                    Complex directional gain in voltage for the `frequencies`.
+
+                """
                 interp_gains = np.interp(frequencies, freq_data, gain_data,
                                          left=0, right=0)
                 interp_phases = np.interp(frequencies, freq_data, phase_data,
@@ -274,8 +498,73 @@ class ARAAntenna(Antenna):
 
 
 class ARAAntennaSystem(AntennaSystem):
-    """ARA antenna system consisting of antenna, amplification,
-    and tunnel diode response."""
+    """
+    Antenna system extending base ARA antenna with front-end processing.
+
+    Applies as the front end a filter representing the full ARA electronics
+    chain (including amplification) and signal clipping. Additionally provides
+    a method for passing a signal through the tunnel diode.
+
+    Parameters
+    ----------
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    power_threshold : float
+        Power threshold for trigger condition. Antenna triggers if a signal
+        passed through the tunnel diode exceeds this threshold times the noise
+        RMS of the tunnel diode.
+    directionality_data : None or dict, optional
+        Dictionary containing data on the directionality of the antenna. If
+        ``None``, behavior is undefined.
+    directionality_freqs : None or set, optional
+        Set of frequencies in the directionality data ``dict`` keys. If
+        ``None``, calculated automatically from `directionality_data`.
+    orientation : array_like, optional
+        Vector direction of the z-axis of the antenna.
+    amplification : float, optional
+        Amplification to be applied to the signal pre-clipping. Note that the
+        usual ARA electronics amplification is already applied without this.
+    amplifier_clipping : float, optional
+        Voltage (V) above which the amplified signal is clipped (in positive
+        and negative values).
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+
+    Attributes
+    ----------
+    antenna : Antenna
+        ``Antenna`` object extended by the front end.
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    power_threshold : float
+        Power threshold for trigger condition. Antenna triggers if a signal
+        passed through the tunnel diode exceeds this threshold times the noise
+        RMS of the tunnel diode.
+    amplification : float
+        Amplification to be applied to the signal pre-clipping. Note that the
+        usual ARA electronics amplification is already applied without this.
+    amplifier_clipping : float
+        Voltage (V) above which the amplified signal is clipped (in positive
+        and negative values).
+    is_hit
+    signals
+    waveforms
+    all_waveforms
+
+    See Also
+    --------
+    pyrex.AntennaSystem : Base class for antenna system with front-end
+                          processing.
+    ARAAntenna : Antenna class to be used for ARA antennas.
+
+    """
     def __init__(self, name, position, power_threshold,
                  directionality_data=None, directionality_freqs=None,
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
@@ -301,9 +590,38 @@ class ARAAntennaSystem(AntennaSystem):
                       resistance=8.5, orientation=(0,0,1),
                       directionality_data=None, directionality_freqs=None,
                       efficiency=1, noisy=True, unique_noise_waveforms=10):
-        """Sets attributes of the antenna including center frequency (Hz),
-        bandwidth (Hz), resistance (ohms), orientation, and effective
-        height (m)."""
+        """
+        Setup the antenna by passing along its init arguments.
+
+        Any arguments passed to this method are directly passed to the
+        ``__init__`` methods of the ``antenna``'s class.
+
+        Parameters
+        ----------
+        center_frequency : float, optional
+            Frequency (Hz) at the center of the antenna's frequency range.
+        bandwidth : float, optional
+            Bandwidth (Hz) of the antenna.
+        resistance : float, optional
+            The noise resistance (ohm) of the antenna. Used to calculate the
+            RMS voltage of the antenna noise.
+        orientation : array_like, optional
+            Vector direction of the z-axis of the antenna.
+        directionality_data : None or dict, optional
+            Dictionary containing data on the directionality of the antenna. If
+            ``None``, behavior is undefined.
+        directionality_freqs : None or set, optional
+            Set of frequencies in the directionality data ``dict`` keys. If
+            ``None``, calculated automatically from `directionality_data`.
+        efficiency : float, optional
+            Antenna efficiency applied to incoming signal values.
+        noisy : boolean, optional
+            Whether or not the antenna should add noise to incoming signals.
+        unique_noise_waveforms : int, optional
+            The number of expected noise waveforms needed for each received
+            signal to have its own noise.
+
+        """
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
         # This is satisfied for most ice temperatures by using an effective
         # resistance of ~8.5 Ohm
@@ -353,7 +671,28 @@ class ARAAntennaSystem(AntennaSystem):
                 np.exp(-(x-cls._td_args['up'][1])/cls._td_args['up'][2]))
 
     def tunnel_diode(self, signal):
-        """Return the signal response from the tunnel diode."""
+        """
+        Calculate a signal as processed by the tunnel diode.
+
+        The given signal is convolved with the tunnel diodde response as in
+        AraSim.
+
+        Parameters
+        ----------
+        signal : Signal
+            Signal to be processed by the tunnel diode.
+
+        Returns
+        -------
+        Signal
+            Signal output of the tunnel diode for the input `signal`.
+
+        Raises
+        ------
+        ValueError
+            If the input `signal` doesn't have a ``value_type`` of ``voltage``.
+
+        """
         if signal.value_type!=Signal.ValueTypes.voltage:
             raise ValueError("Tunnel diode only accepts voltage signals")
         t_max = 1e-7
@@ -373,8 +712,23 @@ class ARAAntennaSystem(AntennaSystem):
         return output
 
     def front_end(self, signal):
-        """Apply the front-end processing of the antenna signal, including
-        electronics chain filters/amplification and clipping."""
+        """
+        Apply front-end processes to a signal and return the output.
+
+        The front-end consists of the full ARA electronics chain (including
+        amplification) and signal clipping.
+
+        Parameters
+        ----------
+        signal : Signal
+            ``Signal`` object on which to apply the front-end processes.
+
+        Returns
+        -------
+        Signal
+            Signal processed by the antenna front end.
+
+        """
         copy = Signal(signal.times, signal.values)
         copy.filter_frequencies(self.antenna.interpolate_filter,
                                 force_real=True)
@@ -385,6 +739,25 @@ class ARAAntennaSystem(AntennaSystem):
                       value_type=signal.value_type)
 
     def trigger(self, signal):
+        """
+        Check if the antenna system triggers on a given signal.
+
+        Passes the signal through the tunnel diode. Then compares the maximum
+        and minimum values to a tunnel diode noise signal. Triggers if one of
+        the maximum or minimum values exceed the noise mean +/- the noise rms
+        times the power threshold.
+
+        Parameters
+        ----------
+        signal : Signal
+            ``Signal`` object on which to test the trigger condition.
+
+        Returns
+        -------
+        boolean
+            Whether or not the antenna triggers on `signal`.
+
+        """
         if self._power_mean is None or self._power_rms is None:
             # Prepare for antenna trigger by finding rms of noise waveform
             # (1 microsecond) convolved with tunnel diode response
@@ -403,9 +776,36 @@ class ARAAntennaSystem(AntennaSystem):
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=True):
-        """Process incoming signal according to the filter function and
-        store it to the signals list. Forces real filtered signals by
-        default."""
+        """
+        Process and store an incoming signal.
+
+        Processes the incoming signal according to the frequency response of
+        the antenna, the efficiency, and the antenna factor. May also apply the
+        directionality and the polarization gain depending on the provided
+        parameters. Finally stores the processed signal to the signals list.
+
+        Parameters
+        ----------
+        signal : Signal
+            Incoming ``Signal`` object to process and store.
+        direction : array_like, optional
+            Vector denoting the direction of travel of the signal as it reaches
+            the antenna. If ``None`` no directional response will be applied.
+        polarization : array_like, optional
+            Vector denoting the signal's polarization direction. If ``None``
+            no polarization gain will be applied.
+        force_real : boolean, optional
+            Whether or not the frequency response should be redefined in the
+            negative-frequency domain to keep the values of the filtered signal
+            real.
+
+        Raises
+        ------
+        ValueError
+            If the given `signal` does not have a ``value_type`` of ``voltage``
+            or ``field``.
+
+        """
         super().receive(signal=signal, direction=direction,
                         polarization=polarization,
                         force_real=force_real)
@@ -413,8 +813,65 @@ class ARAAntennaSystem(AntennaSystem):
 
 
 class HpolAntenna(ARAAntennaSystem):
-    """ARA Hpol ("quad-slot") antenna system consisting of antenna,
-    amplification, and tunnel diode response."""
+    """
+    ARA Hpol ("quad-slot") antenna system with front-end processing.
+
+    Applies as the front end a filter representing the full ARA electronics
+    chain (including amplification) and signal clipping. Additionally provides
+    a method for passing a signal through the tunnel diode.
+
+    Parameters
+    ----------
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    power_threshold : float
+        Power threshold for trigger condition. Antenna triggers if a signal
+        passed through the tunnel diode exceeds this threshold times the noise
+        RMS of the tunnel diode.
+    amplification : float, optional
+        Amplification to be applied to the signal pre-clipping. Note that the
+        usual ARA electronics amplification is already applied without this.
+    amplifier_clipping : float, optional
+        Voltage (V) above which the amplified signal is clipped (in positive
+        and negative values).
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+
+    Attributes
+    ----------
+    antenna : Antenna
+        ``Antenna`` object extended by the front end.
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    power_threshold : float
+        Power threshold for trigger condition. Antenna triggers if a signal
+        passed through the tunnel diode exceeds this threshold times the noise
+        RMS of the tunnel diode.
+    amplification : float
+        Amplification to be applied to the signal pre-clipping. Note that the
+        usual ARA electronics amplification is already applied without this.
+    amplifier_clipping : float
+        Voltage (V) above which the amplified signal is clipped (in positive
+        and negative values).
+    is_hit
+    signals
+    waveforms
+    all_waveforms
+
+    See Also
+    --------
+    ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
+                       processing.
+    ARAAntenna : Antenna class to be used for ARA antennas.
+
+    """
     def __init__(self, name, position, power_threshold,
                  amplification=1, amplifier_clipping=1, noisy=True,
                  unique_noise_waveforms=10):
@@ -430,8 +887,65 @@ class HpolAntenna(ARAAntennaSystem):
 
 
 class VpolAntenna(ARAAntennaSystem):
-    """ARA Vpol ("bicone" or "birdcage") antenna system consisting of antenna,
-    amplification, and tunnel diode response."""
+    """
+    ARA Vpol ("bicone" or "birdcage") antenna system with front-end processing.
+
+    Applies as the front end a filter representing the full ARA electronics
+    chain (including amplification) and signal clipping. Additionally provides
+    a method for passing a signal through the tunnel diode.
+
+    Parameters
+    ----------
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    power_threshold : float
+        Power threshold for trigger condition. Antenna triggers if a signal
+        passed through the tunnel diode exceeds this threshold times the noise
+        RMS of the tunnel diode.
+    amplification : float, optional
+        Amplification to be applied to the signal pre-clipping. Note that the
+        usual ARA electronics amplification is already applied without this.
+    amplifier_clipping : float, optional
+        Voltage (V) above which the amplified signal is clipped (in positive
+        and negative values).
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+
+    Attributes
+    ----------
+    antenna : Antenna
+        ``Antenna`` object extended by the front end.
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    power_threshold : float
+        Power threshold for trigger condition. Antenna triggers if a signal
+        passed through the tunnel diode exceeds this threshold times the noise
+        RMS of the tunnel diode.
+    amplification : float
+        Amplification to be applied to the signal pre-clipping. Note that the
+        usual ARA electronics amplification is already applied without this.
+    amplifier_clipping : float
+        Voltage (V) above which the amplified signal is clipped (in positive
+        and negative values).
+    is_hit
+    signals
+    waveforms
+    all_waveforms
+
+    See Also
+    --------
+    ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
+                       processing.
+    ARAAntenna : Antenna class to be used for ARA antennas.
+
+    """
     def __init__(self, name, position, power_threshold,
                  amplification=1, amplifier_clipping=1, noisy=True,
                  unique_noise_waveforms=10):

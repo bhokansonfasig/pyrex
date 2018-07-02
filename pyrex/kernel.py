@@ -1,5 +1,12 @@
-"""Module for the simulation kernel. Includes neutrino generation,
-ray tracking (no raytracing yet), and hit generation."""
+"""
+Module for the simulation kernel.
+
+The simulation kernel is responsible for running through the simulation
+chain by controlling classes and objects which will independently produce
+neutrinos, create corresponding signals, propagate the signals to antennas,
+and handle antenna processing of the signals.
+
+"""
 
 import logging
 import numpy as np
@@ -12,8 +19,75 @@ logger = logging.getLogger(__name__)
 
 
 class EventKernel:
-    """Kernel for generation of events with a given particle generator,
-    list of antennas, and optionally a non-default ice_model."""
+    """
+    High-level kernel for controlling event simulation.
+
+    The kernel is responsible for handling the classes and objects which
+    control the major simulation steps: particle creation, signal production,
+    signal propagation, and antenna response. The modular kernel structure
+    allows for easy switching of the classes or objects which handle any of the
+    simulation steps.
+
+    Parameters
+    ----------
+    generator
+        A particle generator to create neutrino events.
+    antennas
+        An iterable object consisting of antenna objects which can receive and
+        store signals.
+    ice_model : optional
+        An ice model describing the ice surrounding the `antennas`.
+    ray_tracer : optional
+        A ray tracer capable of propagating signals from the neutrino vertex
+        to the antenna positions.
+    signal_times : array_like, optional
+        The array of times over which the neutrino signal should be generated.
+
+    Attributes
+    ----------
+    gen
+        The particle generator responsible for particle creation.
+    antennas
+        The iterable of antennas responsible for handling applying their
+        response and storing the resulting signals.
+    ice
+        The ice model describing the ice containing the `antennas`.
+    ray_tracer
+        The ray tracer responsible for signal propagation through the `ice`.
+    signal_times
+        The array of times over which the neutrino signal should be generated.
+
+    Notes
+    -----
+    The kernel is designed to be modular so individual parts of the simulation
+    chain can be exchanged. In order to interchange the pieces, their classes
+    require the following at a minimum:
+
+    The particle generator `generator` must have a ``create_particle`` method
+    which takes no arguments and returns a `Particle` object with ``vertex``,
+    ``direction``, and ``energy`` attributes.
+
+    The antenna iterable `antennas` must yield each antenna object once when
+    iterating directly over `antennas`. Each antenna object must have a
+    ``position`` attribute and a ``receive`` method which takes a signal object
+    as its first argument, and ``ndarray`` objects as ``direction`` and
+    ``polarization`` keyword arguments.
+
+    The `ice_model` must have an ``index`` method returning the index of
+    refraction given a (negative-valued) depth, and it must support anything
+    required of it by the `ray_tracer`.
+
+    The `ray_tracer` must be initialized with the particle vertex and an
+    antenna position as its first two arguments, and the `ice_model` of the
+    kernel as the ``ice_model`` keyword argument. The ray tracer must also have
+    ``exists`` and ``solutions`` attributes, the first of which denotes whether
+    any paths exist between the given points and the second of which is an
+    iterable revelaing each path between the points. These paths must have
+    ``emitted_direction``, ``received_direction``, and ``path_length``
+    attributes, as well as a ``propagate`` method which takes a signal object
+    and applies the propagation effects of the path in-place to that object.
+
+    """
     def __init__(self, generator, antennas,
                  ice_model=IceModel, ray_tracer=RayTracer,
                  signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False)):
@@ -24,8 +98,20 @@ class EventKernel:
         self.signal_times = signal_times
 
     def event(self):
-        """Generate particle, propagate signal through ice to antennas,
-        process signal at antennas, and return the original particle."""
+        """
+        Create a neutrino event and run it through the simulation chain.
+
+        Creates a particle using the ``generator``, produces a signal from that
+        event, propagates that signal through the ice according to the
+        ``ice_model`` and the ``ray_tracer``, and passes it into the
+        ``antennas`` for processing.
+
+        Returns
+        -------
+        Particle
+            The neutrino generated which is responsible for the event.
+
+        """
         p = self.gen.create_particle()
         logger.info("Processing event for %s", p)
         n = self.ice.index(p.vertex[2])

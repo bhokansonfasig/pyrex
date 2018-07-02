@@ -18,6 +18,8 @@ Alternatively, you can download the code from https://github.com/bhokansonfasig/
 PyREx is not currently available on PyPI, so a simple ``pip install pyrex`` will not have the intended effect.
 
 
+.. currentmodule:: pyrex
+
 Quick Code Example
 ==================
 
@@ -32,7 +34,7 @@ Then, create a particle generator object that will produce random particles in  
     particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=1000,
                                                energy=1e8)
 
-An array of antennas that represent the detector is also needed. The base ``Antenna`` class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical "string" of four antennas with no noise::
+An array of antennas that represent the detector is also needed. The base :class:`Antenna` class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical "string" of four antennas with no noise::
 
     antenna_array = []
     for z in [-100, -150, -200, -250]:
@@ -40,13 +42,13 @@ An array of antennas that represent the detector is also needed. The base ``Ante
             pyrex.Antenna(position=(0,0,z), noisy=False)
         )
 
-Finally, we want to pass these into the ``EventKernel`` and produce an event::
+Finally, we want to pass these into the :class:`EventKernel` and produce an event::
 
     kernel = pyrex.EventKernel(generator=particle_generator,
                                antennas=antenna_array)
     kernel.event()
 
-Now the signals received by each antenna can be accessed by their ``waveforms`` parameter::
+Now the signals received by each antenna can be accessed by their :attr:`waveforms` parameter::
 
     import matplotlib.pyplot as plt
     for ant in kernel.ant_array:

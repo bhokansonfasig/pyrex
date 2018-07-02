@@ -1,4 +1,10 @@
-"""Module containing setup and wrappers for PySpice module into PyREx"""
+"""
+Module containing setup and wrappers for using the PySpice module in PyREx.
+
+Contains checks for PySpice installation and builds signal wrappers if PySpice
+is available.
+
+"""
 
 import importlib.util
 import numpy as np
@@ -18,8 +24,13 @@ if __available__:
     from PySpice.Unit import *
 
     class NgSpiceSharedSignal(NgSpiceShared):
-        """Helper class for bridging gap between PyREx Signal and
-        PySpice NgSpiceShared classes"""
+        """
+        Helper class for bridging gap between PyREx and PySpice.
+
+        Designed to bridge the gap between the PyREx ``Signal`` class and the
+        PySpice ``NgSpiceShared`` class.
+
+        """
         def __init__(self, **kwargs):
             super().__init__(**kwargs)
             self._signal = None
@@ -32,7 +43,18 @@ if __available__:
     NGSPICE_SHARED_MASTER = NgSpiceSharedSignal()
 
     class SpiceSignal:
-        """Class for passing PyREx Signal object into PySpice"""
+        """
+        Class for passing PyREx Signal object into PySpice
+
+        Parameters
+        ----------
+        signal : Signal
+            PyREx ``Signal`` object.
+        shared : NgSpiceShared
+            Master PySpice ``NgSpiceShared`` object that `signal` will be
+            passed through.
+
+        """
         def __init__(self, signal, shared=NGSPICE_SHARED_MASTER):
             self.shared = shared
             self.shared._signal = signal

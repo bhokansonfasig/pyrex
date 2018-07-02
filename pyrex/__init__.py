@@ -1,4 +1,7 @@
-"""PyREx radio neutrino simulation package."""
+"""
+PyREx radio neutrino simulation package.
+
+"""
 
 import os
 import os.path

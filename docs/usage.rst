@@ -5,33 +5,36 @@ This section describes in detail how to use a majority of the functions and clas
 
     import numpy as np
     import matplotlib.pyplot as plt
+    import scipy.signal
     import scipy.fftpack
     import pyrex
 
-All of the following examples can also be found (and quickly run) in the Code Examples python notebook found in the examples directory.
+All of the following examples can also be found (and easily run) in the Code Examples python notebook found in the examples directory.
 
+
+.. currentmodule:: pyrex
 
 
 Working with Signal Objects
 ===========================
 
-The base ``Signal`` class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The ``times`` array is assumed to be in units of seconds, but there are no general units for the ``values`` array. It is worth noting that the Signal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the ``Signal`` object. ::
+The base :class:`Signal` class consists of an array of times and an array of corresponding signal values, and is instantiated with these two arrays. The :attr:`times` array is assumed to be in units of seconds, but there are no general units for the :attr:`values` array. It is worth noting that the Signal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the :class:`Signal` object. ::
 
     time_array = np.linspace(0, 10)
     value_array = np.sin(time_array)
     my_signal = pyrex.Signal(times=time_array, values=value_array)
 
-Plotting the ``Signal`` object is as simple as plotting the times vs the values::
+Plotting the :class:`Signal` object is as simple as plotting the times vs the values::
 
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
-While there are no specified units for a ``Signal.values``, there is the option to specify the ``value_type`` of the ``values``. This is done using the ``Signal.ValueTypes`` enum. By default, a ``Signal`` object has ``value_type=ValueTypes.unknown``. However, if the signal represents a voltage, electric field, or electric power; ``value_type`` can be set to ``Signal.ValueTypes.voltage``, ``Signal.ValueTypes.field``, or ``Signal.ValueTypes.power`` respectively::
+While there are no specified units for :attr:`Signal.values`, there is the option to specify the :attr:`value_type` of the :attr:`values`. This is done using the :attr:`Signal.ValueTypes` enum. By default, a :class:`Signal` object has ``value_type=ValueTypes.unknown``. However, if the signal represents a voltage, electric field, or power; :attr:`value_type` can be set to :attr:`Signal.ValueTypes.voltage`, :attr:`Signal.ValueTypes.field`, or :attr:`Signal.ValueTypes.power` respectively::
 
     my_voltage_signal = pyrex.Signal(times=time_array, values=value_array,
                                      value_type=pyrex.Signal.ValueTypes.voltage)
 
-``Signal`` objects can be added as long as they have the same time array and ``value_type``. ``Signal`` objects also support the python ``sum`` function::
+:class:`Signal` objects can be added as long as they have the same time array and :attr:`value_type`. :class:`Signal` objects also support the python :func:`sum` function::
 
     time_array = np.linspace(0, 10)
     values1 = np.sin(time_array)
@@ -48,7 +51,7 @@ While there are no specified units for a ``Signal.values``, there is the option 
     plt.legend()
     plt.show()
 
-The ``Signal`` class provides many convenience attributes for dealing with signals::
+The :class:`Signal` class provides many convenience attributes for dealing with signals::
 
     my_signal.dt == my_signal.times[1] - my_signal.times[0]
     my_signal.spectrum == scipy.fftpack.fft(my_signal.values)
@@ -56,7 +59,7 @@ The ``Signal`` class provides many convenience attributes for dealing with signa
                                                    d=my_signal.dt)
     my_signal.envelope == np.abs(scipy.signal.hilbert(my_signal.values))
 
-The ``Signal`` class also provides functions for manipulating the signal. The ``resample`` function will resample the times and values arrays to the given number of points (with the same endpoints)::
+The :class:`Signal` class also provides functions for manipulating the signal. The :meth:`Signal.resample` method will resample the times and values arrays to the given number of points (with the same endpoints)::
 
     my_signal.resample(1001)
     len(my_signal.times) == len(my_signal.values) == 1001
@@ -65,7 +68,7 @@ The ``Signal`` class also provides functions for manipulating the signal. The ``
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
-The ``with_times`` function will interpolate/extrapolate the signal's values onto a new times array::
+The :meth:`Signal.with_times` method will interpolate/extrapolate the signal's values onto a new times array::
 
     new_times = np.linspace(-5, 15)
     new_signal = my_signal.with_times(new_times)
@@ -74,7 +77,7 @@ The ``with_times`` function will interpolate/extrapolate the signal's values ont
     plt.legend()
     plt.show()
 
-The ``filter_frequencies`` function will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive freqeuncies (as below) the filtered frequency may have strange behavior including having an imaginary part. To resolve that issue, pass ``force_real=True`` to the ``filter_frequencies`` function which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal. ::
+The :meth:`Signal.filter_frequencies` method will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive freqeuncies (as below) the filtered frequency may exhibit strange behavior, including potentially having an imaginary part. To resolve that issue, pass ``force_real=True`` to the :meth:`Signal.filter_frequencies` method which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal. ::
 
     def lowpass_filter(frequency):
         if frequency < 1:
@@ -86,20 +89,21 @@ The ``filter_frequencies`` function will apply a frequency-domain filter to the 
     value_array = np.sin(0.1*2*np.pi*time_array) + np.sin(2*2*np.pi*time_array)
     my_signal = pyrex.Signal(times=time_array, values=value_array)
 
-    plt.plot(my_signal.times, my_signal.values)
+    plt.plot(my_signal.times, my_signal.values, label="original")
     my_signal.filter_frequencies(lowpass_filter, force_real=True)
-    plt.plot(my_signal.times, my_signal.values)
+    plt.plot(my_signal.times, my_signal.values, label="filtered")
+    plt.legend()
     plt.show()
 
 
-A number of classes which inherit from the Signal class are included in PyREx: ``EmptySignal``, ``FunctionSignal``, ``AskaryanSignal``, and ``ThermalNoise``. ``EmptySignal`` is simply a signal whose values are all zero::
+A number of classes which inherit from the :class:`Signal` class are included in PyREx: :class:`EmptySignal`, :class:`FunctionSignal`, :class:`AskaryanSignal`, and :class:`ThermalNoise`. :class:`EmptySignal` is simply a signal whose values are all zero::
 
     time_array = np.linspace(0,10)
     empty = pyrex.EmptySignal(times=time_array)
     plt.plot(empty.times, empty.values)
     plt.show()
 
-``FunctionSignal`` takes a function of time and creates a signal based on that function::
+:class:`FunctionSignal` takes a function of time and creates a signal based on that function::
 
     time_array = np.linspace(0, 10, num=101)
     def square_wave(time):
@@ -111,16 +115,16 @@ A number of classes which inherit from the Signal class are included in PyREx: `
     plt.plot(square_signal.times, square_signal.values)
     plt.show()
 
-Additionally, ``FunctionSignal`` leverages its knowledge of the function to more accurately interpolate and extrapolate values for the ``with_times`` function::
+Additionally, :class:`FunctionSignal` leverages its knowledge of the function to more accurately interpolate and extrapolate values for the :meth:`Signal.with_times` method::
 
     new_times = np.linspace(0, 20, num=201)
     long_square_signal = square_signal.with_times(new_times)
-    plt.plot(long_square_signal.times, long_square_signal.values, label="new signal")
-    plt.plot(square_signal.times, square_signal.values, label="original signal")
+    plt.plot(long_square_signal.times, long_square_signal.values, label="extrapolated")
+    plt.plot(square_signal.times, square_signal.values, label="original")
     plt.legend()
     plt.show()
 
-``AskaryanSignal`` produces an Askaryan pulse (in V/m) on a time array due to a neutrino of given energy observed at a given angle from the shower axis::
+:class:`AskaryanSignal` produces an Askaryan pulse (in V/m) on a time array due to a neutrino of given energy observed at a given angle from the shower axis::
 
     time_array = np.linspace(-10e-9, 40e-9, 1001)
     neutrino_energy = 1e8 # GeV
@@ -131,7 +135,7 @@ Additionally, ``FunctionSignal`` leverages its knowledge of the function to more
     plt.plot(askaryan.times, askaryan.values)
     plt.show()
 
-``ThermalNoise`` produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range::
+:class:`ThermalNoise` produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range::
 
     time_array = np.linspace(-10e-9, 40e-9, 1001)
     noise_temp = 300 # K
@@ -144,7 +148,7 @@ Additionally, ``FunctionSignal`` leverages its knowledge of the function to more
     plt.plot(noise.times, noise.values)
     plt.show()
 
-Note that since ``ThermalNoise`` inherits from ``FunctionSignal``, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a large number of frequencies is requested on initialization. ::
+Note that since :class:`ThermalNoise` inherits from :class:`FunctionSignal`, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a larger number of frequencies is requested on initialization. ::
 
     short_noise = pyrex.ThermalNoise(times=time_array, temperature=noise_temp,
                                      resistance=system_resistance,
@@ -161,9 +165,9 @@ Note that since ``ThermalNoise`` inherits from ``FunctionSignal``, it can be ext
 Antenna Class and Subclasses
 ============================
 
-The base ``Antenna`` class provided by PyREx is designed to be inherited from to match the needs of each project. At its core, an ``Antenna`` object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance for noise calculations and a boolean dictating whether or not noise should be added to the antenna's signals (note that if noise is to be added, a resistance must be specified). ::
+The base :class:`Antenna` class provided by PyREx is designed to be subclassed in order to match the needs of each project. At its core, an :class:`Antenna` object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance (for noise calculations) and a boolean dictating whether or not noise should be added to the antenna's signals (note that if noise is to be added, a resistance must be specified). ::
 
-    # Please note that some values are unrealistic in order to simplify demonstration
+    # Please note that some values are unrealistic for demonstration purposes
     position = (0, 0, -100) # m
     temperature = 300 # K
     resistance = 1e17 # ohm
@@ -173,12 +177,12 @@ The base ``Antenna`` class provided by PyREx is designed to be inherited from to
                                   freq_range=frequency_range)
     noiseless_antenna = pyrex.Antenna(position=position, noisy=False)
 
-The basic properties of an ``Antenna`` object are ``is_hit`` and ``waveforms``. ``is_hit`` specifies whether or not the antenna has been triggered by an event. ``waveforms`` is a list of all the waveforms which have triggered the antenna. The antenna also defines ``signals``, which is a list of all signals the antenna has received, and ``all_waveforms`` which is a list of all waveforms (signal plus noise) the antenna has received including those which didn't trigger. ::
+The basic properties of an :class:`Antenna` object are :attr:`is_hit` and :attr:`waveforms`. The :attr:`is_hit` property specifies whether or not the antenna has been triggered by an event. :attr:`waveforms` is a list of all the waveforms which have triggered the antenna. The antenna also defines a :attr:`signals` attribute, which is a list of all signals the antenna has received, and :attr:`all_waveforms` which is a list of all waveforms (signal plus noise) the antenna has received including those which didn't trigger. ::
 
     basic_antenna.is_hit == False
     basic_antenna.waveforms == []
 
-The ``Antenna`` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are ``efficiency`` and ``antenna_factor``, and the methods are ``response``, ``directional_gain``, and ``polarization_gain``. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. ``efficiency`` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). ``antenna_factor`` is a factor used in converting received electric fields into voltages (``antenna_factor`` = E / V; default value is ``1``). ``response`` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). ``directional_gain`` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). ``directional_gain`` is dependent on the antenna's orientation, which is defined by its ``z_axis`` and ``x_axis`` attributes. To change the antenna's orientation, use the ``set_orientation`` method which takes ``z_axis`` and ``x_axis`` arguments. Finally, ``polarization_gain`` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
+The :class:`Antenna` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are :attr:`efficiency` and :attr:`antenna_factor`, and the methods are :meth:`Antenna.response`, :meth:`Antenna.directional_gain`, and :meth:`Antenna.polarization_gain`. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. :attr:`efficiency` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). :attr:`antenna_factor` is a factor used in converting received electric fields into voltages (:attr:`antenna_factor` = E / V; default value is ``1``). :meth:`Antenna.response` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). :meth:`Antenna.directional_gain` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). :meth:`Antenna.directional_gain` is dependent on the antenna's orientation, which is defined by its :attr:`z_axis` and :attr:`x_axis` attributes. To change the antenna's orientation, use the :meth:`Antenna.set_orientation` method which takes ``z_axis`` and ``x_axis`` arguments. Finally, :meth:`Antenna.polarization_gain` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
 
     basic_antenna.efficiency == 1
     basic_antenna.antenna_factor == 1
@@ -187,11 +191,11 @@ The ``Antenna`` class contains two attributes and three methods which represent 
     basic_antenna.directional_gain(theta=np.pi/2, phi=0) == 1
     basic_antenna.polarization_gain([0,0,1]) == 1
 
-The ``Antenna`` class defines a ``trigger`` method which is also expected to be overwritten. ``trigger`` takes a ``Signal`` object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns ``True``). ::
+The :class:`Antenna` class defines an :meth:`Antenna.trigger` method which is also expected to be overwritten. :meth:`Antenna.trigger` takes a :class:`Signal` object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns ``True``). ::
 
     basic_antenna.trigger(pyrex.Signal([0],[0])) == True
 
-The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal`` object and processes the signal according to the antenna's attributes (``efficiency``, ``antenna_factor``, ``response``, ``directional_gain``, and ``polarization_gain`` as described above). To use the ``receive`` function, simply pass it the ``Signal`` object the antenna sees, and the ``Antenna`` class will handle the rest. You can also optionally specify the direction of travel of the signal (used in ``directional_gain`` calculation) and the polarization direction of the signal (used in ``polarization_gain`` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
+The :class:`Antenna` class also defines an :meth:`Antenna.receive` method which takes a :class:`Signal` object and processes the signal according to the antenna's attributes (:attr:`efficiency`, :attr:`antenna_factor`, :attr:`response`, :attr:`directional_gain`, and :attr:`polarization_gain` as described above). To use the :meth:`Antenna.receive` method, simply pass it the :class:`Signal` object the antenna sees, and the :class:`Antenna` class will handle the rest. You can also optionally specify the direction of travel of the signal (used in the :meth:`Antenna.directional_gain` calculation) and the polarization direction of the signal (used in the :meth:`Antenna.polarization_gain` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
 
     incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), np.sin,
                                              value_type=pyrex.Signal.ValueTypes.voltage)
@@ -207,7 +211,7 @@ The ``Antenna`` class also defines a ``receive`` method which takes a ``Signal``
         plt.legend()
         plt.show()
 
-Beyond ``Antenna.waveforms``, the ``Antenna`` object also provides methods for checking the waveform and trigger status for arbitrary times: ``full_waveform`` and ``is_hit_during``. Both of these methods take a time array as an argument and return the waveform ``Signal`` object for those times and whether said waveform triggered the antenna, respectively. ::
+Beyond :attr:`Antenna.waveforms`, the :class:`Antenna` object also provides methods for checking the waveform and trigger status for arbitrary times: :meth:`Antenna.full_waveform` and :meth:`Antenna.is_hit_during`. Both of these methods take a time array as an argument and return either the waveform :class:`Signal` object for those times or whether said waveform triggered the antenna, respectively. ::
 
     total_waveform = basic_antenna.full_waveform(np.linspace(0,20))
     plt.plot(total_waveform.times, total_waveform.values, label="Total Waveform")
@@ -218,13 +222,13 @@ Beyond ``Antenna.waveforms``, the ``Antenna`` object also provides methods for c
 
     basic_antenna.is_hit_during(np.linspace(0, 200e-9)) == True
 
-Finally, the ``Antenna`` class defines a ``clear`` method which will reset the antenna to a state of having received no signals::
+Finally, the :class:`Antenna` class defines an :meth:`Antenna.clear` method which will reset the antenna to a state of having received no signals::
 
     basic_antenna.clear()
     basic_antenna.is_hit == False
     len(basic_antenna.waveforms) == 0
 
-The ``clear`` method can also optionally reset the source of noise waveforms by passing ``reset_noise=True`` so that if the same signals are given after the antenna is cleared, the noise waveforms will be different::
+The :meth:`Antenna.clear` method can also optionally reset the source of noise waveforms by passing ``reset_noise=True`` so that if the same signals are given after the antenna is cleared, the noise waveforms will be different::
 
     noise_before = basic_antenna.make_noise(np.linspace(0, 20))
     plt.plot(noise_before.times, noise_before.values, label="Noise Before Clear")
@@ -235,7 +239,7 @@ The ``clear`` method can also optionally reset the source of noise waveforms by 
     plt.show()
 
 
-To create a custom antenna, simply inherit from the ``Antenna`` class::
+To create a custom antenna, simply inherit from the :class:`Antenna` class::
 
     class NoiselessThresholdAntenna(pyrex.Antenna):
         def __init__(self, position, threshold):
@@ -248,7 +252,7 @@ To create a custom antenna, simply inherit from the ``Antenna`` class::
             else:
                 return False
 
-Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude of a signal exceeds its threshold value::
+Our custom :class:`NoiselessThresholdAntenna` should only trigger when the amplitude of a signal exceeds its threshold value::
 
     my_antenna = NoiselessThresholdAntenna(position=(0, 0, 0), threshold=2)
 
@@ -272,10 +276,10 @@ Our custom ``NoiselessThresholdAntenna`` should only trigger when the amplitude 
         plt.plot(wave.times, wave.values)
         plt.show()
 
-For more on customizing PyREx, see the `custom-package` section.
+For more on customizing PyREx, see the :ref:`custom-package` section.
 
 
-PyREx defines ``DipoleAntenna``, a subclass of ``Antenna`` which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A ``DipoleAntenna`` object is created as follows::
+PyREx defines :class:`DipoleAntenna`, a subclass of :class:`Antenna` which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A :class:`DipoleAntenna` object can be created as follows::
 
     antenna_identifier = "antenna 1"
     position = (0, 0, -100)
@@ -297,9 +301,9 @@ PyREx defines ``DipoleAntenna``, a subclass of ``Antenna`` which provides a basi
 AntennaSystem and Detector Classes
 ==================================
 
-The ``AntennaSystem`` class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna's signals. It is designed to be subclassed, but by default it takes as an argument the ``Antenna`` class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the ``Antenna`` class, but where a ``front_end`` method (which by default does nothing) is applied to the extended antenna's signals.
+The :class:`AntennaSystem` class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna's signals. It is designed to be subclassed, but by default it takes as an argument the :class:`Antenna` class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the :class:`Antenna` class, but where a :meth:`AntennaSystem.front_end` method (which by default does nothing) is applied to the extended antenna's signals.
 
-To extend an ``Antenna`` class or subclass into a full antenna system, subclass the ``AntennaSystem`` class and define the ``front_end`` method. Optionally a trigger can be defined for the antenna system (by default it uses the antenna's trigger)::
+To extend an :class:`Antenna` class or subclass into a full antenna system, inherit from the :class:`AntennaSystem` class and define the :meth:`AntennaSystem.front_end` method. A different trigger optionally can be defined for the antenna system (by default it uses the antenna's trigger)::
 
     class PowerAntennaSystem(pyrex.AntennaSystem):
         """Antenna system whose signals and waveforms are powers instead of
@@ -361,7 +365,7 @@ Objects of this class can then, for the most part, be interacted with as though 
     len(basic_antenna_system.waveforms) == 0
 
 
-The ``Detector`` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used to build a detector). Subclasses must define a ``set_positions`` method to assign vector positions to the self.antenna_positions attribute. By default ``set_positions`` will raise a ``NotImplementedError``. Additionally subclasses may extend the default ``build_antennas`` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the ``Detector`` class is that once the ``build_antennas`` method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the ``Detector`` class is shown below::
+The :class:`Detector` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used in a detector). Subclasses must define a :meth:`Detector.set_positions` method to assign vector positions to the self.antenna_positions attribute. By default :meth:`Detector.set_positions` will raise a :exc:`NotImplementedError`. Additionally subclasses may extend the default :meth:`Detector.build_antennas` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the :class:`Detector` class is that once the :meth:`Detector.build_antennas` method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the :class:`Detector` class is shown below::
 
     class AntennaGrid(pyrex.Detector):
         """A detector composed of a plane of antennas in a rectangular grid layout
@@ -396,7 +400,7 @@ The ``Detector`` class is another convenience class meant to be subclassed. It i
     plt.ylim(plt.xlim())
     plt.show()
 
-Due to the parallels between ``Antenna`` and ``AntennaSystem``, an antenna system may also be used in the custom detector class. Note however, that the antenna positions must be accessed as ``antenna.antenna.position`` since we didn't define a position attribute for the ``PowerAntennaSystem``::
+Due to the parallels between :class:`Antenna` and :class:`AntennaSystem`, an antenna system may also be used in the custom detector class. Note however, that the antenna positions must be accessed as :attr:`antenna.antenna.position` since we didn't define a position attribute for the :class:`PowerAntennaSystem`::
 
     grid_detector = AntennaGrid(12)
 
@@ -419,7 +423,7 @@ Due to the parallels between ``Antenna`` and ``AntennaSystem``, an antenna syste
 Ice and Earth Models
 ====================
 
-PyREx provides a class ``IceModel``, which is an alias for whichever south pole ice model class is the preferred (currently just the basic ``AntarcticIce``). The ``IceModel`` class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below::
+PyREx provides a class :class:`IceModel`, which is an alias for whichever south pole ice model class is preferred (currently :class:`pyrex.ice_model.AntarcticIce`). The :class:`IceModel` class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below::
 
     depth = -1000 # m
     pyrex.IceModel.temperature(depth)
@@ -428,12 +432,12 @@ PyREx provides a class ``IceModel``, which is an alias for whichever south pole 
     frequency = 1e8 # Hz
     pyrex.IceModel.attenuation_length(depth, frequency)
 
-PyREx also provides two functions realted to its earth model: ``prem_density`` and ``slant_depth``. ``prem_density`` calculates the density in grams per cubic centimeter of the earth at a given radius::
+PyREx also provides two functions realted to its earth model: :func:`prem_density` and :func:`slant_depth`. :func:`prem_density` calculates the density in grams per cubic centimeter of the earth at a given radius::
 
     radius = 6360000 # m
     pyrex.prem_density(radius)
 
-``slant_depth`` calculates the material thickness in grams per square centimeter of a chord cutting through the earth at a given nadir angle, starting from a given depth::
+:func:`slant_depth` calculates the material thickness in grams per square centimeter of a chord cutting through the earth at a given nadir angle, starting from a given depth::
 
     nadir_angle = 60 * np.pi/180 # radians
     depth = 1000 # m
@@ -441,45 +445,21 @@ PyREx also provides two functions realted to its earth model: ``prem_density`` a
 
 
 
-Particle Generation
-===================
-
-PyREx includes ``Particle`` as a container for information about neutrinos which are generated to produce Askaryan pulses. ``Particle`` contains three attributes: ``vertex``, ``direction``, and ``energy``::
-
-    initial_position = (0,0,0) # m
-    direction_vector = (0,0,-1)
-    particle_energy = 1e8 # GeV
-    pyrex.Particle(vertex=initial_position, direction=direction_vector,
-                   energy=particle_energy)
-
-PyREx also includes a ``ShadowGenerator`` class for generating random neutrinos, taking into account some Earth shadowing. The neutrinos are generated in a box of given size, and with a given energy (which can be a scalar value or a function returning scalar values)::
-
-    box_width = 1000 # m
-    box_depth = 500 # m
-    my_generator = pyrex.ShadowGenerator(dx=box_width, dy=box_width,
-                                         dz=box_depth,
-                                         energy=particle_energy)
-    my_generator.create_particle()
-
-Lastly, PyREx includes ``ListGenerator`` and ``FileGenerator`` classes which can be used to reproduce pre-generated particles from either a list or from numpy files, respectively.
-
-
-
 Ray Tracing
 ===========
 
-PyREx provides ray tracing in the ``RayTracer`` and ``RayTracerPath`` classes. ``RayTracer`` takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as ``RayTracerPath`` objects). ::
+PyREx provides ray tracing in the :class:`RayTracer` and :class:`RayTracePath` classes. :class:`RayTracer` takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as :class:`RayTracePath` objects). ::
 
     start = (0, 0, -250) # m
     finish = (100, 0, -100) # m
     my_ray_tracer = pyrex.RayTracer(from_point=start, to_point=finish)
 
-The two most useful properties of ``RayTracer`` are ``RayTracer.exists`` and ``RayTracer.solutions``. ``RayTracer.exists`` is a boolean value of whether or not path solutions exist between the launch and receiving points. ``RayTracer.solutions`` is the list of (zero or two) ``RayTracerPath`` objects which exist between the launch and receiving points. There are many other properties available in ``RayTracer``, outlined in the `pyrex-api` section, which are mostly used internally and maybe not interesting otherwise. ::
+The two most useful properties of :class:`RayTracer` are :attr:`exists` and :attr:`solutions`. The :attr:`exists` property is a boolean value of whether or not path solutions exist between the launch and receiving points. :attr:`solutions` is the list of (zero or two) :class:`RayTracePath` objects which exist between the launch and receiving points. There are many other properties available in :class:`RayTracer`, outlined in the :ref:`pyrex-api` section, which are mostly used internally and maybe not interesting otherwise. ::
 
     my_ray_tracer.exists
     my_ray_tracer.solutions
 
-The ``RayTracerPath`` class contains the attributes of the paths between points. The most useful properties of ``RayTracerPath`` are ``RayTracerPath.tof``, ``RayTracerPath.path_length``, ``RayTracerPath.emitted_direction``, and ``RayTracerPath.received_direction``. These properties provide the time of flight, path length, and direction of rays at the launch and receiving points respectively. ::
+The :class:`RayTracePath` class contains the attributes of the paths between points. The most useful properties of :class:`RayTracePath` are :attr:`tof`, :attr:`path_length`, :attr:`emitted_direction`, and :attr:`received_direction`. These properties provide the time of flight, path length, and direction of rays at the launch and receiving points respectively. ::
 
     my_path = my_ray_tracer.solutions[0]
     my_path.tof
@@ -487,7 +467,7 @@ The ``RayTracerPath`` class contains the attributes of the paths between points.
     my_path.emitted_direction
     my_path.received_direction
 
-``RayTracePath`` also provides the ``RayTracePath.attenuation()`` method which gives the attenuation of the signal at a given frequency (or frequencies), and the ``RayTracePath.coordinates`` property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not garuanteed to be accurate for other purposes). ::
+:class:`RayTracePath` also provides a :meth:`RayTracePath.attenuation` method which gives the attenuation of the signal at a given frequency (or frequencies), and a :attr:`RayTracePath.coordinates` property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not guaranteed to be accurate for other purposes). ::
 
     frequency = 500e6 # Hz
     my_path.attenuation(100e6)
@@ -495,7 +475,7 @@ The ``RayTracerPath`` class contains the attributes of the paths between points.
     plt.plot(my_path.coordinates[0], my_path.coordinates[2])
     plt.show()
 
-Finally, ``RayTracePath.propagate()`` propagates a ``Signal`` object from the launch point to the receiving point by applying the frequency-dependent attenuation of ``RayTracePath.attenuation()``, and shifting the signal times by ``RayTracePath.tof``. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. ::
+Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. ::
 
     time_array = np.linspace(0, 5e-9, 1001)
     my_signal = (pyrex.FunctionSignal(time_array, lambda t: np.sin(1e9*2*np.pi*t))
@@ -510,10 +490,34 @@ Finally, ``RayTracePath.propagate()`` propagates a ``Signal`` object from the la
 
 
 
+Particle Generation
+===================
+
+PyREx includes the :class:`Particle` class as a container for information about neutrinos which are generated to produce Askaryan pulses. :class:`Particle` contains three attributes: :attr:`vertex`, :attr:`direction`, and :attr:`energy`::
+
+    initial_position = (0,0,0) # m
+    direction_vector = (0,0,-1)
+    particle_energy = 1e8 # GeV
+    pyrex.Particle(vertex=initial_position, direction=direction_vector,
+                   energy=particle_energy)
+
+PyREx also includes a :class:`ShadowGenerator` class for generating random neutrinos, taking into account Earth shadowing. The neutrinos are generated in a box of given size, and with a given energy (which can be a scalar value or a function returning scalar values)::
+
+    box_width = 1000 # m
+    box_depth = 500 # m
+    my_generator = pyrex.ShadowGenerator(dx=box_width, dy=box_width,
+                                         dz=box_depth,
+                                         energy=particle_energy)
+    my_generator.create_particle()
+
+Lastly, PyREx includes :class:`ListGenerator` and :class:`FileGenerator` classes which can be used to reproduce pre-generated particles from either a list or from numpy files, respectively.
+
+
+
 Full Simulation
 ===============
 
-PyREx provides the ``EventKernel`` class to control a basic simulation including the creation of neutrinos, the propagation of their pulses to the antennas, and the triggering of the antennas. The ``EventKernel`` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
+PyREx provides the :class:`EventKernel` class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The :class:`EventKernel` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
 
     particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
                                                energy=1e8)
@@ -553,4 +557,4 @@ PyREx provides the ``EventKernel`` class to control a basic simulation including
 More Examples
 =============
 
-For more code examples, see the `example-code` section and the python notebooks in the examples directory.
+For more code examples, see the :ref:`example-code` section and the python notebooks in the examples directory.
