@@ -34,8 +34,8 @@ class BasicRayTracePath(LazyMutableClass):
         Launch angle (radians) of the ray path.
     direct : boolean
         Whether the ray path is direct. If ``True`` this means the path does
-        not "turn over". If ``False`` then the path does "turn over" after
-        reaching some maximum depth.
+        not "turn over". If ``False`` then the path does "turn over" by either
+        reflection or refraction after reaching some maximum depth.
 
     Attributes
     ----------
@@ -51,17 +51,25 @@ class BasicRayTracePath(LazyMutableClass):
         The z-step (m) to be used for integration of the ray path attributes.
     direct : boolean
         Whether the ray path is direct. If ``True`` this means the path does
-        not "turn over". If ``False`` then the path does "turn over" after
-        reaching some maximum depth.
+        not "turn over". If ``False`` then the path does "turn over" by either
+        reflection or refraction after reaching some maximum depth.
     emitted_direction
     received_direction
     path_length
     tof
     coordinates
 
+    See Also
+    --------
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
+    BasicRayTracer : Class for calculating the ray-trace solutions between
+                     points.
+
     Notes
     -----
-    More attributes than those listed above are available for the class, but
+    Even more attributes than those listed are available for the class, but
     are mainly for internal use. These attributes can be found by exploring
     the source code.
 
@@ -368,10 +376,11 @@ class SpecializedRayTracePath(BasicRayTracePath):
     Stores parameters of the ray path with calculations performed analytically
     (with the exception of attenuation). These calculations require the index
     of refraction of the ice to be of the form n(z)=n0-k*exp(a*z). However this
-    allows for most of the integrations to be performed analytically. The
-    attenuation is calculated by numerical integration with z-steps of size
-    ``dz``. Most properties are lazily evaluated to save on computation time.
-    If any attributes of the class instance are changed, the lazily-evaluated
+    restriction allows for most of the integrations to be performed
+    analytically. The attenuation is the only attribute which is still
+    calculated by numerical integration with z-steps of size ``dz``. Most
+    properties are lazily evaluated to save on computation time. If any
+    attributes of the class instance are changed, the lazily-evaluated
     properties will be cleared.
 
     Parameters
@@ -382,8 +391,8 @@ class SpecializedRayTracePath(BasicRayTracePath):
         Launch angle (radians) of the ray path.
     direct : boolean
         Whether the ray path is direct. If ``True`` this means the path does
-        not "turn over". If ``False`` then the path does "turn over" after
-        reaching some maximum depth.
+        not "turn over". If ``False`` then the path does "turn over" by either
+        reflection or refraction after reaching some maximum depth.
 
     Attributes
     ----------
@@ -399,8 +408,8 @@ class SpecializedRayTracePath(BasicRayTracePath):
         The z-step (m) to be used for integration of the ray path attributes.
     direct : boolean
         Whether the ray path is direct. If ``True`` this means the path does
-        not "turn over". If ``False`` then the path does "turn over" after
-        reaching some maximum depth.
+        not "turn over". If ``False`` then the path does "turn over" by either
+        reflection or refraction after reaching some maximum depth.
     uniformity_factor : float
         Factor (<1) of the base index of refraction (n0 in the ice model)
         beyond which calculations start to break down numerically.
@@ -413,14 +422,22 @@ class SpecializedRayTracePath(BasicRayTracePath):
     tof
     coordinates
 
+    See Also
+    --------
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
+    SpecializedRayTracer : Class for calculating the ray-trace solutions
+                           between points.
+
     Notes
     -----
-    More attributes than those listed above are available for the class, but
+    Even more attributes than those listed are available for the class, but
     are mainly for internal use. These attributes can be found by exploring
     the source code.
 
     The requirement that the ice model go as n(z)=n0-k*exp(a*z) is implemented
-    by requiring the ice model to inherit from ``AntarcticIce``. Obviously this
+    by requiring the ice model to inherit from `AntarcticIce`. Obviously this
     is not fool-proof, but likely the ray tracing will obviously fail if the
     index follows a very different functional form.
 
@@ -946,9 +963,17 @@ class BasicRayTracer(LazyMutableClass):
     expected_solutions
     solutions
 
+    See Also
+    --------
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
+    BasicRayTracePath : Class for representing a single ray-trace solution
+                        between points.
+
     Notes
     -----
-    More attributes than those listed above are available for the class, but
+    Even more attributes than those listed are available for the class, but
     are mainly for internal use. These attributes can be found by exploring
     the source code.
 
@@ -1283,7 +1308,7 @@ class BasicRayTracer(LazyMutableClass):
     def angle_search(true_r, r_function, min_angle, max_angle,
                      tolerance=1e-12, max_iterations=100):
         """
-        Calculates the angle where `r_function`(angle)==`true_r`.
+        Calculates the angle where `r_function` (angle) == `true_r`.
 
         Runs the brentq root-finding algorithm on `r_function` with an offset
         of `true_r` to find the angle at which they are equal.
@@ -1306,7 +1331,8 @@ class BasicRayTracer(LazyMutableClass):
         Returns
         -------
         float
-            The launch angle which will satisfy `r_function`(angle)==`true_r`.
+            The launch angle which will satisfy the condition
+            `r_function` (angle) == `true_r`.
 
         Raises
         ------
@@ -1325,10 +1351,10 @@ class SpecializedRayTracer(BasicRayTracer):
     Class for calculating the ray-trace solutions between points.
 
     Calculations in this class require the index of refraction of the ice to be
-    of the form n(z)=n0-k*exp(a*z). However this allows the integrations to be
-    performed analytically. Most properties are lazily evaluated to save on
-    computation time. If any attributes of the class instance are changed, the
-    lazily-evaluated properties will be cleared.
+    of the form n(z)=n0-k*exp(a*z). However this restriction allows for most of
+    the integrations to be performed analytically. Most properties are lazily
+    evaluated to save on computation time. If any attributes of the class
+    instance are changed, the lazily-evaluated properties will be cleared.
 
     Parameters
     ----------
@@ -1357,14 +1383,22 @@ class SpecializedRayTracer(BasicRayTracer):
     expected_solutions
     solutions
 
+    See Also
+    --------
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
+    SpecializedRayTracePath : Class for representing a single ray-trace
+                              solution between points.
+
     Notes
     -----
-    More attributes than those listed above are available for the class, but
+    Even more attributes than those listed are available for the class, but
     are mainly for internal use. These attributes can be found by exploring
     the source code.
 
     The requirement that the ice model go as n(z)=n0-k*exp(a*z) is implemented
-    by requiring the ice model to inherit from ``AntarcticIce``. Obviously this
+    by requiring the ice model to inherit from `AntarcticIce`. Obviously this
     is not fool-proof, but likely the ray tracing will obviously fail if the
     index follows a very different functional form.
 

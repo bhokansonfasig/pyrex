@@ -73,7 +73,7 @@ class AntarcticIce:
         Returns
         -------
         array_like
-            Indices of refraction at `depth`s.
+            Indices of refraction at `depth` values.
 
         """
         try:
@@ -106,7 +106,7 @@ class AntarcticIce:
         Returns
         -------
         array_like
-            (Negative-valued) depths corresponding to the given `n`s.
+            (Negative-valued) depths corresponding to the given `n` values.
 
         """
         n0 = cls.index(0)
@@ -136,7 +136,7 @@ class AntarcticIce:
         Returns
         -------
         array_like
-            Temperatures (K) at `depth`s.
+            Temperatures (K) at `depth` values.
 
         """
         z_km = -0.001 * z
@@ -156,7 +156,7 @@ class AntarcticIce:
         t : array_like
             Temperatures (K) of the ice.
         f : array_like
-            Freuqencies (Hz) of the signal.
+            Frequencies (Hz) of the signal.
 
         Returns
         -------
@@ -229,7 +229,7 @@ class AntarcticIce:
         z : array_like
             (Negative-valued) depths (m) in the ice.
         f : array_like
-            Freuqencies (Hz) of the signal.
+            Frequencies (Hz) of the signal.
 
         Returns
         -------
@@ -265,11 +265,10 @@ class NewcombIce(AntarcticIce):
     """
     Class describing the ice at the south pole.
 
-    Uses an attenuation length based on Matt Newcomb's fit (DOESN'T CURRENTLY
-    WORK). For convenience, consists of static methods and class methods, so
-    creating an instance of the class may not be necessary. In all methods, the
-    depth z should be given as a negative value if it is below the surface of
-    the ice.
+    Uses an attenuation length based on Matt Newcomb's fit. For convenience,
+    consists of static methods and class methods, so creating an instance of
+    the class may not be necessary. In all methods, the depth z should be given
+    as a negative value if it is below the surface of the ice.
 
     Attributes
     ----------
@@ -277,6 +276,11 @@ class NewcombIce(AntarcticIce):
         Parameters of the index of refraction of the ice.
     thickness : float
         Thickness of the ice sheet.
+
+    Warnings
+    --------
+    The `attenuation_length` method if this class does not currently work
+    properly. This class should not be used until it is fixed.
 
     Notes
     -----
@@ -292,26 +296,32 @@ class NewcombIce(AntarcticIce):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
-        DOESN'T CURRENTLY WORK - USE BOGORODSKY ATTENUATION FROM ANTARCTICICE.
-
         Parameters
         ----------
         z : array_like
             (Negative-valued) depths (m) in the ice.
         f : array_like
-            Freuqencies (MHz) of the signal.
+            Frequencies (MHz) of the signal.
 
         Returns
         -------
         array_like
             Attenuation lengths for the given parameters.
 
+        Warnings
+        --------
+        This method does not currently work properly. Instead the Bogorodsky
+        attenuation in the `AntarcticIce` class should be used.
+
+        This method does not currently support passing both inputs as 1D arrays
+        the way `AntarcticIce.attenuation_length` does.
+
         Notes
         -----
         The shape of the output array is determined by the shapes of the input
         arrays. If both inputs are scalar, the output will be scalar. If one
         input is scalar and the other is a 1D array, the output will be a 1D
-        array. DOES NOT SUPPORT BOTH INPUTS AS 1D ARRAYS.
+        array.
 
         """
         temp = cls.temperature(z)
@@ -337,6 +347,9 @@ class ArasimIce(AntarcticIce):
         Parameters of the index of refraction of the ice.
     thickness : float
         Thickness of the ice sheet.
+    atten_depths, atten_lengths : list
+        Depths and corresponding attenuation lengths to be interpolated in the
+        `attenuation_length` calculation.
 
     """
     k = 0.43
@@ -378,7 +391,7 @@ class ArasimIce(AntarcticIce):
         z : array_like
             (Negative-valued) depths (m) in the ice.
         f : array_like
-            Freuqencies (Hz) of the signal.
+            Frequencies (Hz) of the signal.
 
         Returns
         -------

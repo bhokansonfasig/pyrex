@@ -221,6 +221,7 @@ def basic_envelope_model(signal, cap=20e-12, res=500):
     Notes
     -----
     Ascii depiction of the basic envelope circuit::
+
         Vin---D1---+---+---out
                    |   |
                   C1   R1
@@ -313,6 +314,7 @@ def bridge_rectifier_envelope_model(signal, cap=20e-12, res=500):
     Notes
     -----
     Ascii depiction of the diode bridge rectifier envelope circuit::
+
          +-----------+
          |           |
          |       +---+---+

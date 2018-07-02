@@ -25,7 +25,7 @@ class DipoleTester(Antenna):
     Dipole antenna for IREX testing.
 
     Stores the attributes of an antenna as well as handling receiving,
-    processing and storing signals and adding noise. Uses a first-order
+    processing, and storing signals and adding noise. Uses a first-order
     butterworth filter for the frequency response.
 
     Parameters
@@ -233,7 +233,7 @@ class EnvelopeSystem(ARAAntennaSystem):
     envelope_amplification : float, optional
         Amplification to be applied to the signal after the typical ARA front
         end, before the envelope circuit.
-    envelope_method : {('hilbert', 'analytic', 'spice') + ('basic', 'biased',
+    envelope_method : {('hilbert', 'analytic', 'spice') + ('basic', 'biased',\
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
@@ -271,6 +271,14 @@ class EnvelopeSystem(ARAAntennaSystem):
     signals
     waveforms
     all_waveforms
+
+    See Also
+    --------
+    pyrex.custom.ara.antenna.ARAAntennaSystem : Antenna system extending base
+                                                ARA antenna with front-end
+                                                processing.
+    pyrex.custom.ara.antenna.ARAAntenna : Antenna class to be used for ARA
+                                          antennas.
 
     """
     def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
@@ -316,6 +324,13 @@ class EnvelopeSystem(ARAAntennaSystem):
         ModuleNotFoundError
             If "spice" is in ``envelope_method`` and ``PySpice`` hasn't been
             installed.
+
+        See Also
+        --------
+        pyrex.custom.irex.frontends.basic_envelope_model :
+            Model of a basic diode-capacitor-resistor envelope circuit.
+        pyrex.custom.irex.frontends.bridge_rectifier_envelope_model :
+            Model of a diode bridge rectifier envelope circuit.
 
         """
         if "hilbert" in self.envelope_method:
@@ -394,6 +409,13 @@ class EnvelopeSystem(ARAAntennaSystem):
         Signal
             Signal processed by the antenna front end.
 
+        See Also
+        --------
+        EnvelopeSystem.make_envelope : Return the signal envelope based on the
+                                       antenna's ``envelope_method``.
+        pyrex.custom.ara.antenna.ARAAntennaSystem.front_end :
+            Apply front-end processes to a signal and return the output.
+
         """
         amplified = super().front_end(signal)
         amplified.values *= self.envelope_amplification
@@ -432,13 +454,18 @@ class EnvelopeSystem(ARAAntennaSystem):
         Signal
             Signal processed by the ARA antenna front end.
 
+        See Also
+        --------
+        pyrex.custom.ara.antenna.ARAAntennaSystem.front_end :
+            Apply front-end processes to a signal and return the output.
+
         """
         return super().front_end(signal)
 
     @property
     def all_waveforms(self):
         """
-        The antenna system signal + noise at all hits.
+        The antenna system signal + noise for all hits.
 
         Adds a lead-in time period equal to the signal length so the envelope
         circuit has time to equilibrate.
@@ -474,6 +501,11 @@ class EnvelopeSystem(ARAAntennaSystem):
         -------
         Signal
             Complete waveform with noise and all signals.
+
+        See Also
+        --------
+        pyrex.Antenna.full_waveform : Signal + noise for an antenna for the
+                                      given times.
 
         """
         # Process full antenna waveform
@@ -548,7 +580,7 @@ class EnvelopeHpol(EnvelopeSystem):
     envelope_amplification : float, optional
         Amplification to be applied to the signal after the typical ARA front
         end, before the envelope circuit.
-    envelope_method : {('hilbert', 'analytic', 'spice') + ('basic', 'biased',
+    envelope_method : {('hilbert', 'analytic', 'spice') + ('basic', 'biased',\
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
@@ -637,7 +669,7 @@ class EnvelopeVpol(EnvelopeSystem):
     envelope_amplification : float, optional
         Amplification to be applied to the signal after the typical ARA front
         end, before the envelope circuit.
-    envelope_method : {('hilbert', 'analytic', 'spice') + ('basic', 'biased',
+    envelope_method : {('hilbert', 'analytic', 'spice') + ('basic', 'biased',\
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert

@@ -167,7 +167,7 @@ class ARAAntenna(Antenna):
     Antenna class to be used for ARA antennas.
 
     Stores the attributes of an antenna as well as handling receiving,
-    processing and storing signals and adding noise.
+    processing, and storing signals and adding noise.
 
     Parameters
     ----------
@@ -231,6 +231,10 @@ class ARAAntenna(Antenna):
     is_hit
     waveforms
     all_waveforms
+
+    See Also
+    --------
+    pyrex.Antenna : Base class for antennas.
 
     """
     def __init__(self, position, center_frequency, bandwidth, resistance,
@@ -385,7 +389,7 @@ class ARAAntenna(Antenna):
         Frequency response of the antenna is based on the effective height
         calculation with some electronics gains thrown in. The frequency
         dependence of the directional gain is handled in the
-        ``generate_directionality_gains`` method.
+        `generate_directionality_gains` method.
 
         Parameters
         ----------
@@ -553,6 +557,12 @@ class ARAAntennaSystem(AntennaSystem):
     signals
     waveforms
     all_waveforms
+
+    See Also
+    --------
+    pyrex.AntennaSystem : Base class for antenna system with front-end
+                          processing.
+    ARAAntenna : Antenna class to be used for ARA antennas.
 
     """
     def __init__(self, name, position, power_threshold,
@@ -855,6 +865,12 @@ class HpolAntenna(ARAAntennaSystem):
     waveforms
     all_waveforms
 
+    See Also
+    --------
+    ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
+                       processing.
+    ARAAntenna : Antenna class to be used for ARA antennas.
+
     """
     def __init__(self, name, position, power_threshold,
                  amplification=1, amplifier_clipping=1, noisy=True,
@@ -922,6 +938,12 @@ class VpolAntenna(ARAAntennaSystem):
     signals
     waveforms
     all_waveforms
+
+    See Also
+    --------
+    ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
+                       processing.
+    ARAAntenna : Antenna class to be used for ARA antennas.
 
     """
     def __init__(self, name, position, power_threshold,

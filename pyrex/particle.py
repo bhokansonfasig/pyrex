@@ -164,7 +164,7 @@ class ShadowGenerator:
     """
     Class to generate neutrino vertices with Earth shadowing.
 
-    Generates neutrinos in a box with given width, length, and height. Accouts
+    Generates neutrinos in a box with given width, length, and height. Accounts
     for Earth shadowing by comparing the neutrino interaction length to the
     material thickness of the Earth along the neutrino path, and rejecting
     particles which would interact before reaching the vertex. Note the subtle
@@ -174,10 +174,10 @@ class ShadowGenerator:
     ----------
     dx : float
         Width of the ice volume in the x-direction. Neutrinos generated within
-        (-`dx`/2, `dx`/2).
+        (-`dx` / 2, `dx` / 2).
     dy : float
         Length of the ice volume in the y-direction. Neutrinos generated within
-        (-`dy`/2, `dy`/2).
+        (-`dy` / 2, `dy` / 2).
     dz : float
         Height of the ice volume in the z-direction. Neutrinos generated within
         (-`dz`, 0).
@@ -190,10 +190,10 @@ class ShadowGenerator:
     ----------
     dx : float
         Width of the ice volume in the x-direction. Neutrinos generated within
-        (-`dx`/2, `dx`/2).
+        (-`dx` / 2, `dx` / 2).
     dy : float
         Length of the ice volume in the y-direction. Neutrinos generated within
-        (-`dy`/2, `dy`/2).
+        (-`dy` / 2, `dy` / 2).
     dz : float
         Height of the ice volume in the z-direction. Neutrinos generated within
         (-`dz`, 0).
@@ -202,6 +202,11 @@ class ShadowGenerator:
         calls.
     count : int
         Number of neutrinos produced by the generator.
+
+    See Also
+    --------
+    pyrex.slant_depth : Calculates the material thickness of a chord cutting
+                        through Earth.
 
     """
     def __init__(self, dx, dy, dz, energy):
@@ -223,10 +228,10 @@ class ShadowGenerator:
         """
         Generate a neutrino.
 
-        Creates a neutrino with random vertex in the volume, a random
-        direction, and an energy based on the `energy_generator`. Accounts for
-        Earth shadowing by throwing out particles that wouldn't make it to the
-        vertex based on the Earth's thickness along their path.
+        Creates a neutrino with a random vertex in the volume, a random
+        direction, and an energy based on the ``energy_generator``. Accounts
+        for Earth shadowing by discarding particles that wouldn't make it to
+        the vertex based on the Earth's thickness along their path.
 
         Returns
         -------
@@ -265,24 +270,24 @@ class ListGenerator:
     """
     Class to generate neutrino vertices from a list.
 
-    Generates neutrinos by simply pulling them from a list of Particle objects.
-    By default returns to the start of the list once the end is reached, but
-    can optionally fail after reaching the list's end.
+    Generates neutrinos by simply pulling them from a list of `Particle`
+    objects. By default returns to the start of the list once the end is
+    reached, but can optionally fail after reaching the list's end.
 
     Parameters
     ----------
     particles : Particle or list of Particle
-        List of ``Particle`` objects to draw from. If only a single
-        ``Particle`` object is given, creates a list of that particle alone.
+        List of `Particle` objects to draw from. If only a single `Particle`
+        object is given, creates a list of that particle alone.
     loop : boolean, optional
         Whether or not to return to the start of the list after throwing the
-        last ``Particle``. If ``False``, raises an error if trying to throw
-        after the last ``Particle``.
+        last `Particle`. If ``False``, raises an error if trying to throw
+        after the last `Particle`.
 
     Attributes
     ----------
-    particles : list
-        List of ``Particle`` objects to draw from.
+    particles : list of Particle
+        List to draw `Particle` objects from, sequentially.
     loop : boolean
         Whether or not to loop through the list more than once.
 
@@ -299,7 +304,7 @@ class ListGenerator:
         """
         Generate a neutrino.
 
-        Pulls the next ``Particle`` object from the class's list of particles.
+        Pulls the next `Particle` object from the class's list of particles.
 
         Returns
         -------
@@ -413,7 +418,7 @@ class FileGenerator:
         """
         Generate a neutrino.
 
-        Pulls the next ``Particle`` object from the file(s).
+        Pulls the next `Particle` object from the file(s).
 
         Returns
         -------

@@ -64,11 +64,11 @@ class EventKernel:
     require the following at a minimum:
 
     The particle generator `generator` must have a ``create_particle`` method
-    which takes no arguments and returns a ``Particle`` object with ``vertex``,
+    which takes no arguments and returns a `Particle` object with ``vertex``,
     ``direction``, and ``energy`` attributes.
 
-    The antenna iterable ``antennas`` must yield each antenna object once when
-    iterating directly over ``antennas``. Each antenna object must have a
+    The antenna iterable `antennas` must yield each antenna object once when
+    iterating directly over `antennas`. Each antenna object must have a
     ``position`` attribute and a ``receive`` method which takes a signal object
     as its first argument, and ``ndarray`` objects as ``direction`` and
     ``polarization`` keyword arguments.
@@ -79,7 +79,7 @@ class EventKernel:
 
     The `ray_tracer` must be initialized with the particle vertex and an
     antenna position as its first two arguments, and the `ice_model` of the
-    kernel as the `ice_model` keyword argument. The ray tracer must also have
+    kernel as the ``ice_model`` keyword argument. The ray tracer must also have
     ``exists`` and ``solutions`` attributes, the first of which denotes whether
     any paths exist between the given points and the second of which is an
     iterable revelaing each path between the points. These paths must have

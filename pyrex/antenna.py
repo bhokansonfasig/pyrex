@@ -25,7 +25,7 @@ class Antenna:
     Base class for antennas.
 
     Stores the attributes of an antenna as well as handling receiving,
-    processing and storing signals and adding noise.
+    processing, and storing signals and adding noise.
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ class Antenna:
     x_axis : array_like, optional
         Vector direction of the x-axis of the antenna.
     antenna_factor : float, optional
-        Antenna factor used for converting fields to voltages.
+        Antenna factor used for converting electric field values to voltages.
     efficiency : float, optional
         Antenna efficiency applied to incoming signal values.
     noisy : boolean, optional
@@ -67,7 +67,7 @@ class Antenna:
     x_axis : ndarray
         Vector direction of the x-axis of the antenna.
     antenna_factor : float
-        Antenna factor used for converting fields to voltages.
+        Antenna factor used for converting electric field values to voltages.
     efficiency : float
         Antenna efficiency applied to incoming signal values.
     noisy : boolean
@@ -191,7 +191,7 @@ class Antenna:
 
     @property
     def waveforms(self):
-        """Signal + noise (if noisy) at each triggered antenna hit."""
+        """Signal + noise (if ``noisy``) for each triggered antenna hit."""
         # Process any unprocessed triggers
         all_waves = self.all_waveforms
         while len(self._triggers)<len(all_waves):
@@ -203,7 +203,7 @@ class Antenna:
 
     @property
     def all_waveforms(self):
-        """Signal + noise (if noisy) at all antenna hits."""
+        """Signal + noise (if ``noisy``) for all antenna hits."""
         if not(self.noisy):
             return self.signals
 
@@ -217,7 +217,7 @@ class Antenna:
 
     def full_waveform(self, times):
         """
-        Signal + noise (if noisy) for the given times.
+        Signal + noise (if ``noisy``) for the given times.
 
         Creates the complete waveform of the antenna including noise and all
         received signals for the given `times` array.
@@ -246,9 +246,9 @@ class Antenna:
         """
         Creates a noise signal over the given times.
 
-        In order to add noise to signal to produce the waveforms of the antenna
-        this function is used to create the noise values at specific times.
-        Makes use of the antenna's noise-related attributes.
+        In order to add noise to signal to produce the waveforms of the
+        antenna, this function is used to create the noise values at specific
+        times. Makes use of the antenna's noise-related attributes.
 
         Parameters
         ----------
@@ -509,7 +509,7 @@ class DipoleAntenna(Antenna):
     Class for half-wave dipole antennas.
 
     Stores the attributes of an antenna as well as handling receiving,
-    processing and storing signals and adding noise. Uses a first-order
+    processing, and storing signals and adding noise. Uses a first-order
     butterworth filter for the frequency response. Includes a simple threshold
     trigger.
 
@@ -550,7 +550,7 @@ class DipoleAntenna(Antenna):
     x_axis : ndarray
         Vector direction of the x-axis of the antenna.
     antenna_factor : float
-        Antenna factor used for converting fields to voltages.
+        Antenna factor used for converting electric field values to voltages.
     efficiency : float
         Antenna efficiency applied to incoming signal values.
     threshold : float, optional
@@ -559,8 +559,8 @@ class DipoleAntenna(Antenna):
         Effective length of the antenna. By default calculated by the tuned
         `center_frequency` of the dipole.
     filter_coeffs : tuple of ndarray
-        Coefficients of transfer function for butterworth bandpass filter to be
-        used for frequency response.
+        Coefficients of the transfer function of the butterworth bandpass
+        filter to be used for frequency response.
     noisy : boolean
         Whether or not the antenna should add noise to incoming signals.
     unique_noises : int
@@ -584,6 +584,10 @@ class DipoleAntenna(Antenna):
     is_hit
     waveforms
     all_waveforms
+
+    See Also
+    --------
+    Antenna : Base class for antennas.
 
     """
     def __init__(self, name, position, center_frequency, bandwidth, resistance,

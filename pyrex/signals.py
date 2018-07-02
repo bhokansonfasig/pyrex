@@ -29,10 +29,11 @@ class Signal:
         1D array of times for which the signal is defined.
     values : array_like
         1D array of values of the signal corresponding to the given `times`.
-        Will be resized to the size of `times` by zero-padding or truncating.
+        Will be resized to the size of `times` by zero-padding or truncating
+        as necessary.
     value_type
         Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` Enum.
+        ``Signal.ValueTypes`` enum.
 
     Attributes
     ----------
@@ -127,7 +128,7 @@ class Signal:
 
     @property
     def dt(self):
-        """The time spacing of the ``times`` array, or ``None`` if invalid."""
+        """The time spacing of the `times` array, or ``None`` if invalid."""
         try:
             return self.times[1]-self.times[0]
         except IndexError:
@@ -172,7 +173,7 @@ class Signal:
         Notes
         -----
         Interpolates the values of the ``Signal`` object across `new_times`,
-        with zero values on the left and right.
+        extrapolating with zero values on the left and right.
 
         """
         new_values = np.interp(new_times, self.times, self.values,
@@ -264,7 +265,7 @@ class Signal:
 
 class EmptySignal(Signal):
     """
-    Class for signal with no amplitude (all values = 0).
+    Class for signal with zero amplitude (all values = 0).
 
     Parameters
     ----------
@@ -351,6 +352,7 @@ class FunctionSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
+    EmptySignal : Class for signal with zero amplitude.
 
     """
     def __init__(self, times, function, value_type=Signal.ValueTypes.undefined):
@@ -434,7 +436,12 @@ class SlowAskaryanSignal(Signal):
     Warns
     -----
     Raises warning that this class is essentially deprecated and
-    ``FastAskaryanSignal`` should be used instead.
+    FastAskaryanSignal should be used instead.
+
+    Warnings
+    --------
+    This class is essentially deprecated. ``FastAskaryanSignal`` is faster and
+    more accurate. This class is kept for reference only and shouldn't be used.
 
     See Also
     --------
@@ -996,7 +1003,7 @@ class ThermalNoise(FunctionSignal):
 
     The Rayleigh thermal noise is calculated in a given frequency band with
     flat or otherwise specified amplitude and random phase at some number of
-    frequencies. Values are scaled to some RMS voltage.
+    frequencies. Values are scaled to a provided or calculated RMS voltage.
 
     Parameters
     ----------
@@ -1062,7 +1069,7 @@ class ThermalNoise(FunctionSignal):
     Raises
     ------
     ValueError
-        If the RMS voltage cannot be calculated (i.e. `rms_voltage` or
+        If the RMS voltage cannot be calculated (i.e. `rms_voltage` or both
         `temperature` and `resistance` are ``None``).
 
     See Also

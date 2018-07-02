@@ -50,7 +50,7 @@ def normalize(vector):
 
 def flatten(iterator, dont_flatten=()):
     """
-    Flattens an iterator to iterate over all elements.
+    Flattens an iterator to iterate over all elements individually.
 
     Flattens all iterable elements in the given iterator recursively and
     yields the resulting flat iterator. Can optionally not flatten certain
@@ -99,7 +99,7 @@ def flatten(iterator, dont_flatten=()):
 
 def mirror_func(match_func, run_func, self=None):
     """
-    Mirror the attributes of one function to another.
+    Mirror the attributes of one function onto another.
 
     Creates a function which operates like one function, but has all the
     attributes of another. Works for functions or class methods.
@@ -243,7 +243,7 @@ def lazy_property(fn):
 # saved in lazy evaluation of properties
 class LazyMutableClass:
     """
-    Class with lazy properties which can be dependent on static attributes.
+    Class with lazy properties which may depend on other class attributes.
 
     This class is intended as a base class for any class which desires lazy
     properties which depend on other attributes and thus may need to be
@@ -258,7 +258,8 @@ class LazyMutableClass:
     ----------
     static_attributes : None or sequence of str
         Set of attribute names on which the lazy properties depend. If ``None``
-        then it will contain all members of __dict__ at the time of the call.
+        then it will contain all members of ``__dict__`` at the time of the
+        call.
 
     See Also
     --------

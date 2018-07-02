@@ -90,6 +90,10 @@ def slant_depth(angle, depth, step=500):
         Material thickness (g/cm^2) along the chord starting from `depth` and
         passing through the Earth at `angle`.
 
+    See Also
+    --------
+    prem_density : Calculates the Earth's density at a given radius.
+
     """
     # Starting point (x0, z0)
     x0 = 0
