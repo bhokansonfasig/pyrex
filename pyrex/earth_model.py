@@ -115,7 +115,7 @@ def slant_depth(angle, depth, step=500):
             x1 = -m*a/b + np.sqrt(m**2*a**2/b**2 - (a**2 - EARTH_RADIUS**2)/b)
         z1 = z0 + m*(x1-x0)
 
-    # Parametrize line integral with t from 0 to 1, with steps just under the
+    # Parameterize line integral with t from 0 to 1, with steps just under the
     # given step size (in meters)
     l = np.sqrt((x1-x0)**2 + (z1-z0)**2)
     ts = np.linspace(0, 1, int(l/step)+2)

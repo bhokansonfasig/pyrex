@@ -396,7 +396,7 @@ class FunctionSignal(Signal):
 
 class SlowAskaryanSignal(Signal):
     """
-    Class for generating Askaryan signals according to ARWZ parametrization.
+    Class for generating Askaryan signals according to ARVZ parameterization.
 
     Stores the time-domain information for an Askaryan electric field (V/m).
     The amplitude of the pulse is calculated at 1 meter from the shower, so a
@@ -446,12 +446,12 @@ class SlowAskaryanSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
-    FastAskaryanSignal : Faster class for ARWZ Askaryan parametrization.
+    FastAskaryanSignal : Faster class for ARVZ Askaryan parameterization.
 
     Notes
     -----
-    Calculates the Askaryan signal based on the ARWZ (Alvarez-Muniz,
-    Romero-Wolf, Zas) parametrization [1]_. Uses a simplified Heitler model for
+    Calculates the Askaryan signal based on the ARVZ (Alvarez-Muniz,
+    Romero-Wolf, Zas) parameterization [1]_. Uses a simplified Heitler model for
     the shower profile [2]_. Calculates the vector potential directly, and then
     numerically differentiates to get the electric field. This method is
     considerably slower (~1000x) than the convolution method in
@@ -534,7 +534,7 @@ class SlowAskaryanSignal(Signal):
 
         Notes
         -----
-        Based on equation 16 of the ARWZ paper [1]_.
+        Based on equation 16 of the ARVZ paper [1]_.
 
         References
         ----------
@@ -637,7 +637,7 @@ class SlowAskaryanSignal(Signal):
 
 class FastAskaryanSignal(Signal):
     """
-    Class for generating Askaryan signals according to ARWZ parametrization.
+    Class for generating Askaryan signals according to ARVZ parameterization.
 
     Stores the time-domain information for an Askaryan electric field (V/m).
     The amplitude of the pulse is calculated at 1 meter from the shower, so a
@@ -679,11 +679,11 @@ class FastAskaryanSignal(Signal):
 
     Notes
     -----
-    Calculates the Askaryan signal based on the ARWZ (Alvarez-Muniz,
-    Romero-Wolf, Zas) parametrization [1]_. Uses a Heitler model for the shower
-    profile [2]_. Calculates the electric field directly using the convolution
-    method outlined in the ARWZ paper, which results in the most efficient
-    calculation of the parametrization.
+    Calculates the Askaryan signal based on the ARVZ (Alvarez-Muniz,
+    Romero-Wolf, Zas) parameterization [1]_. Uses a Heitler model for the
+    shower profile [2]_. Calculates the electric field directly using the
+    convolution method outlined in the ARVZ paper, which results in the most
+    efficient calculation of the parameterization.
 
     References
     ----------
@@ -848,7 +848,7 @@ class FastAskaryanSignal(Signal):
 
         Notes
         -----
-        Based on equation 16 of the ARWZ paper [1]_.
+        Based on equation 16 of the ARVZ paper [1]_.
 
         References
         ----------
