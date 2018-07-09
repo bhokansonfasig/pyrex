@@ -48,6 +48,50 @@ def normalize(vector):
         return v / mag
 
 
+def get_from_enum(value, enum):
+    """
+    Find the enum value given some representation of it.
+
+    Transforms the given `value` into the corresponding value from the `enum`
+    by checking the type of `value` given.
+
+    Parameters
+    ----------
+    value
+        Representation of the desired `enum` value. If already a member of
+        `enum`, no change. If ``str``, assumed to be a name in the `enum`.
+        Otherwise, assumed to be a value type of the `enum`.
+    enum : Enum
+        Python ``Enum`` to compare names values with.
+
+    Returns
+    -------
+    Enum value
+        Value in the `enum` represented by the given `value`.
+
+    Examples
+    --------
+    >>> from enum import Enum
+    >>> class Color(Enum):
+    ...     red = 1
+    ...     green = 2
+    ...     blue = 3
+    >>> get_from_enum(Color.red, Color)
+    <Color.red: 1>
+    >>> get_from_enum("green", Color)
+    <Color.green: 2>
+    >>> get_from_enum(3, Color)
+    <Color.blue: 3>
+
+    """
+    if isinstance(value, enum):
+        return value
+    elif isinstance(value, str):
+        return enum[value]
+    else:
+        return enum(value)
+
+
 def flatten(iterator, dont_flatten=()):
     """
     Flattens an iterator to iterate over all elements individually.

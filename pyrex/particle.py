@@ -1,103 +1,22 @@
 """
 Module for particles (neutrinos) and neutrino interactions in the ice.
 
-Included in the module are Particle and NeutrinoInteraction classes, as
-well as different particle generators.
+Included in the module are the Particle class for storing particle/shower
+attributes and some Interaction classes which store models describing neutrino
+interactions.
 
 """
 
+from enum import Enum
+import inspect
 import logging
 import numpy as np
-from pyrex.internal_functions import normalize
-import pyrex.earth_model as earth_model
+from pyrex.internal_functions import normalize, get_from_enum
 
 logger = logging.getLogger(__name__)
 
 AVOGADRO_NUMBER = 6.02e23
 
-class NeutrinoInteraction:
-    """
-    Class for describing neutrino interaction attributes.
-
-    Stores parameters used to describe cross section and interaction length of
-    a specific neutrino interaction.
-
-    Parameters
-    ----------
-    c : float
-        Cross section energy coefficient.
-    p : float
-        Cross section energy exponent.
-
-    Attributes
-    ----------
-    times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type
-        Type of signal, representing the units of the values.
-    ValueTypes : Enum
-        Different value types available for `value_type` of signal objects.
-    dt
-    frequencies
-    spectrum
-    envelope
-
-    Notes
-    -----
-    Neutrino intractions based on the GQRS Ultrahigh-Energy Neutrino
-    Interactions Paper [1]_.
-
-    References
-    ----------
-    .. [1] R. Gandhi et al, "Ultrahigh-Energy Neutrino Interactions."
-        Physical Review D **58**, 093009 (1998).
-
-    """
-    def __init__(self, c, p):
-        self.c = c
-        self.p = p
-
-    def cross_section(self, E):
-        """
-        Calculate the neutrino cross section at a given energy.
-
-        Parameters
-        ----------
-        E : float
-            Energy (GeV) of the neutrino.
-
-        Returns
-        -------
-        float
-            Cross section (cm^2) of the neutrino at energy `E`.
-
-        """
-        return self.c * E**self.p
-
-    def interaction_length(self, E):
-        """
-        Calculate the neutrino interaction length at a given energy.
-
-        Parameters
-        ----------
-        E : float
-            Energy (GeV) of the neutrino.
-
-        Returns
-        -------
-        float
-            Interaction length (cm) in water equivalent for the neutrino at
-            energy `E`.
-
-        """
-        return 1 / (AVOGADRO_NUMBER * self.cross_section(E))
-
-# Neutrino interactions from GQRS Ultrahigh-Energy Neutrino Interactions 1995
-# https://arxiv.org/pdf/hep-ph/9512364.pdf
-CC_NU = NeutrinoInteraction(2.69E-36, 0.402)
-NC_NU = NeutrinoInteraction(1.06e-36, 0.408)
-CC_NUBAR = NeutrinoInteraction(2.53e-36, 0.404)
-NC_NUBAR = NeutrinoInteraction(0.98e-36, 0.410)
 
 class Particle:
     """
@@ -105,27 +24,113 @@ class Particle:
 
     Parameters
     ----------
+    particle_id
+        Identification value of the particle type. Values should be from the
+        ``Particle.Type`` enum, but integer or string values may work if
+        carefully chosen. ``Particle.Type.undefined`` by default.
     vertex : array_like
         Vector position (m) of the particle.
     direction : array_like
         Vector direction of the particle's velocity.
     energy : float
         Energy (GeV) of the particle.
+    interaction_model : optional
+        Class to use to describe interactions of the particle. Should inherit
+        from (or behave like) the base ``Interaction`` class.
+    interaction_type : optional
+        Value of the interaction type. Values should be from the
+        ``Interaction.Type`` enum, but integer or string values may work if
+        carefully chosen. By default, the `interaction_model` will choose an
+        interaction type.
+    weight : float, optional
+        Monte Carlo weight of the particle. The calculation of this weight
+        depends on the particle generation method, but this value should be the
+        total weight representing the probability of this particle's event
+        occurring.
 
     Attributes
     ----------
+    id : Particle.Type
+        Identification value of the particle type.
     vertex : array_like
         Vector position (m) of the particle.
     direction : array_like
         (Unit) vector direction of the particle's velocity.
     energy : float
         Energy (GeV) of the particle.
+    interaction : Interaction
+        Instance of the `interaction_model` class to be used for calculations
+        related to interactions of the particle.
+    weight : float
+        Monte Carlo weight of the particle.
 
     """
-    def __init__(self, vertex, direction, energy):
+    class Type(Enum):
+        """
+        Enum containing possible particle types.
+
+        Values based on the PDG particle numbering scheme.
+        http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
+
+        Attributes
+        ----------
+        e, e_minus, electron
+        e_plus, positron
+        nu_e, electron_neutrino
+        nu_e_bar, electron_antineutrino
+        mu, mu_minus, muon
+        mu_plus, antimuon
+        nu_mu, muon_neutrino
+        nu_mu_bar, muon_antineutrino
+        tau, tau_minus, tauon
+        tau_plus, antitau
+        nu_tau, tau_neutrino
+        nu_tau_bar, tau_antineutrino
+        unknown, undefined
+
+        """
+        unknown = 0
+        undefined = 0
+        e = 11
+        e_minus = 11
+        electron = 11
+        e_plus = -11
+        positron = -11
+        nu_e = 12
+        electron_neutrino = 12
+        nu_e_bar = -12
+        electron_antineutrino = -12
+        mu = 13
+        mu_minus = 13
+        muon = 13
+        mu_plus = -13
+        antimuon = -13
+        nu_mu = 14
+        muon_neutrino = 14
+        nu_mu_bar = -14
+        muon_antineutrino = -14
+        tau = 15
+        tau_minus = 15
+        tauon = 15
+        tau_plus = -15
+        antitau = -15
+        nu_tau = 16
+        tau_neutrino = 16
+        nu_tau_bar = -16
+        tau_antineutrino = -16
+
+    def __init__(self, particle_id, vertex, direction, energy,
+                 interaction_model=NeutrinoInteraction, interaction_type=None,
+                 weight=1):
+        self.id = particle_id
         self.vertex = np.array(vertex)
         self.direction = normalize(direction)
         self.energy = energy
+        if inspect.isclass(interaction_model):
+            self.interaction = interaction_model(self, kind=interaction_type)
+        else:
+            raise ValueError("Particle class interaction_model must be a class")
+        self.weight = weight
 
     def __str__(self):
         string = self.__class__.__name__+"("
@@ -133,309 +138,587 @@ class Particle:
             string += key+"="+repr(val)+", "
         return string[:-2]+")"
 
-def random_direction():
-    """
-    Generate an arbitrary cartesian unit vector.
+    @property
+    def id(self):
+        """
+        Identification value of the particle type.
 
-    Returns
-    -------
-    array_like
-        (Unit) vector with a uniformly distributed random direction.
+        Should always be a value from the ``Particle.Type`` enum. Setting with
+        integer or string values may work if carefully chosen.
+
+        """
+        return self._id
+
+    @id.setter
+    def id(self, particle_id):
+        if particle_id is None:
+            self._id = self.Type.undefined
+        else:
+            self._id = get_from_enum(particle_id, self.Type)
+
+
+
+class Interaction:
+    """
+    Base class for describing neutrino interaction attributes.
+
+    Defaults to values which will result in zero probability of interaction.
+
+    Parameters
+    ----------
+    particle : Particle
+        ``Particle`` object for which the interaction is defined.
+    kind : optional
+        Value of the interaction type. Values should be from the
+        ``Interaction.Type`` enum, but integer or string values may work if
+        carefully chosen. By default will be chosen by the `choose_interaction`
+        method.
+
+    Attributes
+    ----------
+    particle : Particle
+        ``Particle`` object for which the interaction is defined.
+    kind : Interaction.Type
+        Value of the interaction type.
+    inelasticity : float
+        Inelasticity value from `choose_inelasticity` distribution for the
+        interaction.
+    total_cross_section
+    total_interaction_length
+    cross_section
+    interaction_length
+
+    """
+
+    class Type(Enum):
+        """
+        Enum containing possible interaction types.
+
+        Attributes
+        ----------
+        cc, charged_current
+        nc, neutral_current
+        unknown, undefined
+
+        """
+        unknown = 0
+        undefined = 0
+        cc = 1
+        charged_current = 1
+        nc = 2
+        neutral_current = 2
+
+    def __init__(self, particle, kind=None):
+        self.particle = particle
+        self.kind = kind
+        if self.kind==self.Type.undefined:
+            self.kind = self.choose_interaction()
+        self.inelasticity = self.choose_inelasticity()
+
+    @property
+    def kind(self):
+        """
+        Value of the interaction type.
+
+        Should always be a value from the ``Interaction.Type`` enum. Setting
+        with integer or string values may work if carefully chosen.
+
+        """
+        return self._interaction_type
+
+    @kind.setter
+    def kind(self, int_type):
+        if int_type is None:
+            self._interaction_type = self.Type.undefined
+        else:
+            self._interaction_type = get_from_enum(int_type, self.Type)
+
+    def choose_interaction(self):
+        """
+        Choose an interaction type for the ``particle`` attribute.
+
+        By default, always chooses undefined interaction type.
+
+        Returns
+        -------
+        Interaction.Type
+            Enum value for the interaction type for the particle.
+
+        """
+        return self.Type.undefined
+
+    def choose_inelasticity(self):
+        """
+        Choose an inelasticity for the ``particle`` attribute's shower.
+
+        By default, always returns zero.
+
+        Returns
+        -------
+        float
+            Inelasticity (y) value for the interaction.
+
+        """
+        return 0
+
+    @property
+    def total_cross_section(self):
+        """
+        The total neutrino cross section (cm^2) of the ``particle`` type.
+
+        Calculation is determined by whether the ``particle`` is a neutrino
+        or antineutrino and is dependent on the energy of the ``particle``.
+        Combines the charged-current and neutral-current cross sections. By
+        default, always zero so no interaction will occur.
+
+        """
+        return 0
+
+    @property
+    def cross_section(self):
+        """
+        The neutrino cross section (cm^2) of the ``particle`` interaction.
+
+        Calculation is determined by whether the ``particle`` is a neutrino
+        or antineutrino and what type of interaction it produces, and is
+        dependent on the energy of the ``particle``. By default, always zero so
+        no interaction will occur.
+
+        """
+        return 0
+
+    @property
+    def total_interaction_length(self):
+        """
+        The neutrino interaction length (cmwe) of the ``particle`` type.
+
+        The interaction length is calculated in centimeters of water
+        equivalent. Calculation is determined by whether the ``particle`` is a
+        neutrino or antineutrino and is dependent on the energy of the
+        ``particle``. Combines the charged-current and neutral-current
+        interaction lengths.
+
+        """
+        return 1 / (AVOGADRO_NUMBER * self.total_cross_section)
+
+    @property
+    def interaction_length(self):
+        """
+        The neutrino interaction length (cmwe) of the ``particle`` interaction.
+
+        The interaction length is calculated in centimeters of water
+        equivalent. Calculation is determined by whether the ``particle`` is a
+        neutrino or antineutrino and what type of interaction it produces, and
+        is dependent on the energy of the ``particle``.
+
+        """
+        return 1 / (AVOGADRO_NUMBER * self.cross_section)
+
+
+class GQRSInteraction(Interaction):
+    """
+    Class for describing neutrino interaction attributes.
+
+    Calculates values related to the interaction(s) of a given `particle`.
+    Values based on GQRS 1998.
+
+    Parameters
+    ----------
+    particle : Particle
+        ``Particle`` object for which the interaction is defined.
+    kind : optional
+        Value of the interaction type. Values should be from the
+        ``Interaction.Type`` enum, but integer or string values may work if
+        carefully chosen. By default will be chosen by the `choose_interaction`
+        method.
+
+    Attributes
+    ----------
+    particle : Particle
+        ``Particle`` object for which the interaction is defined.
+    kind : Interaction.Type
+        Value of the interaction type.
+    inelasticity : float
+        Inelasticity value from `choose_inelasticity` distribution for the
+        interaction.
+    total_cross_section
+    total_interaction_length
+    cross_section
+    interaction_length
 
     Notes
     -----
-    Generates random vector direction by pulling from uniform distributions for
-    -1<cos(theta)<1 and 0<phi<2*pi.
+    Neutrino intractions based on the GQRS Ultrahigh-Energy Neutrino
+    Interactions paper [1]_.
 
-    """
-    cos_theta = np.random.random_sample()*2-1
-    sin_theta = np.sqrt(1 - cos_theta**2)
-    phi = np.random.random_sample() * 2*np.pi
-    return [sin_theta * np.cos(phi), sin_theta * np.sin(phi), cos_theta]
-
-    # Old method:
-    # while 1:
-    #     u = np.random.uniform(low=(-1,-1,-1), high=(1,1,1))
-    #     mag = np.linalg.norm(u)
-    #     if mag<1.0:
-    #         s = 1.0/mag
-    #         return u * s
-
-class ShadowGenerator:
-    """
-    Class to generate neutrino vertices with Earth shadowing.
-
-    Generates neutrinos in a box with given width, length, and height. Accounts
-    for Earth shadowing by comparing the neutrino interaction length to the
-    material thickness of the Earth along the neutrino path, and rejecting
-    particles which would interact before reaching the vertex. Note the subtle
-    difference in x and y ranges compared to the z range.
-
-    Parameters
+    References
     ----------
-    dx : float
-        Width of the ice volume in the x-direction. Neutrinos generated within
-        (-`dx` / 2, `dx` / 2).
-    dy : float
-        Length of the ice volume in the y-direction. Neutrinos generated within
-        (-`dy` / 2, `dy` / 2).
-    dz : float
-        Height of the ice volume in the z-direction. Neutrinos generated within
-        (-`dz`, 0).
-    energy : float or function
-        Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
-        same constant energy. If ``function``, neutrinos are generated with the
-        energy returned by successive function calls.
-
-    Attributes
-    ----------
-    dx : float
-        Width of the ice volume in the x-direction. Neutrinos generated within
-        (-`dx` / 2, `dx` / 2).
-    dy : float
-        Length of the ice volume in the y-direction. Neutrinos generated within
-        (-`dy` / 2, `dy` / 2).
-    dz : float
-        Height of the ice volume in the z-direction. Neutrinos generated within
-        (-`dz`, 0).
-    energy_generator : function
-        Function returning energy (GeV) of the neutrinos by successive function
-        calls.
-    count : int
-        Number of neutrinos produced by the generator.
-
-    See Also
-    --------
-    pyrex.slant_depth : Calculates the material thickness of a chord cutting
-                        through Earth.
+    .. [1] R. Gandhi et al, "Ultrahigh-Energy Neutrino Interactions."
+        Physical Review D **58**, 093009 (1998).
 
     """
-    def __init__(self, dx, dy, dz, energy):
-        self.dx = dx
-        self.dy = dy
-        self.dz = dz
-        if not callable(energy):
-            try:
-                e = float(energy)
-            except TypeError:
-                raise ValueError("energy_generator must be a function "+
-                                 "or a number")
+    def choose_interaction(self):
+        """
+        Choose an interaction type for the ``particle`` attribute.
+
+        Randomly generates the interaction type (charged-current or
+        neutral-current) according to the cross-section ratio.
+
+        Returns
+        -------
+        Interaction.Type
+            Enum value for the interaction type for the particle.
+
+        Notes
+        -----
+        The interaction type choice is based on the ratio used in AraSim and
+        ANITA's icemc. It claims to be based on "[the] Ghandi etal paper,
+        updated for the CTEQ6-DIS parton distribution functions (M.H. Reno,
+        personal communication)".
+
+        """
+        if np.random.rand()<0.6865254:
+            return self.Type.charged_current
+        else:
+            return self.Type.neutral_current
+
+    def choose_inelasticity(self):
+        """
+        Choose an inelasticity for the ``particle`` attribute's shower.
+
+        Generates an inelasticity based on the interaction type.
+
+        Returns
+        -------
+        float
+            Inelasticity (y) value for the interaction.
+
+        Notes
+        -----
+        The inelasticity calculation is based on the "old" calculation in
+        AraSim (or the pickYGhandietal function in ANITA's icemc). It is
+        documented as "A ROUGH PARAMETRIZATION OF PLOT [7] FROM Ghandhi, Reno,
+        Quigg, Sarcevic hep-ph/9512364 (the curves are not in their later
+        article). There is also a slow energy dependence."
+
+        """
+        r_1 = 1 / np.e
+        r_2 = 1 - r_1
+        rnd = np.random.rand()
+        return (-np.log(r_1+rnd*r_2))**2.5
+
+    @property
+    def total_cross_section(self):
+        """
+        The total neutrino cross section (cm^2) of the ``particle`` type.
+
+        Calculation is determined by whether the ``particle`` is a neutrino
+        or antineutrino and is dependent on the energy of the ``particle``.
+        Combines the charged-current and neutral-current cross sections.
+
+        """
+        # Particle
+        if particle.id.value>0:
+            coeff = 7.84e-36
+            power = 0.363
+        # Antiparticle
+        elif particle.id.value<0:
+            coeff = 7.80e-36
+            power = 0.363
+        else:
+            raise ValueError("Unable to calculate cross section without a"+
+                             " particle type")
+        # Calculate cross section based on GQRS 1998
+        return coeff * particle.energy**power
+
+    @property
+    def cross_section(self):
+        """
+        The neutrino cross section (cm^2) of the ``particle`` interaction.
+
+        Calculation is determined by whether the ``particle`` is a neutrino
+        or antineutrino and what type of interaction it produces, and is
+        dependent on the energy of the ``particle``.
+
+        """
+        # Particle
+        if particle.id.value>0:
+            if self.kind==self.Type.charged_current:
+                coeff = 5.53e-36
+                power = 0.363
+            elif self.kind==self.Type.neutral_current:
+                coeff = 2.31e-36
+                power = 0.363
             else:
-                energy = lambda: e
-        self.energy_generator = energy
-        self.count = 0
-
-    def create_particle(self):
-        """
-        Generate a neutrino.
-
-        Creates a neutrino with a random vertex in the volume, a random
-        direction, and an energy based on the ``energy_generator``. Accounts
-        for Earth shadowing by discarding particles that wouldn't make it to
-        the vertex based on the Earth's thickness along their path.
-
-        Returns
-        -------
-        Particle
-            Random neutrino object not shadowed by the Earth.
-
-        """
-        vtx = np.random.uniform(low=(-self.dx/2, -self.dy/2, -self.dz),
-                                high=(self.dx/2, self.dy/2, 0))
-        u = random_direction()
-        nadir = np.arccos(u[2])
-        depth = -vtx[2]
-        t = earth_model.slant_depth(nadir, depth)
-        E = self.energy_generator()
-        # Interaction length is average of neutrino and antineutrino
-        # interaction lengths. Each of those is the inverted-sum of the
-        # CC and NC interaction lengths.
-        inter_length = 2/(1/CC_NU.interaction_length(E) +
-                          1/NC_NU.interaction_length(E) +
-                          1/CC_NUBAR.interaction_length(E) +
-                          1/NC_NUBAR.interaction_length(E))
-        x = t / inter_length
-        self.count += 1
-        rand_exponential = np.random.exponential()
-        if rand_exponential > x:
-            p = Particle(vtx, u, E)
-            logger.debug("Successfully created %s", p)
-            return p
-        else:
-            # Particle was shadowed by the earth. Try again
-            logger.debug("Particle creation shadowed by the Earth")
-            return self.create_particle()
-
-
-class ListGenerator:
-    """
-    Class to generate neutrino vertices from a list.
-
-    Generates neutrinos by simply pulling them from a list of `Particle`
-    objects. By default returns to the start of the list once the end is
-    reached, but can optionally fail after reaching the list's end.
-
-    Parameters
-    ----------
-    particles : Particle or list of Particle
-        List of `Particle` objects to draw from. If only a single `Particle`
-        object is given, creates a list of that particle alone.
-    loop : boolean, optional
-        Whether or not to return to the start of the list after throwing the
-        last `Particle`. If ``False``, raises an error if trying to throw
-        after the last `Particle`.
-
-    Attributes
-    ----------
-    particles : list of Particle
-        List to draw `Particle` objects from, sequentially.
-    loop : boolean
-        Whether or not to loop through the list more than once.
-
-    """
-    def __init__(self, particles, loop=True):
-        if isinstance(particles, Particle):
-            self.particles = [particles]
-        else:
-            self.particles = particles
-        self.loop = loop
-        self._index = -1
-
-    def create_particle(self):
-        """
-        Generate a neutrino.
-
-        Pulls the next `Particle` object from the class's list of particles.
-
-        Returns
-        -------
-        Particle
-            Next neutrino object in the list.
-
-        Raises
-        ------
-        StopIteration
-            If ``loop`` is ``False`` and the end of the list has been exceeded.
-
-        """
-        self._index += 1
-        if not self.loop and self._index>=len(self.particles):
-            raise StopIteration("No more particles to be generated")
-        return self.particles[self._index%len(self.particles)]
-
-
-class FileGenerator:
-    """
-    Class to generate neutrino vertices from numpy file(s).
-
-    Generates neutrinos by pulling their vertex, direction, and energy from a
-    (list of) .npz file(s). Each file must have three arrays, containing the
-    vertices, directions, and energies respectively so the first particle will
-    have properties given by the first elements of these three arrays. Tries to
-    smartly figure out which array is which based on their names, but if the
-    arrays are unnamed, assumes they are in the order used above.
-
-    Parameters
-    ----------
-    files : str or list of str
-        List of file names containing neutrino information. If only a single
-        file name is provided, creates a list with that file alone.
-
-    Attributes
-    ----------
-    files : list of str
-        List of file names containing neutrino information.
-    vertices : ndarray
-        Array of neutrino vertices from the current file.
-    directions : ndarray
-        Array of neutrino directions from the current file.
-    energies : ndarray
-        Array of neutrino energies from the current file.
-
-    """
-    def __init__(self, files):
-        if isinstance(files, str):
-            self.files = [files]
-        else:
-            self.files = files
-        self._file_index = -1
-        self._next_file()
-
-    def _next_file(self):
-        """
-        Pulls the next file into memory.
-
-        Reads in the next file from the ``files`` list and stores its vertices,
-        directions, and energies. Tries to smartly figure out which array is
-        which based on their names, but if the arrays are unnamed, assumes they
-        are in the order used above.
-
-        Raises
-        ------
-        KeyError
-            If the keys of the numpy file could not be interpreted.
-        ValueError
-            If the arrays of vertices, directions, and energies are not of the
-            same length.
-
-        """
-        self._file_index += 1
-        self._index = -1
-        self.vertices = None
-        self.directions = None
-        self.energies = None
-        if self._file_index>=len(self.files):
-            raise StopIteration("No more particles to be generated")
-        with np.load(self.files[self._file_index]) as data:
-            if 'arr_0' in data:
-                self.vertices = data['arr_0']
-                self.directions = data['arr_1']
-                self.energies = data['arr_2']
+                raise ValueError("Unable to calculate cross section without an"
+                                 +" interaction type")
+        # Antiparticle
+        elif particle.id.value<0:
+            if self.kind==self.Type.charged_current:
+                coeff = 5.52e-36
+                power = 0.363
+            elif self.kind==self.Type.neutral_current:
+                coeff = 2.29e-36
+                power = 0.363
             else:
-                for key, val in data.items():
-                    key = key.lower()
-                    if 'vert' in key:
-                        self.vertices = val
-                    elif key.startswith('v'):
-                        self.vertices = val
-                    if 'dir' in key:
-                        self.directions = val
-                    elif key.startswith('d'):
-                        self.directions = val
-                    if 'en' in key:
-                        self.energies = val
-                    elif key.startswith('e'):
-                        self.energies = val
-        if (self.vertices is None or self.directions is None
-                or self.energies is None):
-            raise KeyError("Could not interpret data keys of file "+
-                           str(self.files[self._file_index]))
-        if (len(self.vertices)!=len(self.directions) or
-                len(self.vertices)!=len(self.energies)):
-            raise ValueError("Vertex, direction, and energy lists must all be"+
-                             " the same length")
+                raise ValueError("Unable to calculate cross section without an"
+                                 +" interaction type")
+        else:
+            raise ValueError("Unable to calculate cross section without a"+
+                             " particle type")
+        # Calculate cross section based on GQRS 1998
+        return coeff * particle.energy**power
 
-    def create_particle(self):
+
+class CTWInteraction(Interaction):
+    """
+    Class for describing neutrino interaction attributes.
+
+    Calculates values related to the interaction(s) of a given `particle`.
+    Values based on CTW 2011.
+
+    Parameters
+    ----------
+    particle : Particle
+        ``Particle`` object for which the interaction is defined.
+    kind : optional
+        Value of the interaction type. Values should be from the
+        ``Interaction.Type`` enum, but integer or string values may work if
+        carefully chosen. By default will be chosen by the `choose_interaction`
+        method.
+
+    Attributes
+    ----------
+    particle : Particle
+        ``Particle`` object for which the interaction is defined.
+    kind : Interaction.Type
+        Value of the interaction type.
+    inelasticity : float
+        Inelasticity value from `choose_inelasticity` distribution for the
+        interaction.
+    total_cross_section
+    total_interaction_length
+    cross_section
+    interaction_length
+
+    Notes
+    -----
+    Neutrino intractions based on the CTW High Energy Neutrino-Nucleon Cross
+    Sections paper [1]_.
+
+    References
+    ----------
+    .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
+        Cross Sections and Uncertainties Using the MSTW Parton Distribution
+        Functions and Implications for Future Experiments." Physical Review D
+        **83**, 113009 (2011).
+
+    """
+    def choose_interaction(self):
         """
-        Generate a neutrino.
+        Choose an interaction type for the ``particle`` attribute.
 
-        Pulls the next `Particle` object from the file(s).
+        Randomly generates the interaction type (charged-current or
+        neutral-current) according to the cross-section ratio.
 
         Returns
         -------
-        Particle
-            Next neutrino object from the file(s).
+        Interaction.Type
+            Enum value for the interaction type for the particle.
 
-        Raises
-        ------
-        StopIteration
-            If the end of the last file in the file list has been reached.
+        Notes
+        -----
+        The interaction type choice is based on the ratio equation in the CTW
+        2011 paper [1]_ (Equation 8).
+
+        References
+        ----------
+        .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
+            Cross Sections and Uncertainties Using the MSTW Parton Distribution
+            Functions and Implications for Future Experiments." Physical Review
+            D **83**, 113009 (2011).
 
         """
-        self._index += 1
-        if self.vertices is None or self._index>=len(self.vertices):
-            self._next_file()
-            return self.create_particle()
-        return Particle(vertex=self.vertices[self._index],
-                        direction=self.directions[self._index],
-                        energy=self.energies[self._index])
+        d_0 = 1.76
+        d_1 = 0.252162
+        d_2 = 0.0256
+        eps = np.log10(self.particle.energy)
+        nc_frac = d_1 + d_2 * np.log(eps - d_0)
+        if np.random.rand()<nc_frac:
+            return self.Type.neutral_current
+        else:
+            return self.Type.charged_current
+
+    def choose_inelasticity(self):
+        """
+        Choose an inelasticity for the ``particle`` attribute's shower.
+
+        Generates a random inelasticity from an inelasticity distribution based
+        on the interaction type.
+
+        Returns
+        -------
+        float
+            Inelasticity (y) value for the interaction.
+
+        Notes
+        -----
+        The inelasticity calculation is based on Equations 14-18 in the CTW
+        2011 paper [1]_.
+
+        References
+        ----------
+        .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
+            Cross Sections and Uncertainties Using the MSTW Parton Distribution
+            Functions and Implications for Future Experiments." Physical Review
+            D **83**, 113009 (2011).
+
+        """
+        eps = np.log10(self.particle.energy)
+        # Step 1
+        is_low_y = bool(np.random.rand() < 0.128*np.sin(-0.197*(eps-21.8)))
+        # Step 2
+        if is_low_y:
+            a_0 = 0
+            a_1 = 0.0941
+            a_2 = 4.72
+            a_3 = 0.456
+        else:
+            if int_type==self.Type.charged_current:
+                # Particle
+                if particle.id.value>0:
+                    a_0 = -0.008
+                    a_1 = 0.26
+                    a_2 = 3
+                    a_3 = 1.7
+                # Antiparticle
+                elif particle.id.value<0
+                    a_0 = -0.0026
+                    a_1 = 0.085
+                    a_2 = 4.1
+                    a_3 = 1.7
+                else:
+                    raise ValueError("Unable to calculate inelasticity without"+
+                                     " a particle type")
+            elif int_type==self.Type.neutral_current:
+                a_0 = -0.005
+                a_1 = 0.23
+                a_2 = 3
+                a_3 = 1.7
+            else:
+                raise ValueError("Unable to calculate inelasticity without an"
+                                 +" interaction type")
+        # Equations 16 & 17
+        c_1 = a_0 - a_1*np.exp(-(eps-a_2)/a_3)
+        c_2 = 2.55 - 0.0949*eps
+        # Step 3
+        r = np.random.rand()
+        if is_low_y:
+            y_min = 0
+            y_max = 1e-3
+            # Equation 14
+            return c_1 + (r*(y_max-c_1)**(-1/(c_2+1)) +
+                          (1-r)*(y_min-c_1)**(-1/(c_2+1)))**(c_2/(c_2-1))
+        else:
+            y_min = 1e-3
+            y_max = 1
+            # Equation 15
+            return (y_max-c_1)**r / (y_min-c_1)**(r-1) + c_1
+
+    @property
+    def total_cross_section(self):
+        """
+        The total neutrino cross section (cm^2) of the ``particle`` type.
+
+        Calculation is determined by whether the ``particle`` is a neutrino
+        or antineutrino and is dependent on the energy of the ``particle``.
+        Combines the charged-current and neutral-current cross sections.
+        Based on Equation 7 and Table III of the CTW 2011 paper.
+
+        """
+        # Total cross section should be sum of nc and cc cross sections
+        # Based on the form of equation 7 of CTW 2011, the nc and cc cross
+        # sections can be summed as long as c_0 is the same for nc and cc.
+        # Then c_1, c_2, c_3, and c_4 will be sums of the constants for each
+        # current type, while c_0 will stay the same.
+
+        # Particle
+        if particle.id.value>0:
+            c_0 = -1.826
+            c_1 = -34.62  # = -17.31 + -17.31
+            c_2 = -12.854  # = -6.448 + -6.406
+            c_3 = 2.862  # = 1.431 + 1.431
+            c_4 = -36.52  # = -18.61 + -17.91
+        # Antiparticle
+        elif particle.id.value<0:
+            c_0 = -1.033
+            c_1 = -31.9  # = -15.95 + -15.95
+            c_2 = -14.543  # = -7.296 + -7.247
+            c_3 = 3.138  # = 1.569 + 1.569
+            c_4 = -36.02  # = -18.30 + -17.72
+        else:
+            raise ValueError("Unable to calculate cross section without a"+
+                             " particle type")
+        # Calculate cross section based on CTW 2011
+        eps = np.log10(self.particle.energy)
+        log_term = np.log(eps - c_0)
+        power = c_1 + c_2*log_term + c_3*log_term**2 + c_4/log_term
+        return 10**power
+
+    @property
+    def cross_section(self):
+        """
+        The neutrino cross section (cm^2) of the ``particle`` interaction.
+
+        Calculation is determined by whether the ``particle`` is a neutrino
+        or antineutrino and what type of interaction it produces, and is
+        dependent on the energy of the ``particle``. Based on Equation 7 and
+        Table III of the CTW 2011 paper.
+
+        """
+        # Particle
+        if particle.id.value>0:
+            if self.kind==self.Type.charged_current:
+                c_0 = -1.826
+                c_1 = -17.31
+                c_2 = -6.406
+                c_3 = 1.431
+                c_4 = -17.91
+            elif self.kind==self.Type.neutral_current:
+                c_0 = -1.826
+                c_1 = -17.31
+                c_2 = -6.448
+                c_3 = 1.431
+                c_4 = -18.61
+            else:
+                raise ValueError("Unable to calculate cross section without an"
+                                 +" interaction type")
+        # Antiparticle
+        elif particle.id.value<0:
+            if self.kind==self.Type.charged_current:
+                c_0 = -1.033
+                c_1 = -15.95
+                c_2 = -7.247
+                c_3 = 1.569
+                c_4 = -17.72
+            elif self.kind==self.Type.neutral_current:
+                c_0 = -1.033
+                c_1 = -15.95
+                c_2 = -7.296
+                c_3 = 1.569
+                c_4 = -18.30
+            else:
+                raise ValueError("Unable to calculate cross section without an"
+                                 +" interaction type")
+        else:
+            raise ValueError("Unable to calculate cross section without a"+
+                             " particle type")
+        # Calculate cross section based on CTW 2011
+        eps = np.log10(self.particle.energy)
+        log_term = np.log(eps - c_0)
+        power = c_1 + c_2*log_term + c_3*log_term**2 + c_4/log_term
+        return 10**power
+
+
+# Preferred interaction model
+NeutrinoInteraction = CTWInteraction
