@@ -12,6 +12,7 @@ import logging
 import numpy as np
 import scipy.signal
 import scipy.fftpack
+from pyrex.internal_functions import get_from_enum
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +33,17 @@ class Signal:
         Will be resized to the size of `times` by zero-padding or truncating
         as necessary.
     value_type
-        Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` enum.
+        Type of signal, representing the units of the values. Values should be
+        from the ``Signal.ValueType`` enum, but integer or string values may
+        work if carefully chosen. ``Signal.ValueType.undefined`` by default.
 
     Attributes
     ----------
     times, values : ndarray
         1D arrays of times and corresponding values which define the signal.
-    value_type
+    value_type : Signal.ValueType
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    ValueType : Enum
         Different value types available for `value_type` of signal objects.
     dt
     frequencies
@@ -49,24 +51,25 @@ class Signal:
     envelope
 
     """
-    class ValueTypes(Enum):
+    class ValueType(Enum):
         """
         Enum containing possible types (units) for signal values.
 
         Attributes
         ----------
-        undefined
         voltage
         field
         power
+        unknown, undefined
 
         """
+        unknown = 0
         undefined = 0
         voltage = 1
         field = 2
         power = 3
 
-    def __init__(self, times, values, value_type=ValueTypes.undefined):
+    def __init__(self, times, values, value_type=None):
         self.times = np.array(times)
         len_diff = len(times)-len(values)
         if len_diff>0:
@@ -97,12 +100,12 @@ class Signal:
                             +str(type(other))+" to a signal")
         if not(np.array_equal(self.times, other.times)):
             raise ValueError("Can't add signals with different times")
-        if (self.value_type!=self.ValueTypes.undefined and
-                other.value_type!=self.ValueTypes.undefined and
+        if (self.value_type!=self.ValueType.undefined and
+                other.value_type!=self.ValueType.undefined and
                 self.value_type!=other.value_type):
             raise ValueError("Can't add signals with different value types")
 
-        if self.value_type==self.ValueTypes.undefined:
+        if self.value_type==self.ValueType.undefined:
             value_type = other.value_type
         else:
             value_type = self.value_type
@@ -122,9 +125,27 @@ class Signal:
         """
         if other!=0:
             raise TypeError("unsupported operand type(s) for +: '"+
-                            +str(type(other))+"' and 'Signal'")
+                            str(type(other))+"' and 'Signal'")
 
         return self
+
+    @property
+    def value_type(self):
+        """
+        Type of signal, representing the units of the values.
+
+        Should always be a value from the ``Particle.Type`` enum. Setting with
+        integer or string values may work if carefully chosen.
+
+        """
+        return self._value_type
+
+    @value_type.setter
+    def value_type(self, val_type):
+        if val_type is None:
+            self._value_type = self.ValueType.undefined
+        else:
+            self._value_type = get_from_enum(val_type, self.ValueType)
 
     @property
     def dt(self):
@@ -273,15 +294,15 @@ class EmptySignal(Signal):
         1D array of times for which the signal is defined.
     value_type
         Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` Enum.
+        ``Signal.ValueType`` Enum.
 
     Attributes
     ----------
     times, values : ndarray
         1D arrays of times and corresponding values which define the signal.
-    value_type
+    value_type : Signal.ValueType
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    ValueType : Enum
         Different value types available for `value_type` of signal objects.
     dt
     frequencies
@@ -293,7 +314,7 @@ class EmptySignal(Signal):
     Signal : Base class for time-domain signals.
 
     """
-    def __init__(self, times, value_type=Signal.ValueTypes.undefined):
+    def __init__(self, times, value_type=Signal.ValueType.undefined):
         super().__init__(times, np.zeros(len(times)), value_type=value_type)
 
     def with_times(self, new_times):
@@ -332,15 +353,15 @@ class FunctionSignal(Signal):
         array of times.
     value_type
         Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` Enum.
+        ``Signal.ValueType`` Enum.
 
     Attributes
     ----------
     times, values : ndarray
         1D arrays of times and corresponding values which define the signal.
-    value_type
+    value_type : Signal.ValueType
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    ValueType : Enum
         Different value types available for `value_type` of signal objects.
     function : function
         Function to evaluate the signal values at given time(s).
@@ -355,7 +376,7 @@ class FunctionSignal(Signal):
     EmptySignal : Class for signal with zero amplitude.
 
     """
-    def __init__(self, times, function, value_type=Signal.ValueTypes.undefined):
+    def __init__(self, times, function, value_type=Signal.ValueType.undefined):
         self.times = np.array(times)
         self.function = function
         # Attempt to evaluate all values in one function call
@@ -420,9 +441,9 @@ class SlowAskaryanSignal(Signal):
     ----------
     times, values : ndarray
         1D arrays of times and corresponding values which define the signal.
-    value_type : Signal.ValueTypes.field
+    value_type : Signal.ValueType.field
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    ValueType : Enum
         Different value types available for `value_type` of signal objects.
     energy : float
         Energy (GeV) of the particle shower producing the pulse.
@@ -512,7 +533,7 @@ class SlowAskaryanSignal(Signal):
         dt = times[1] - times[0]
         values = -np.diff(self.vector_potential) / dt
 
-        super().__init__(times, values, value_type=self.ValueTypes.field)
+        super().__init__(times, values, value_type=self.ValueType.field)
 
 
     def RAC(self, time):
@@ -661,9 +682,9 @@ class FastAskaryanSignal(Signal):
     ----------
     times, values : ndarray
         1D arrays of times and corresponding values which define the signal.
-    value_type : Signal.ValueTypes.field
+    value_type : Signal.ValueType.field
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    ValueType : Enum
         Different value types available for `value_type` of signal objects.
     energy : float
         Energy (GeV) of the particle shower producing the pulse.
@@ -815,7 +836,7 @@ class FastAskaryanSignal(Signal):
 
         # Note that although len(values) = len(times)-1 (because of np.diff),
         # the Signal class is desinged to handle this by zero-padding the values
-        super().__init__(times, values, value_type=self.ValueTypes.field)
+        super().__init__(times, values, value_type=self.ValueType.field)
 
 
     @property
@@ -971,15 +992,15 @@ class GaussianNoise(Signal):
         Will be resized to the size of `times` by zero-padding or truncating.
     value_type
         Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` Enum.
+        ``Signal.ValueType`` Enum.
 
     Attributes
     ----------
     times, values : ndarray
         1D arrays of times and corresponding values which define the signal.
-    value_type
+    value_type : Signal.ValueType
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    ValueType : Enum
         Different value types available for `value_type` of signal objects.
     dt
     frequencies
@@ -994,7 +1015,7 @@ class GaussianNoise(Signal):
     def __init__(self, times, sigma):
         self.sigma = sigma
         values = np.random.normal(0, self.sigma, size=len(times))
-        super().__init__(times, values, value_type=self.ValueTypes.voltage)
+        super().__init__(times, values, value_type=self.ValueType.voltage)
 
 
 class ThermalNoise(FunctionSignal):
@@ -1035,9 +1056,9 @@ class ThermalNoise(FunctionSignal):
     ----------
     times, values : ndarray
         1D arrays of times and corresponding values which define the signal.
-    value_type
+    value_type : Signal.ValueType
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    ValueType : Enum
         Different value types available for `value_type` of signal objects.
     function : function
         Function to evaluate the signal values at given time(s).
@@ -1159,4 +1180,4 @@ class ThermalNoise(FunctionSignal):
 
             return values
 
-        super().__init__(times, function=f, value_type=self.ValueTypes.voltage)
+        super().__init__(times, function=f, value_type=self.ValueType.voltage)
