@@ -473,7 +473,7 @@ class Antenna:
 
         """
         copy = Signal(signal.times, signal.values,
-                      value_type=Signal.ValueTypes.voltage)
+                      value_type=Signal.Type.voltage)
         copy.filter_frequencies(self.response, force_real=force_real)
 
         if direction is None:
@@ -491,9 +491,9 @@ class Antenna:
 
         signal_factor = d_gain * p_gain * self.efficiency
 
-        if signal.value_type==Signal.ValueTypes.voltage:
+        if signal.value_type==Signal.Type.voltage:
             pass
-        elif signal.value_type==Signal.ValueTypes.field:
+        elif signal.value_type==Signal.Type.field:
             signal_factor /= self.antenna_factor
         else:
             raise ValueError("Signal's value type must be either "
