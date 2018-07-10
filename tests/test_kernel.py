@@ -4,7 +4,8 @@ import pytest
 
 from pyrex.antenna import Antenna
 from pyrex.ice_model import IceModel
-from pyrex.particle import Particle, ListGenerator
+from pyrex.particle import Particle, Event
+from pyrex.generation import ListGenerator
 from pyrex.kernel import EventKernel
 
 import numpy as np
@@ -14,9 +15,10 @@ import numpy as np
 @pytest.fixture
 def kernel():
     """Fixture for forming basic EventKernel object"""
-    gen = ListGenerator(Particle(vertex=[100, 200, -500],
-                                 direction=[0, 0, 1],
-                                 energy=1e9))
+    gen = ListGenerator(Event(Particle(particle_id="electron_neutrino",
+                                       vertex=[100, 200, -500],
+                                       direction=[0, 0, 1],
+                                       energy=1e9)))
     return EventKernel(generator=gen, antennas=[Antenna(position=(0, 0, -100),
                                                         noisy=False)])
 
@@ -32,7 +34,8 @@ class TestEventKernel:
 
     def test_event(self, kernel):
         """Test that the event method runs smoothly"""
-        particle = kernel.event()
+        event = kernel.event()
+        particle = event.roots[0]
         assert np.array_equal(particle.vertex, [100, 200, -500])
         assert np.array_equal(particle.direction, [0, 0, 1])
         assert particle.energy == 1e9

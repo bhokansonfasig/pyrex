@@ -4,8 +4,8 @@ import pytest
 
 from config import SEED
 
-from pyrex.particle import (CC_NU, Particle, random_direction,
-                            ShadowGenerator, ListGenerator, FileGenerator)
+from pyrex.particle import (Event, Particle, Interaction,
+                            GQRSInteraction, CTWInteraction)
 
 import numpy as np
 
@@ -21,194 +21,211 @@ CC_NU_interaction_lengths = [(1,   6.175e11), (10,  2.447e11),
                              (1e8, 3.755e8)]
 
 
-class TestCC_NU:
-    """Tests for CC_NU object"""
-    @pytest.mark.parametrize("energy,cross_section",
-                             CC_NU_cross_sections)
-    def test_cross_section(self, energy, cross_section):
-        """Test that the cross section for CC_NU is as expected within 2%"""
-        assert (CC_NU.cross_section(energy) ==
-                pytest.approx(cross_section, rel=0.02, abs=1e-36))
+# class TestCC_NU:
+#     """Tests for CC_NU object"""
+#     @pytest.mark.parametrize("energy,cross_section",
+#                              CC_NU_cross_sections)
+#     def test_cross_section(self, energy, cross_section):
+#         """Test that the cross section for CC_NU is as expected within 2%"""
+#         assert (CC_NU.cross_section(energy) ==
+#                 pytest.approx(cross_section, rel=0.02, abs=1e-36))
 
-    @pytest.mark.parametrize("energy,interaction_length",
-                             CC_NU_interaction_lengths)
-    def test_interaction_length(self, energy, interaction_length):
-        """Test that the interaction length for CC_NU is as expected within 2%"""
-        assert (CC_NU.interaction_length(energy) ==
-                pytest.approx(interaction_length, rel=0.02))
+#     @pytest.mark.parametrize("energy,interaction_length",
+#                              CC_NU_interaction_lengths)
+#     def test_interaction_length(self, energy, interaction_length):
+#         """Test that the interaction length for CC_NU is as expected within 2%"""
+#         assert (CC_NU.interaction_length(energy) ==
+#                 pytest.approx(interaction_length, rel=0.02))
 
 
-# TODO: Add tests for all neutrino interactions based on data in paper
+# TODO: Add tests for all neutrino interactions based on data in papers
 
 
 @pytest.fixture
 def particle():
     """Fixture for forming basic Particle object"""
-    return Particle(vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
+    return Particle(particle_id=Particle.Type.electron_neutrino,
+                    vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
 
 class TestParticle:
     """Tests for Particle class"""
     def test_creation(self, particle):
         """Test initialization of particle"""
+        assert particle.id == Particle.Type.electron_neutrino
         assert np.array_equal(particle.vertex, [100, 200, -500])
         assert np.array_equal(particle.direction, [0, 0, 1])
         assert particle.energy == 1e9
+        assert isinstance(particle.interaction, Interaction)
+        assert particle.weight == 1
 
     def test_direction_normalization(self):
         """Test that the particle direction is automatically normalized"""
         direction = [0, 1, 1]
-        particle = Particle(vertex=[100, 200, -500], direction=direction, energy=1e9)
-        assert np.array_equal(particle.direction, direction/np.linalg.norm(direction))
+        p = Particle(particle_id=Particle.Type.electron_neutrino,
+                     vertex=[100, 200, -500], direction=direction, energy=1e9)
+        assert np.array_equal(p.direction, direction/np.linalg.norm(direction))
+
+    def test_id_coercion(self):
+        """Test that the particle id can be set by enum value, int, or str"""
+        p = Particle(particle_id=Particle.Type.electron,
+                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
+        assert p.id == Particle.Type.electron
+        p = Particle(particle_id=-12,
+                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
+        assert p.id == Particle.Type.electron_antineutrino
+        p = Particle(particle_id="nu_mu",
+                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
+        assert p.id == Particle.Type.muon_neutrino
+        p = Particle(particle_id=None,
+                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
+        assert p.id == Particle.Type.undefined
+
+    def test_interaction_type_setting(self):
+        """Test that the interaction type can be set during construction"""
+        p = Particle(particle_id="nu_e", vertex=[100, 200, -500],
+                     direction=[0, 0, 1], energy=1e9,
+                     interaction_type=Interaction.Type.charged_current)
+        assert p.interaction.kind == Interaction.Type.charged_current
 
 
 
-class Test_random_direction:
-    """Tests for random_direction function"""
-    def test_unit_vector(self):
-        """Test that the direction is a unit vector"""
-        np.random.seed(SEED)
-        for _ in range(10):
-            v = random_direction()
-            assert np.linalg.norm(v) == pytest.approx(1)
-
-    def test_uniform(self):
-        """Test that the random directions are uniform on the unit sphere"""
-        np.random.seed(SEED)
-        xs = []
-        ys = []
-        zs = []
-        for _ in range(10000):
-            v = random_direction()
-            xs.append(v[0])
-            ys.append(v[1])
-            zs.append(v[2])
-        assert np.mean(xs) == pytest.approx(0, abs=0.01)
-        assert np.std(xs) == pytest.approx(2/np.sqrt(12), rel=0.01)
-        assert np.mean(ys) == pytest.approx(0, abs=0.01)
-        assert np.std(ys) == pytest.approx(2/np.sqrt(12), rel=0.01)
-        assert np.mean(zs) == pytest.approx(0, abs=0.01)
-        assert np.std(zs) == pytest.approx(2/np.sqrt(12), rel=0.01)
-
-
-
-class TestShadowGenerator:
-    """Tests for ShadowGenerator class"""
-    def test_creation(self):
-        """Test initialization of ShadowGenerator"""
-        generator = ShadowGenerator(dx=5000, dy=5000, dz=3000,
-                                    energy=1e9)
-        assert generator.dx == 5000
-        assert generator.dy == 5000
-        assert generator.dz == 3000
-        assert generator.energy_generator() == 1e9
-        assert generator.count == 0
-
-        generator = ShadowGenerator(dx=5000, dy=5000, dz=3000,
-                                    energy=lambda: 1e9)
-        assert generator.energy_generator() == 1e9
-
-    def test_creation_failure(self):
-        """Test that initialization fails if the energy_generator is not
-        a function or a float-like value"""
-        with pytest.raises(ValueError):
-            generator = ShadowGenerator(dx=5000, dy=5000, dz=3000,
-                                        energy=[1e9])
-
-    def test_create_particle(self):
-        """Test that create_particle method returns a particle object"""
-        np.random.seed(SEED)
-        generator = ShadowGenerator(dx=5000, dy=5000, dz=3000,
-                                    energy=lambda: 1e9)
-        particle = generator.create_particle()
-        assert isinstance(particle, Particle)
-
-
-
-class TestListGenerator:
-    """Tests for ListGenerator class"""
+class TestEvent:
+    """Tests for Event class"""
     def test_creation(self, particle):
-        """Test initialization of ListGenerator"""
-        generator = ListGenerator(particle)
-        assert generator.particles[0] == particle
-        assert generator.loop
-        generator = ListGenerator([particle, particle])
-        assert generator.particles[0] == particle
-        assert generator.particles[1] == particle
-        assert generator.loop
+        """Test initialization of event"""
+        event = Event(particle)
+        assert event.roots[0] == particle
+        assert len(event.roots) == 1
+        assert len(event) == 1
+        for p in event:
+            assert p == particle
 
-    def test_create_particle(self, particle):
-        particle2 = Particle(vertex=[0, 0, 0], direction=[0, 0, -1], energy=1e9)
-        generator = ListGenerator([particle, particle2])
-        assert generator.create_particle() == particle
-        assert generator.create_particle() == particle2
+    def test_add_children(self, particle):
+        """Test the ability to add children to a particle"""
+        event = Event(particle)
+        child1 = Particle(particle_id=Particle.Type.electron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        child2 = Particle(particle_id=Particle.Type.positron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        event.add_children(particle, [child1, child2])
+        assert len(event.roots) == 1
+        assert len(event) == 3
+        all_particles = [particle, child1, child2]
+        for p in event:
+            assert p in all_particles
+            all_particles.remove(p)
+        assert all_particles == []
+        child3 = Particle(particle_id=Particle.Type.electron_antineutrino,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        event.add_children(child1, child3)
+        assert len(event) == 4
+        all_particles = [particle, child1, child2, child3]
+        for p in event:
+            assert p in all_particles
+            all_particles.remove(p)
+        assert all_particles == []
 
-    def test_loop(self, particle):
-        """Test that the loop property allows for turning on and off the
-        re-iteration of the list of particles"""
-        particle2 = Particle(vertex=[0, 0, 0], direction=[0, 0, -1], energy=1e9)
-        generator = ListGenerator([particle, particle2], loop=True)
-        assert generator.loop
-        assert generator.create_particle() == particle
-        assert generator.create_particle() == particle2
-        assert generator.create_particle() == particle
-        assert generator.create_particle() == particle2
-        generator = ListGenerator(particle, loop=False)
-        assert not generator.loop
-        assert generator.create_particle() == particle
-        with pytest.raises(StopIteration):
-            generator.create_particle()
-
-
-
-test_vertices = [(0, 0, 0), (0, 0, -100), (-100, -100, -300), (100, 200, -500)]
-test_directions = [(0, 0, -1), (0, 0, 1), (1, 0, 1), (0, 0, 1)]
-test_energies = [1e9]*4
-
-@pytest.fixture
-def file_gen(tmpdir):
-    """Fixture for forming basic FileGenerator object,
-    including creating temporary .npz files (once per test)."""
-    if not "test_particles_1.npz" in [f.basename for f in tmpdir.listdir()]:
-        np.savez(str(tmpdir.join("test_particles_1.npz")),
-                 vertices=test_vertices[:2], directions=test_directions[:2],
-                 energies=test_energies[:2])
-        np.savez(str(tmpdir.join("test_particles_2.npz")),
-                 test_vertices[2:], test_directions[2:], test_energies[2:])
-    return FileGenerator([str(tmpdir.join("test_particles_1.npz")),
-                          str(tmpdir.join("test_particles_2.npz"))])
-
-class TestFileGenerator:
-    """Tests for FileGenerator class"""
-    def test_creation(self, file_gen, tmpdir):
-        """Test initialization of FileGenerator"""
-        assert file_gen.files == [str(tmpdir.join("test_particles_1.npz")),
-                                  str(tmpdir.join("test_particles_2.npz"))]
-        file_gen_2 = FileGenerator(str(tmpdir.join("test_particles_1.npz")))
-        assert file_gen_2.files == [str(tmpdir.join("test_particles_1.npz"))]
-
-    def test_create_particle(self, file_gen, tmpdir):
-        """Test that create_particle method loops over files correctly.
-        Also tests ability to read files without explicit labels since
-        test_particles_2.npz is created without explicit labels"""
-        for i in range(4):
-            particle = file_gen.create_particle()
-            expected = Particle(vertex=test_vertices[i],
-                                direction=test_directions[i],
-                                energy=test_energies[i])
-            assert np.array_equal(particle.vertex, expected.vertex)
-            assert np.array_equal(particle.direction, expected.direction)
-            assert particle.energy == expected.energy
-        with pytest.raises(StopIteration):
-            file_gen.create_particle()
-
-    def test_bad_files(self, tmpdir):
-        """Test that appropriate errors are raised when bad files are passed"""
-        np.savez(str(tmpdir.join("bad_particles_1.npz")),
-                 some=[(0, 0, 0), (0, 0, -100)], bad=[(0, 0, -1), (0, 0, 1)],
-                 keys=[1e9]*2)
-        with pytest.raises(KeyError):
-            FileGenerator(str(tmpdir.join("bad_particles_1.npz")))
-        np.savez(str(tmpdir.join("bad_particles_2.npz")),
-                 [(0, 0, 0), (0, 0, -100)], [(0, 0, -1), (0, 0, 1)], [1e9])
+    def test_add_children_fails(self, particle):
+        """Test that add_children fails if the parent isn't in the tree"""
+        event = Event(particle)
+        child1 = Particle(particle_id=Particle.Type.electron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        child2 = Particle(particle_id=Particle.Type.positron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
         with pytest.raises(ValueError):
-            gen = FileGenerator(str(tmpdir.join("bad_particles_2.npz")))
+            event.add_children(child1, [child2])
+
+    def test_get_children(self, particle):
+        """Test the ability to retrieve children of a particle"""
+        event = Event(particle)
+        child1 = Particle(particle_id=Particle.Type.electron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        child2 = Particle(particle_id=Particle.Type.positron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        event.add_children(particle, [child1, child2])
+        expected_children = [child1, child2]
+        for child in event.get_children(particle):
+            assert child in expected_children
+            expected_children.remove(child)
+        assert expected_children == []
+        assert event.get_children(child1) == []
+
+    def test_get_children_fails(self, particle):
+        """Test that get_children fails if the parent isn't in the tree"""
+        event = Event(particle)
+        child1 = Particle(particle_id=Particle.Type.electron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        with pytest.raises(ValueError):
+            event.get_children(child1)
+
+    def test_get_parent(self, particle):
+        """Test the ability to retrieve parent of a particle"""
+        event = Event(particle)
+        child1 = Particle(particle_id=Particle.Type.electron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        child2 = Particle(particle_id=Particle.Type.positron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        event.add_children(particle, [child1, child2])
+        assert event.get_parent(child1) == particle
+        assert event.get_parent(child2) == particle
+        assert event.get_parent(particle) is None
+
+    def test_get_parent_fails(self, particle):
+        """Test that get_parent fails if the parent isn't in the tree"""
+        event = Event(particle)
+        child1 = Particle(particle_id=Particle.Type.electron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        with pytest.raises(ValueError):
+            event.get_parent(child1)
+
+    def test_get_from_level(self, particle):
+        """Test the ability to get particles from a level in the tree"""
+        event = Event(particle)
+        child1 = Particle(particle_id=Particle.Type.electron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        child2 = Particle(particle_id=Particle.Type.positron,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        event.add_children(particle, [child1, child2])
+        expected_level_0 = [particle]
+        expected_level_1 = [child1, child2]
+        for p in event.get_from_level(0):
+            assert p in expected_level_0
+            expected_level_0.remove(p)
+        assert expected_level_0 == []
+        for p in event.get_from_level(1):
+            assert p in expected_level_1
+            expected_level_1.remove(p)
+        assert expected_level_1 == []
+        assert event.get_from_level(2) == []
+        child3 = Particle(particle_id=Particle.Type.electron_antineutrino,
+                          vertex=[100, 200, -500], direction=[0, 0, 1],
+                          energy=1e9)
+        event.add_children(child1, child3)
+        expected_level_0 = [particle]
+        expected_level_1 = [child1, child2]
+        expected_level_2 = [child3]
+        for p in event.get_from_level(0):
+            assert p in expected_level_0
+            expected_level_0.remove(p)
+        assert expected_level_0 == []
+        for p in event.get_from_level(1):
+            assert p in expected_level_1
+            expected_level_1.remove(p)
+        assert expected_level_1 == []
+        for p in event.get_from_level(2):
+            assert p in expected_level_2
+            expected_level_2.remove(p)
+        assert expected_level_2 == []

@@ -16,11 +16,11 @@ def signal():
     """Fixture for forming basic Signal object"""
     return Signal([0,1,2,3,4], [1,2,1,2,1])
 
-@pytest.fixture(params=[([0,1,2,3,4], [0,1,2,1,0], Signal.ValueTypes.undefined),
+@pytest.fixture(params=[([0,1,2,3,4], [0,1,2,1,0], Signal.Type.undefined),
                         ([0,0.1,0.2,0.3,0.4], [0,0.1,0.2,0.1,0],
-                         Signal.ValueTypes.voltage),
+                         Signal.Type.voltage),
                         ([0,1e-9,2e-9,3e-9,4e-9], [0,1e-9,2e-9,1e-9,0],
-                         Signal.ValueTypes.field)])
+                         Signal.Type.field)])
 def signals(request):
     """Fixture for forming parameterized Signal objects for many value types"""
     ts = request.param[0]
@@ -35,7 +35,7 @@ class TestSignal:
         """Test initialization of signal"""
         assert np.array_equal(signal.times, [0,1,2,3,4])
         assert np.array_equal(signal.values, [1,2,1,2,1])
-        assert signal.value_type == Signal.ValueTypes.undefined
+        assert signal.value_type == Signal.Type.undefined
 
     def test_addition(self, signals):
         """Test that signal objects can be added"""
@@ -75,9 +75,9 @@ class TestSignal:
     def test_addition_value_type_failure(self):
         """Test that adding signal objects with different value types fails"""
         signal_1 = Signal([0,1,2,3,4], [1,2,1,2,1],
-                          value_type=Signal.ValueTypes.voltage)
+                          value_type=Signal.Type.voltage)
         signal_2 = Signal([0,1,2,3,4], [2,3,2,3,2],
-                          value_type=Signal.ValueTypes.field)
+                          value_type=Signal.Type.field)
         with pytest.raises(ValueError):
             signal_sum = signal_1 + signal_2
 
@@ -85,7 +85,7 @@ class TestSignal:
         """Test that adding signal objects with undefined value type
         results in a sum with the value type of the other signal"""
         undef_signal = Signal(signals.times, signals.values,
-                              value_type=Signal.ValueTypes.undefined)
+                              value_type=Signal.Type.undefined)
         signal_sum_1 = signals + undef_signal
         signal_sum_2 = undef_signal + signals
         assert signal_sum_1.value_type == signals.value_type
@@ -138,8 +138,8 @@ class TestSignal:
 
     def test_value_types_equivalent(self, signal):
         """Test that value types are equivalent across classes"""
-        assert signal.ValueTypes.voltage == Signal.ValueTypes.voltage
-        assert Signal.ValueTypes.voltage == EmptySignal.ValueTypes.voltage
+        assert signal.Type.voltage == Signal.Type.voltage
+        assert Signal.Type.voltage == EmptySignal.Type.voltage
 
     def test_with_times(self, signal):
         """Test that with_times method works as expected,
@@ -204,11 +204,11 @@ class TestEmptySignal:
         """Test initialization of empty signal"""
         assert np.array_equal(empty_signal.times, [0,1,2,3,4])
         assert np.array_equal(empty_signal.values, np.zeros(5))
-        assert empty_signal.value_type == Signal.ValueTypes.undefined
+        assert empty_signal.value_type == Signal.Type.undefined
 
     def test_with_times(self, empty_signal):
         """Test that with_times method keeps all zeros"""
-        empty_signal.value_type = Signal.ValueTypes.voltage
+        empty_signal.value_type = Signal.Type.voltage
         new = empty_signal.with_times(np.linspace(-2, 7, 19))
         assert np.array_equal(new.values, np.zeros(19))
         assert new.value_type == empty_signal.value_type
@@ -229,12 +229,12 @@ class TestFunctionSignal:
         assert np.array_equal(function_signals.times, [0,1,2,3,4])
         for i in range(5):
             assert function_signals.values[i] == function_signals.function(i)
-        assert function_signals.value_type == Signal.ValueTypes.undefined
+        assert function_signals.value_type == Signal.Type.undefined
 
     def test_with_times(self, function_signals):
         """Test that with_times method uses function to re-evaluate"""
         times = np.linspace(-2, 7, 19)
-        function_signals.value_type == Signal.ValueTypes.voltage
+        function_signals.value_type == Signal.Type.voltage
         new = function_signals.with_times(times)
         assert np.array_equal(new.times, times)
         for i in range(19):
@@ -255,7 +255,7 @@ class TestAskaryanSignal:
     def test_arz_pulse(self, arz_pulse):
         assert arz_pulse.energy == 3e9
         assert np.array_equal(arz_pulse.times, np.linspace(0, 3e-9, 301))
-        assert arz_pulse.value_type == Signal.ValueTypes.field
+        assert arz_pulse.value_type == Signal.Type.field
         # FIXME: Fix the amplitude of Askaryan pulses and use these amplitude tests
         # assert np.max(arz_pulse.values) == pytest.approx(200)
         # assert np.min(arz_pulse.values) == pytest.approx(-200)
@@ -280,7 +280,7 @@ class TestGaussianNoise:
         """Test initialization of gaussian noise signal"""
         assert np.array_equal(gauss_signal.times, np.linspace(0, 100, 10001))
         assert gauss_signal.sigma == 1
-        assert gauss_signal.value_type == Signal.ValueTypes.voltage
+        assert gauss_signal.value_type == Signal.Type.voltage
     
     def test_sigma(self, gauss_signal):
         """Test the standard deviation of the gaussian noise signal"""
@@ -301,7 +301,7 @@ class TestThermalNoise:
     def test_creation(self, thermal_signal):
         """Test initialization of thermal noise signal"""
         assert np.array_equal(thermal_signal.times, np.linspace(0, 100e-9, 1001))
-        assert thermal_signal.value_type == Signal.ValueTypes.voltage
+        assert thermal_signal.value_type == Signal.Type.voltage
         assert thermal_signal.f_min == 300e6
         assert thermal_signal.f_max == 700e6
         assert len(thermal_signal.freqs) == 40
