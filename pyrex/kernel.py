@@ -63,9 +63,10 @@ class EventKernel:
     chain can be exchanged. In order to interchange the pieces, their classes
     require the following at a minimum:
 
-    The particle generator `generator` must have a ``create_particle`` method
-    which takes no arguments and returns a `Particle` object with ``vertex``,
-    ``direction``, and ``energy`` attributes.
+    The particle generator `generator` must have a ``create_event`` method
+    which takes no arguments and returns a `Event` object consisting of
+    `Particle` objects with ``vertex``, ``direction``, ``energy``, and
+    ``weight`` attributes.
 
     The antenna iterable `antennas` must yield each antenna object once when
     iterating directly over `antennas`. Each antenna object must have a
@@ -108,49 +109,58 @@ class EventKernel:
 
         Returns
         -------
-        Particle
-            The neutrino generated which is responsible for the event.
+        Event
+            The neutrino event generated which is responsible for the waveforms
+            on the antennas.
 
         """
-        p = self.gen.create_particle()
-        logger.info("Processing event for %s", p)
-        n = self.ice.index(p.vertex[2])
-        for ant in self.antennas:
-            rt = self.ray_tracer(p.vertex, ant.position, ice_model=self.ice)
+        event = self.gen.create_event()
+        for particle in event:
+            logger.info("Processing event for %s", particle)
+            n = self.ice.index(particle.vertex[2])
+            for ant in self.antennas:
+                rt = self.ray_tracer(particle.vertex, ant.position,
+                                     ice_model=self.ice)
 
-            # If no path(s) between the points, skip ahead
-            if not rt.exists:
-                logger.debug("Ray paths to %s do not exist", ant)
-                continue
-
-            for path in rt.solutions:
-                # epol is (negative) vector rejection of
-                # path.received_direction onto p.direction,
-                # making epol orthogonal to path.recieved_direction in the same
-                # plane as p.direction and path.received_direction
-                epol = normalize(np.vdot(path.received_direction, p.direction)
-                                 * path.received_direction - p.direction)
-                # In case path.received_direction and p.direction are equal,
-                # just let epol be all zeros
-
-                psi = np.arccos(np.vdot(p.direction, path.emitted_direction))
-                logger.debug("Angle to %s is %f degrees", ant, np.degrees(psi))
-                # TODO: Support angles larger than pi/2
-                # (low priority since these angles are far from cherenkov cone)
-                if psi>np.pi/2:
+                # If no path(s) between the points, skip ahead
+                if not rt.exists:
+                    logger.debug("Ray paths to %s do not exist", ant)
                     continue
 
-                # FIXME: Use shower energy for AskaryanSignal
-                # Dependent on shower type / neutrino type
+                for path in rt.solutions:
+                    # epol is (negative) vector rejection of
+                    # path.received_direction onto particle.direction,
+                    # making epol orthogonal to path.recieved_direction in the
+                    # same plane as p.direction and path.received_direction
+                    epol = normalize(np.vdot(path.received_direction,
+                                             particle.direction)
+                                     * path.received_direction
+                                     - particle.direction)
+                    # In case path.received_direction and particle.direction
+                    # are equal, just let epol be all zeros
 
-                pulse = AskaryanSignal(times=self.signal_times,
-                                       energy=p.energy, theta=psi, n=n)
+                    psi = np.arccos(np.vdot(particle.direction,
+                                            path.emitted_direction))
+                    logger.debug("Angle to %s is %f degrees", ant,
+                                 np.degrees(psi))
+                    # TODO: Support angles larger than pi/2
+                    # (low priority since these angles are far from the
+                    # cherenkov cone)
+                    if psi>np.pi/2:
+                        continue
 
-                path.propagate(pulse)
-                # Dividing by path length scales Askaryan pulse properly
-                pulse.values /= path.path_length
+                    # FIXME: Use shower energy for AskaryanSignal
+                    # Dependent on shower type / neutrino type
 
-                ant.receive(pulse, direction=path.received_direction,
-                            polarization=epol)
+                    pulse = AskaryanSignal(times=self.signal_times,
+                                           energy=particle.energy,
+                                           theta=psi, n=n)
 
-        return p
+                    path.propagate(pulse)
+                    # Dividing by path length scales Askaryan pulse properly
+                    pulse.values /= path.path_length
+
+                    ant.receive(pulse, direction=path.received_direction,
+                                polarization=epol)
+
+        return event

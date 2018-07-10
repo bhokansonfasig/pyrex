@@ -18,6 +18,149 @@ logger = logging.getLogger(__name__)
 AVOGADRO_NUMBER = 6.02e23
 
 
+class Event:
+    """
+    Class for storing a tree of `Particle` objects representing an event.
+
+    The event may be comprised of any number of root `Particle` objects
+    specified at initialization. Each `Particle` in the tree may have any
+    number of child `Particle` objects. Iterating the tree will return all
+    `Particle` objects, but in no guaranteed order.
+
+    Parameters
+    ----------
+    roots : Particle or list of Particle
+        Root `Particle` objects for the event tree.
+
+    Attributes
+    ----------
+    roots : Particle or list of Particle
+        Root `Particle` objects for the event tree.
+
+    """
+    def __init__(self, roots):
+        if isinstance(roots, Particle):
+            self.roots = [roots]
+        else:
+            self.roots = roots
+        if len(self.roots)>0:
+            if not isinstance(roots[0], Particle):
+                raise ValueError("Root elements must be Particle objects")
+        self._all = [particle for particle in self.roots]
+        self._children = [[] for _ in range(len(self.roots))]
+
+    def add_children(self, parent, children):
+        """
+        Add the given `children` to the `parent` `Particle` object.
+
+        Parameters
+        ----------
+        parent : Particle
+            `Particle` object in the tree to act as the parent to the
+            `children`.
+        children : Particle or list of Particle
+            `Particle` objects to be added as children of the `parent`.
+
+        Raises
+        ------
+        ValueError
+            If the `parent` is not a part of the event tree.
+
+        """
+        if parent not in self._all:
+            raise ValueError("Parent particle is not in the event tree")
+        else:
+            parent_index = self._all.index(parent)
+        if isinstance(children, Particle):
+            children = [children]
+        new_index_start = len(self._all)
+        self._all.extend(children)
+        indices = [new_index_start+i for i in range(len(children))]
+        self._children.extend([[] for _ in indices])
+        self._children[parent_index].extend(indices)
+
+    def get_children(self, parent):
+        """
+        Get the children of the given `parent` `Particle` object.
+
+        Parameters
+        ----------
+        parent : Particle
+            `Particle` object in the tree.
+
+        Raises
+        ------
+        ValueError
+            If the `parent` is not a part of the event tree.
+
+        """
+        if parent not in self._all:
+            raise ValueError("Parent particle is not in the event tree")
+        else:
+            parent_index = self._all.index(parent)
+        return [self._all[i] for i in self._children[parent_index]]
+
+    def get_parent(self, child):
+        """
+        Get the parent of the given `child` `Particle` object.
+
+        Parameters
+        ----------
+        child : Particle
+            `Particle` object in the tree.
+
+        Raises
+        ------
+        ValueError
+            If the `child` is not a part of the event tree.
+
+        """
+        if child not in self._all:
+            raise ValueError("Child particle is not in the event tree")
+        else:
+            child_index = self._all.index(child)
+        for parent_index, child_indices in enumerate(self._children):
+            if child_index in indices:
+                return self._all[parent_index]
+
+    def get_from_level(self, level):
+        """
+        Get all `Particle` objects some `level` deep into the event tree.
+
+        Parameters
+        ----------
+        level : int
+            Level of the event tree to scan. Root `Particle` objects at level
+            zero.
+
+        Returns
+        -------
+        list of Particle
+            All `Particle` objects at the given `level` in the tree.
+
+        """
+        # This method could be sped up by working exclusively with indices
+        # and self._children, only grabbing the corresponding Particle objects
+        # from self._all at the very end. But using self.get_children is clear
+        # and as long as the trees are relatively small shouldn't be a problem.
+        current_level = 0
+        particles = self.roots
+        while current_level<level:
+            previous = particles
+            particles = []
+            for p in previous:
+                particles.extend(self.get_children(p))
+            current_level += 1
+        return particles
+
+    # Allow direct iteration of the event by traversing self._all
+    def __iter__(self):
+        yield from self._all
+
+    def __len__(self):
+        return len(self._all)
+
+
 class Particle:
     """
     Class for storing particle attributes.

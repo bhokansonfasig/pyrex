@@ -9,7 +9,7 @@ import logging
 import numpy as np
 from pyrex.internal_functions import normalize
 import pyrex.earth_model as earth_model
-from pyrex.particle import Particle, NeutrinoInteraction
+from pyrex.particle import Event, Particle, NeutrinoInteraction
 
 logger = logging.getLogger(__name__)
 
@@ -255,9 +255,9 @@ class ShadowGenerator:
                 np.exp(-travel_length/interaction_length))
 
 
-    def create_particle(self):
+    def create_event(self):
         """
-        Generate a neutrino in the ice volume.
+        Generate a neutrino event in the ice volume.
 
         Creates a neutrino with a random vertex in the volume, a random
         direction, and an energy based on the ``energy_generator``. Particle
@@ -265,12 +265,13 @@ class ShadowGenerator:
         chosen based on the branching ratio. Accounts for Earth shadowing by
         discarding particles that wouldn't make it to their vertex based on the
         Earth's thickness along their path. Weights the particles according to
-        their probability of interacting in the ice at their vertex.
+        their probability of interacting in the ice at their vertex. Currently
+        each `Event` returned consists of only a single `Particle`.
 
         Returns
         -------
-        Particle
-            Random neutrino object not shadowed by the Earth.
+        Event
+            Random neutrino event not shadowed by the Earth.
 
         """
         vtx = self.get_vertex()
@@ -290,58 +291,58 @@ class ShadowGenerator:
         if rand_exponential > x:
             particle.weight = self.get_weight(particle)
             logger.debug("Successfully created %s with interaction weight %d",
-                         p, p.weight)
-            return p
+                         particle, particle.weight)
+            return Event(particle)
         else:
             # Particle was shadowed by the earth. Try again
             logger.debug("Particle creation shadowed by the Earth")
-            return self.create_particle()
+            return self.create_event()
 
 
 class ListGenerator:
     """
-    Class to generate neutrino vertices from a list.
+    Class to generate neutrino events from a list.
 
-    Generates neutrinos by simply pulling them from a list of `Particle`
-    objects. By default returns to the start of the list once the end is
-    reached, but can optionally fail after reaching the list's end.
+    Generates events by simply pulling them from a list of `Event` objects. By
+    default returns to the start of the list once the end is reached, but can
+    optionally fail after reaching the list's end.
 
     Parameters
     ----------
-    particles : Particle or list of Particle
-        List of `Particle` objects to draw from. If only a single `Particle`
-        object is given, creates a list of that particle alone.
+    events : Event, or list of Event
+        List of `Event` objects to draw from. If only a single `Event` object
+        is given, creates a list of that event alone.
     loop : boolean, optional
         Whether or not to return to the start of the list after throwing the
-        last `Particle`. If ``False``, raises an error if trying to throw
-        after the last `Particle`.
+        last `Event`. If ``False``, raises an error if trying to throw after
+        the last `Event`.
 
     Attributes
     ----------
-    particles : list of Particle
-        List to draw `Particle` objects from, sequentially.
+    events : list of Event
+        List to draw `Event` objects from, sequentially.
     loop : boolean
         Whether or not to loop through the list more than once.
 
     """
-    def __init__(self, particles, loop=True):
-        if isinstance(particles, Particle):
-            self.particles = [particles]
+    def __init__(self, events, loop=True):
+        if isinstance(events, Event):
+            self.events = [events]
         else:
-            self.particles = particles
+            self.events = events
         self.loop = loop
         self._index = -1
 
-    def create_particle(self):
+    def create_event(self):
         """
-        Generate a neutrino.
+        Generate a neutrino event.
 
-        Pulls the next `Particle` object from the class's list of particles.
+        Pulls the next `Event` object from the class's list of events.
 
         Returns
         -------
-        Particle
-            Next neutrino object in the list.
+        Event
+            Next `Event` object in the list of events.
 
         Raises
         ------
@@ -350,14 +351,14 @@ class ListGenerator:
 
         """
         self._index += 1
-        if not self.loop and self._index>=len(self.particles):
-            raise StopIteration("No more particles to be generated")
-        return self.particles[self._index%len(self.particles)]
+        if not self.loop and self._index>=len(self.events):
+            raise StopIteration("No more events to be generated")
+        return self.events[self._index%len(self.events)]
 
 
 class FileGenerator:
     """
-    Class to generate neutrino vertices from numpy file(s).
+    Class to generate neutrino events from numpy file(s).
 
     Generates neutrinos by pulling their vertex, direction, and energy from a
     (list of) .npz file(s). Each file must have three to five arrays,
@@ -389,6 +390,12 @@ class FileGenerator:
         Array of interaction types from the current file.
     weights : ndarray
         Array of neutrino weights from the current file.
+
+    Warnings
+    --------
+    This generator only supports `Event` objects containing a single `Particle`
+    object. There is currently no way to read from files where an `Event`
+    contains mutliple `Particle` objects with some dependencies.
 
     See Also
     --------
@@ -432,7 +439,7 @@ class FileGenerator:
         self.interactions = None
         self.weights = None
         if self._file_index>=len(self.files):
-            raise StopIteration("No more particles to be generated")
+            raise StopIteration("No more events to be generated")
         with np.load(self.files[self._file_index]) as data:
             if 'arr_0' in data:
                 self.vertices = data['arr_0']
@@ -477,16 +484,17 @@ class FileGenerator:
                  len(self.vertices)!=len(self.weights))):
             raise ValueError("All input lists must all be the same length")
 
-    def create_particle(self):
+    def create_event(self):
         """
         Generate a neutrino.
 
-        Pulls the next `Particle` object from the file(s).
+        Pulls the next `Particle` object from the file(s) and places it into
+        an `Event` by itself.
 
         Returns
         -------
-        Particle
-            Next neutrino object from the file(s).
+        Event
+            Next neutrino `Event` object from the file(s).
 
         Raises
         ------
@@ -497,7 +505,7 @@ class FileGenerator:
         self._index += 1
         if self.vertices is None or self._index>=len(self.vertices):
             self._next_file()
-            return self.create_particle()
+            return self.create_event()
         if self.interactions is None:
             interaction = None
         else:
@@ -506,9 +514,10 @@ class FileGenerator:
             weight = 1
         else:
             weight = self.weights[self._index]
-        return Particle(vertex=self.vertices[self._index],
-                        direction=self.directions[self._index],
-                        energy=self.energies[self._index],
-                        interaction_model=self.interaction_model,
-                        interaction_type=interaction,
-                        weight=weight)
+        p = Particle(vertex=self.vertices[self._index],
+                     direction=self.directions[self._index],
+                     energy=self.energies[self._index],
+                     interaction_model=self.interaction_model,
+                     interaction_type=interaction,
+                     weight=weight)
+        return Event(p)
