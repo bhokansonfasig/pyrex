@@ -751,7 +751,7 @@ class Event:
         else:
             self.roots = roots
         if len(self.roots)>0:
-            if not isinstance(roots[0], Particle):
+            if not isinstance(self.roots[0], Particle):
                 raise ValueError("Root elements must be Particle objects")
         self._all = [particle for particle in self.roots]
         self._children = [[] for _ in range(len(self.roots))]
@@ -828,7 +828,7 @@ class Event:
         else:
             child_index = self._all.index(child)
         for parent_index, child_indices in enumerate(self._children):
-            if child_index in indices:
+            if child_index in child_indices:
                 return self._all[parent_index]
 
     def get_from_level(self, level):

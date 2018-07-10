@@ -90,7 +90,7 @@ class ShadowGenerator:
             else:
                 energy = lambda: e
         self.get_energy = energy
-        self.ratio = normalize(flavor_ratio)
+        self.ratio = np.array(flavor_ratio)/np.sum(flavor_ratio)
         self.interaction_model = interaction_model
         self.count = 0
 
@@ -285,7 +285,7 @@ class ShadowGenerator:
         nadir = np.arccos(u[2])
         depth = -vtx[2]
         t = earth_model.slant_depth(nadir, depth)
-        x = t / particle.total_interaction_length
+        x = t / particle.interaction.total_interaction_length
         self.count += 1
         rand_exponential = np.random.exponential()
         if rand_exponential > x:
