@@ -360,13 +360,13 @@ class FileGenerator:
     """
     Class to generate neutrino events from numpy file(s).
 
-    Generates neutrinos by pulling their vertex, direction, and energy from a
-    (list of) .npz file(s). Each file must have three to five arrays,
-    containing the vertices, directions, energies, and optional interaction
-    types and weights respectively so the first particle will have properties
-    given by the first elements of these arrays. Tries to smartly figure out
-    which array is which based on their names, but if the arrays are unnamed,
-    assumes they are in the order used above.
+    Generates neutrinos by pulling their attributes from a (list of) .npz
+    file(s). Each file must have four to six arrays, containing the id values,
+    vertices, directions, energies, and optional interaction types and weights
+    respectively so the first particle will have properties given by the first
+    elements of these arrays. Tries to smartly figure out which array is which
+    based on their names, but if the arrays are unnamed, assumes they are in
+    the order used above.
 
     Parameters
     ----------
@@ -380,6 +380,8 @@ class FileGenerator:
     ----------
     files : list of str
         List of file names containing neutrino information.
+    ids : ndarray
+        Array of particle id values from the current file.
     vertices : ndarray
         Array of neutrino vertices from the current file.
     directions : ndarray
@@ -433,6 +435,7 @@ class FileGenerator:
         """
         self._file_index += 1
         self._index = -1
+        self.ids = None
         self.vertices = None
         self.directions = None
         self.energies = None
@@ -442,16 +445,19 @@ class FileGenerator:
             raise StopIteration("No more events to be generated")
         with np.load(self.files[self._file_index]) as data:
             if 'arr_0' in data:
-                self.vertices = data['arr_0']
-                self.directions = data['arr_1']
-                self.energies = data['arr_2']
-                if 'arr_3' in data:
-                    self.interactions = data['arr_3']
+                self.ids = data['arr_0']
+                self.vertices = data['arr_1']
+                self.directions = data['arr_2']
+                self.energies = data['arr_3']
                 if 'arr_4' in data:
-                    self.weights = data['arr_4']
+                    self.interactions = data['arr_4']
+                if 'arr_5' in data:
+                    self.weights = data['arr_5']
             else:
                 for key, val in data.items():
                     key = key.lower()
+                    if 'id' in key:
+                        self.ids = val
                     if 'vert' in key:
                         self.vertices = val
                     elif key.startswith('v'):
@@ -466,7 +472,9 @@ class FileGenerator:
                         self.energies = val
                     if 'int' in key:
                         self.interactions = val
-                    elif key.startswith('i'):
+                    elif 'type' in key:
+                        self.interactions = val
+                    elif 'curr' in key:
                         self.interactions = val
                     if 'weight' in key:
                         self.weights = val
@@ -476,12 +484,13 @@ class FileGenerator:
                 or self.energies is None):
             raise KeyError("Could not interpret data keys of file "+
                            str(self.files[self._file_index]))
-        if (len(self.vertices)!=len(self.directions) or
-                len(self.vertices)!=len(self.energies) or
-                (self.interactions is not None and
-                 len(self.vertices)!=len(self.interactions))
-                (self.weights is not None and
-                 len(self.vertices)!=len(self.weights))):
+        if (len(self.ids)!=len(self.vertices) or
+                len(self.ids)!=len(self.directions) or
+                len(self.ids)!=len(self.energies) or
+                (self.interactions is not None
+                 and len(self.ids)!=len(self.interactions)) or
+                (self.weights is not None
+                 and len(self.ids)!=len(self.weights))):
             raise ValueError("All input lists must all be the same length")
 
     def create_event(self):
@@ -514,7 +523,8 @@ class FileGenerator:
             weight = 1
         else:
             weight = self.weights[self._index]
-        p = Particle(vertex=self.vertices[self._index],
+        p = Particle(particle_id=self.ids[self._index],
+                     vertex=self.vertices[self._index],
                      direction=self.directions[self._index],
                      energy=self.energies[self._index],
                      interaction_model=self.interaction_model,

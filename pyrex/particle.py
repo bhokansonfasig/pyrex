@@ -18,289 +18,6 @@ logger = logging.getLogger(__name__)
 AVOGADRO_NUMBER = 6.02e23
 
 
-class Event:
-    """
-    Class for storing a tree of `Particle` objects representing an event.
-
-    The event may be comprised of any number of root `Particle` objects
-    specified at initialization. Each `Particle` in the tree may have any
-    number of child `Particle` objects. Iterating the tree will return all
-    `Particle` objects, but in no guaranteed order.
-
-    Parameters
-    ----------
-    roots : Particle or list of Particle
-        Root `Particle` objects for the event tree.
-
-    Attributes
-    ----------
-    roots : Particle or list of Particle
-        Root `Particle` objects for the event tree.
-
-    """
-    def __init__(self, roots):
-        if isinstance(roots, Particle):
-            self.roots = [roots]
-        else:
-            self.roots = roots
-        if len(self.roots)>0:
-            if not isinstance(roots[0], Particle):
-                raise ValueError("Root elements must be Particle objects")
-        self._all = [particle for particle in self.roots]
-        self._children = [[] for _ in range(len(self.roots))]
-
-    def add_children(self, parent, children):
-        """
-        Add the given `children` to the `parent` `Particle` object.
-
-        Parameters
-        ----------
-        parent : Particle
-            `Particle` object in the tree to act as the parent to the
-            `children`.
-        children : Particle or list of Particle
-            `Particle` objects to be added as children of the `parent`.
-
-        Raises
-        ------
-        ValueError
-            If the `parent` is not a part of the event tree.
-
-        """
-        if parent not in self._all:
-            raise ValueError("Parent particle is not in the event tree")
-        else:
-            parent_index = self._all.index(parent)
-        if isinstance(children, Particle):
-            children = [children]
-        new_index_start = len(self._all)
-        self._all.extend(children)
-        indices = [new_index_start+i for i in range(len(children))]
-        self._children.extend([[] for _ in indices])
-        self._children[parent_index].extend(indices)
-
-    def get_children(self, parent):
-        """
-        Get the children of the given `parent` `Particle` object.
-
-        Parameters
-        ----------
-        parent : Particle
-            `Particle` object in the tree.
-
-        Raises
-        ------
-        ValueError
-            If the `parent` is not a part of the event tree.
-
-        """
-        if parent not in self._all:
-            raise ValueError("Parent particle is not in the event tree")
-        else:
-            parent_index = self._all.index(parent)
-        return [self._all[i] for i in self._children[parent_index]]
-
-    def get_parent(self, child):
-        """
-        Get the parent of the given `child` `Particle` object.
-
-        Parameters
-        ----------
-        child : Particle
-            `Particle` object in the tree.
-
-        Raises
-        ------
-        ValueError
-            If the `child` is not a part of the event tree.
-
-        """
-        if child not in self._all:
-            raise ValueError("Child particle is not in the event tree")
-        else:
-            child_index = self._all.index(child)
-        for parent_index, child_indices in enumerate(self._children):
-            if child_index in indices:
-                return self._all[parent_index]
-
-    def get_from_level(self, level):
-        """
-        Get all `Particle` objects some `level` deep into the event tree.
-
-        Parameters
-        ----------
-        level : int
-            Level of the event tree to scan. Root `Particle` objects at level
-            zero.
-
-        Returns
-        -------
-        list of Particle
-            All `Particle` objects at the given `level` in the tree.
-
-        """
-        # This method could be sped up by working exclusively with indices
-        # and self._children, only grabbing the corresponding Particle objects
-        # from self._all at the very end. But using self.get_children is clear
-        # and as long as the trees are relatively small shouldn't be a problem.
-        current_level = 0
-        particles = self.roots
-        while current_level<level:
-            previous = particles
-            particles = []
-            for p in previous:
-                particles.extend(self.get_children(p))
-            current_level += 1
-        return particles
-
-    # Allow direct iteration of the event by traversing self._all
-    def __iter__(self):
-        yield from self._all
-
-    def __len__(self):
-        return len(self._all)
-
-
-class Particle:
-    """
-    Class for storing particle attributes.
-
-    Parameters
-    ----------
-    particle_id
-        Identification value of the particle type. Values should be from the
-        ``Particle.Type`` enum, but integer or string values may work if
-        carefully chosen. ``Particle.Type.undefined`` by default.
-    vertex : array_like
-        Vector position (m) of the particle.
-    direction : array_like
-        Vector direction of the particle's velocity.
-    energy : float
-        Energy (GeV) of the particle.
-    interaction_model : optional
-        Class to use to describe interactions of the particle. Should inherit
-        from (or behave like) the base ``Interaction`` class.
-    interaction_type : optional
-        Value of the interaction type. Values should be from the
-        ``Interaction.Type`` enum, but integer or string values may work if
-        carefully chosen. By default, the `interaction_model` will choose an
-        interaction type.
-    weight : float, optional
-        Monte Carlo weight of the particle. The calculation of this weight
-        depends on the particle generation method, but this value should be the
-        total weight representing the probability of this particle's event
-        occurring.
-
-    Attributes
-    ----------
-    id : Particle.Type
-        Identification value of the particle type.
-    vertex : array_like
-        Vector position (m) of the particle.
-    direction : array_like
-        (Unit) vector direction of the particle's velocity.
-    energy : float
-        Energy (GeV) of the particle.
-    interaction : Interaction
-        Instance of the `interaction_model` class to be used for calculations
-        related to interactions of the particle.
-    weight : float
-        Monte Carlo weight of the particle.
-
-    """
-    class Type(Enum):
-        """
-        Enum containing possible particle types.
-
-        Values based on the PDG particle numbering scheme.
-        http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
-
-        Attributes
-        ----------
-        e, e_minus, electron
-        e_plus, positron
-        nu_e, electron_neutrino
-        nu_e_bar, electron_antineutrino
-        mu, mu_minus, muon
-        mu_plus, antimuon
-        nu_mu, muon_neutrino
-        nu_mu_bar, muon_antineutrino
-        tau, tau_minus, tauon
-        tau_plus, antitau
-        nu_tau, tau_neutrino
-        nu_tau_bar, tau_antineutrino
-        unknown, undefined
-
-        """
-        unknown = 0
-        undefined = 0
-        e = 11
-        e_minus = 11
-        electron = 11
-        e_plus = -11
-        positron = -11
-        nu_e = 12
-        electron_neutrino = 12
-        nu_e_bar = -12
-        electron_antineutrino = -12
-        mu = 13
-        mu_minus = 13
-        muon = 13
-        mu_plus = -13
-        antimuon = -13
-        nu_mu = 14
-        muon_neutrino = 14
-        nu_mu_bar = -14
-        muon_antineutrino = -14
-        tau = 15
-        tau_minus = 15
-        tauon = 15
-        tau_plus = -15
-        antitau = -15
-        nu_tau = 16
-        tau_neutrino = 16
-        nu_tau_bar = -16
-        tau_antineutrino = -16
-
-    def __init__(self, particle_id, vertex, direction, energy,
-                 interaction_model=NeutrinoInteraction, interaction_type=None,
-                 weight=1):
-        self.id = particle_id
-        self.vertex = np.array(vertex)
-        self.direction = normalize(direction)
-        self.energy = energy
-        if inspect.isclass(interaction_model):
-            self.interaction = interaction_model(self, kind=interaction_type)
-        else:
-            raise ValueError("Particle class interaction_model must be a class")
-        self.weight = weight
-
-    def __str__(self):
-        string = self.__class__.__name__+"("
-        for key, val in self.__dict__.items():
-            string += key+"="+repr(val)+", "
-        return string[:-2]+")"
-
-    @property
-    def id(self):
-        """
-        Identification value of the particle type.
-
-        Should always be a value from the ``Particle.Type`` enum. Setting with
-        integer or string values may work if carefully chosen.
-
-        """
-        return self._id
-
-    @id.setter
-    def id(self, particle_id):
-        if particle_id is None:
-            self._id = self.Type.undefined
-        else:
-            self._id = get_from_enum(particle_id, self.Type)
-
-
-
 class Interaction:
     """
     Base class for describing neutrino interaction attributes.
@@ -561,18 +278,18 @@ class GQRSInteraction(Interaction):
 
         """
         # Particle
-        if particle.id.value>0:
+        if self.particle.id.value>0:
             coeff = 7.84e-36
             power = 0.363
         # Antiparticle
-        elif particle.id.value<0:
+        elif self.particle.id.value<0:
             coeff = 7.80e-36
             power = 0.363
         else:
             raise ValueError("Unable to calculate cross section without a"+
                              " particle type")
         # Calculate cross section based on GQRS 1998
-        return coeff * particle.energy**power
+        return coeff * self.particle.energy**power
 
     @property
     def cross_section(self):
@@ -585,7 +302,7 @@ class GQRSInteraction(Interaction):
 
         """
         # Particle
-        if particle.id.value>0:
+        if self.particle.id.value>0:
             if self.kind==self.Type.charged_current:
                 coeff = 5.53e-36
                 power = 0.363
@@ -596,7 +313,7 @@ class GQRSInteraction(Interaction):
                 raise ValueError("Unable to calculate cross section without an"
                                  +" interaction type")
         # Antiparticle
-        elif particle.id.value<0:
+        elif self.particle.id.value<0:
             if self.kind==self.Type.charged_current:
                 coeff = 5.52e-36
                 power = 0.363
@@ -610,7 +327,7 @@ class GQRSInteraction(Interaction):
             raise ValueError("Unable to calculate cross section without a"+
                              " particle type")
         # Calculate cross section based on GQRS 1998
-        return coeff * particle.energy**power
+        return coeff * self.particle.energy**power
 
 
 class CTWInteraction(Interaction):
@@ -727,15 +444,15 @@ class CTWInteraction(Interaction):
             a_2 = 4.72
             a_3 = 0.456
         else:
-            if int_type==self.Type.charged_current:
+            if self.kind==self.Type.charged_current:
                 # Particle
-                if particle.id.value>0:
+                if self.particle.id.value>0:
                     a_0 = -0.008
                     a_1 = 0.26
                     a_2 = 3
                     a_3 = 1.7
                 # Antiparticle
-                elif particle.id.value<0
+                elif self.particle.id.value<0:
                     a_0 = -0.0026
                     a_1 = 0.085
                     a_2 = 4.1
@@ -743,7 +460,7 @@ class CTWInteraction(Interaction):
                 else:
                     raise ValueError("Unable to calculate inelasticity without"+
                                      " a particle type")
-            elif int_type==self.Type.neutral_current:
+            elif self.kind==self.Type.neutral_current:
                 a_0 = -0.005
                 a_1 = 0.23
                 a_2 = 3
@@ -786,14 +503,14 @@ class CTWInteraction(Interaction):
         # current type, while c_0 will stay the same.
 
         # Particle
-        if particle.id.value>0:
+        if self.particle.id.value>0:
             c_0 = -1.826
             c_1 = -34.62  # = -17.31 + -17.31
             c_2 = -12.854  # = -6.448 + -6.406
             c_3 = 2.862  # = 1.431 + 1.431
             c_4 = -36.52  # = -18.61 + -17.91
         # Antiparticle
-        elif particle.id.value<0:
+        elif self.particle.id.value<0:
             c_0 = -1.033
             c_1 = -31.9  # = -15.95 + -15.95
             c_2 = -14.543  # = -7.296 + -7.247
@@ -820,7 +537,7 @@ class CTWInteraction(Interaction):
 
         """
         # Particle
-        if particle.id.value>0:
+        if self.particle.id.value>0:
             if self.kind==self.Type.charged_current:
                 c_0 = -1.826
                 c_1 = -17.31
@@ -837,7 +554,7 @@ class CTWInteraction(Interaction):
                 raise ValueError("Unable to calculate cross section without an"
                                  +" interaction type")
         # Antiparticle
-        elif particle.id.value<0:
+        elif self.particle.id.value<0:
             if self.kind==self.Type.charged_current:
                 c_0 = -1.033
                 c_1 = -15.95
@@ -865,3 +582,288 @@ class CTWInteraction(Interaction):
 
 # Preferred interaction model
 NeutrinoInteraction = CTWInteraction
+
+
+
+class Particle:
+    """
+    Class for storing particle attributes.
+
+    Parameters
+    ----------
+    particle_id
+        Identification value of the particle type. Values should be from the
+        ``Particle.Type`` enum, but integer or string values may work if
+        carefully chosen. ``Particle.Type.undefined`` by default.
+    vertex : array_like
+        Vector position (m) of the particle.
+    direction : array_like
+        Vector direction of the particle's velocity.
+    energy : float
+        Energy (GeV) of the particle.
+    interaction_model : optional
+        Class to use to describe interactions of the particle. Should inherit
+        from (or behave like) the base ``Interaction`` class.
+    interaction_type : optional
+        Value of the interaction type. Values should be from the
+        ``Interaction.Type`` enum, but integer or string values may work if
+        carefully chosen. By default, the `interaction_model` will choose an
+        interaction type.
+    weight : float, optional
+        Monte Carlo weight of the particle. The calculation of this weight
+        depends on the particle generation method, but this value should be the
+        total weight representing the probability of this particle's event
+        occurring.
+
+    Attributes
+    ----------
+    id : Particle.Type
+        Identification value of the particle type.
+    vertex : array_like
+        Vector position (m) of the particle.
+    direction : array_like
+        (Unit) vector direction of the particle's velocity.
+    energy : float
+        Energy (GeV) of the particle.
+    interaction : Interaction
+        Instance of the `interaction_model` class to be used for calculations
+        related to interactions of the particle.
+    weight : float
+        Monte Carlo weight of the particle.
+
+    """
+    class Type(Enum):
+        """
+        Enum containing possible particle types.
+
+        Values based on the PDG particle numbering scheme.
+        http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
+
+        Attributes
+        ----------
+        e, e_minus, electron
+        e_plus, positron
+        nu_e, electron_neutrino
+        nu_e_bar, electron_antineutrino
+        mu, mu_minus, muon
+        mu_plus, antimuon
+        nu_mu, muon_neutrino
+        nu_mu_bar, muon_antineutrino
+        tau, tau_minus, tauon
+        tau_plus, antitau
+        nu_tau, tau_neutrino
+        nu_tau_bar, tau_antineutrino
+        unknown, undefined
+
+        """
+        unknown = 0
+        undefined = 0
+        e = 11
+        e_minus = 11
+        electron = 11
+        e_plus = -11
+        positron = -11
+        nu_e = 12
+        electron_neutrino = 12
+        nu_e_bar = -12
+        electron_antineutrino = -12
+        mu = 13
+        mu_minus = 13
+        muon = 13
+        mu_plus = -13
+        antimuon = -13
+        nu_mu = 14
+        muon_neutrino = 14
+        nu_mu_bar = -14
+        muon_antineutrino = -14
+        tau = 15
+        tau_minus = 15
+        tauon = 15
+        tau_plus = -15
+        antitau = -15
+        nu_tau = 16
+        tau_neutrino = 16
+        nu_tau_bar = -16
+        tau_antineutrino = -16
+
+    def __init__(self, particle_id, vertex, direction, energy,
+                 interaction_model=NeutrinoInteraction, interaction_type=None,
+                 weight=1):
+        self.id = particle_id
+        self.vertex = np.array(vertex)
+        self.direction = normalize(direction)
+        self.energy = energy
+        if inspect.isclass(interaction_model):
+            self.interaction = interaction_model(self, kind=interaction_type)
+        else:
+            raise ValueError("Particle class interaction_model must be a class")
+        self.weight = weight
+
+    def __str__(self):
+        string = self.__class__.__name__+"("
+        for key, val in self.__dict__.items():
+            string += key+"="+repr(val)+", "
+        return string[:-2]+")"
+
+    @property
+    def id(self):
+        """
+        Identification value of the particle type.
+
+        Should always be a value from the ``Particle.Type`` enum. Setting with
+        integer or string values may work if carefully chosen.
+
+        """
+        return self._id
+
+    @id.setter
+    def id(self, particle_id):
+        if particle_id is None:
+            self._id = self.Type.undefined
+        else:
+            self._id = get_from_enum(particle_id, self.Type)
+
+
+
+class Event:
+    """
+    Class for storing a tree of `Particle` objects representing an event.
+
+    The event may be comprised of any number of root `Particle` objects
+    specified at initialization. Each `Particle` in the tree may have any
+    number of child `Particle` objects. Iterating the tree will return all
+    `Particle` objects, but in no guaranteed order.
+
+    Parameters
+    ----------
+    roots : Particle or list of Particle
+        Root `Particle` objects for the event tree.
+
+    Attributes
+    ----------
+    roots : Particle or list of Particle
+        Root `Particle` objects for the event tree.
+
+    """
+    def __init__(self, roots):
+        if isinstance(roots, Particle):
+            self.roots = [roots]
+        else:
+            self.roots = roots
+        if len(self.roots)>0:
+            if not isinstance(roots[0], Particle):
+                raise ValueError("Root elements must be Particle objects")
+        self._all = [particle for particle in self.roots]
+        self._children = [[] for _ in range(len(self.roots))]
+
+    def add_children(self, parent, children):
+        """
+        Add the given `children` to the `parent` `Particle` object.
+
+        Parameters
+        ----------
+        parent : Particle
+            `Particle` object in the tree to act as the parent to the
+            `children`.
+        children : Particle or list of Particle
+            `Particle` objects to be added as children of the `parent`.
+
+        Raises
+        ------
+        ValueError
+            If the `parent` is not a part of the event tree.
+
+        """
+        if parent not in self._all:
+            raise ValueError("Parent particle is not in the event tree")
+        else:
+            parent_index = self._all.index(parent)
+        if isinstance(children, Particle):
+            children = [children]
+        new_index_start = len(self._all)
+        self._all.extend(children)
+        indices = [new_index_start+i for i in range(len(children))]
+        self._children.extend([[] for _ in indices])
+        self._children[parent_index].extend(indices)
+
+    def get_children(self, parent):
+        """
+        Get the children of the given `parent` `Particle` object.
+
+        Parameters
+        ----------
+        parent : Particle
+            `Particle` object in the tree.
+
+        Raises
+        ------
+        ValueError
+            If the `parent` is not a part of the event tree.
+
+        """
+        if parent not in self._all:
+            raise ValueError("Parent particle is not in the event tree")
+        else:
+            parent_index = self._all.index(parent)
+        return [self._all[i] for i in self._children[parent_index]]
+
+    def get_parent(self, child):
+        """
+        Get the parent of the given `child` `Particle` object.
+
+        Parameters
+        ----------
+        child : Particle or None
+            `Particle` object in the tree. ``None`` if the `child` has no
+            parent.
+
+        Raises
+        ------
+        ValueError
+            If the `child` is not a part of the event tree.
+
+        """
+        if child not in self._all:
+            raise ValueError("Child particle is not in the event tree")
+        else:
+            child_index = self._all.index(child)
+        for parent_index, child_indices in enumerate(self._children):
+            if child_index in indices:
+                return self._all[parent_index]
+
+    def get_from_level(self, level):
+        """
+        Get all `Particle` objects some `level` deep into the event tree.
+
+        Parameters
+        ----------
+        level : int
+            Level of the event tree to scan. Root `Particle` objects at level
+            zero.
+
+        Returns
+        -------
+        list of Particle
+            All `Particle` objects at the given `level` in the tree.
+
+        """
+        # This method could be sped up by working exclusively with indices
+        # and self._children, only grabbing the corresponding Particle objects
+        # from self._all at the very end. But using self.get_children is clear
+        # and as long as the trees are relatively small shouldn't be a problem.
+        current_level = 0
+        particles = self.roots
+        while current_level<level:
+            previous = particles
+            particles = []
+            for p in previous:
+                particles.extend(self.get_children(p))
+            current_level += 1
+        return particles
+
+    # Allow direct iteration of the event by traversing self._all
+    def __iter__(self):
+        yield from self._all
+
+    def __len__(self):
+        return len(self._all)
