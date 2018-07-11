@@ -751,21 +751,21 @@ class ARVZAskaryanSignal(Signal):
         if (particle.interaction.kind ==
                 particle.interaction.Type.neutral_current):
             self.em_frac = 0
-            self.had_frac = particle.inelasticity
+            self.had_frac = particle.interaction.inelasticity
         elif (particle.interaction.kind ==
               particle.interaction.Type.charged_current):
             if (particle.id==particle.Type.electron_neutrino or
                     particle.id==particle.Type.electron_antineutrino):
-                self.em_frac = 1 - particle.inelasticity
-                self.had_frac = particle.inelasticity
+                self.em_frac = 1 - particle.interaction.inelasticity
+                self.had_frac = particle.interaction.inelasticity
             elif (particle.id==particle.Type.muon_neutrino or
                   particle.id==particle.Type.muon_antineutrino):
                 self.em_frac = 0
-                self.had_frac = particle.inelasticity
+                self.had_frac = particle.interaction.inelasticity
             elif (particle.id==particle.Type.tau_neutrino or
                   particle.id==particle.Type.tau_antineutrino):
                 self.em_frac = 0
-                self.had_frac = particle.inelasticity
+                self.had_frac = particle.interaction.inelasticity
             else:
                 raise ValueError("Particle type not supported")
         else:

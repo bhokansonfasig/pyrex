@@ -6,6 +6,8 @@ from config import SEED
 
 from pyrex.signals import (Signal, EmptySignal, FunctionSignal,
                            AskaryanSignal, GaussianNoise, ThermalNoise)
+from pyrex.ice_model import IceModel
+from pyrex.particle import Particle
 
 import numpy as np
 
@@ -246,8 +248,17 @@ class TestFunctionSignal:
 @pytest.fixture
 def arz_pulse():
     """Example Askaryan pulse from https://arxiv.org/pdf/1106.6283v3.pdf"""
-    return AskaryanSignal(times=np.linspace(0, 3e-9, 301), energy=3e9,
-                          theta=np.radians(54.85), n=1.75, t0=1e-9)
+    # Create particle to ensure shower energy is 3e9 GeV
+    particle = Particle(particle_id=Particle.Type.electron_neutrino,
+                        vertex=(0, 0, -1000), direction=(0, 0, 1), energy=3e9,
+                        interaction_type="cc")
+    particle.interaction.inelasticity = 0
+    n = IceModel.index(particle.vertex[2])
+    cherenkov_angle = np.arcsin(np.sqrt(1 - 1/n**2))
+    return AskaryanSignal(times=np.linspace(0, 3e-9, 301),
+                          particle=particle,
+                          viewing_angle=cherenkov_angle-np.radians(0.3),
+                          t0=1e-9)
 
 
 class TestAskaryanSignal:
@@ -257,8 +268,8 @@ class TestAskaryanSignal:
         assert np.array_equal(arz_pulse.times, np.linspace(0, 3e-9, 301))
         assert arz_pulse.value_type == Signal.Type.field
         # FIXME: Fix the amplitude of Askaryan pulses and use these amplitude tests
-        # assert np.max(arz_pulse.values) == pytest.approx(200)
-        # assert np.min(arz_pulse.values) == pytest.approx(-200)
+        # assert np.max(arz_pulse.values) == pytest.approx(200, rel=0.1)
+        # assert np.min(arz_pulse.values) == pytest.approx(-200, rel=0.1)
         peak_to_peak_time = (arz_pulse.times[np.argmin(arz_pulse.values)] -
                              arz_pulse.times[np.argmax(arz_pulse.values)])
         assert peak_to_peak_time == pytest.approx(0.2e-9, abs=0.05e-9)

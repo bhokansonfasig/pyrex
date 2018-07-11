@@ -2,8 +2,10 @@
 
 import pytest
 
+from pyrex.signals import AskaryanSignal
 from pyrex.antenna import Antenna
 from pyrex.ice_model import IceModel
+from pyrex.ray_tracing import RayTracer
 from pyrex.particle import Particle, Event
 from pyrex.generation import ListGenerator
 from pyrex.kernel import EventKernel
@@ -31,6 +33,10 @@ class TestEventKernel:
         assert len(kernel.antennas) == 1
         assert isinstance(kernel.antennas[0], Antenna)
         assert kernel.ice == IceModel
+        assert kernel.ray_tracer == RayTracer
+        assert kernel.signal_model == AskaryanSignal
+        assert np.array_equal(kernel.signal_times,
+                              np.linspace(-20e-9, 80e-9, 2000, endpoint=False))
 
     def test_event(self, kernel):
         """Test that the event method runs smoothly"""
