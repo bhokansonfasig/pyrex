@@ -40,6 +40,8 @@ class EventKernel:
     ray_tracer : optional
         A ray tracer capable of propagating signals from the neutrino vertex
         to the antenna positions.
+    signal_model : optional
+        A signal class which generates signals based on the particle.
     signal_times : array_like, optional
         The array of times over which the neutrino signal should be generated.
 
@@ -54,6 +56,8 @@ class EventKernel:
         The ice model describing the ice containing the `antennas`.
     ray_tracer
         The ray tracer responsible for signal propagation through the `ice`.
+    signal_model
+        The signal class to use to generate signals based on the particle.
     signal_times
         The array of times over which the neutrino signal should be generated.
 
@@ -88,14 +92,22 @@ class EventKernel:
     attributes, as well as a ``propagate`` method which takes a signal object
     and applies the propagation effects of the path in-place to that object.
 
+    The `signal_model` must be initialized with the `signal_times` array,
+    a `Particle` object from the `Event`, the ``viewing_angle`` and
+    ``viewing_distance`` according to the `ray_tracer`, and the `ice_model`.
+    The object created should be a `Signal` object with ``times`` and
+    ``values`` attributes representing the time-domain Askaryan signal produced
+    by the `Particle`.
+
     """
-    def __init__(self, generator, antennas,
-                 ice_model=IceModel, ray_tracer=RayTracer,
+    def __init__(self, generator, antennas, ice_model=IceModel,
+                 ray_tracer=RayTracer, signal_model=AskaryanSignal,
                  signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False)):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
         self.ray_tracer = ray_tracer
+        self.signal_model = signal_model
         self.signal_times = signal_times
 
     def event(self):
@@ -117,7 +129,6 @@ class EventKernel:
         event = self.gen.create_event()
         for particle in event:
             logger.info("Processing event for %s", particle)
-            n = self.ice.index(particle.vertex[2])
             for ant in self.antennas:
                 rt = self.ray_tracer(particle.vertex, ant.position,
                                      ice_model=self.ice)
@@ -149,16 +160,13 @@ class EventKernel:
                     if psi>np.pi/2:
                         continue
 
-                    # FIXME: Use shower energy for AskaryanSignal
-                    # Dependent on shower type / neutrino type
-
-                    pulse = AskaryanSignal(times=self.signal_times,
-                                           energy=particle.energy,
-                                           theta=psi, n=n)
+                    pulse = self.signal_model(times=self.signal_times,
+                                              particle=particle,
+                                              viewing_angle=psi,
+                                              viewing_distance=path.path_length,
+                                              ice_model=self.ice)
 
                     path.propagate(pulse)
-                    # Dividing by path length scales Askaryan pulse properly
-                    pulse.values /= path.path_length
 
                     ant.receive(pulse, direction=path.received_direction,
                                 polarization=epol)

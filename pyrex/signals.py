@@ -13,6 +13,7 @@ import numpy as np
 import scipy.signal
 import scipy.fftpack
 from pyrex.internal_functions import get_from_enum
+from pyrex.ice_model import IceModel
 
 logger = logging.getLogger(__name__)
 
@@ -457,17 +458,17 @@ class SlowAskaryanSignal(Signal):
     Warns
     -----
     Raises warning that this class is essentially deprecated and
-    FastAskaryanSignal should be used instead.
+    ARVZAskaryanSignal should be used instead.
 
     Warnings
     --------
-    This class is essentially deprecated. ``FastAskaryanSignal`` is faster and
+    This class is essentially deprecated. ``ARVZAskaryanSignal`` is faster and
     more accurate. This class is kept for reference only and shouldn't be used.
 
     See Also
     --------
     Signal : Base class for time-domain signals.
-    FastAskaryanSignal : Faster class for ARVZ Askaryan parameterization.
+    ARVZAskaryanSignal : Faster class for ARVZ Askaryan parameterization.
 
     Notes
     -----
@@ -476,7 +477,7 @@ class SlowAskaryanSignal(Signal):
     the shower profile [2]_. Calculates the vector potential directly, and then
     numerically differentiates to get the electric field. This method is
     considerably slower (~1000x) than the convolution method in
-    ``FastAskaryanSignal``, and seems to be backwards in time as well. The
+    ``ARVZAskaryanSignal``, and seems to be backwards in time as well. The
     class is kept for reference only and shouldn't be used.
 
     References
@@ -490,7 +491,7 @@ class SlowAskaryanSignal(Signal):
     """
     def __init__(self, times, energy, theta, n=1.78, t0=0):
         logger.warning("SlowAskaryanSignal is deprecated, use "+
-                       "FastAskaryanSignal (aliased to AskaryanSignal) instead")
+                       "ARVZAskaryanSignal (aliased to AskaryanSignal) instead")
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
         #   A(theta,t) = integral(Q(z) * RAC(t-z(1-n*cos(theta))/c))
@@ -656,25 +657,29 @@ class SlowAskaryanSignal(Signal):
         return 0.01 * x_max / density
 
 
-class FastAskaryanSignal(Signal):
+class ARVZAskaryanSignal(Signal):
     """
     Class for generating Askaryan signals according to ARVZ parameterization.
 
-    Stores the time-domain information for an Askaryan electric field (V/m).
-    The amplitude of the pulse is calculated at 1 meter from the shower, so a
-    1/R effect (where R is the distance from source to observer) must be
-    applied to produce the proper signal amplitude at the observation point.
+    Stores the time-domain information for an Askaryan electric field (V/m)
+    produced by the electromagnetic shower initiated by a neutrino.
 
     Parameters
     ----------
     times : array_like
         1D array of times for which the signal is defined.
-    energy : float
-        Energy (GeV) of the particle shower producing the pulse.
-    theta : float
+    particle : Particle
+        ``Particle`` object responsible for the shower which produces the
+        Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
+        and ``id``, plus an ``interaction`` with a ``kind``.
+    viewing_angle : float
         Observation angle (radians) measured relative to the shower axis.
-    n : float, optional
-        Index of refraction at the location of the shower.
+    viewing_distance : float, optional
+        Distance (m) between the shower vertex and the observation point (along
+        the ray path).
+    ice_model : optional
+        The ice model to be used for describing the index of refraction of the
+        medium.
     t0 : float, optional
         Pulse offset time (s), i.e. time at which the shower takes place.
 
@@ -688,11 +693,22 @@ class FastAskaryanSignal(Signal):
         Different value types available for `value_type` of signal objects.
     energy : float
         Energy (GeV) of the particle shower producing the pulse.
+    em_frac : float
+        Fraction of the particle energy which goes into the electromagnetic
+        cascade.
+    had_frac : float
+        Fraction of the particle energy which goes into the hadronic cascade.
     vector_potential
     dt
     frequencies
     spectrum
     envelope
+
+    Raises
+    ------
+    ValueError
+        If the `particle` object is not a neutrino or antineutrino with a
+        charged-current or neutral-current interaction.
 
     See Also
     --------
@@ -700,11 +716,11 @@ class FastAskaryanSignal(Signal):
 
     Notes
     -----
-    Calculates the Askaryan signal based on the ARVZ (Alvarez-Muniz,
-    Romero-Wolf, Zas) parameterization [1]_. Uses a Heitler model for the
-    shower profile [2]_. Calculates the electric field directly using the
-    convolution method outlined in the ARVZ paper, which results in the most
-    efficient calculation of the parameterization.
+    Calculates the Askaryan signal based on the ARVZ parameterization [1]_.
+    Uses a Heitler model for the electromagnetic shower profile [2]_.
+    Calculates the electric field from the vector potential using the
+    convolution method outlined in section 4 of the ARVZ paper, which results
+    in the most efficient calculation of the parameterization.
 
     References
     ----------
@@ -715,7 +731,8 @@ class FastAskaryanSignal(Signal):
         **60**, 25-31 (2015).
 
     """
-    def __init__(self, times, energy, theta, n=1.78, t0=0):
+    def __init__(self, times, particle, viewing_angle, viewing_distance=1,
+                 ice_model=IceModel, t0=0):
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
         #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
@@ -725,12 +742,40 @@ class FastAskaryanSignal(Signal):
 
         # Theta should represent the angle from the shower axis, and so should
         # always be positive
-        theta = np.abs(theta)
+        theta = np.abs(viewing_angle)
 
         if theta > np.pi:
             raise ValueError("Angles greater than 180 degrees not supported")
 
-        self.energy = energy
+        # Calculate shower energy based on particle energy and inelasticity
+        if (particle.interaction.kind ==
+                particle.interaction.Type.neutral_current):
+            self.em_frac = 0
+            self.had_frac = particle.inelasticity
+        elif (particle.interaction.kind ==
+              particle.interaction.Type.charged_current):
+            if (particle.id==particle.Type.electron_neutrino or
+                    particle.id==particle.Type.electron_antineutrino):
+                self.em_frac = 1 - particle.inelasticity
+                self.had_frac = particle.inelasticity
+            elif (particle.id==particle.Type.muon_neutrino or
+                  particle.id==particle.Type.muon_antineutrino):
+                self.em_frac = 0
+                self.had_frac = particle.inelasticity
+            elif (particle.id==particle.Type.tau_neutrino or
+                  particle.id==particle.Type.tau_antineutrino):
+                self.em_frac = 0
+                self.had_frac = particle.inelasticity
+            else:
+                raise ValueError("Particle type not supported")
+        else:
+            raise ValueError("Interaction type not supported")
+
+        self.energy = particle.energy * self.em_frac
+
+        # Calculate index of refraction at the shower position for the
+        # Cherenkov angle calculation and others
+        n = ice_model.index(particle.vertex[2])
 
         # Conversion factor from z to t for RAC:
         # (1-n*cos(theta)) / c
@@ -831,8 +876,9 @@ class FastAskaryanSignal(Signal):
         # So, to clarify, the above statement should have "* -dt" at the end
         # to be the true value of A, and the below would then have "/ -dt"
 
-        # Calculate electric field by taking derivative of vector potential
-        values = np.diff(A)
+        # Calculate electric field by taking derivative of vector potential,
+        # and divide by the viewing distance (R)
+        values = np.diff(A) / viewing_distance
 
         # Note that although len(values) = len(times)-1 (because of np.diff),
         # the Signal class is desinged to handle this by zero-padding the values
@@ -968,12 +1014,12 @@ class FastAskaryanSignal(Signal):
         return 0.01 * x_max / density
 
 
-# FastAskaryanSignal result now matches SlowAskaryanSignal.
-# In fact, FastAskaryanSignal performs much better:
+# ARVZAskaryanSignal result now matches SlowAskaryanSignal.
+# In fact, ARVZAskaryanSignal performs much better:
 #   Runs about 1000x faster
 #   Causal, whereas SlowAskaryanSignal pulse seems to be backwards in time
 #   Smooth pulse; no artifacts from integration errors
-AskaryanSignal = FastAskaryanSignal
+AskaryanSignal = ARVZAskaryanSignal
 
 
 
