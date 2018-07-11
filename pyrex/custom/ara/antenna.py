@@ -706,7 +706,7 @@ class ARAAntennaSystem(AntennaSystem):
         # Signal class will automatically only take the first part of conv,
         # which is what we want.
         # conv multiplied by dt so that the amplitude stays constant for
-        # varying dts (determined emperically, see FastAskaryanSignal comments)
+        # varying dts (determined emperically, see ARVZAskaryanSignal comments)
         output = Signal(signal.times, conv*signal.dt,
                         value_type=Signal.Type.power)
         return output

@@ -61,12 +61,12 @@ class Interaction:
         unknown, undefined
 
         """
-        unknown = 0
         undefined = 0
-        cc = 1
+        unknown = 0
         charged_current = 1
-        nc = 2
+        cc = 1
         neutral_current = 2
+        nc = 2
 
     def __init__(self, particle, kind=None):
         self.particle = particle
@@ -656,35 +656,35 @@ class Particle:
         unknown, undefined
 
         """
-        unknown = 0
         undefined = 0
+        unknown = 0
+        electron = 11
         e = 11
         e_minus = 11
-        electron = 11
-        e_plus = -11
         positron = -11
-        nu_e = 12
+        e_plus = -11
         electron_neutrino = 12
-        nu_e_bar = -12
+        nu_e = 12
         electron_antineutrino = -12
+        nu_e_bar = -12
+        muon = 13
         mu = 13
         mu_minus = 13
-        muon = 13
-        mu_plus = -13
         antimuon = -13
-        nu_mu = 14
+        mu_plus = -13
         muon_neutrino = 14
-        nu_mu_bar = -14
+        nu_mu = 14
         muon_antineutrino = -14
+        nu_mu_bar = -14
         tau = 15
-        tau_minus = 15
         tauon = 15
-        tau_plus = -15
+        tau_minus = 15
         antitau = -15
-        nu_tau = 16
+        tau_plus = -15
         tau_neutrino = 16
-        nu_tau_bar = -16
+        nu_tau = 16
         tau_antineutrino = -16
+        nu_tau_bar = -16
 
     def __init__(self, particle_id, vertex, direction, energy,
                  interaction_model=NeutrinoInteraction, interaction_type=None,

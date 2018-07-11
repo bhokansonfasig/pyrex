@@ -64,8 +64,8 @@ class Signal:
         unknown, undefined
 
         """
-        unknown = 0
         undefined = 0
+        unknown = 0
         voltage = 1
         field = 2
         power = 3
@@ -773,6 +773,12 @@ class ARVZAskaryanSignal(Signal):
 
         self.energy = particle.energy * self.em_frac
 
+        # Fail gracefully if there is no EM shower (the energy is zero)
+        if self.energy==0:
+            super().__init__(times, np.zeros(len(times)),
+                             value_type=self.Type.field)
+            return
+
         # Calculate index of refraction at the shower position for the
         # Cherenkov angle calculation and others
         n = ice_model.index(particle.vertex[2])
@@ -806,7 +812,8 @@ class ARVZAskaryanSignal(Signal):
         # Fail gracefully if the energy is less than the critical energy for
         # shower formation (i.e. all Q values are zero)
         if np.all(Q==0) and len(Q)>0:
-            super().__init__(times, np.zeros(len(times)))
+            super().__init__(times, np.zeros(len(times)),
+                             value_type=self.Type.field)
             return
 
         # Calculate RAC at a specific number of t values (n_RAC) determined so
