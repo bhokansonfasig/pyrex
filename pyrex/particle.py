@@ -477,8 +477,8 @@ class CTWInteraction(Interaction):
             y_min = 0
             y_max = 1e-3
             # Equation 14
-            return c_1 + (r*(y_max-c_1)**(-1/(c_2+1)) +
-                          (1-r)*(y_min-c_1)**(-1/(c_2+1)))**(c_2/(c_2-1))
+            return c_1 + (r*(y_max-c_1)**(1-1/c_2) +
+                          (1-r)*(y_min-c_1)**(1-1/c_2))**(c_2/(c_2-1))
         else:
             y_min = 1e-3
             y_max = 1
