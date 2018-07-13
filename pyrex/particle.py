@@ -64,14 +64,14 @@ def _read_secondary_data_file(data_directory, flavor, secondary_type,
         with open(fullname) as f:
             for line in f:
                 y, dsdy = line.split()
-                ys.append(y)
-                dsdys.append(dsdy)
+                ys.append(float(y))
+                dsdys.append(float(dsdy))
         y_vals.append(np.array(ys))
         dsdy_vals.append(np.array(dsdys))
     return y_vals, dsdy_vals
 
 # Load the probability distributions for secondary data from files
-_secondary_data_dir = os.path.join("data", "secondary")
+_secondary_data_dir = os.path.join(os.path.dirname(__file__), "data", "secondary")
 _y_muon_brems, _dsdy_muon_brems = _read_secondary_data_file(
     _secondary_data_dir, "muons", "brems"
 )
@@ -112,18 +112,24 @@ _int_tauon_edecay = np.sum(_dsdy_tauon_edecay, axis=1)
 _int_tauon_mudecay = np.sum(_dsdy_tauon_mudecay, axis=1)
 
 # Calculate the cumulative distributions
-_y_cum_muon_brems = np.cumsum(_dsdy_muon_brems, axis=1) / _int_muon_brems
-_y_cum_muon_epair = np.cumsum(_dsdy_muon_epair, axis=1) / _int_muon_epair
-_y_cum_muon_pn = np.cumsum(_dsdy_muon_pn, axis=1) / _int_muon_pn
-_y_cum_tauon_brems = np.cumsum(_dsdy_tauon_brems, axis=1) / _int_tauon_brems
-_y_cum_tauon_epair = np.cumsum(_dsdy_tauon_epair, axis=1) / _int_tauon_epair
-_y_cum_tauon_pn = np.cumsum(_dsdy_tauon_pn, axis=1) / _int_tauon_pn
+_y_cum_muon_brems = (np.cumsum(_dsdy_muon_brems, axis=1)
+                     / _int_muon_brems[:,np.newaxis])
+_y_cum_muon_epair = (np.cumsum(_dsdy_muon_epair, axis=1)
+                     / _int_muon_epair[:,np.newaxis])
+_y_cum_muon_pn = (np.cumsum(_dsdy_muon_pn, axis=1)
+                  / _int_muon_pn[:,np.newaxis])
+_y_cum_tauon_brems = (np.cumsum(_dsdy_tauon_brems, axis=1)
+                      / _int_tauon_brems[:,np.newaxis])
+_y_cum_tauon_epair = (np.cumsum(_dsdy_tauon_epair, axis=1)
+                      / _int_tauon_epair[:,np.newaxis])
+_y_cum_tauon_pn = (np.cumsum(_dsdy_tauon_pn, axis=1)
+                   / _int_tauon_pn[:,np.newaxis])
 _y_cum_tauon_hadrdecay = (np.cumsum(_dsdy_tauon_hadrdecay, axis=1)
-                          / _int_tauon_hadrdecay)
+                          / _int_tauon_hadrdecay[:,np.newaxis])
 _y_cum_tauon_edecay = (np.cumsum(_dsdy_tauon_edecay, axis=1)
-                       / _int_tauon_edecay)
+                       / _int_tauon_edecay[:,np.newaxis])
 _y_cum_tauon_mudecay = (np.cumsum(_dsdy_tauon_mudecay, axis=1)
-                        / _int_tauon_mudecay)
+                        / _int_tauon_mudecay[:,np.newaxis])
 
 
 class Interaction:
