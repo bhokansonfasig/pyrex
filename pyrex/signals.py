@@ -671,7 +671,7 @@ class ARVZAskaryanSignal(Signal):
     particle : Particle
         ``Particle`` object responsible for the shower which produces the
         Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
-        and ``id``, plus an ``interaction`` with a ``kind``.
+        and ``id``, plus an ``interaction`` with an ``em_frac``.
     viewing_angle : float
         Observation angle (radians) measured relative to the shower axis.
     viewing_distance : float, optional
@@ -692,12 +692,7 @@ class ARVZAskaryanSignal(Signal):
     Type : Enum
         Different value types available for `value_type` of signal objects.
     energy : float
-        Energy (GeV) of the particle shower producing the pulse.
-    em_frac : float
-        Fraction of the particle energy which goes into the electromagnetic
-        cascade.
-    had_frac : float
-        Fraction of the particle energy which goes into the hadronic cascade.
+        Energy (GeV) of the electromagnetic shower producing the pulse.
     vector_potential
     dt
     frequencies
@@ -747,31 +742,9 @@ class ARVZAskaryanSignal(Signal):
         if theta > np.pi:
             raise ValueError("Angles greater than 180 degrees not supported")
 
-        # Calculate shower energy based on particle energy and inelasticity
-        if (particle.interaction.kind ==
-                particle.interaction.Type.neutral_current):
-            self.em_frac = 0
-            self.had_frac = particle.interaction.inelasticity
-        elif (particle.interaction.kind ==
-              particle.interaction.Type.charged_current):
-            if (particle.id==particle.Type.electron_neutrino or
-                    particle.id==particle.Type.electron_antineutrino):
-                self.em_frac = 1 - particle.interaction.inelasticity
-                self.had_frac = particle.interaction.inelasticity
-            elif (particle.id==particle.Type.muon_neutrino or
-                  particle.id==particle.Type.muon_antineutrino):
-                self.em_frac = 0
-                self.had_frac = particle.interaction.inelasticity
-            elif (particle.id==particle.Type.tau_neutrino or
-                  particle.id==particle.Type.tau_antineutrino):
-                self.em_frac = 0
-                self.had_frac = particle.interaction.inelasticity
-            else:
-                raise ValueError("Particle type not supported")
-        else:
-            raise ValueError("Interaction type not supported")
-
-        self.energy = particle.energy * self.em_frac
+        # Calculate shower energy based on particle's electromagnetic shower
+        # fraction
+        self.energy = particle.energy * particle.interaction.em_frac
 
         # Fail gracefully if there is no EM shower (the energy is zero)
         if self.energy==0:

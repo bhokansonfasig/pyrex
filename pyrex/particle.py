@@ -10,12 +10,120 @@ interactions.
 from enum import Enum
 import inspect
 import logging
+import os.path
 import numpy as np
 from pyrex.internal_functions import normalize, get_from_enum
 
 logger = logging.getLogger(__name__)
 
 AVOGADRO_NUMBER = 6.02e23
+
+
+def _read_secondary_data_file(data_directory, flavor, secondary_type,
+                              energies=("1e18", "1e18.5", "1e19", "1e19.5",
+                                        "1e20", "1e20.5", "1e21")):
+    """
+    Read a file of secondary inelasticity data.
+
+    Reads from file(s) `data_directory` / `flavor` / dsdy_ `secondary_type`
+    _ `energies` [.vec, _tau.vec].
+
+    Parameters
+    ----------
+    data_directory : str
+        Directory containing secondary data.
+    flavor : {"muons", "tauon"}
+        Flavor of neutrino corresponding to a data sub-directory.
+    secondary_type : str
+        Type of secondary for which inelasticity data should be returned.
+    energies : list of str
+        Energies at which the data should be read.
+
+    Returns
+    -------
+    y_vals : list of ndarray
+        Arrays of inelasticity values for each energy in `energies`.
+    dsdy_vals : list of ndarray
+        Arrays of d(sigma)/dy values corresponding to the `y_vals` for each
+        energy in `energies`.
+
+    """
+    if flavor=="muons":
+        suffix = ".vec"
+    elif flavor=="tauon":
+        suffix = "_tau.vec"
+    else:
+        raise ValueError("Unknown flavor value '"+flavor+"'")
+    y_vals = []
+    dsdy_vals = []
+    for energy in energies:
+        filename = "dsdy_"+secondary_type+"_"+energy+suffix
+        fullname = os.path.join(data_directory, flavor, filename)
+        ys = []
+        dsdys = []
+        with open(fullname) as f:
+            for line in f:
+                y, dsdy = line.split()
+                ys.append(y)
+                dsdys.append(dsdy)
+        y_vals.append(np.array(ys))
+        dsdy_vals.append(np.array(dsdys))
+    return y_vals, dsdy_vals
+
+# Load the probability distributions for secondary data from files
+_secondary_data_dir = os.path.join("data", "secondary")
+_y_muon_brems, _dsdy_muon_brems = _read_secondary_data_file(
+    _secondary_data_dir, "muons", "brems"
+)
+_y_muon_epair, _dsdy_muon_epair = _read_secondary_data_file(
+    _secondary_data_dir, "muons", "epair"
+)
+_y_muon_pn, _dsdy_muon_pn = _read_secondary_data_file(
+    _secondary_data_dir, "muons", "pn"
+)
+_y_tauon_brems, _dsdy_tauon_brems = _read_secondary_data_file(
+    _secondary_data_dir, "tauon", "brems"
+)
+_y_tauon_epair, _dsdy_tauon_epair = _read_secondary_data_file(
+    _secondary_data_dir, "tauon", "epair"
+)
+_y_tauon_pn, _dsdy_tauon_pn = _read_secondary_data_file(
+    _secondary_data_dir, "tauon", "pn"
+)
+_y_tauon_hadrdecay, _dsdy_tauon_hadrdecay = _read_secondary_data_file(
+    _secondary_data_dir, "tauon", "hadrdecay"
+)
+_y_tauon_edecay, _dsdy_tauon_edecay = _read_secondary_data_file(
+    _secondary_data_dir, "tauon", "edecay"
+)
+_y_tauon_mudecay, _dsdy_tauon_mudecay = _read_secondary_data_file(
+    _secondary_data_dir, "tauon", "mudecay"
+)
+
+# Integrate the probability distributions
+_int_muon_brems = np.sum(_dsdy_muon_brems, axis=1)
+_int_muon_epair = np.sum(_dsdy_muon_epair, axis=1)
+_int_muon_pn = np.sum(_dsdy_muon_pn, axis=1)
+_int_tauon_brems = np.sum(_dsdy_tauon_brems, axis=1)
+_int_tauon_epair = np.sum(_dsdy_tauon_epair, axis=1)
+_int_tauon_pn = np.sum(_dsdy_tauon_pn, axis=1)
+_int_tauon_hadrdecay = np.sum(_dsdy_tauon_hadrdecay, axis=1)
+_int_tauon_edecay = np.sum(_dsdy_tauon_edecay, axis=1)
+_int_tauon_mudecay = np.sum(_dsdy_tauon_mudecay, axis=1)
+
+# Calculate the cumulative distributions
+_y_cum_muon_brems = np.cumsum(_dsdy_muon_brems, axis=1) / _int_muon_brems
+_y_cum_muon_epair = np.cumsum(_dsdy_muon_epair, axis=1) / _int_muon_epair
+_y_cum_muon_pn = np.cumsum(_dsdy_muon_pn, axis=1) / _int_muon_pn
+_y_cum_tauon_brems = np.cumsum(_dsdy_tauon_brems, axis=1) / _int_tauon_brems
+_y_cum_tauon_epair = np.cumsum(_dsdy_tauon_epair, axis=1) / _int_tauon_epair
+_y_cum_tauon_pn = np.cumsum(_dsdy_tauon_pn, axis=1) / _int_tauon_pn
+_y_cum_tauon_hadrdecay = (np.cumsum(_dsdy_tauon_hadrdecay, axis=1)
+                          / _int_tauon_hadrdecay)
+_y_cum_tauon_edecay = (np.cumsum(_dsdy_tauon_edecay, axis=1)
+                       / _int_tauon_edecay)
+_y_cum_tauon_mudecay = (np.cumsum(_dsdy_tauon_mudecay, axis=1)
+                        / _int_tauon_mudecay)
 
 
 class Interaction:
@@ -74,6 +182,7 @@ class Interaction:
         if self.kind==self.Type.undefined:
             self.kind = self.choose_interaction()
         self.inelasticity = self.choose_inelasticity()
+        self.em_frac, self.had_frac = self.choose_shower_fractions()
 
     @property
     def kind(self):
@@ -111,7 +220,7 @@ class Interaction:
         """
         Choose an inelasticity for the ``particle`` attribute's shower.
 
-        By default, always returns zero.
+        By default, always returns zeros.
 
         Returns
         -------
@@ -120,6 +229,21 @@ class Interaction:
 
         """
         return 0
+
+    def choose_shower_fractions(self):
+        """
+        Choose the electromagnetic and hadronic shower fractions.
+
+        By default, always returns zero.
+
+        Returns
+        -------
+        em_frac : float
+            Electromagnetic shower fraction.
+        had_frac : float
+            Hadronic shower fraction.
+        """
+        return 0, 0
 
     @property
     def total_cross_section(self):
@@ -266,6 +390,191 @@ class GQRSInteraction(Interaction):
         r_2 = 1 - r_1
         rnd = np.random.rand()
         return (-np.log(r_1+rnd*r_2))**2.5
+
+    def choose_shower_fractions(self):
+        """
+        Choose the electromagnetic and hadronic shower fractions.
+
+        Calculates the maximal electromagnetic and hadronic shower fractions
+        based on the primary ``particle`` and randomly generated secondary
+        interactions.
+
+        Returns
+        -------
+        em_frac : float
+            Electromagnetic shower fraction.
+        had_frac : float
+            Hadronic shower fraction.
+        """
+        # Calculate shower fractions for primary particle
+        if self.kind==self.Type.neutral_current:
+            em_frac = 0
+            had_frac = self.inelasticity
+        elif self.kind==self.Type.charged_current:
+            if (self.particle.id==self.particle.Type.electron_neutrino or
+                    self.particle.id==self.particle.Type.electron_antineutrino):
+                em_frac = 1 - self.inelasticity
+                had_frac = self.inelasticity
+            elif (self.particle.id==self.particle.Type.muon_neutrino or
+                  self.particle.id==self.particle.Type.muon_antineutrino):
+                em_frac = 0
+                had_frac = self.inelasticity
+            elif (self.particle.id==self.particle.Type.tau_neutrino or
+                  self.particle.id==self.particle.Type.tau_antineutrino):
+                # Treat taus like muons
+                em_frac = 0
+                had_frac = self.inelasticity
+            else:
+                raise ValueError("Particle type not supported")
+        else:
+            raise ValueError("Interaction type not supported")
+
+        # Calculate lepton energy for inelasticity distributions
+        if self.kind==self.Type.charged_current:
+            lepton_energy = self.particle.energy * (1-self.inelasticity)
+        elif self.kind==self.Type.neutral_current:
+            # No lepton energy, therefore no secondaries
+            # Just return primary fractions
+            return em_frac, had_frac
+        else:
+            raise ValueError("Secondaries cannot be generated without an "+
+                             "interaction type")
+        energy_index = int(2*(np.log10(lepton_energy)-18))
+        if energy_index<0:
+            energy_index = 0
+        elif energy_index>6:
+            energy_index = 6
+
+        loop_counter = 0
+        # Try some reasonable number of times to produce secondaries which
+        # conserve energy
+        while loop_counter<1000:
+            em_secondaries, had_secondaries = \
+                self._choose_secondary_fractions(lepton_energy, energy_index)
+            # If the generated secondaries conserve energy, check whether the
+            # larger signal will come from primary or secondaries
+            if em_secondaries+had_secondaries<=lepton_energy:
+                # If the signal from secondaries is larger, return the
+                # secondary fractions
+                if (em_secondaries+had_secondaries >
+                        (em_frac+had_frac)*self.particle.energy):
+                    return (em_secondaries / self.particle.energy,
+                            had_secondaries / self.particle.energy)
+                # Otherwise return the primary fractions
+                else:
+                    return em_frac, had_frac
+
+    def _choose_secondary_fractions(self, lepton_energy, energy_index):
+        """
+        Choose electromagnetic and hadronic shower fractions from secondaries.
+
+        Generate random secondary interactions for the given `lepton_energy`
+        and return the largest electromagnetic and hadronic fractions from the
+        secondaries.
+
+        Parameters
+        ----------
+        lepton_energy : float
+            The energy (GeV) of the lepton produced in a charged-current
+            interaction.
+        energy_index : int
+            The index relating the `lepton_energy` to the proper set of data.
+            Should be calculated as 2*log10(`lepton_energy`)-18.
+
+        Returns
+        -------
+        em_frac : float
+            Maximal electromagnetic shower fraction from secondary
+            interactions.
+        had_frac : float
+            Maximal adronic shower fraction form secondary interactions.
+
+        """
+        em_max = 0
+        had_max = 0
+        if (self.particle.id==self.particle.Type.muon_neutrino or
+                self.particle.id==self.particle.Type.muon_antineutrino):
+            # Pick numbers of bremsstrahlung, pair production, and
+            # photonuclear interactions based on the integrated
+            # secondaries data
+            n_brems = np.random.poisson(_int_muon_brems[energy_index])
+            n_epair = np.random.poisson(_int_muon_epair[energy_index])
+            n_pn = np.random.poisson(_int_muon_pn[energy_index])
+            n_tot = n_brems + n_epair + n_pn
+            # Generate all secondary interactions and capture the largest
+            for _ in range(n_tot):
+                rand_interaction = np.random.rand()
+                if rand_interaction<n_brems/n_tot:
+                    interaction = "brems"
+                    cum_dist = _y_cum_muon_brems[energy_index]
+                elif rand_interaction<(n_brems+n_epair)/n_tot:
+                    interaction = "epair"
+                    cum_dist = _y_cum_muon_epair[energy_index]
+                else:
+                    interaction = "pn"
+                    cum_dist = _y_cum_muon_pn[energy_index]
+                # Calculate inelasticity according to cumulative
+                # distribution
+                rand_inelasticity = np.random.rand()
+                y = np.interp(rand_inelasticity, cum_dist,
+                              np.linspace(0, 1, len(cum_dist)))
+                # Store if the largest interaction thus far
+                if y*lepton_energy>max(em_max, had_max):
+                    if interaction=="brems" or interaction=="epair":
+                        em_max = y*lepton_energy
+                    elif interaction=="pn":
+                        had_max = y*lepton_energy
+
+        elif (self.particle.id==self.particle.Type.tau_neutrino or
+              self.particle.id==self.particle.Type.tau_antineutrino):
+            # Pick numbers of bremsstrahlung, pair production, and
+            # photonuclear interactions based on the integrated
+            # secondaries data
+            n_brems = np.random.poisson(_int_tauon_brems[energy_index])
+            n_epair = np.random.poisson(_int_tauon_epair[energy_index])
+            n_pn = np.random.poisson(_int_tauon_pn[energy_index])
+            n_tot = n_brems + n_epair + n_pn
+            # Generate all secondary interactions and capture the largest
+            for _ in range(n_tot):
+                rand_interaction = np.random.rand()
+                if rand_interaction<n_brems/n_tot:
+                    interaction = "brems"
+                    cum_dist = _y_cum_tauon_brems[energy_index]
+                elif rand_interaction<(n_brems+n_epair)/n_tot:
+                    interaction = "epair"
+                    cum_dist = _y_cum_tauon_epair[energy_index]
+                else:
+                    interaction = "pn"
+                    cum_dist = _y_cum_tauon_pn[energy_index]
+                # Calculate inelasticity according to cumulative
+                # distribution
+                rand_inelasticity = np.random.rand()
+                y = np.interp(rand_inelasticity, cum_dist,
+                              np.linspace(0, 1, len(cum_dist)))
+                # Store if the largest interaction thus far
+                if y*lepton_energy>max(em_max, had_max):
+                    if interaction=="brems" or interaction=="epair":
+                        em_max = y*lepton_energy
+                    elif interaction=="pn":
+                        had_max = y*lepton_energy
+            # Handle tau decay interaction just like the others
+            rand_interaction = np.random.rand()
+            if rand_interaction<0.65011:
+                interaction = "hadrdecay"
+                cum_dist = _y_cum_tauon_hadrdecay
+            elif rand_interaction<0.8219:
+                interaction = "mudecay"
+                cum_dist = _y_cum_tauon_mudecay
+            else:
+                interaction = "edecay"
+                cum_dist = _y_cum_tauon_edecay
+            if y*lepton_energy>max(em_max, had_max):
+                if interaction=="edecay":
+                    em_max = y*lepton_energy
+                elif interaction=="hadrdecay":
+                    had_max = y*lepton_energy
+
+        return em_max, had_max
 
     @property
     def total_cross_section(self):
