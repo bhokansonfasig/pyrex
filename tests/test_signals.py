@@ -252,7 +252,8 @@ def arz_pulse():
     particle = Particle(particle_id=Particle.Type.electron_neutrino,
                         vertex=(0, 0, -1000), direction=(0, 0, 1), energy=3e9,
                         interaction_type="cc")
-    particle.interaction.inelasticity = 0
+    particle.interaction.em_frac = 1
+    particle.interaction.had_frac = 0
     n = IceModel.index(particle.vertex[2])
     cherenkov_angle = np.arcsin(np.sqrt(1 - 1/n**2))
     return AskaryanSignal(times=np.linspace(0, 3e-9, 301),
@@ -264,7 +265,8 @@ def arz_pulse():
 class TestAskaryanSignal:
     """Tests for AksaryanSignal class"""
     def test_arz_pulse(self, arz_pulse):
-        assert arz_pulse.energy == 3e9
+        assert arz_pulse.em_energy == 3e9
+        assert arz_pulse.had_energy == 0
         assert np.array_equal(arz_pulse.times, np.linspace(0, 3e-9, 301))
         assert arz_pulse.value_type == Signal.Type.field
         # FIXME: Fix the amplitude of Askaryan pulses and use these amplitude tests
