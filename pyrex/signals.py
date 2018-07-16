@@ -416,6 +416,129 @@ class FunctionSignal(Signal):
 
 
 
+class ZHSAskaryanSignal(Signal):
+    """
+    Class for generating Askaryan signals according to ZHS parameterization.
+
+    Stores the time-domain information for an Askaryan electric field (V/m)
+    produced by the electromagnetic shower initiated by a neutrino.
+
+    Parameters
+    ----------
+    times : array_like
+        1D array of times for which the signal is defined.
+    particle : Particle
+        ``Particle`` object responsible for the shower which produces the
+        Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
+        and ``id``, plus an ``interaction`` with an ``em_frac``.
+    viewing_angle : float
+        Observation angle (radians) measured relative to the shower axis.
+    viewing_distance : float, optional
+        Distance (m) between the shower vertex and the observation point (along
+        the ray path).
+    ice_model : optional
+        The ice model to be used for describing the index of refraction of the
+        medium.
+    t0 : float, optional
+        Pulse offset time (s), i.e. time at which the shower takes place.
+
+    Attributes
+    ----------
+    times, values : ndarray
+        1D arrays of times and corresponding values which define the signal.
+    value_type : Signal.Type.field
+        Type of signal, representing the units of the values.
+    Type : Enum
+        Different value types available for `value_type` of signal objects.
+    energy : float
+        Energy (GeV) of the electromagnetic shower producing the pulse.
+    vector_potential
+    dt
+    frequencies
+    spectrum
+    envelope
+
+    Raises
+    ------
+    ValueError
+        If the `particle` object is not a neutrino or antineutrino with a
+        charged-current or neutral-current interaction.
+
+    See Also
+    --------
+    Signal : Base class for time-domain signals.
+
+    Notes
+    -----
+    Calculates the Askaryan signal based on the ZHS parameterization [1]_.
+    Uses equations 20 and 21 to calculate the electric field close to the
+    Chereknov angle.
+
+    References
+    ----------
+    .. [1] E. Zas, F. Halzen, T. Stanev, "Electromagnetic pulses from
+        high-energy showers: implications for neutrino detection", Physical
+        Review D **45**, 362-376 (1992).
+
+    """
+    def __init__(self, times, particle, viewing_angle, viewing_distance=1,
+                 ice_model=IceModel, t0=0):
+        # Theta should represent the angle from the shower axis, and so should
+        # always be positive
+        theta = np.abs(viewing_angle)
+
+        if theta > np.pi:
+            raise ValueError("Angles greater than 180 degrees not supported")
+
+        # Calculate shower energy based on particle's total shower fractions
+        self.energy = particle.energy * (particle.interaction.em_frac +
+                                         particle.interaction.had_frac)
+
+        # Fail gracefully if there is no EM shower (the energy is zero)
+        if self.energy==0:
+            super().__init__(times, np.zeros(len(times)),
+                             value_type=self.Type.field)
+            return
+
+        # Calculate index of refraction at the shower position for the
+        # Cherenkov angle calculation and others
+        n = ice_model.index(particle.vertex[2])
+
+        # Calculate theta_c = arccos(1/n)
+        theta_c = np.arccos(1/n)
+
+        # Parameterization relative frequency value
+        nu_0 = 500e6
+
+        # Calculate dt of times array
+        dt = times[1] - times[0]
+
+        # Calculate frequencies for frequency-domain calculations
+        freqs = scipy.fftpack.fftfreq(len(times), d=dt)
+
+        # Field as a function of frequency at Cherenkov angle (ZHS equation 20)
+        ratio = np.abs(freqs)/nu_0
+        e_omega = 1.1e-7 * self.energy/1000 * ratio * 1/(1 + 0.4*ratio**2)
+        e_omega /= viewing_distance
+
+        # Convert to volts per meter per hertz
+        # (from volts per meter per megahertz)
+        e_omega *= 1e-6
+
+        # Parameterize away from Chereknov angle using Gaussian peak (eqn 21)
+        e_omega *= np.exp(-0.5*((viewing_angle-theta_c)*ratio
+                                /np.radians(2.4))**2)
+
+        # Shift the times so the signal comes at t0
+        freq_vals = e_omega * np.exp(-1j*2*np.pi*freqs*(t0-times[0]))
+
+        # Normalize the inverse fourier transform by dt so the time-domain
+        # amplitude stays the same for different sampling rates
+        values = np.real(scipy.fftpack.ifft(freq_vals)) / dt
+
+        super().__init__(times, values, value_type=self.Type.field)
+
+
 class SlowAskaryanSignal(Signal):
     """
     Class for generating Askaryan signals according to ARVZ parameterization.
