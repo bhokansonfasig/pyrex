@@ -605,7 +605,7 @@ class SlowAskaryanSignal(Signal):
 
     References
     ----------
-    .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
+    .. [1] Jaime Alvarez-Muniz et al, "Practical and accurate calculations
         of Askaryan radiation." Physical Review D **84**, 103003 (2011).
     .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
         high-energy neutrino-induced showers in ice." Astropart. Phys.
@@ -683,7 +683,7 @@ class SlowAskaryanSignal(Signal):
 
         References
         ----------
-        .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
+        .. [1] Jaime Alvarez-Muniz et al, "Practical and accurate calculations
             of Askaryan radiation." Physical Review D **84**, 103003 (2011).
 
         """
@@ -842,7 +842,7 @@ class ARVZAskaryanSignal(Signal):
 
     References
     ----------
-    .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
+    .. [1] Jaime Alvarez-Muniz et al, "Practical and accurate calculations
         of Askaryan radiation." Physical Review D **84**, 103003 (2011).
     .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
         high-energy neutrino-induced showers in ice." Astropart. Phys.
@@ -1022,7 +1022,7 @@ class ARVZAskaryanSignal(Signal):
 
         References
         ----------
-        .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
+        .. [1] Jaime Alvarez-Muniz et al, "Practical and accurate calculations
             of Askaryan radiation." Physical Review D **84**, 103003 (2011).
 
         """
