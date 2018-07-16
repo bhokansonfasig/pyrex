@@ -53,6 +53,7 @@ Individual Module APIs
     api/ice_model
     api/ray_tracing
     api/particle
+    api/generation
     api/kernel
 
 
