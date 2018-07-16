@@ -268,7 +268,7 @@ def basic_envelope_model(signal, cap=20e-12, res=500):
         v_c = v_c*charge_exp - discharge + lambert_factor*lambert_term
         v_out.append(v_c)
 
-    return Signal(signal.times, v_out, value_type=Signal.ValueTypes.voltage)
+    return Signal(signal.times, v_out, value_type=Signal.Type.voltage)
 
 
 # Bridge rectifier envelope circuit:
@@ -369,4 +369,4 @@ def bridge_rectifier_envelope_model(signal, cap=20e-12, res=500):
         v_c = v_c*charge_exp - discharge + lambert_factor*lambert_term
         v_out.append(v_c)
 
-    return Signal(signal.times, v_out, value_type=Signal.ValueTypes.voltage)
+    return Signal(signal.times, v_out, value_type=Signal.Type.voltage)

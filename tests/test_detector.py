@@ -111,13 +111,13 @@ class TestAntennaSystem:
         """Test that receive is passed along to underlying antenna"""
         assert ant_obj_sys.signals == []
         assert ant_obj_sys.antenna.signals == []
-        ant_obj_sys.receive(Signal([0,1,2], [1,2,1], Signal.ValueTypes.voltage))
+        ant_obj_sys.receive(Signal([0,1,2], [1,2,1], Signal.Type.voltage))
         assert ant_obj_sys.signals != []
         assert ant_obj_sys.antenna.signals != []
 
     def test_clear(self, ant_obj_sys):
         """Test that clear clears the system and the underlying antenna"""
-        ant_obj_sys.receive(Signal([0,1,2], [1,2,1], Signal.ValueTypes.voltage))
+        ant_obj_sys.receive(Signal([0,1,2], [1,2,1], Signal.Type.voltage))
         assert ant_obj_sys.signals != []
         assert ant_obj_sys.antenna.signals != []
         ant_obj_sys.clear()

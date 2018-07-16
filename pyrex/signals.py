@@ -12,6 +12,8 @@ import logging
 import numpy as np
 import scipy.signal
 import scipy.fftpack
+from pyrex.internal_functions import get_from_enum
+from pyrex.ice_model import IceModel
 
 logger = logging.getLogger(__name__)
 
@@ -26,22 +28,23 @@ class Signal:
     Parameters
     ----------
     times : array_like
-        1D array of times for which the signal is defined.
+        1D array of times (s) for which the signal is defined.
     values : array_like
         1D array of values of the signal corresponding to the given `times`.
         Will be resized to the size of `times` by zero-padding or truncating
         as necessary.
     value_type
-        Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` enum.
+        Type of signal, representing the units of the values. Values should be
+        from the ``Signal.Type`` enum, but integer or string values may
+        work if carefully chosen. ``Signal.Type.undefined`` by default.
 
     Attributes
     ----------
     times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    Type : Enum
         Different value types available for `value_type` of signal objects.
     dt
     frequencies
@@ -49,24 +52,25 @@ class Signal:
     envelope
 
     """
-    class ValueTypes(Enum):
+    class Type(Enum):
         """
         Enum containing possible types (units) for signal values.
 
         Attributes
         ----------
-        undefined
         voltage
         field
         power
+        unknown, undefined
 
         """
         undefined = 0
+        unknown = 0
         voltage = 1
         field = 2
         power = 3
 
-    def __init__(self, times, values, value_type=ValueTypes.undefined):
+    def __init__(self, times, values, value_type=None):
         self.times = np.array(times)
         len_diff = len(times)-len(values)
         if len_diff>0:
@@ -97,12 +101,12 @@ class Signal:
                             +str(type(other))+" to a signal")
         if not(np.array_equal(self.times, other.times)):
             raise ValueError("Can't add signals with different times")
-        if (self.value_type!=self.ValueTypes.undefined and
-                other.value_type!=self.ValueTypes.undefined and
+        if (self.value_type!=self.Type.undefined and
+                other.value_type!=self.Type.undefined and
                 self.value_type!=other.value_type):
             raise ValueError("Can't add signals with different value types")
 
-        if self.value_type==self.ValueTypes.undefined:
+        if self.value_type==self.Type.undefined:
             value_type = other.value_type
         else:
             value_type = self.value_type
@@ -122,9 +126,27 @@ class Signal:
         """
         if other!=0:
             raise TypeError("unsupported operand type(s) for +: '"+
-                            +str(type(other))+"' and 'Signal'")
+                            str(type(other))+"' and 'Signal'")
 
         return self
+
+    @property
+    def value_type(self):
+        """
+        Type of signal, representing the units of the values.
+
+        Should always be a value from the ``Signal.Type`` enum. Setting with
+        integer or string values may work if carefully chosen.
+
+        """
+        return self._value_type
+
+    @value_type.setter
+    def value_type(self, val_type):
+        if val_type is None:
+            self._value_type = self.Type.undefined
+        else:
+            self._value_type = get_from_enum(val_type, self.Type)
 
     @property
     def dt(self):
@@ -163,7 +185,7 @@ class Signal:
         Parameters
         ----------
         new_times : array_like
-            1D array of times for which to define the new signal.
+            1D array of times (s) for which to define the new signal.
 
         Returns
         -------
@@ -270,18 +292,18 @@ class EmptySignal(Signal):
     Parameters
     ----------
     times : array_like
-        1D array of times for which the signal is defined.
+        1D array of times (s) for which the signal is defined.
     value_type
         Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` Enum.
+        ``Signal.Type`` Enum.
 
     Attributes
     ----------
     times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    Type : Enum
         Different value types available for `value_type` of signal objects.
     dt
     frequencies
@@ -293,7 +315,7 @@ class EmptySignal(Signal):
     Signal : Base class for time-domain signals.
 
     """
-    def __init__(self, times, value_type=Signal.ValueTypes.undefined):
+    def __init__(self, times, value_type=None):
         super().__init__(times, np.zeros(len(times)), value_type=value_type)
 
     def with_times(self, new_times):
@@ -303,7 +325,7 @@ class EmptySignal(Signal):
         Parameters
         ----------
         new_times : array_like
-            1D array of times for which to define the new signal.
+            1D array of times (s) for which to define the new signal.
 
         Returns
         -------
@@ -326,21 +348,21 @@ class FunctionSignal(Signal):
     Parameters
     ----------
     times : array_like
-        1D array of times for which the signal is defined.
+        1D array of times (s) for which the signal is defined.
     function : function
         Function which evaluates the corresponding value(s) for a given time or
         array of times.
     value_type
         Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` Enum.
+        ``Signal.Type`` Enum.
 
     Attributes
     ----------
     times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    Type : Enum
         Different value types available for `value_type` of signal objects.
     function : function
         Function to evaluate the signal values at given time(s).
@@ -355,7 +377,7 @@ class FunctionSignal(Signal):
     EmptySignal : Class for signal with zero amplitude.
 
     """
-    def __init__(self, times, function, value_type=Signal.ValueTypes.undefined):
+    def __init__(self, times, function, value_type=None):
         self.times = np.array(times)
         self.function = function
         # Attempt to evaluate all values in one function call
@@ -376,7 +398,7 @@ class FunctionSignal(Signal):
         Parameters
         ----------
         new_times : array_like
-            1D array of times for which to define the new signal.
+            1D array of times (s) for which to define the new signal.
 
         Returns
         -------
@@ -394,307 +416,207 @@ class FunctionSignal(Signal):
 
 
 
-class SlowAskaryanSignal(Signal):
+class ZHSAskaryanSignal(Signal):
     """
-    Class for generating Askaryan signals according to ARVZ parameterization.
+    Class for generating Askaryan signals according to ZHS parameterization.
 
-    Stores the time-domain information for an Askaryan electric field (V/m).
-    The amplitude of the pulse is calculated at 1 meter from the shower, so a
-    1/R effect (where R is the distance from source to observer) must be
-    applied to produce the proper signal amplitude at the observation point.
+    Stores the time-domain information for an Askaryan electric field (V/m)
+    produced by the electromagnetic shower initiated by a neutrino.
 
     Parameters
     ----------
     times : array_like
-        1D array of times for which the signal is defined.
-    energy : float
-        Energy (GeV) of the particle shower producing the pulse.
-    theta : float
+        1D array of times (s) for which the signal is defined.
+    particle : Particle
+        ``Particle`` object responsible for the shower which produces the
+        Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
+        and ``id``, plus an ``interaction`` with an ``em_frac``.
+    viewing_angle : float
         Observation angle (radians) measured relative to the shower axis.
-    n : float, optional
-        Index of refraction at the location of the shower.
+    viewing_distance : float, optional
+        Distance (m) between the shower vertex and the observation point (along
+        the ray path).
+    ice_model : optional
+        The ice model to be used for describing the index of refraction of the
+        medium.
     t0 : float, optional
         Pulse offset time (s), i.e. time at which the shower takes place.
 
     Attributes
     ----------
     times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type : Signal.ValueTypes.field
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type.field
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    Type : Enum
         Different value types available for `value_type` of signal objects.
     energy : float
-        Energy (GeV) of the particle shower producing the pulse.
-    vector_potential : ndarray
-        1D array of vector potential (V*s/m) of the pulse
-    dt
-    frequencies
-    spectrum
-    envelope
-
-    Warns
-    -----
-    Raises warning that this class is essentially deprecated and
-    FastAskaryanSignal should be used instead.
-
-    Warnings
-    --------
-    This class is essentially deprecated. ``FastAskaryanSignal`` is faster and
-    more accurate. This class is kept for reference only and shouldn't be used.
-
-    See Also
-    --------
-    Signal : Base class for time-domain signals.
-    FastAskaryanSignal : Faster class for ARVZ Askaryan parameterization.
-
-    Notes
-    -----
-    Calculates the Askaryan signal based on the ARVZ (Alvarez-Muniz,
-    Romero-Wolf, Zas) parameterization [1]_. Uses a simplified Heitler model for
-    the shower profile [2]_. Calculates the vector potential directly, and then
-    numerically differentiates to get the electric field. This method is
-    considerably slower (~1000x) than the convolution method in
-    ``FastAskaryanSignal``, and seems to be backwards in time as well. The
-    class is kept for reference only and shouldn't be used.
-
-    References
-    ----------
-    .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
-        of Askaryan radiation." Physical Review D **84**, 103003 (2011).
-    .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
-        high-energy neutrino-induced showers in ice." Astropart. Phys.
-        **60**, 25-31 (2015).
-
-    """
-    def __init__(self, times, energy, theta, n=1.78, t0=0):
-        logger.warning("SlowAskaryanSignal is deprecated, use "+
-                       "FastAskaryanSignal (aliased to AskaryanSignal) instead")
-        # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
-        # Vector potential is given by:
-        #   A(theta,t) = integral(Q(z) * RAC(t-z(1-n*cos(theta))/c))
-        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
-        self.energy = energy
-        self.vector_potential = np.zeros(len(times))
-
-        # Conversion factor for z in RAC
-        z_to_t = (1 - n*np.cos(theta))/3e8
-
-        # Integrals of z go from z_min to z_max with n_z steps
-        z_min = 0
-        z_max = 2.5*self.max_length()
-        n_z = 1000
-        z_vals, dz = np.linspace(z_min, z_max, n_z, endpoint=False,
-                                 retstep=True)
-
-        # Q(z) is the same for every time
-        Q = np.zeros(n_z)
-        for i, z in enumerate(z_vals):
-            Q[i] = self.charge_profile(z)
-
-        # Calculate RAC and integral(Q*RAC) at each time
-        for i, t in enumerate(times):
-            RA_C = np.zeros(n_z)
-            for j, z in enumerate(z_vals):
-                RA_C[j] = self.RAC(t - t0 - z*z_to_t)
-            self.vector_potential[i] = np.trapz(Q*RA_C, dx=dz)
-
-        # Calculate LQ_tot (the excess longitudinal charge along the shower)
-        LQ_tot = np.trapz(Q, dx=dz)
-
-        # Calculate sin(theta_c) = sqrt(1-cos^2(theta_c)) = sqrt(1-1/n^2)
-        sin_theta_c = np.sqrt(1 - 1/n**2)
-
-        # Scale the integral by the necessary factors
-        self.vector_potential *= np.sin(theta) / sin_theta_c / LQ_tot
-
-        # Calculate electric field by taking derivative of vector potential
-        dt = times[1] - times[0]
-        values = -np.diff(self.vector_potential) / dt
-
-        super().__init__(times, values, value_type=self.ValueTypes.field)
-
-
-    def RAC(self, time):
-        """
-        Calculates R*A_C at the given time.
-
-        The R*A_C value is the observation distance R (m) times the vector
-        potential (V*s/m) at the Cherenkov angle.
-
-        Parameters
-        ----------
-        time : float
-            Time (s) at which to calculate the R*A_C value.
-
-        Returns
-        -------
-        float
-            The R*A_C value (V*s) at the given time.
-
-        Notes
-        -----
-        Based on equation 16 of the ARVZ paper [1]_.
-
-        References
-        ----------
-        .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
-            of Askaryan radiation." Physical Review D **84**, 103003 (2011).
-
-        """
-        # Get absolute value of time in nanoseconds
-        ta = np.abs(time) * 1e9
-        if time>=0:
-            return (-4.5e-17 * self.energy
-                    * (np.exp(-ta/0.057) + (1+2.87*ta)**-3))
-        else:
-            return (-4.5e-17 * self.energy
-                    * (np.exp(-ta/0.030) + (1+3.05*ta)**-3.5))
-
-    def charge_profile(self, z, density=0.92, crit_energy=7.86e-2,
-                       rad_length=36.08):
-        """
-        Calculates the EM shower longitudinal charge profile.
-
-        The longitudinal charge profile is calculated for a given distance,
-        density, critical energy, and electron radiation length in ice.
-
-        Parameters
-        ----------
-        z : float
-            Distance (m) along the shower at which to calculate the charge.
-        density : float, optional
-            Density (g/cm^3) of ice.
-        crit_energy : float, optional
-            Critical energy (GeV) for shower formation.
-        rad_length : float, optional
-            Electron radiation length (g/cm^2) in ice.
-
-        Returns
-        -------
-        float
-            The charge (C) at the given distance along the shower.
-
-        Notes
-        -----
-        Profile calculated by a simplified Heitler model ased on equations 24
-        and 25 of the radar feasibility paper [1]_.
-
-        References
-        ----------
-        .. [1] K.D. de Vries et al, "On the feasibility of RADAR detection of
-            high-energy neutrino-induced showers in ice." Astropart. Phys.
-            **60**, 25-31 (2015).
-
-        """
-        # Based on Heitler model as described in appendix of
-        # https://arxiv.org/pdf/1312.4331v2.pdf
-        if z<=0 or self.energy<=crit_energy:
-            return 0
-
-        # Depth calculated by "integrating" the density along the shower path
-        # (in g/cm^2)
-        x = 100 * z * density
-        x_ratio = x / rad_length
-        e_ratio = self.energy / crit_energy
-
-        # Shower age
-        s = 3 * x_ratio / (x_ratio + 2*np.log(e_ratio))
-
-        # Number of particles
-        N = (0.31 * np.exp(x_ratio * (1 - 1.5*np.log(s)))
-             / np.sqrt(np.log(e_ratio)))
-
-        return N * 1.602e-19
-
-    def max_length(self, density=0.92, crit_energy=7.86e-2, rad_length=36.08):
-        """
-        Calculates the maximum length (or shower depth) of an EM shower.
-
-        The maximum length of an EM shower is calculated for a given density,
-        critical energy, and electron radiation length in ice.
-
-        Parameters
-        ----------
-        density : float, optional
-            Density (g/cm^3) of ice.
-        crit_energy : float, optional
-            Critical energy (GeV) for shower formation.
-        rad_length : float, optional
-            Electron radiation length (g/cm^2) in ice.
-
-        Returns
-        -------
-        float
-            The maximum length (m) of an EM shower.
-
-        """
-        # Maximum depth in g/cm^2
-        x_max = rad_length * np.log(self.energy / crit_energy) / np.log(2)
-
-        return 0.01 * x_max / density
-
-
-class FastAskaryanSignal(Signal):
-    """
-    Class for generating Askaryan signals according to ARVZ parameterization.
-
-    Stores the time-domain information for an Askaryan electric field (V/m).
-    The amplitude of the pulse is calculated at 1 meter from the shower, so a
-    1/R effect (where R is the distance from source to observer) must be
-    applied to produce the proper signal amplitude at the observation point.
-
-    Parameters
-    ----------
-    times : array_like
-        1D array of times for which the signal is defined.
-    energy : float
-        Energy (GeV) of the particle shower producing the pulse.
-    theta : float
-        Observation angle (radians) measured relative to the shower axis.
-    n : float, optional
-        Index of refraction at the location of the shower.
-    t0 : float, optional
-        Pulse offset time (s), i.e. time at which the shower takes place.
-
-    Attributes
-    ----------
-    times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type : Signal.ValueTypes.field
-        Type of signal, representing the units of the values.
-    ValueTypes : Enum
-        Different value types available for `value_type` of signal objects.
-    energy : float
-        Energy (GeV) of the particle shower producing the pulse.
+        Energy (GeV) of the electromagnetic shower producing the pulse.
     vector_potential
     dt
     frequencies
     spectrum
     envelope
 
+    Raises
+    ------
+    ValueError
+        If the `particle` object is not a neutrino or antineutrino with a
+        charged-current or neutral-current interaction.
+
     See Also
     --------
     Signal : Base class for time-domain signals.
 
     Notes
     -----
-    Calculates the Askaryan signal based on the ARVZ (Alvarez-Muniz,
-    Romero-Wolf, Zas) parameterization [1]_. Uses a Heitler model for the
-    shower profile [2]_. Calculates the electric field directly using the
-    convolution method outlined in the ARVZ paper, which results in the most
+    Calculates the Askaryan signal based on the ZHS parameterization [1]_.
+    Uses equations 20 and 21 to calculate the electric field close to the
+    Chereknov angle.
+
+    References
+    ----------
+    .. [1] E. Zas, F. Halzen, T. Stanev, "Electromagnetic pulses from
+        high-energy showers: implications for neutrino detection", Physical
+        Review D **45**, 362-376 (1992).
+
+    """
+    def __init__(self, times, particle, viewing_angle, viewing_distance=1,
+                 ice_model=IceModel, t0=0):
+        # Theta should represent the angle from the shower axis, and so should
+        # always be positive
+        theta = np.abs(viewing_angle)
+
+        if theta > np.pi:
+            raise ValueError("Angles greater than 180 degrees not supported")
+
+        # Calculate shower energy based on particle's total shower fractions
+        self.energy = particle.energy * (particle.interaction.em_frac +
+                                         particle.interaction.had_frac)
+
+        # Fail gracefully if there is no EM shower (the energy is zero)
+        if self.energy==0:
+            super().__init__(times, np.zeros(len(times)),
+                             value_type=self.Type.field)
+            return
+
+        # Calculate index of refraction at the shower position for the
+        # Cherenkov angle calculation and others
+        n = ice_model.index(particle.vertex[2])
+
+        # Calculate theta_c = arccos(1/n)
+        theta_c = np.arccos(1/n)
+
+        # Parameterization relative frequency value
+        nu_0 = 500e6
+
+        # Calculate dt of times array
+        dt = times[1] - times[0]
+
+        # Calculate frequencies for frequency-domain calculations
+        freqs = scipy.fftpack.fftfreq(len(times), d=dt)
+
+        # Field as a function of frequency at Cherenkov angle (ZHS equation 20)
+        ratio = np.abs(freqs)/nu_0
+        e_omega = 1.1e-7 * self.energy/1000 * ratio * 1/(1 + 0.4*ratio**2)
+        e_omega /= viewing_distance
+
+        # Convert to volts per meter per hertz
+        # (from volts per meter per megahertz)
+        e_omega *= 1e-6
+
+        # Parameterize away from Chereknov angle using Gaussian peak (eqn 21)
+        e_omega *= np.exp(-0.5*((viewing_angle-theta_c)*ratio
+                                /np.radians(2.4))**2)
+
+        # Shift the times so the signal comes at t0
+        freq_vals = e_omega * np.exp(-1j*2*np.pi*freqs*(t0-times[0]))
+
+        # Normalize the inverse fourier transform by dt so the time-domain
+        # amplitude stays the same for different sampling rates
+        values = np.real(scipy.fftpack.ifft(freq_vals)) / dt
+
+        super().__init__(times, values, value_type=self.Type.field)
+
+
+
+class ARVZAskaryanSignal(Signal):
+    """
+    Class for generating Askaryan signals according to ARVZ parameterization.
+
+    Stores the time-domain information for an Askaryan electric field (V/m)
+    produced by the electromagnetic and hadronic showers initiated by a
+    neutrino.
+
+    Parameters
+    ----------
+    times : array_like
+        1D array of times (s) for which the signal is defined.
+    particle : Particle
+        ``Particle`` object responsible for the showers which produce the
+        Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
+        and ``id``, plus an ``interaction`` with an ``em_frac``.
+    viewing_angle : float
+        Observation angle (radians) measured relative to the shower axis.
+    viewing_distance : float, optional
+        Distance (m) between the shower vertex and the observation point (along
+        the ray path).
+    ice_model : optional
+        The ice model to be used for describing the index of refraction of the
+        medium.
+    t0 : float, optional
+        Pulse offset time (s), i.e. time at which the showers take place.
+
+    Attributes
+    ----------
+    times, values : ndarray
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type.field
+        Type of signal, representing the units of the values.
+    Type : Enum
+        Different value types available for `value_type` of signal objects.
+    em_energy : float
+        Energy (GeV) of the electromagnetic shower producing the pulse.
+    had_energy : float
+        Energy (GeV) of the hadronic shower producing the pulse.
+    vector_potential
+    dt
+    frequencies
+    spectrum
+    envelope
+
+    Raises
+    ------
+    ValueError
+        If the `particle` object is not a neutrino or antineutrino with a
+        charged-current or neutral-current interaction.
+
+    See Also
+    --------
+    Signal : Base class for time-domain signals.
+
+    Notes
+    -----
+    Calculates the Askaryan signal based on the ARVZ parameterization [1]_.
+    Uses a Heitler model for the electromagnetic shower profile [2]_ and a
+    Gaisser-Hillas model for the hadronic shower profile [3]_. Calculates the
+    electric field from the vector potential using the convolution method
+    outlined in section 4 of the ARVZ paper, which results in the most
     efficient calculation of the parameterization.
 
     References
     ----------
-    .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
+    .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
         of Askaryan radiation." Physical Review D **84**, 103003 (2011).
     .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
         high-energy neutrino-induced showers in ice." Astropart. Phys.
         **60**, 25-31 (2015).
+    .. [3] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
+        effect." ICRC proceedings, 17-25 (1999).
 
     """
-    def __init__(self, times, energy, theta, n=1.78, t0=0):
+    def __init__(self, times, particle, viewing_angle, viewing_distance=1,
+                 ice_model=IceModel, t0=0):
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
         #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
@@ -704,12 +626,87 @@ class FastAskaryanSignal(Signal):
 
         # Theta should represent the angle from the shower axis, and so should
         # always be positive
-        theta = np.abs(theta)
+        theta = np.abs(viewing_angle)
 
         if theta > np.pi:
             raise ValueError("Angles greater than 180 degrees not supported")
 
-        self.energy = energy
+        # Calculate shower energies based on particle's electromagnetic and
+        # hadronic shower fractions
+        self.em_energy = particle.energy * particle.interaction.em_frac
+        self.had_energy = particle.energy * particle.interaction.had_frac
+
+        # Calculate index of refraction at the shower position for the
+        # Cherenkov angle calculation and others
+        n = ice_model.index(particle.vertex[2])
+
+        # Calculate the resulting pulse values from an electromagnetic shower
+        # and a hadronic shower, then add them
+        em_vals = self.shower_signal(times=times, energy=self.em_energy,
+                                     profile_function=self.em_shower_profile,
+                                     viewing_angle=theta,
+                                     viewing_distance=viewing_distance,
+                                     n=n, t0=t0)
+        had_vals = self.shower_signal(times=times, energy=self.had_energy,
+                                      profile_function=self.had_shower_profile,
+                                      viewing_angle=theta,
+                                      viewing_distance=viewing_distance,
+                                      n=n, t0=t0)
+
+        # Note that although len(values) = len(times)-1 (because of np.diff),
+        # the Signal class is desinged to handle this by zero-padding the values
+        super().__init__(times, em_vals+had_vals, value_type=self.Type.field)
+
+
+    def shower_signal(self, times, energy, profile_function, viewing_angle,
+                      viewing_distance, n, t0):
+        """
+        Calculate the signal values for some shower type.
+
+        Calculates the time-domain values for an Askaryan electric field (V/m)
+        produced by a particular shower initiated by a neutrino.
+
+        Parameters
+        ----------
+        times : array_like
+            1D array of times (s) for which the signal is defined.
+        energy : float
+            Energy (GeV) of the shower.
+        profile_function : function
+            Function to be used for calculating the longitudinal shower
+            profile. Should take a distance (m) and energy (GeV) and return the
+            profile value at that depth for a shower of that energy.
+        viewing_angle : float
+            Observation angle (radians) measured relative to the shower axis.
+            Should be positive-valued.
+        viewing_distance : float
+            Distance (m) between the shower vertex and the observation point
+            (along the ray path).
+        n : float
+            The index of refraction of the ice at the location of the shower.
+        t0 : float
+            Pulse offset time (s), i.e. time at which the shower takes place.
+
+        Returns
+        -------
+        array_like
+            1D array of values of the signal created by the shower
+            corresponding to the given `times`. Length ends up being one less
+            than the length of `times` due to implementation.
+
+        """
+        # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
+        # Vector potential is given by:
+        #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
+        #                            RAC(z(1-n*cos(theta))/c))
+        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
+        #                * c / (1-n*cos(theta))
+
+        # Fail gracefully if there is no shower (the energy is zero)
+        if energy==0:
+            return np.zeros(len(times)-1)
+
+        theta = viewing_angle
 
         # Conversion factor from z to t for RAC:
         # (1-n*cos(theta)) / c
@@ -719,29 +716,28 @@ class FastAskaryanSignal(Signal):
         dt = times[1] - times[0]
 
         # Calculate the corresponding z-step (dz = dt / z_to_t)
-        # If the z-step is too large compared to the expected maximum shower
+        # If the z-step is too large compared to the expected shower maximum
         # length, then the result will be bad. Set dt_divider so that
         # dz / max_length <= 0.1 (with dz=dt/z_to_t)
-        dt_divider = int(np.abs(10*dt/self.max_length()/z_to_t)) + 1
+        dt_divider = int(np.abs(10*dt/self.max_length(energy)/z_to_t)) + 1
         dz = dt / dt_divider / z_to_t
         if dt_divider!=1:
             logger.debug("z-step of %g too large; dt_divider changed to %g",
                          dt / z_to_t, dt_divider)
 
         # Create the charge-profile array up to 2.5 times the nominal
-        # maximum shower length (to reduce errors)
-        z_max = 2.5*self.max_length()
+        # shower maximum length (to reduce errors).
+        z_max = 2.5*self.max_length(energy)
         n_Q = int(np.abs(z_max/dz))
         z_Q_vals = np.arange(n_Q) * np.abs(dz)
         Q = np.zeros(n_Q)
         for i, z in enumerate(z_Q_vals):
-            Q[i] = self.charge_profile(z)
+            Q[i] = profile_function(z, energy)
 
         # Fail gracefully if the energy is less than the critical energy for
         # shower formation (i.e. all Q values are zero)
         if np.all(Q==0) and len(Q)>0:
-            super().__init__(times, np.zeros(len(times)))
-            return
+            return np.zeros(len(times)-1)
 
         # Calculate RAC at a specific number of t values (n_RAC) determined so
         # that the full convolution will have the same size as the times array,
@@ -762,7 +758,7 @@ class FastAskaryanSignal(Signal):
                       + t_start - n_extra_beginning * dz * z_to_t)
         RA_C = np.zeros(n_RAC)
         for i, t in enumerate(t_RAC_vals):
-            RA_C[i] = self.RAC(t)
+            RA_C[i] = self.RAC(t, energy)
 
         # Convolve Q and RAC to get unnormalized vector potential
         if n_Q*n_RAC>1e6:
@@ -789,7 +785,7 @@ class FastAskaryanSignal(Signal):
         # TODO: Figure that out
         convolution = convolution[::dt_divider]
 
-        # Calculate LQ_tot (the excess longitudinal charge along the shower)
+        # Calculate LQ_tot (the excess longitudinal charge along the showers)
         LQ_tot = np.trapz(Q, dx=dz)
 
         # Calculate sin(theta_c) = sqrt(1-cos^2(theta_c)) = sqrt(1-1/n^2)
@@ -810,12 +806,9 @@ class FastAskaryanSignal(Signal):
         # So, to clarify, the above statement should have "* -dt" at the end
         # to be the true value of A, and the below would then have "/ -dt"
 
-        # Calculate electric field by taking derivative of vector potential
-        values = np.diff(A)
-
-        # Note that although len(values) = len(times)-1 (because of np.diff),
-        # the Signal class is desinged to handle this by zero-padding the values
-        super().__init__(times, values, value_type=self.ValueTypes.field)
+        # Calculate electric field by taking derivative of vector potential,
+        # and divide by the viewing distance (R)
+        return np.diff(A) / viewing_distance
 
 
     @property
@@ -829,9 +822,10 @@ class FastAskaryanSignal(Signal):
         return np.cumsum(np.concatenate(([0],self.values)))[:-1] * -self.dt
 
 
-    def RAC(self, time):
+    @staticmethod
+    def RAC(time, energy):
         """
-        Calculates R*A_C at the given time.
+        Calculates R*A_C at the given time and energy.
 
         The R*A_C value is the observation distance R (m) times the vector
         potential (V*s/m) at the Cherenkov angle.
@@ -840,6 +834,8 @@ class FastAskaryanSignal(Signal):
         ----------
         time : float
             Time (s) at which to calculate the R*A_C value.
+        energy : float
+            Energy (GeV) of the shower.
 
         Returns
         -------
@@ -848,35 +844,40 @@ class FastAskaryanSignal(Signal):
 
         Notes
         -----
-        Based on equation 16 of the ARVZ paper [1]_.
+        Based on equation 16 of the ARVZ paper [1]_. This parameterization
+        is only described for electromagnetic showers, but in the absence of
+        a different parameterization for hadronic showers this one is used for
+        both cases.
 
         References
         ----------
-        .. [1] Jaime Alvarez-Muñiz et al, "Practical and accurate calculations
+        .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
             of Askaryan radiation." Physical Review D **84**, 103003 (2011).
 
         """
         # Get absolute value of time in nanoseconds
         ta = np.abs(time) * 1e9
         if time>=0:
-            return (-4.5e-17 * self.energy
-                    * (np.exp(-ta/0.057) + (1+2.87*ta)**-3))
+            return -4.5e-17 * energy * (np.exp(-ta/0.057) + (1+2.87*ta)**-3)
         else:
-            return (-4.5e-17 * self.energy
-                    * (np.exp(-ta/0.030) + (1+3.05*ta)**-3.5))
+            return -4.5e-17 * energy * (np.exp(-ta/0.030) + (1+3.05*ta)**-3.5)
 
-    def charge_profile(self, z, density=0.92, crit_energy=7.86e-2,
-                       rad_length=36.08):
+    @staticmethod
+    def em_shower_profile(z, energy, density=0.92, crit_energy=7.86e-2,
+                          rad_length=36.08):
         """
-        Calculates the EM shower longitudinal charge profile.
+        Calculates the electromagnetic shower longitudinal charge profile.
 
         The longitudinal charge profile is calculated for a given distance,
-        density, critical energy, and electron radiation length in ice.
+        shower energy, density, critical energy, and electron radiation length
+        in ice.
 
         Parameters
         ----------
         z : float
             Distance (m) along the shower at which to calculate the charge.
+        energy : float
+            Energy (GeV) of the shower.
         density : float, optional
             Density (g/cm^3) of ice.
         crit_energy : float, optional
@@ -891,7 +892,7 @@ class FastAskaryanSignal(Signal):
 
         Notes
         -----
-        Profile calculated by a simplified Heitler model ased on equations 24
+        Profile calculated by a simplified Heitler model based on equations 24
         and 25 of the radar feasibility paper [1]_.
 
         References
@@ -901,14 +902,14 @@ class FastAskaryanSignal(Signal):
             **60**, 25-31 (2015).
 
         """
-        if z<=0 or self.energy<=crit_energy:
+        if z<=0 or energy<=crit_energy:
             return 0
 
         # Depth calculated by "integrating" the density along the shower path
         # (in g/cm^2)
         x = 100 * z * density
         x_ratio = x / rad_length
-        e_ratio = self.energy / crit_energy
+        e_ratio = energy / crit_energy
 
         # Shower age
         s = 3 * x_ratio / (x_ratio + 2*np.log(e_ratio))
@@ -919,40 +920,101 @@ class FastAskaryanSignal(Signal):
 
         return N * 1.602e-19
 
-    def max_length(self, density=0.92, crit_energy=7.86e-2, rad_length=36.08):
+    @staticmethod
+    def had_shower_profile(z, energy, density=0.92, crit_energy=17.006e-2,
+                           rad_length=39.562, int_length=113.03,
+                           scale_factor=0.11842):
         """
-        Calculates the maximum length (or shower depth) of an EM shower.
+        Calculates the hadronic shower longitudinal charge profile.
 
-        The maximum length of an EM shower is calculated for a given density,
-        critical energy, and electron radiation length in ice.
+        The longitudinal charge profile is calculated for a given distance,
+        density, critical energy, hadron radiation length, and interaction
+        length in ice, plus a scale factor for the number of particles.
 
         Parameters
         ----------
+        z : float
+            Distance (m) along the shower at which to calculate the charge.
+        energy : float
+            Energy (GeV) of the shower.
         density : float, optional
             Density (g/cm^3) of ice.
         crit_energy : float, optional
             Critical energy (GeV) for shower formation.
         rad_length : float, optional
-            Electron radiation length (g/cm^2) in ice.
+            Hadron radiation length (g/cm^2) in ice.
+        int_length : float, optional
+            Interaction length (g/cm^2) in ice.
+        scale_factor : float, optional
+            Scale factor S_0 which multiplies the number of particles in the
+            shower.
 
         Returns
         -------
         float
-            The maximum length (m) of an EM shower.
+            The charge (C) at the given distance along the shower.
+
+        Notes
+        -----
+        Profile calculated by a Gaisser-Hillas model based on equation 1 of the
+        Alvarez hadronic shower paper [1]_.
+
+        References
+        ----------
+        .. [1] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
+            effect." ICRC proceedings, 17-25 (1999).
+
+        """
+        if z<=0 or energy<=crit_energy:
+            return 0
+
+        # Calculate shower depth and shower maximum depth in g/cm^2
+        x = 100 * z * density
+        e_ratio = energy / crit_energy
+        x_max = rad_length * np.log(e_ratio)
+
+        # Number of particles
+        N = (scale_factor * e_ratio * (x_max - int_length) / x_max
+             * (x / (x_max - int_length))**(x_max / int_length)
+             * np.exp((x_max - x)/int_length - 1))
+
+        return N * 1.602e-19
+
+    @staticmethod
+    def max_length(energy, density=0.92, crit_energy=7.86e-2,
+                   rad_length=36.08):
+        """
+        Calculates the depth of a particle shower maximum.
+
+        The shower depth of a shower maximum is calculated for a given density,
+        critical energy, and particle radiation length in ice.
+
+        Parameters
+        ----------
+        energy : float
+            Energy (GeV) of the shower.
+        density : float, optional
+            Density (g/cm^3) of ice.
+        crit_energy : float, optional
+            Critical energy (GeV) for shower formation.
+        rad_length : float, optional
+            Radiation length (g/cm^2) in ice of the particle which makes up the
+            shower.
+
+        Returns
+        -------
+        float
+            The depth (m) of the shower maximum for a particle shower.
 
         """
         # Maximum depth in g/cm^2
-        x_max = rad_length * np.log(self.energy / crit_energy) / np.log(2)
+        x_max = rad_length * np.log(energy / crit_energy) / np.log(2)
 
         return 0.01 * x_max / density
 
 
-# FastAskaryanSignal result now matches SlowAskaryanSignal.
-# In fact, FastAskaryanSignal performs much better:
-#   Runs about 1000x faster
-#   Causal, whereas SlowAskaryanSignal pulse seems to be backwards in time
-#   Smooth pulse; no artifacts from integration errors
-AskaryanSignal = FastAskaryanSignal
+
+AskaryanSignal = ARVZAskaryanSignal
 
 
 
@@ -965,21 +1027,21 @@ class GaussianNoise(Signal):
     Parameters
     ----------
     times : array_like
-        1D array of times for which the signal is defined.
+        1D array of times (s) for which the signal is defined.
     values : array_like
         1D array of values of the signal corresponding to the given `times`.
         Will be resized to the size of `times` by zero-padding or truncating.
     value_type
         Type of signal, representing the units of the values. Must be from the
-        ``Signal.ValueTypes`` Enum.
+        ``Signal.Type`` Enum.
 
     Attributes
     ----------
     times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type.voltage
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    Type : Enum
         Different value types available for `value_type` of signal objects.
     dt
     frequencies
@@ -994,7 +1056,7 @@ class GaussianNoise(Signal):
     def __init__(self, times, sigma):
         self.sigma = sigma
         values = np.random.normal(0, self.sigma, size=len(times))
-        super().__init__(times, values, value_type=self.ValueTypes.voltage)
+        super().__init__(times, values, value_type=self.Type.voltage)
 
 
 class ThermalNoise(FunctionSignal):
@@ -1008,7 +1070,7 @@ class ThermalNoise(FunctionSignal):
     Parameters
     ----------
     times : array_like
-        1D array of times for which the signal is defined.
+        1D array of times (s) for which the signal is defined.
     f_band : array_like
         Array of two elements denoting the frequency band (Hz) of the noise.
         The first element should be smaller than the second.
@@ -1034,10 +1096,10 @@ class ThermalNoise(FunctionSignal):
     Attributes
     ----------
     times, values : ndarray
-        1D arrays of times and corresponding values which define the signal.
-    value_type
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type.voltage
         Type of signal, representing the units of the values.
-    ValueTypes : Enum
+    Type : Enum
         Different value types available for `value_type` of signal objects.
     function : function
         Function to evaluate the signal values at given time(s).
@@ -1159,4 +1221,4 @@ class ThermalNoise(FunctionSignal):
 
             return values
 
-        super().__init__(times, function=f, value_type=self.ValueTypes.voltage)
+        super().__init__(times, function=f, value_type=self.Type.voltage)

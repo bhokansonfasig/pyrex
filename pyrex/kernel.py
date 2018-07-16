@@ -40,6 +40,8 @@ class EventKernel:
     ray_tracer : optional
         A ray tracer capable of propagating signals from the neutrino vertex
         to the antenna positions.
+    signal_model : optional
+        A signal class which generates signals based on the particle.
     signal_times : array_like, optional
         The array of times over which the neutrino signal should be generated.
 
@@ -54,6 +56,8 @@ class EventKernel:
         The ice model describing the ice containing the `antennas`.
     ray_tracer
         The ray tracer responsible for signal propagation through the `ice`.
+    signal_model
+        The signal class to use to generate signals based on the particle.
     signal_times
         The array of times over which the neutrino signal should be generated.
 
@@ -63,9 +67,10 @@ class EventKernel:
     chain can be exchanged. In order to interchange the pieces, their classes
     require the following at a minimum:
 
-    The particle generator `generator` must have a ``create_particle`` method
-    which takes no arguments and returns a `Particle` object with ``vertex``,
-    ``direction``, and ``energy`` attributes.
+    The particle generator `generator` must have a ``create_event`` method
+    which takes no arguments and returns a `Event` object consisting of
+    `Particle` objects with ``vertex``, ``direction``, ``energy``, and
+    ``weight`` attributes.
 
     The antenna iterable `antennas` must yield each antenna object once when
     iterating directly over `antennas`. Each antenna object must have a
@@ -87,14 +92,22 @@ class EventKernel:
     attributes, as well as a ``propagate`` method which takes a signal object
     and applies the propagation effects of the path in-place to that object.
 
+    The `signal_model` must be initialized with the `signal_times` array,
+    a `Particle` object from the `Event`, the ``viewing_angle`` and
+    ``viewing_distance`` according to the `ray_tracer`, and the `ice_model`.
+    The object created should be a `Signal` object with ``times`` and
+    ``values`` attributes representing the time-domain Askaryan signal produced
+    by the `Particle`.
+
     """
-    def __init__(self, generator, antennas,
-                 ice_model=IceModel, ray_tracer=RayTracer,
+    def __init__(self, generator, antennas, ice_model=IceModel,
+                 ray_tracer=RayTracer, signal_model=AskaryanSignal,
                  signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False)):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
         self.ray_tracer = ray_tracer
+        self.signal_model = signal_model
         self.signal_times = signal_times
 
     def event(self):
@@ -108,49 +121,54 @@ class EventKernel:
 
         Returns
         -------
-        Particle
-            The neutrino generated which is responsible for the event.
+        Event
+            The neutrino event generated which is responsible for the waveforms
+            on the antennas.
 
         """
-        p = self.gen.create_particle()
-        logger.info("Processing event for %s", p)
-        n = self.ice.index(p.vertex[2])
-        for ant in self.antennas:
-            rt = self.ray_tracer(p.vertex, ant.position, ice_model=self.ice)
+        event = self.gen.create_event()
+        for particle in event:
+            logger.info("Processing event for %s", particle)
+            for ant in self.antennas:
+                rt = self.ray_tracer(particle.vertex, ant.position,
+                                     ice_model=self.ice)
 
-            # If no path(s) between the points, skip ahead
-            if not rt.exists:
-                logger.debug("Ray paths to %s do not exist", ant)
-                continue
-
-            for path in rt.solutions:
-                # epol is (negative) vector rejection of
-                # path.received_direction onto p.direction,
-                # making epol orthogonal to path.recieved_direction in the same
-                # plane as p.direction and path.received_direction
-                epol = normalize(np.vdot(path.received_direction, p.direction)
-                                 * path.received_direction - p.direction)
-                # In case path.received_direction and p.direction are equal,
-                # just let epol be all zeros
-
-                psi = np.arccos(np.vdot(p.direction, path.emitted_direction))
-                logger.debug("Angle to %s is %f degrees", ant, np.degrees(psi))
-                # TODO: Support angles larger than pi/2
-                # (low priority since these angles are far from cherenkov cone)
-                if psi>np.pi/2:
+                # If no path(s) between the points, skip ahead
+                if not rt.exists:
+                    logger.debug("Ray paths to %s do not exist", ant)
                     continue
 
-                # FIXME: Use shower energy for AskaryanSignal
-                # Dependent on shower type / neutrino type
+                for path in rt.solutions:
+                    # epol is (negative) vector rejection of
+                    # path.received_direction onto particle.direction,
+                    # making epol orthogonal to path.recieved_direction in the
+                    # same plane as p.direction and path.received_direction
+                    epol = normalize(np.vdot(path.received_direction,
+                                             particle.direction)
+                                     * path.received_direction
+                                     - particle.direction)
+                    # In case path.received_direction and particle.direction
+                    # are equal, just let epol be all zeros
 
-                pulse = AskaryanSignal(times=self.signal_times,
-                                       energy=p.energy, theta=psi, n=n)
+                    psi = np.arccos(np.vdot(particle.direction,
+                                            path.emitted_direction))
+                    logger.debug("Angle to %s is %f degrees", ant,
+                                 np.degrees(psi))
+                    # TODO: Support angles larger than pi/2
+                    # (low priority since these angles are far from the
+                    # cherenkov cone)
+                    if psi>np.pi/2:
+                        continue
 
-                path.propagate(pulse)
-                # Dividing by path length scales Askaryan pulse properly
-                pulse.values /= path.path_length
+                    pulse = self.signal_model(times=self.signal_times,
+                                              particle=particle,
+                                              viewing_angle=psi,
+                                              viewing_distance=path.path_length,
+                                              ice_model=self.ice)
 
-                ant.receive(pulse, direction=path.received_direction,
-                            polarization=epol)
+                    path.propagate(pulse)
 
-        return p
+                    ant.receive(pulse, direction=path.received_direction,
+                                polarization=epol)
+
+        return event

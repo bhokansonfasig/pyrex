@@ -446,7 +446,7 @@ class ARAAntenna(Antenna):
             or ``field``.
 
         """
-        copy = Signal(signal.times, signal.values, value_type=Signal.ValueTypes.voltage)
+        copy = Signal(signal.times, signal.values, value_type=Signal.Type.voltage)
         copy.filter_frequencies(self.response, force_real=force_real)
 
         if direction is not None:
@@ -484,9 +484,9 @@ class ARAAntenna(Antenna):
 
         signal_factor = p_gain * self.efficiency
 
-        if signal.value_type==Signal.ValueTypes.voltage:
+        if signal.value_type==Signal.Type.voltage:
             pass
-        elif signal.value_type==Signal.ValueTypes.field:
+        elif signal.value_type==Signal.Type.field:
             signal_factor /= self.antenna_factor
         else:
             raise ValueError("Signal's value type must be either "
@@ -693,7 +693,7 @@ class ARAAntennaSystem(AntennaSystem):
             If the input `signal` doesn't have a ``value_type`` of ``voltage``.
 
         """
-        if signal.value_type!=Signal.ValueTypes.voltage:
+        if signal.value_type!=Signal.Type.voltage:
             raise ValueError("Tunnel diode only accepts voltage signals")
         t_max = 1e-7
         n_pts = int(t_max/signal.dt)
@@ -706,9 +706,9 @@ class ARAAntennaSystem(AntennaSystem):
         # Signal class will automatically only take the first part of conv,
         # which is what we want.
         # conv multiplied by dt so that the amplitude stays constant for
-        # varying dts (determined emperically, see FastAskaryanSignal comments)
+        # varying dts (determined emperically, see ARVZAskaryanSignal comments)
         output = Signal(signal.times, conv*signal.dt,
-                        value_type=Signal.ValueTypes.power)
+                        value_type=Signal.Type.power)
         return output
 
     def front_end(self, signal):

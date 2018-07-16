@@ -110,7 +110,7 @@ class TestAntenna:
 
     def test_receive(self, antenna):
         """Test that the antenna properly receives signals"""
-        antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.ValueTypes.voltage))
+        antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.Type.voltage))
         assert len(antenna.signals) > 0
 
     def test_no_waveforms(self, antenna):
@@ -120,7 +120,7 @@ class TestAntenna:
 
     def test_waveforms_exist(self, antenna):
         """Test that waveforms returns a waveform when a signal has been received"""
-        antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.ValueTypes.voltage))
+        antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.Type.voltage))
         assert antenna.waveforms != []
         assert antenna.all_waveforms != []
         assert isinstance(antenna.waveforms[0], Signal)
@@ -129,7 +129,7 @@ class TestAntenna:
 
     def test_delay_noise_calculation(self, antenna):
         """Test that antenna noise isn't calculated until it is needed"""
-        antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.ValueTypes.voltage))
+        antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.Type.voltage))
         assert antenna._noises == []
         antenna.waveforms
         assert antenna._noises != []
