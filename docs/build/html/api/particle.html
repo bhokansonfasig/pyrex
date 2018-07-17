@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Particles and Generators (pyrex.particle) &mdash; PyREx 1.6.0 documentation</title>
+    <title>Particles and Interaction Models (pyrex.particle) &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,9 +27,9 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
-    <link rel="next" title="pyrex.particle.NeutrinoInteraction" href="../docstrings/pyrex.particle.NeutrinoInteraction.html" >
+    <link rel="next" title="pyrex.particle.Event" href="../docstrings/pyrex.particle.Event.html" >
     <link rel="prev" title="pyrex.ray_tracing.ReflectedPathFinder" href="../docstrings/pyrex.ray_tracing.ReflectedPathFinder.html" > 
   </head>
   <body>
@@ -52,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -68,7 +68,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="../docstrings/pyrex.particle.NeutrinoInteraction.html" title="pyrex.particle.NeutrinoInteraction"
+        <a href="../docstrings/pyrex.particle.Event.html" title="pyrex.particle.Event"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -89,45 +89,34 @@
           <div class="body" id="spc-section-body">
             
   <div class="section" id="module-pyrex.particle">
-<span id="particles-and-generators-pyrex-particle"></span><h1>Particles and Generators (<a class="reference internal" href="#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>)<a class="headerlink" href="#module-pyrex.particle" title="Permalink to this headline">¶</a></h1>
+<span id="particles-and-interaction-models-pyrex-particle"></span><h1>Particles and Interaction Models (<a class="reference internal" href="#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>)<a class="headerlink" href="#module-pyrex.particle" title="Permalink to this headline">¶</a></h1>
 <p>Module for particles (neutrinos) and neutrino interactions in the ice.</p>
-<p>Included in the module are Particle and NeutrinoInteraction classes, as
-well as different particle generators.</p>
+<p>Included in the module are the Particle class for storing particle/shower
+attributes and some Interaction classes which store models describing neutrino
+interactions.</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.NeutrinoInteraction.html#pyrex.particle.NeutrinoInteraction" title="pyrex.particle.NeutrinoInteraction"><code class="xref py py-obj docutils literal"><span class="pre">NeutrinoInteraction</span></code></a>(c,&nbsp;p)</td>
-<td>Class for describing neutrino interaction attributes.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.Event.html#pyrex.particle.Event" title="pyrex.particle.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a>(roots)</td>
+<td>Class for storing a tree of <a class="reference internal" href="../docstrings/pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects representing an event.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.CC_NU.html#pyrex.particle.CC_NU" title="pyrex.particle.CC_NU"><code class="xref py py-obj docutils literal"><span class="pre">CC_NU</span></code></a></td>
-<td>Class for describing neutrino interaction attributes.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.NC_NU.html#pyrex.particle.NC_NU" title="pyrex.particle.NC_NU"><code class="xref py py-obj docutils literal"><span class="pre">NC_NU</span></code></a></td>
-<td>Class for describing neutrino interaction attributes.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.CC_NUBAR.html#pyrex.particle.CC_NUBAR" title="pyrex.particle.CC_NUBAR"><code class="xref py py-obj docutils literal"><span class="pre">CC_NUBAR</span></code></a></td>
-<td>Class for describing neutrino interaction attributes.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.NC_NUBAR.html#pyrex.particle.NC_NUBAR" title="pyrex.particle.NC_NUBAR"><code class="xref py py-obj docutils literal"><span class="pre">NC_NUBAR</span></code></a></td>
-<td>Class for describing neutrino interaction attributes.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a>(vertex,&nbsp;direction,&nbsp;energy)</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a>(particle_id,&nbsp;vertex,&nbsp;direction,&nbsp;energy)</td>
 <td>Class for storing particle attributes.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.random_direction.html#pyrex.particle.random_direction" title="pyrex.particle.random_direction"><code class="xref py py-obj docutils literal"><span class="pre">random_direction</span></code></a>()</td>
-<td>Generate an arbitrary cartesian unit vector.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal"><span class="pre">Interaction</span></code></a>(particle[,&nbsp;kind])</td>
+<td>Base class for describing neutrino interaction attributes.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.ShadowGenerator.html#pyrex.particle.ShadowGenerator" title="pyrex.particle.ShadowGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ShadowGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy)</td>
-<td>Class to generate neutrino vertices with Earth shadowing.</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.GQRSInteraction.html#pyrex.particle.GQRSInteraction" title="pyrex.particle.GQRSInteraction"><code class="xref py py-obj docutils literal"><span class="pre">GQRSInteraction</span></code></a>(particle[,&nbsp;kind])</td>
+<td>Class for describing neutrino interaction attributes.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.ListGenerator.html#pyrex.particle.ListGenerator" title="pyrex.particle.ListGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ListGenerator</span></code></a>(particles[,&nbsp;loop])</td>
-<td>Class to generate neutrino vertices from a list.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-obj docutils literal"><span class="pre">CTWInteraction</span></code></a>(particle[,&nbsp;kind])</td>
+<td>Class for describing neutrino interaction attributes.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.FileGenerator.html#pyrex.particle.FileGenerator" title="pyrex.particle.FileGenerator"><code class="xref py py-obj docutils literal"><span class="pre">FileGenerator</span></code></a>(files)</td>
-<td>Class to generate neutrino vertices from numpy file(s).</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.NeutrinoInteraction.html#pyrex.particle.NeutrinoInteraction" title="pyrex.particle.NeutrinoInteraction"><code class="xref py py-obj docutils literal"><span class="pre">NeutrinoInteraction</span></code></a></td>
+<td>alias of <a class="reference internal" href="../docstrings/pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -144,7 +133,7 @@ well as different particle generators.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 

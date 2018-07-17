@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Askaryan Signal &mdash; PyREx 1.6.0 documentation</title>
+    <title>Askaryan Signal &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +49,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
 	 
     </ul>
               
@@ -82,8 +82,8 @@
 <p>The <a class="reference internal" href="../docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a> class is responsible for storing the time-domain signal of the Askaryan signal produced by a particle shower. The <code class="xref py py-meth docutils literal"><span class="pre">__init__()</span></code> method of an <a class="reference internal" href="../docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a>-like class must accept the arguments listed below:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="9%" />
-<col width="91%" />
+<col width="10%" />
+<col width="90%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Attribute</th>
@@ -94,17 +94,20 @@
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">times</span></code></td>
 <td>A list-type (usually a numpy array) of time values at which to calculate the amplitude of the Askaryan pulse.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">energy</span></code></td>
-<td>The energy of the particle shower.</td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">particle</span></code></td>
+<td>A <code class="docutils literal"><span class="pre">Particle</span></code> object representing the neutrino that causes the event. Should have an <code class="docutils literal"><span class="pre">energy</span></code>, <code class="docutils literal"><span class="pre">vertex</span></code>, <code class="docutils literal"><span class="pre">id</span></code>, and an <code class="docutils literal"><span class="pre">interaction</span></code> with an <code class="docutils literal"><span class="pre">em_frac</span></code> and <code class="docutils literal"><span class="pre">had_frac</span></code>.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">theta</span></code></td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">viewing_angle</span></code></td>
 <td>The viewing angle in radians measured from the shower axis.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">n</span></code></td>
-<td>The index of refraction of the ice at the shower vertex (default 1.78)</td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">viewing_distance</span></code></td>
+<td>The distance of the observation point from the shower vertex.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">t0</span></code></td>
-<td>The starting time of the Askaryan pulse (default 0)</td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">ice</span></code></td>
+<td>The ice model to be used for describing the medium’s index of refraction.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">t0</span></code></td>
+<td>The starting time of the Askaryan pulse / showers (default 0).</td>
 </tr>
 </tbody>
 </table>
@@ -141,9 +144,15 @@
 <p>The path class must have a <code class="xref py py-meth docutils literal"><span class="pre">propagate()</span></code> method which takes a <a class="reference internal" href="../docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object as its argument and propagates that signal by applying any attenuation and time of flight. This method does not have a return value. Additionally, note that any 1/R factor that the signal could have is not applied in this method, but externally by dividing the singal values by the <code class="xref py py-attr docutils literal"><span class="pre">path_length</span></code>. If using the default <code class="xref py py-meth docutils literal"><span class="pre">propagate()</span></code> method, an <code class="xref py py-meth docutils literal"><span class="pre">attenuation()</span></code> method is required which takes an array of frequencies <code class="docutils literal"><span class="pre">f</span></code> and returns the attenuation factors for a signal along the path at those frequencies.</p>
 <p>Finally, though not required it is recommended that the path have a <code class="xref py py-attr docutils literal"><span class="pre">coordinates</span></code> attribute which is a list of lists of the x, y, and z coordinates along the path (with some reasonable step size). This method is used for plotting purposes and does not need to have the accuracy necessary for calculations.</p>
 </div>
+<div class="section" id="interaction-model">
+<h1>Interaction Model<a class="headerlink" href="#interaction-model" title="Permalink to this headline">¶</a></h1>
+<p>The interaction model used for <a class="reference internal" href="../docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> interactions in ice handles the cross sections and interaction lengths of neutrinos, as well as the ratios of their interaction types and the resulting shower fractions. An interaction class should inherit from <code class="xref py py-class docutils literal"><span class="pre">Interaction</span></code> (preferrably keeping its <code class="xref py py-meth docutils literal"><span class="pre">__init__()</span></code> method) and should implement the following methods:</p>
+<p>The <code class="xref py py-attr docutils literal"><span class="pre">cross_section</span></code> property method should return the neutrino cross section for the <code class="xref py py-attr docutils literal"><span class="pre">Interaction.particle</span></code> parent, specific to the <code class="xref py py-attr docutils literal"><span class="pre">Interaction.kind</span></code>. Similarly the <code class="xref py py-attr docutils literal"><span class="pre">total_cross_section</span></code> property method should return the neutrino cross section for the <code class="xref py py-attr docutils literal"><span class="pre">Interaction.particle</span></code> parent, but this should be the total cross section for both charged-current and neutral-current interactions. The <code class="xref py py-attr docutils literal"><span class="pre">interaction_length</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">total_interaction_length</span></code> properties will convert these cross sections to interaction lengths automatically.</p>
+<p>The <code class="xref py py-meth docutils literal"><span class="pre">choose_interaction()</span></code> method should return a value from <code class="xref py py-class docutils literal"><span class="pre">Interaction.Type</span></code> representing the interaction type based on a random choice. Similarly the <code class="xref py py-meth docutils literal"><span class="pre">choose_inelasticity()</span></code> method should return an inelasticity value based on a random choice, and the <code class="xref py py-meth docutils literal"><span class="pre">choose_shower_fractions()</span></code> method return calculate electromagnetic and hadronic fractions based on the <code class="xref py py-attr docutils literal"><span class="pre">inelasticity</span></code> attribute storing the inelasticity value from <code class="xref py py-meth docutils literal"><span class="pre">choose_inelasticity()</span></code>. The <code class="xref py py-meth docutils literal"><span class="pre">choose_shower_fractions()</span></code> can be either chosen based on random processes like secondary generation or deterministic.</p>
+</div>
 <div class="section" id="particle-generator">
 <h1>Particle Generator<a class="headerlink" href="#particle-generator" title="Permalink to this headline">¶</a></h1>
-<p>The particle generator classes are quite flexible. The only requirement is that they possess a <code class="xref py py-meth docutils literal"><span class="pre">create_particle()</span></code> method which returns a <a class="reference internal" href="../docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> object.</p>
+<p>The particle generator classes are quite flexible. The only requirement is that they possess a <code class="xref py py-meth docutils literal"><span class="pre">create_event()</span></code> method which returns a <a class="reference internal" href="../docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a> object consisting of at least one <a class="reference internal" href="../docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a>.</p>
 </div>
 
 
@@ -157,7 +166,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 

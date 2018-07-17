@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.signals.ARVZAskaryanSignal &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
+    <link rel="up" title="Signal Processing (pyrex.signals)" href="../api/signals.html" >
+    <link rel="next" title="pyrex.signals.AskaryanSignal" href="pyrex.signals.AskaryanSignal.html" >
+    <link rel="prev" title="pyrex.signals.ZHSAskaryanSignal" href="pyrex.signals.ZHSAskaryanSignal.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../api/signals.html" accesskey="U">Signal Processing (<code class="docutils literal"><span class="pre">pyrex.signals</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.signals.AskaryanSignal.html" title="pyrex.signals.AskaryanSignal"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.signals.ZHSAskaryanSignal.html" title="pyrex.signals.ZHSAskaryanSignal"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-signals-arvzaskaryansignal">
+<h1>pyrex.signals.ARVZAskaryanSignal<a class="headerlink" href="#pyrex-signals-arvzaskaryansignal" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyrex.signals.ARVZAskaryanSignal">
+<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">ARVZAskaryanSignal</code><span class="sig-paren">(</span><em>times</em>, <em>particle</em>, <em>viewing_angle</em>, <em>viewing_distance=1</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>t0=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.ARVZAskaryanSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for generating Askaryan signals according to ARVZ parameterization.</p>
+<p>Stores the time-domain information for an Askaryan electric field (V/m)
+produced by the electromagnetic and hadronic showers initiated by a
+neutrino.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>times</strong> : array_like</p>
+<blockquote>
+<div><p>1D array of times (s) for which the signal is defined.</p>
+</div></blockquote>
+<p><strong>particle</strong> : Particle</p>
+<blockquote>
+<div><p><code class="docutils literal"><span class="pre">Particle</span></code> object responsible for the showers which produce the
+Askaryan signal. Should have an <code class="docutils literal"><span class="pre">energy</span></code> in GeV, <code class="docutils literal"><span class="pre">vertex</span></code> in m,
+and <code class="docutils literal"><span class="pre">id</span></code>, plus an <code class="docutils literal"><span class="pre">interaction</span></code> with an <code class="docutils literal"><span class="pre">em_frac</span></code> and
+<code class="docutils literal"><span class="pre">had_frac</span></code>.</p>
+</div></blockquote>
+<p><strong>viewing_angle</strong> : float</p>
+<blockquote>
+<div><p>Observation angle (radians) measured relative to the shower axis.</p>
+</div></blockquote>
+<p><strong>viewing_distance</strong> : float, optional</p>
+<blockquote>
+<div><p>Distance (m) between the shower vertex and the observation point (along
+the ray path).</p>
+</div></blockquote>
+<p><strong>ice_model</strong> : optional</p>
+<blockquote>
+<div><p>The ice model to be used for describing the index of refraction of the
+medium.</p>
+</div></blockquote>
+<p><strong>t0</strong> : float, optional</p>
+<blockquote>
+<div><p>Pulse offset time (s), i.e. time at which the showers take place.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>If the <em class="xref py py-obj">particle</em> object is not a neutrino or antineutrino with a
+charged-current or neutral-current interaction.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="pyrex.signals.Signal.html#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-obj docutils literal"><span class="pre">Signal</span></code></a></dt>
+<dd>Base class for time-domain signals.</dd>
+<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Particle</span></code></a></dt>
+<dd>Class for storing particle attributes.</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Calculates the Askaryan signal based on the ARVZ parameterization <a class="reference internal" href="#r6163" id="id1">[R6163]</a>.
+Uses a Heitler model for the electromagnetic shower profile <a class="reference internal" href="#r6263" id="id2">[R6263]</a> and a
+Gaisser-Hillas model for the hadronic shower profile <a class="reference internal" href="#r6363" id="id3">[R6363]</a>. Calculates the
+electric field from the vector potential using the convolution method
+outlined in section 4 of the ARVZ paper, which results in the most
+efficient calculation of the parameterization.</p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r6163" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R6163]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> J. Alvarez-Muniz et al, “Practical and accurate calculations
+of Askaryan radiation.” Physical Review D <strong>84</strong>, 103003 (2011).</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r6263" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R6263]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id5">2</a>)</em> K.D. de Vries et al, “On the feasibility of RADAR detection of
+high-energy neutrino-induced showers in ice.” Astropart. Phys.
+<strong>60</strong>, 25-31 (2015).</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r6363" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R6363]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id6">2</a>)</em> J. Alvarez-Muniz &amp; E. Zas, “EeV Hadronic Showers in Ice: The LPM
+effect.” ICRC proceedings, 17-25 (1999).</td></tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">value_type</span></code></td>
+<td>Type of signal, representing the units of the values.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Type</span></code></td>
+<td>Enum containing possible types (units) for signal values.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">vector_potential</span></code></td>
+<td>The vector potential of the signal.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">dt</span></code></td>
+<td>The time spacing of the <em class="xref py py-obj">times</em> array, or <code class="docutils literal"><span class="pre">None</span></code> if invalid.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">frequencies</span></code></td>
+<td>The FFT frequencies of the signal.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">spectrum</span></code></td>
+<td>The FFT complex spectrum values of the signal.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">envelope</span></code></td>
+<td>The envelope of the signal by Hilbert transform.</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>times, values</strong></td>
+<td>(ndarray) 1D arrays of times (s) and corresponding values which define the signal.</td>
+</tr>
+<tr class="row-even"><td><strong>em_energy</strong></td>
+<td>(float) Energy (GeV) of the electromagnetic shower producing the pulse.</td>
+</tr>
+<tr class="row-odd"><td><strong>had_energy</strong></td>
+<td>(float) Energy (GeV) of the hadronic shower producing the pulse.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.RAC.html#pyrex.signals.ARVZAskaryanSignal.RAC" title="pyrex.signals.ARVZAskaryanSignal.RAC"><code class="xref py py-obj docutils literal"><span class="pre">RAC</span></code></a>(time,&nbsp;energy)</td>
+<td>Calculates R*A_C at the given time and energy.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Type</span></code></td>
+<td>Enum containing possible types (units) for signal values.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.em_shower_profile.html#pyrex.signals.ARVZAskaryanSignal.em_shower_profile" title="pyrex.signals.ARVZAskaryanSignal.em_shower_profile"><code class="xref py py-obj docutils literal"><span class="pre">em_shower_profile</span></code></a>(z,&nbsp;energy[,&nbsp;density,&nbsp;…])</td>
+<td>Calculates the electromagnetic shower longitudinal charge profile.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.filter_frequencies.html#pyrex.signals.ARVZAskaryanSignal.filter_frequencies" title="pyrex.signals.ARVZAskaryanSignal.filter_frequencies"><code class="xref py py-obj docutils literal"><span class="pre">filter_frequencies</span></code></a>(freq_response[,&nbsp;force_real])</td>
+<td>Apply the given frequency response function to the signal, in-place.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.had_shower_profile.html#pyrex.signals.ARVZAskaryanSignal.had_shower_profile" title="pyrex.signals.ARVZAskaryanSignal.had_shower_profile"><code class="xref py py-obj docutils literal"><span class="pre">had_shower_profile</span></code></a>(z,&nbsp;energy[,&nbsp;density,&nbsp;…])</td>
+<td>Calculates the hadronic shower longitudinal charge profile.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.max_length.html#pyrex.signals.ARVZAskaryanSignal.max_length" title="pyrex.signals.ARVZAskaryanSignal.max_length"><code class="xref py py-obj docutils literal"><span class="pre">max_length</span></code></a>(energy[,&nbsp;density,&nbsp;crit_energy,&nbsp;…])</td>
+<td>Calculates the depth of a particle shower maximum.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.resample.html#pyrex.signals.ARVZAskaryanSignal.resample" title="pyrex.signals.ARVZAskaryanSignal.resample"><code class="xref py py-obj docutils literal"><span class="pre">resample</span></code></a>(n)</td>
+<td>Resamples the signal into n points in the same time range, in-place.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.shower_signal.html#pyrex.signals.ARVZAskaryanSignal.shower_signal" title="pyrex.signals.ARVZAskaryanSignal.shower_signal"><code class="xref py py-obj docutils literal"><span class="pre">shower_signal</span></code></a>(times,&nbsp;energy,&nbsp;…)</td>
+<td>Calculate the signal values for some shower type.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.signals.ARVZAskaryanSignal.with_times.html#pyrex.signals.ARVZAskaryanSignal.with_times" title="pyrex.signals.ARVZAskaryanSignal.with_times"><code class="xref py py-obj docutils literal"><span class="pre">with_times</span></code></a>(new_times)</td>
+<td>Returns a representation of this signal over a different times array.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.particle.NeutrinoInteraction &mdash; PyREx 1.6.0 documentation</title>
+    <title>pyrex.particle.NeutrinoInteraction &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,10 +27,10 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="../index.html" >
-    <link rel="up" title="Particles and Generators (pyrex.particle)" href="../api/particle.html" >
-    <link rel="next" title="pyrex.particle.CC_NU" href="pyrex.particle.CC_NU.html" >
-    <link rel="prev" title="Particles and Generators (pyrex.particle)" href="../api/particle.html" > 
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
+    <link rel="up" title="Particles and Interaction Models (pyrex.particle)" href="../api/particle.html" >
+    <link rel="next" title="Event Generators (pyrex.generation)" href="../api/generation.html" >
+    <link rel="prev" title="pyrex.particle.CTWInteraction" href="pyrex.particle.CTWInteraction.html" > 
   </head>
   <body>
 
@@ -52,10 +52,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/particle.html" accesskey="U">Particles and Generators (<code class="docutils literal"><span class="pre">pyrex.particle</span></code>)</a></li> 
+          <li class="active"><a href="../api/particle.html" accesskey="U">Particles and Interaction Models (<code class="docutils literal"><span class="pre">pyrex.particle</span></code>)</a></li> 
     </ul>
               
               
@@ -69,11 +69,11 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="pyrex.particle.CC_NU.html" title="pyrex.particle.CC_NU"
+        <a href="../api/generation.html" title="Event Generators (pyrex.generation)"
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="../api/particle.html" title="Particles and Generators (pyrex.particle)"
+        <a href="pyrex.particle.CTWInteraction.html" title="pyrex.particle.CTWInteraction"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -91,84 +91,10 @@
             
   <div class="section" id="pyrex-particle-neutrinointeraction">
 <h1>pyrex.particle.NeutrinoInteraction<a class="headerlink" href="#pyrex-particle-neutrinointeraction" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="attribute">
 <dt id="pyrex.particle.NeutrinoInteraction">
-<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">NeutrinoInteraction</code><span class="sig-paren">(</span><em>c</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.NeutrinoInteraction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for describing neutrino interaction attributes.</p>
-<p>Stores parameters used to describe cross section and interaction length of
-a specific neutrino interaction.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>c</strong> : float</p>
-<blockquote>
-<div><p>Cross section energy coefficient.</p>
-</div></blockquote>
-<p><strong>p</strong> : float</p>
-<blockquote class="last">
-<div><p>Cross section energy exponent.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<p>Neutrino intractions based on the GQRS Ultrahigh-Energy Neutrino
-Interactions Paper <a class="reference internal" href="#r1919" id="id1">[R1919]</a>.</p>
-<p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r1919" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[R1919]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> R. Gandhi et al, “Ultrahigh-Energy Neutrino Interactions.”
-Physical Review D <strong>58</strong>, 093009 (1998).</td></tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="18%" />
-<col width="82%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>times, values</strong></td>
-<td>(ndarray) 1D arrays of times and corresponding values which define the signal.</td>
-</tr>
-<tr class="row-even"><td><strong>value_type</strong></td>
-<td>Type of signal, representing the units of the values.</td>
-</tr>
-<tr class="row-odd"><td><strong>ValueTypes</strong></td>
-<td>(Enum) Different value types available for <em class="xref py py-obj">value_type</em> of signal objects.</td>
-</tr>
-<tr class="row-even"><td><strong>dt</strong></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td><strong>frequencies</strong></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td><strong>spectrum</strong></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td><strong>envelope</strong></td>
-<td>&#160;</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.particle.NeutrinoInteraction.cross_section.html#pyrex.particle.NeutrinoInteraction.cross_section" title="pyrex.particle.NeutrinoInteraction.cross_section"><code class="xref py py-obj docutils literal"><span class="pre">cross_section</span></code></a>(E)</td>
-<td>Calculate the neutrino cross section at a given energy.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.particle.NeutrinoInteraction.interaction_length.html#pyrex.particle.NeutrinoInteraction.interaction_length" title="pyrex.particle.NeutrinoInteraction.interaction_length"><code class="xref py py-obj docutils literal"><span class="pre">interaction_length</span></code></a>(E)</td>
-<td>Calculate the neutrino interaction length at a given energy.</td>
-</tr>
-</tbody>
-</table>
+<code class="descclassname">pyrex.particle.</code><code class="descname">NeutrinoInteraction</code><a class="headerlink" href="#pyrex.particle.NeutrinoInteraction" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -184,7 +110,7 @@ Physical Review D <strong>58</strong>, 093009 (1998).</td></tr>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 

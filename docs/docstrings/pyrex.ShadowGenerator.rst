@@ -11,7 +11,12 @@ pyrex\.ShadowGenerator
       .. autosummary::
          :toctree:
       
-         ShadowGenerator.create_particle
+         ShadowGenerator.create_event
+         ShadowGenerator.get_direction
+         ShadowGenerator.get_exit_points
+         ShadowGenerator.get_particle_type
+         ShadowGenerator.get_vertex
+         ShadowGenerator.get_weight
 
 
 

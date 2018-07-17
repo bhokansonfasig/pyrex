@@ -9,19 +9,21 @@ In this example we explore how the freqeuncy spectrum of an Askaryan pulse chang
     import matplotlib.pyplot as plt
     import pyrex
 
-    # First, set the depth of the neutrino source and find the index of refraction
-    # at that depth.
+    # First, set up a neutrino source and find the index of refraction at its depth.
     # Then use that index of refraction to calculate the Cherenkov angle.
-    depth = -1000
-    n = pyrex.IceModel.index(depth)
-    ch_angle = np.arcsin(np.sqrt(1 - 1/n**2))
+    source = pyrex.Particle("nu_e", vertex=(0, 0, -1000), direction=(0, 0, -1),
+                            energy=1e8)
+    n = pyrex.IceModel.index(source.vertex[2])
+    ch_angle = np.arccos(1/n)
 
     # Now, for a range of dthetas, generate an Askaryan pulse dtheta away from the
     # Chereknov angle and plot its frequency spectrum.
     for dtheta in np.radians(np.logspace(-1, 1, 5)):
         n_pts = 10001
         pulse = pyrex.AskaryanSignal(times=np.linspace(-20e-9, 80e-9, n_pts),
-                                     energy=1e8, theta=ch_angle-dtheta, n=n)
+                                     particle=source,
+                                     viewing_angle=ch_angle-dtheta,
+                                     viewing_distance=1000)
         plt.plot(pulse.frequencies[:int(n_pts/2)] * 1e-6, # Convert from Hz to MHz
                  np.abs(pulse.spectrum)[:int(n_pts/2)])
         plt.title("Frequency Spectrum of Askaryan Pulse\n"+
@@ -34,7 +36,7 @@ In this example we explore how the freqeuncy spectrum of an Askaryan pulse chang
     # signal has propagated through the ice a bit. So first set up the ray tracer
     # from our neutrino source to some other point where our antenna might be
     # (and make sure a path between those two points exists).
-    rt = pyrex.RayTracer(from_point=(0, 0, depth), to_point=(500, 0, -100))
+    rt = pyrex.RayTracer(from_point=source.vertex, to_point=(500, 0, -100))
     if not rt.exists:
         raise ValueError("Path to antenna doesn't exist!")
 
@@ -44,7 +46,9 @@ In this example we explore how the freqeuncy spectrum of an Askaryan pulse chang
     for dtheta in np.radians(np.logspace(-1, 1, 5)):
         n_pts = 2048
         pulse = pyrex.AskaryanSignal(times=np.linspace(-20e-9, 80e-9, n_pts),
-                                     energy=1e8, theta=ch_angle-dtheta, n=n)
+                                     particle=source,
+                                     viewing_angle=ch_angle-dtheta,
+                                     viewing_distance=path.path_length)
         path.propagate(pulse)
         plt.plot(pulse.frequencies[:int(n_pts/2)] * 1e-6, # Convert from Hz to MHz
                  np.abs(pulse.spectrum)[:int(n_pts/2)])

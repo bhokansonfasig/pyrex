@@ -73,7 +73,7 @@ In this example we will calculate the effective area of a detector over a range 
     ax.set_xscale("log")
     ax.set_yscale("log")
     plt.title("Detector Effective Volume")
-    plt.xlabel("Shower Energy (GeV)")
+    plt.xlabel("Neutrino Energy (GeV)")
     plt.ylabel("Effective Volume (km^3)")
     plt.show()
 

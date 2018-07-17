@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Examine a Single Event &mdash; PyREx 1.6.0 documentation</title>
+    <title>Examine a Single Event &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +49,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
 	 
     </ul>
               
@@ -107,10 +107,14 @@
 
 <span class="c1"># Now set up a particle generator that will just throw the one event we&#39;re</span>
 <span class="c1"># interested in, and create an event kernel with our detector and our generator.</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="n">vertex</span><span class="o">=</span><span class="p">[</span><span class="mf">1002.65674195</span><span class="p">,</span> <span class="o">-</span><span class="mf">421.95118348</span><span class="p">,</span> <span class="o">-</span><span class="mf">586.0953201</span><span class="p">],</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="n">particle_id</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">electron_neutrino</span><span class="p">,</span>
+                   <span class="n">vertex</span><span class="o">=</span><span class="p">[</span><span class="mf">1002.65674195</span><span class="p">,</span> <span class="o">-</span><span class="mf">421.95118348</span><span class="p">,</span> <span class="o">-</span><span class="mf">586.0953201</span><span class="p">],</span>
                    <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.90615395</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.41800062</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.06450191</span><span class="p">],</span>
                    <span class="n">energy</span><span class="o">=</span><span class="mf">1e9</span><span class="p">)</span>
-<span class="n">gen</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ListGenerator</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">charged_current</span>
+<span class="n">p</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">em_frac</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">p</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">had_frac</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">gen</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ListGenerator</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
 <span class="n">kern</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">antennas</span><span class="o">=</span><span class="n">det</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">gen</span><span class="p">)</span>
 
 <span class="c1"># Then make sure our detector is cleared out and throw the event!</span>
@@ -211,7 +215,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 

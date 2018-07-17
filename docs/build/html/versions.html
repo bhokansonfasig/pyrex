@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Version History &mdash; PyREx 1.6.0 documentation</title>
+    <title>Version History &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="index.html" >
     <link rel="prev" title="pyrex.custom.irex.detector.StationGrid" href="api/docstrings/pyrex.custom.irex.detector.StationGrid.html" > 
   </head>
   <body>
@@ -50,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.7.0 documentation</a></li>
 	 
     </ul>
               
@@ -83,6 +83,30 @@
             
   <div class="section" id="version-history">
 <h1>Version History<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-7-0">
+<h2>Version 1.7.0<a class="headerlink" href="#version-1-7-0" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
+<ul class="simple">
+<li>Moved <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.ara</span></code> module into main PyREx package instead of being a plug-in.</li>
+<li>All docstrings now follow numpy docstring style.</li>
+<li>Added particle types and interaction information to <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> class.</li>
+<li>Added <code class="xref py py-class docutils literal"><span class="pre">Interaction</span></code> classes <code class="xref py py-class docutils literal"><span class="pre">GQRSInteraction</span></code> and <code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code> for defining different neutrino interaction models. Preferred model aliased to <a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-class docutils literal"><span class="pre">NeutrinoInteraction</span></code></a>.</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_vertex.html#pyrex.ShadowGenerator.get_vertex" title="pyrex.ShadowGenerator.get_vertex"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_vertex()</span></code></a>, <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_direction.html#pyrex.ShadowGenerator.get_direction" title="pyrex.ShadowGenerator.get_direction"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_direction()</span></code></a>, <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_particle_type.html#pyrex.ShadowGenerator.get_particle_type" title="pyrex.ShadowGenerator.get_particle_type"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_particle_type()</span></code></a>, <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_exit_points.html#pyrex.ShadowGenerator.get_exit_points" title="pyrex.ShadowGenerator.get_exit_points"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_exit_points()</span></code></a>, and <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_weight.html#pyrex.ShadowGenerator.get_weight" title="pyrex.ShadowGenerator.get_weight"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_weight()</span></code></a> methods for generating neutrinos more modularly.</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a> class for holding a tree of <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> objects. <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a> objects are now returned by generators and the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a>.</li>
+<li>Added <code class="xref py py-class docutils literal"><span class="pre">ZHSAskaryanSignal</span></code> class for the Zas, Halzen, Stanev parameterization of Askaryan pulses. Mostly for comparison purposes.</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.create_particle()</span></code> changed to <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.create_event.html#pyrex.ShadowGenerator.create_event" title="pyrex.ShadowGenerator.create_event"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.create_event()</span></code></a> and now returns an <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a> object.</li>
+<li>Generator classes moved to <a class="reference internal" href="api/generation.html#module-pyrex.generation" title="pyrex.generation"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.generation</span></code></a> module.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">Signal.ValueTypes</span></code> changed to <code class="xref py py-class docutils literal"><span class="pre">Signal.Type</span></code> to match <code class="xref py py-class docutils literal"><span class="pre">Particle.Type</span></code> and <code class="xref py py-class docutils literal"><span class="pre">Interaction.Type</span></code>.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">FastAskaryanSignal</span></code> changed to <code class="xref py py-class docutils literal"><span class="pre">ARVZAskaryanSignal</span></code>. This class is still the preferred parameterization aliased to <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a>.</li>
+<li>Arguments of <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a> changed to take a <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> object rather than taking its parameters individually.</li>
+<li>Removed unused <code class="xref py py-class docutils literal"><span class="pre">SlowAskaryanSignal</span></code>.</li>
+<li>Now that <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a> can handle different particle and shower types, secondary particle generation was added to determine shower fractions: <code class="xref py py-attr docutils literal"><span class="pre">NeutrinoInteraction.em_frac</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">NeutrinoInteraction.had_frac</span></code>.</li>
+<li>Changed IREX envelope antennas to be an envelope front-end on top of an ARA antenna. Results in <code class="xref py py-class docutils literal"><span class="pre">IREXAntennaSystem</span></code> becoming <code class="xref py py-class docutils literal"><span class="pre">EnvelopeHpol</span></code> and <code class="xref py py-class docutils literal"><span class="pre">EnvelopeVpol</span></code>.</li>
+</ul>
+</div>
 <div class="section" id="version-1-6-0">
 <h2>Version 1.6.0<a class="headerlink" href="#version-1-6-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
@@ -125,7 +149,7 @@
 <p class="rubric">New Features</p>
 <ul class="simple">
 <li>Added :meth`Detector.triggered` and <a class="reference internal" href="docstrings/pyrex.Detector.clear.html#pyrex.Detector.clear" title="pyrex.Detector.clear"><code class="xref py py-meth docutils literal"><span class="pre">Detector.clear()</span></code></a> methods.</li>
-<li>Added two new neutrino generators <code class="xref py py-class docutils literal"><span class="pre">ListGenerator</span></code> and <code class="xref py py-class docutils literal"><span class="pre">FileGenerator</span></code> designed to pull pre-generated <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> objects.</li>
+<li>Added two new neutrino generators <a class="reference internal" href="docstrings/pyrex.ListGenerator.html#pyrex.ListGenerator" title="pyrex.ListGenerator"><code class="xref py py-class docutils literal"><span class="pre">ListGenerator</span></code></a> and <a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-class docutils literal"><span class="pre">FileGenerator</span></code></a> designed to pull pre-generated <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> objects.</li>
 </ul>
 <p class="rubric">Bug Fixes</p>
 <ul class="simple">
@@ -331,7 +355,7 @@
 <div><ul class="simple">
 <li><code class="xref py py-meth docutils literal"><span class="pre">AntarcticIce.attenuationLength()</span></code> becomes <code class="xref py py-meth docutils literal"><span class="pre">AntarcticIce.attenuation_length()</span></code>.</li>
 <li>In <a class="reference internal" href="api/earth_model.html#module-pyrex.earth_model" title="pyrex.earth_model"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.earth_model</span></code></a>, <code class="xref py py-const docutils literal"><span class="pre">RE</span></code> becomes <code class="xref py py-const docutils literal"><span class="pre">EARTH_RADIUS</span></code>.</li>
-<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">neutrino_interaction</span></code> becomes <code class="xref py py-class docutils literal"><span class="pre">NeutrinoInteraction</span></code>.</li>
+<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">neutrino_interaction</span></code> becomes <a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-class docutils literal"><span class="pre">NeutrinoInteraction</span></code></a>.</li>
 <li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-const docutils literal"><span class="pre">NA</span></code> becomes <code class="xref py py-const docutils literal"><span class="pre">AVOGADRO_NUMBER</span></code>.</li>
 <li><a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-class docutils literal"><span class="pre">particle</span></code></a> class becomes <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> namedtuple.</li>
 <li><code class="xref py py-attr docutils literal"><span class="pre">Particle.vtx</span></code> becomes <code class="xref py py-attr docutils literal"><span class="pre">Particle.vertex</span></code>.</li>
@@ -366,7 +390,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 
@@ -402,6 +426,7 @@ Version 1.6.0</p>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Version History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-7-0">Version 1.7.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-6-0">Version 1.6.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-5-0">Version 1.5.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-4-2">Version 1.4.2</a></li>
