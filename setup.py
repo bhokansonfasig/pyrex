@@ -37,7 +37,7 @@ setup(
     tests_require = ['pytest'],
     package_data = {
         '': ['README.rst', 'LICENSE', 'PyREx Documentation.pdf'],
-        'pyrex': [],
+        'pyrex': ['data/secondary/*/*.vec'],
         'pyrex.custom.ara': ['data/*.txt'],
     },
 )
