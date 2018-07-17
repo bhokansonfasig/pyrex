@@ -261,7 +261,9 @@ class ShadowGenerator:
         in_ice_length = np.sqrt(np.sum(in_ice_vector**2))
         vertex_vector = particle.vertex - np.array(entry_point)
         travel_length = np.sqrt(np.sum(vertex_vector**2))
-        interaction_length = particle.interaction.interaction_length
+        # Convert cm water equivalent interaction length to meters in ice
+        interaction_length = (particle.interaction.total_interaction_length
+                              / 0.92 / 100)
         return (in_ice_length/interaction_length *
                 np.exp(-travel_length/interaction_length))
 
