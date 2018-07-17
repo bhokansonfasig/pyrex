@@ -831,33 +831,43 @@ class CTWInteraction(GQRSInteraction):
 
         """
         # Total cross section should be sum of nc and cc cross sections
-        # Based on the form of equation 7 of CTW 2011, the nc and cc cross
-        # sections can be summed as long as c_0 is the same for nc and cc.
-        # Then c_1, c_2, c_3, and c_4 will be sums of the constants for each
-        # current type, while c_0 will stay the same.
 
         # Particle
         if self.particle.id.value>0:
-            c_0 = -1.826
-            c_1 = -34.62  # = -17.31 + -17.31
-            c_2 = -12.854  # = -6.448 + -6.406
-            c_3 = 2.862  # = 1.431 + 1.431
-            c_4 = -36.52  # = -18.61 + -17.91
+            c_0_cc = -1.826
+            c_0_nc = -1.826
+            c_1_cc = -17.31
+            c_1_nc = -17.31
+            c_2_cc = -6.406
+            c_2_nc = -6.448
+            c_3_cc = 1.431
+            c_3_nc = 1.431
+            c_4_cc = -17.91
+            c_4_nc = -18.61
         # Antiparticle
         elif self.particle.id.value<0:
-            c_0 = -1.033
-            c_1 = -31.9  # = -15.95 + -15.95
-            c_2 = -14.543  # = -7.296 + -7.247
-            c_3 = 3.138  # = 1.569 + 1.569
-            c_4 = -36.02  # = -18.30 + -17.72
+            c_0_cc = -1.033
+            c_0_nc = -1.033
+            c_1_cc = -15.95
+            c_1_nc = -15.95
+            c_2_cc = -7.247
+            c_2_nc = -7.296
+            c_3_cc = 1.569
+            c_3_nc = 1.569
+            c_4_cc = -17.72
+            c_4_nc = -18.30
         else:
             raise ValueError("Unable to calculate cross section without a"+
                              " particle type")
         # Calculate cross section based on CTW 2011
         eps = np.log10(self.particle.energy)
-        log_term = np.log(eps - c_0)
-        power = c_1 + c_2*log_term + c_3*log_term**2 + c_4/log_term
-        return 10**power
+        log_term_cc = np.log(eps - c_0_cc)
+        power_cc = (c_1_cc + c_2_cc*log_term_cc + c_3_cc*log_term_cc**2
+                    + c_4_cc/log_term_cc)
+        log_term_nc = np.log(eps - c_0_nc)
+        power_nc = (c_1_nc + c_2_nc*log_term_nc + c_3_nc*log_term_nc**2
+                    + c_4_nc/log_term_nc)
+        return 10**power_cc + 10**power_nc
 
     @property
     def cross_section(self):
