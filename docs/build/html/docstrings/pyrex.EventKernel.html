@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.EventKernel &mdash; PyREx 1.6.0 documentation</title>
+    <title>pyrex.EventKernel &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="prev" title="pyrex.RayTracePath" href="pyrex.RayTracePath.html" > 
@@ -52,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -92,7 +92,7 @@
 <h1>pyrex.EventKernel<a class="headerlink" href="#pyrex-eventkernel" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.EventKernel">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">EventKernel</code><span class="sig-paren">(</span><em>generator</em>, <em>antennas</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em>signal_times=array([-2.000e-08</em>, <em>-1.995e-08</em>, <em>-1.990e-08</em>, <em>...</em>, <em>7.985e-08</em>, <em>7.990e-08</em>, <em>7.995e-08])</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">EventKernel</code><span class="sig-paren">(</span><em>generator</em>, <em>antennas</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em>signal_model=&lt;class 'pyrex.signals.ARVZAskaryanSignal'&gt;</em>, <em>signal_times=array([-2.000e-08</em>, <em>-1.995e-08</em>, <em>-1.990e-08</em>, <em>...</em>, <em>7.985e-08</em>, <em>7.990e-08</em>, <em>7.995e-08])</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>High-level kernel for controlling event simulation.</p>
 <p>The kernel is responsible for handling the classes and objects which
 control the major simulation steps: particle creation, signal production,
@@ -121,6 +121,10 @@ store signals.</p>
 <div><p>A ray tracer capable of propagating signals from the neutrino vertex
 to the antenna positions.</p>
 </div></blockquote>
+<p><strong>signal_model</strong> : optional</p>
+<blockquote>
+<div><p>A signal class which generates signals based on the particle.</p>
+</div></blockquote>
 <p><strong>signal_times</strong> : array_like, optional</p>
 <blockquote class="last">
 <div><p>The array of times over which the neutrino signal should be generated.</p>
@@ -129,13 +133,29 @@ to the antenna positions.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Event</span></code></a></dt>
+<dd>Class for storing a tree of <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects representing an event.</dd>
+<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Particle</span></code></a></dt>
+<dd>Class for storing particle attributes.</dd>
+<dt><a class="reference internal" href="pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.IceModel</span></code></a></dt>
+<dd>Class describing the ice at the south pole.</dd>
+<dt><a class="reference internal" href="pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.RayTracer</span></code></a></dt>
+<dd>Class for calculating the ray-trace solutions between points.</dd>
+<dt><a class="reference internal" href="pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.AskaryanSignal</span></code></a></dt>
+<dd>Class for generating Askaryan signals according to ARVZ parameterization.</dd>
+</dl>
+</div>
 <p class="rubric">Notes</p>
 <p>The kernel is designed to be modular so individual parts of the simulation
 chain can be exchanged. In order to interchange the pieces, their classes
 require the following at a minimum:</p>
-<p>The particle generator <em class="xref py py-obj">generator</em> must have a <code class="docutils literal"><span class="pre">create_particle</span></code> method
-which takes no arguments and returns a <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> object with <code class="docutils literal"><span class="pre">vertex</span></code>,
-<code class="docutils literal"><span class="pre">direction</span></code>, and <code class="docutils literal"><span class="pre">energy</span></code> attributes.</p>
+<p>The particle generator <em class="xref py py-obj">generator</em> must have a <code class="docutils literal"><span class="pre">create_event</span></code> method
+which takes no arguments and returns a <a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a> object consisting of
+<a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects with <code class="docutils literal"><span class="pre">vertex</span></code>, <code class="docutils literal"><span class="pre">direction</span></code>, <code class="docutils literal"><span class="pre">energy</span></code>, and
+<code class="docutils literal"><span class="pre">weight</span></code> attributes.</p>
 <p>The antenna iterable <em class="xref py py-obj">antennas</em> must yield each antenna object once when
 iterating directly over <em class="xref py py-obj">antennas</em>. Each antenna object must have a
 <code class="docutils literal"><span class="pre">position</span></code> attribute and a <code class="docutils literal"><span class="pre">receive</span></code> method which takes a signal object
@@ -153,6 +173,12 @@ iterable revelaing each path between the points. These paths must have
 <code class="docutils literal"><span class="pre">emitted_direction</span></code>, <code class="docutils literal"><span class="pre">received_direction</span></code>, and <code class="docutils literal"><span class="pre">path_length</span></code>
 attributes, as well as a <code class="docutils literal"><span class="pre">propagate</span></code> method which takes a signal object
 and applies the propagation effects of the path in-place to that object.</p>
+<p>The <em class="xref py py-obj">signal_model</em> must be initialized with the <em class="xref py py-obj">signal_times</em> array,
+a <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> object from the <a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a>, the <code class="docutils literal"><span class="pre">viewing_angle</span></code> and
+<code class="docutils literal"><span class="pre">viewing_distance</span></code> according to the <em class="xref py py-obj">ray_tracer</em>, and the <a class="reference internal" href="../api/ice_model.html#module-pyrex.ice_model" title="pyrex.ice_model"><code class="xref py py-obj docutils literal"><span class="pre">ice_model</span></code></a>.
+The object created should be a <a class="reference internal" href="pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-obj docutils literal"><span class="pre">Signal</span></code></a> object with <code class="docutils literal"><span class="pre">times</span></code> and
+<code class="docutils literal"><span class="pre">values</span></code> attributes representing the time-domain Askaryan signal produced
+by the <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a>.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -172,7 +198,10 @@ and applies the propagation effects of the path in-place to that object.</p>
 <tr class="row-even"><td><strong>ray_tracer</strong></td>
 <td>The ray tracer responsible for signal propagation through the <em class="xref py py-obj">ice</em>.</td>
 </tr>
-<tr class="row-odd"><td><strong>signal_times</strong></td>
+<tr class="row-odd"><td><strong>signal_model</strong></td>
+<td>The signal class to use to generate signals based on the particle.</td>
+</tr>
+<tr class="row-even"><td><strong>signal_times</strong></td>
 <td>The array of times over which the neutrino signal should be generated.</td>
 </tr>
 </tbody>
@@ -204,7 +233,7 @@ and applies the propagation effects of the path in-place to that object.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 

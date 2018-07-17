@@ -16,6 +16,12 @@ help:
 
 .PHONY: help Makefile
 
+# Clean should remove all numpy docstring helpers and any cached items
+clean:
+	-rm -r $(BUILDDIR)/*
+	-rm docstrings/*
+	-rm api/docstrings/*
+
 # Customize html command to place .nojekyll file in build/html directory
 html:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

@@ -88,6 +88,10 @@ class AntennaSystem:
         Signal
             Signal processed by the antenna front end.
 
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
         """
         logger.debug("Using default front_end from "+
                      "pyrex.detector.AntennaSystem")
@@ -216,6 +220,7 @@ class AntennaSystem:
         See Also
         --------
         pyrex.Antenna.receive : Process and store an incoming signal.
+        pyrex.Signal : Base class for time-domain signals.
 
         """
         return self.antenna.receive(signal, direction=direction,
@@ -265,6 +270,7 @@ class AntennaSystem:
         See Also
         --------
         pyrex.Antenna.trigger : Check if an antenna triggers on a given signal.
+        pyrex.Signal : Base class for time-domain signals.
 
         """
         return self.antenna.trigger(signal)

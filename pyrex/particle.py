@@ -157,10 +157,18 @@ class Interaction:
     inelasticity : float
         Inelasticity value from `choose_inelasticity` distribution for the
         interaction.
+    em_frac : float
+        Fraction of `particle` energy deposited into an electromagnetic shower.
+    had_frac : float
+        Fraction of `particle` energy deposited into a hadronic shower.
     total_cross_section
     total_interaction_length
     cross_section
     interaction_length
+
+    See Also
+    --------
+    Particle : Class for storing particle attributes.
 
     """
 
@@ -331,10 +339,19 @@ class GQRSInteraction(Interaction):
     inelasticity : float
         Inelasticity value from `choose_inelasticity` distribution for the
         interaction.
+    em_frac : float
+        Fraction of `particle` energy deposited into an electromagnetic shower.
+    had_frac : float
+        Fraction of `particle` energy deposited into a hadronic shower.
     total_cross_section
     total_interaction_length
     cross_section
     interaction_length
+
+    See Also
+    --------
+    Interaction : Base class for describing neutrino interaction attributes.
+    Particle : Class for storing particle attributes.
 
     Notes
     -----
@@ -403,7 +420,7 @@ class GQRSInteraction(Interaction):
 
         Calculates the maximal electromagnetic and hadronic shower fractions
         based on the primary ``particle`` and randomly generated secondary
-        interactions.
+        interactions. Method pulled from AraSim, which is unchanged from icemc.
 
         Returns
         -------
@@ -411,6 +428,7 @@ class GQRSInteraction(Interaction):
             Electromagnetic shower fraction.
         had_frac : float
             Hadronic shower fraction.
+
         """
         # Calculate shower fractions for primary particle
         if self.kind==self.Type.neutral_current:
@@ -476,7 +494,7 @@ class GQRSInteraction(Interaction):
 
         Generate random secondary interactions for the given `lepton_energy`
         and return the largest electromagnetic and hadronic fractions from the
-        secondaries.
+        secondaries. Method pulled from AraSim, which is unchanged from icemc.
 
         Parameters
         ----------
@@ -567,13 +585,19 @@ class GQRSInteraction(Interaction):
             rand_interaction = np.random.rand()
             if rand_interaction<0.65011:
                 interaction = "hadrdecay"
-                cum_dist = _y_cum_tauon_hadrdecay
+                cum_dist = _y_cum_tauon_hadrdecay[energy_index]
             elif rand_interaction<0.8219:
                 interaction = "mudecay"
-                cum_dist = _y_cum_tauon_mudecay
+                cum_dist = _y_cum_tauon_mudecay[energy_index]
             else:
                 interaction = "edecay"
-                cum_dist = _y_cum_tauon_edecay
+                cum_dist = _y_cum_tauon_edecay[energy_index]
+            # Calculate inelasticity according to cumulative
+            # distribution
+            rand_inelasticity = np.random.rand()
+            y = np.interp(rand_inelasticity, cum_dist,
+                          np.linspace(0, 1, len(cum_dist)))
+            # Store if the largest interaction thus far
             if y*lepton_energy>max(em_max, had_max):
                 if interaction=="edecay":
                     em_max = y*lepton_energy
@@ -645,7 +669,7 @@ class GQRSInteraction(Interaction):
         return coeff * self.particle.energy**power
 
 
-class CTWInteraction(Interaction):
+class CTWInteraction(GQRSInteraction):
     """
     Class for describing neutrino interaction attributes.
 
@@ -671,15 +695,25 @@ class CTWInteraction(Interaction):
     inelasticity : float
         Inelasticity value from `choose_inelasticity` distribution for the
         interaction.
+    em_frac : float
+        Fraction of `particle` energy deposited into an electromagnetic shower.
+    had_frac : float
+        Fraction of `particle` energy deposited into a hadronic shower.
     total_cross_section
     total_interaction_length
     cross_section
     interaction_length
 
+    See Also
+    --------
+    Interaction : Base class for describing neutrino interaction attributes.
+    Particle : Class for storing particle attributes.
+
     Notes
     -----
     Neutrino intractions based on the CTW High Energy Neutrino-Nucleon Cross
-    Sections paper [1]_.
+    Sections paper [1]_. Secondary generation method to determine shower
+    fractions was pulled from AraSim, which is unchanged from icemc.
 
     References
     ----------
@@ -812,33 +846,43 @@ class CTWInteraction(Interaction):
 
         """
         # Total cross section should be sum of nc and cc cross sections
-        # Based on the form of equation 7 of CTW 2011, the nc and cc cross
-        # sections can be summed as long as c_0 is the same for nc and cc.
-        # Then c_1, c_2, c_3, and c_4 will be sums of the constants for each
-        # current type, while c_0 will stay the same.
 
         # Particle
         if self.particle.id.value>0:
-            c_0 = -1.826
-            c_1 = -34.62  # = -17.31 + -17.31
-            c_2 = -12.854  # = -6.448 + -6.406
-            c_3 = 2.862  # = 1.431 + 1.431
-            c_4 = -36.52  # = -18.61 + -17.91
+            c_0_cc = -1.826
+            c_0_nc = -1.826
+            c_1_cc = -17.31
+            c_1_nc = -17.31
+            c_2_cc = -6.406
+            c_2_nc = -6.448
+            c_3_cc = 1.431
+            c_3_nc = 1.431
+            c_4_cc = -17.91
+            c_4_nc = -18.61
         # Antiparticle
         elif self.particle.id.value<0:
-            c_0 = -1.033
-            c_1 = -31.9  # = -15.95 + -15.95
-            c_2 = -14.543  # = -7.296 + -7.247
-            c_3 = 3.138  # = 1.569 + 1.569
-            c_4 = -36.02  # = -18.30 + -17.72
+            c_0_cc = -1.033
+            c_0_nc = -1.033
+            c_1_cc = -15.95
+            c_1_nc = -15.95
+            c_2_cc = -7.247
+            c_2_nc = -7.296
+            c_3_cc = 1.569
+            c_3_nc = 1.569
+            c_4_cc = -17.72
+            c_4_nc = -18.30
         else:
             raise ValueError("Unable to calculate cross section without a"+
                              " particle type")
         # Calculate cross section based on CTW 2011
         eps = np.log10(self.particle.energy)
-        log_term = np.log(eps - c_0)
-        power = c_1 + c_2*log_term + c_3*log_term**2 + c_4/log_term
-        return 10**power
+        log_term_cc = np.log(eps - c_0_cc)
+        power_cc = (c_1_cc + c_2_cc*log_term_cc + c_3_cc*log_term_cc**2
+                    + c_4_cc/log_term_cc)
+        log_term_nc = np.log(eps - c_0_nc)
+        power_nc = (c_1_nc + c_2_nc*log_term_nc + c_3_nc*log_term_nc**2
+                    + c_4_nc/log_term_nc)
+        return 10**power_cc + 10**power_nc
 
     @property
     def cross_section(self):
@@ -946,6 +990,10 @@ class Particle:
     weight : float
         Monte Carlo weight of the particle.
 
+    See Also
+    --------
+    Interaction : Base class for describing neutrino interaction attributes.
+
     """
     class Type(Enum):
         """
@@ -1014,12 +1062,6 @@ class Particle:
             raise ValueError("Particle class interaction_model must be a class")
         self.weight = weight
 
-    def __str__(self):
-        string = self.__class__.__name__+"("
-        for key, val in self.__dict__.items():
-            string += key+"="+repr(val)+", "
-        return string[:-2]+")"
-
     @property
     def id(self):
         """
@@ -1059,6 +1101,10 @@ class Event:
     roots : Particle or list of Particle
         Root `Particle` objects for the event tree.
 
+    See Also
+    --------
+    Particle : Class for storing particle attributes.
+
     """
     def __init__(self, roots):
         if isinstance(roots, Particle):
@@ -1088,6 +1134,10 @@ class Event:
         ValueError
             If the `parent` is not a part of the event tree.
 
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
+
         """
         if parent not in self._all:
             raise ValueError("Parent particle is not in the event tree")
@@ -1110,10 +1160,19 @@ class Event:
         parent : Particle
             `Particle` object in the tree.
 
+        Returns
+        -------
+        list of Particle
+            List of the `Particle` objects which are children of the `parent`.
+
         Raises
         ------
         ValueError
             If the `parent` is not a part of the event tree.
+
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
 
         """
         if parent not in self._all:
@@ -1132,10 +1191,19 @@ class Event:
             `Particle` object in the tree. ``None`` if the `child` has no
             parent.
 
+        Returns
+        -------
+        Particle
+            `Particle` object which is the parent of the `child`.
+
         Raises
         ------
         ValueError
             If the `child` is not a part of the event tree.
+
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
 
         """
         if child not in self._all:
@@ -1160,6 +1228,10 @@ class Event:
         -------
         list of Particle
             All `Particle` objects at the given `level` in the tree.
+
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
 
         """
         # This method could be sped up by working exclusively with indices

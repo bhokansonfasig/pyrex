@@ -148,6 +148,10 @@ class ShadowGenerator:
         Particle.Type
             Enum value for the type of the particle.
 
+        See Also
+        --------
+        pyrex.Particle : Class for storing particle attributes.
+
         Notes
         -----
         The neutrino/antineutrino choice is based on Section 3 of [1]_.
@@ -196,6 +200,10 @@ class ShadowGenerator:
             Vector points where the particle's path intersects with the edges
             of the ice volume.
 
+        See Also
+        --------
+        pyrex.Particle : Class for storing particle attributes.
+
         """
         enter_point = None
         exit_point = None
@@ -243,13 +251,19 @@ class ShadowGenerator:
         float
             Weight of the given `particle`.
 
+        See Also
+        --------
+        pyrex.Particle : Class for storing particle attributes.
+
         """
         entry_point, exit_point = self.get_exit_points(particle)
         in_ice_vector = np.array(exit_point) - np.array(entry_point)
         in_ice_length = np.sqrt(np.sum(in_ice_vector**2))
         vertex_vector = particle.vertex - np.array(entry_point)
         travel_length = np.sqrt(np.sum(vertex_vector**2))
-        interaction_length = particle.interaction.interaction_length
+        # Convert cm water equivalent interaction length to meters in ice
+        interaction_length = (particle.interaction.total_interaction_length
+                              / 0.92 / 100)
         return (in_ice_length/interaction_length *
                 np.exp(-travel_length/interaction_length))
 
@@ -259,18 +273,24 @@ class ShadowGenerator:
         Generate a neutrino event in the ice volume.
 
         Creates a neutrino with a random vertex in the volume, a random
-        direction, and an energy based on the ``energy_generator``. Particle
-        type is randomly chosen, and its interaction type is also randomly
-        chosen based on the branching ratio. Accounts for Earth shadowing by
-        discarding particles that wouldn't make it to their vertex based on the
-        Earth's thickness along their path. Weights the particles according to
-        their probability of interacting in the ice at their vertex. Currently
-        each `Event` returned consists of only a single `Particle`.
+        direction, and an energy based on ``get_energy``. Particle type is
+        randomly chosen, and its interaction type is also randomly chosen based
+        on the branching ratio. Accounts for Earth shadowing by discarding
+        particles that wouldn't make it to their vertex based on the Earth's
+        thickness along their path. Weights the particles according to their
+        probability of interacting in the ice at their vertex. Currently each
+        `Event` returned consists of only a single `Particle`.
 
         Returns
         -------
         Event
             Random neutrino event not shadowed by the Earth.
+
+        See Also
+        --------
+        pyrex.Event : Class for storing a tree of `Particle` objects
+                      representing an event.
+        pyrex.Particle : Class for storing particle attributes.
 
         """
         vtx = self.get_vertex()
@@ -323,6 +343,12 @@ class ListGenerator:
     loop : boolean
         Whether or not to loop through the list more than once.
 
+    See Also
+    --------
+    pyrex.Event : Class for storing a tree of `Particle` objects
+                  representing an event.
+    pyrex.Particle : Class for storing particle attributes.
+
     """
     def __init__(self, events, loop=True):
         if isinstance(events, Event):
@@ -342,6 +368,12 @@ class ListGenerator:
         -------
         Event
             Next `Event` object in the list of events.
+
+        See Also
+        --------
+        pyrex.Event : Class for storing a tree of `Particle` objects
+                      representing an event.
+        pyrex.Particle : Class for storing particle attributes.
 
         Raises
         ------
@@ -402,6 +434,9 @@ class FileGenerator:
     --------
     pyrex.particle.Interaction : Base class for describing neutrino interaction
                                  attributes.
+    pyrex.Event : Class for storing a tree of `Particle` objects
+                  representing an event.
+    pyrex.Particle : Class for storing particle attributes.
 
     """
     def __init__(self, files, interaction_model=NeutrinoInteraction):
@@ -508,6 +543,12 @@ class FileGenerator:
         ------
         StopIteration
             If the end of the last file in the file list has been reached.
+
+        See Also
+        --------
+        pyrex.Event : Class for storing a tree of `Particle` objects
+                      representing an event.
+        pyrex.Particle : Class for storing particle attributes.
 
         """
         self._index += 1

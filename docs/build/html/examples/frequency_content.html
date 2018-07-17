@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Askaryan Frequency Content &mdash; PyREx 1.6.0 documentation</title>
+    <title>Askaryan Frequency Content &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +49,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
 	 
     </ul>
               
@@ -83,19 +83,21 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
 
-<span class="c1"># First, set the depth of the neutrino source and find the index of refraction</span>
-<span class="c1"># at that depth.</span>
+<span class="c1"># First, set up a neutrino source and find the index of refraction at its depth.</span>
 <span class="c1"># Then use that index of refraction to calculate the Cherenkov angle.</span>
-<span class="n">depth</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span>
-<span class="n">n</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
-<span class="n">ch_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">source</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="s2">&quot;nu_e&quot;</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                        <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">vertex</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ch_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">n</span><span class="p">)</span>
 
 <span class="c1"># Now, for a range of dthetas, generate an Askaryan pulse dtheta away from the</span>
 <span class="c1"># Chereknov angle and plot its frequency spectrum.</span>
 <span class="k">for</span> <span class="n">dtheta</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)):</span>
     <span class="n">n_pts</span> <span class="o">=</span> <span class="mi">10001</span>
     <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">20e-9</span><span class="p">,</span> <span class="mf">80e-9</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span>
-                                 <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+                                 <span class="n">particle</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+                                 <span class="n">viewing_angle</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span>
+                                 <span class="n">viewing_distance</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="c1"># Convert from Hz to MHz</span>
              <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Frequency Spectrum of Askaryan Pulse</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
@@ -108,7 +110,7 @@
 <span class="c1"># signal has propagated through the ice a bit. So first set up the ray tracer</span>
 <span class="c1"># from our neutrino source to some other point where our antenna might be</span>
 <span class="c1"># (and make sure a path between those two points exists).</span>
-<span class="n">rt</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">RayTracer</span><span class="p">(</span><span class="n">from_point</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">depth</span><span class="p">),</span> <span class="n">to_point</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">))</span>
+<span class="n">rt</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">RayTracer</span><span class="p">(</span><span class="n">from_point</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">vertex</span><span class="p">,</span> <span class="n">to_point</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">))</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">rt</span><span class="o">.</span><span class="n">exists</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Path to antenna doesn&#39;t exist!&quot;</span><span class="p">)</span>
 
@@ -118,7 +120,9 @@
 <span class="k">for</span> <span class="n">dtheta</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)):</span>
     <span class="n">n_pts</span> <span class="o">=</span> <span class="mi">2048</span>
     <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">20e-9</span><span class="p">,</span> <span class="mf">80e-9</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span>
-                                 <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+                                 <span class="n">particle</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+                                 <span class="n">viewing_angle</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span>
+                                 <span class="n">viewing_distance</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">path_length</span><span class="p">)</span>
     <span class="n">path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">pulse</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="c1"># Convert from Hz to MHz</span>
              <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
@@ -146,7 +150,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 

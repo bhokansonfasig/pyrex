@@ -9,15 +9,16 @@ Askaryan Signal
 
 The :class:`AskaryanSignal` class is responsible for storing the time-domain signal of the Askaryan signal produced by a particle shower. The :meth:`__init__` method of an :class:`AskaryanSignal`-like class must accept the arguments listed below:
 
-=========== ====================================================================
-Attribute   Description
-=========== ====================================================================
-``times``   A list-type (usually a numpy array) of time values at which to calculate the amplitude of the Askaryan pulse.
-``energy``  The energy of the particle shower.
-``theta``   The viewing angle in radians measured from the shower axis.
-``n``       The index of refraction of the ice at the shower vertex (default 1.78)
-``t0``      The starting time of the Askaryan pulse (default 0)
-=========== ====================================================================
+==================== ================================================================
+Attribute            Description
+==================== ================================================================
+``times``            A list-type (usually a numpy array) of time values at which to calculate the amplitude of the Askaryan pulse.
+``particle``         A ``Particle`` object representing the neutrino that causes the event. Should have an ``energy``, ``vertex``, ``id``, and an ``interaction`` with an ``em_frac`` and ``had_frac``.
+``viewing_angle``    The viewing angle in radians measured from the shower axis.
+``viewing_distance`` The distance of the observation point from the shower vertex.
+``ice``              The ice model to be used for describing the medium's index of refraction.
+``t0``               The starting time of the Askaryan pulse / showers (default 0).
+==================== ================================================================
 
 The :meth:`__init__` method should result in a :class:`Signal` object with :attr:`values` being a numpy array of amplitudes corresponding to the given :attr:`times` and should have a proper :attr:`value_type`. Additionally, all methods of the :class:`Signal` class should be implemented (typically by just inheriting from :class:`Signal`).
 
@@ -76,7 +77,17 @@ The path class must have a :meth:`propagate` method which takes a :class:`Signal
 Finally, though not required it is recommended that the path have a :attr:`coordinates` attribute which is a list of lists of the x, y, and z coordinates along the path (with some reasonable step size). This method is used for plotting purposes and does not need to have the accuracy necessary for calculations.
 
 
+Interaction Model
+-----------------
+
+The interaction model used for :class:`Particle` interactions in ice handles the cross sections and interaction lengths of neutrinos, as well as the ratios of their interaction types and the resulting shower fractions. An interaction class should inherit from :class:`Interaction` (preferrably keeping its :meth:`__init__` method) and should implement the following methods:
+
+The :attr:`cross_section` property method should return the neutrino cross section for the :attr:`Interaction.particle` parent, specific to the :attr:`Interaction.kind`. Similarly the :attr:`total_cross_section` property method should return the neutrino cross section for the :attr:`Interaction.particle` parent, but this should be the total cross section for both charged-current and neutral-current interactions. The :attr:`interaction_length` and :attr:`total_interaction_length` properties will convert these cross sections to interaction lengths automatically.
+
+The :meth:`choose_interaction` method should return a value from :class:`Interaction.Type` representing the interaction type based on a random choice. Similarly the :meth:`choose_inelasticity` method should return an inelasticity value based on a random choice, and the :meth:`choose_shower_fractions` method return calculate electromagnetic and hadronic fractions based on the :attr:`inelasticity` attribute storing the inelasticity value from :meth:`choose_inelasticity`. The :meth:`choose_shower_fractions` can be either chosen based on random processes like secondary generation or deterministic.
+
+
 Particle Generator
 ------------------
 
-The particle generator classes are quite flexible. The only requirement is that they possess a :meth:`create_particle` method which returns a :class:`Particle` object.
+The particle generator classes are quite flexible. The only requirement is that they possess an :meth:`create_event` method which returns a :class:`Event` object consisting of at least one :class:`Particle`.

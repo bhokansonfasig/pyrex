@@ -15,9 +15,9 @@ In this example we will calculate the effective area of a detector over a range 
     # First let's set the number of events that we will be throwing at each energy,
     # and the energies we will be using. As stated in the warning, the number of
     # events is set low to speed up the example, but that means the results are
-    # likely inaccurate.
-    n_events = 10
-    energies = [1e8, 1e9, 1e10] # GeV
+    # likely inaccurate. The energies are high to increase the chance of triggering.
+    n_events = 100
+    energies = [1e9, 2e9, 5e9, 1e10] # GeV
 
     # Next, set up the detector to be measured. Here we use a single standard
     # ARA station.
@@ -25,12 +25,10 @@ In this example we will calculate the effective area of a detector over a range 
                                  stations=1)
     detector.build_antennas(power_threshold=-6.15)
 
-    # Now set up a neutrino generator for each energy. Let's scale the generation
-    # volume by energy so that we're not wasting too much time generating neutrinos
-    # that will surely never trigger.
-    dimensions = [2500, 5000, 10000]
-    generators = [pyrex.ShadowGenerator(dx=2*dim, dy=2*dim, dz=2800, energy=energy)
-                  for energy, dim in zip(energies, dimensions)]
+    # Now set up a neutrino generator for each energy. We'll use unrealistically
+    # small volumes to increase the chance of triggering.
+    generators = [pyrex.ShadowGenerator(dx=1000, dy=1000, dz=1000, energy=energy)
+                  for energy in energies]
 
     # And then set up the event kernels for each energy. Let's use the ArasimIce
     # class as our ice model since it calculates attenuations faster at the loss
@@ -59,12 +57,13 @@ In this example we will calculate the effective area of a detector over a range 
             
             if j%10==9:
                 print(flush=True)
+        print(triggers[i], "events triggered at", energies[i]/1e6, "PeV")
     print("Done")
 
     # Now that we have the trigger counts for each energy, we can calculate the
     # effective volumes by scaling the trigger probability by the generation volume.
     # Errors are calculated assuming poisson counting statistics.
-    generation_volumes = np.array([(2*dim)*(2*dim)*2800 for dim in dimensions])
+    generation_volumes = np.ones(4)*1000*1000*1000
     effective_volumes = triggers / n_events * generation_volumes
     volume_errors = np.sqrt(triggers) / n_events * generation_volumes
 
@@ -74,30 +73,30 @@ In this example we will calculate the effective area of a detector over a range 
     ax.set_xscale("log")
     ax.set_yscale("log")
     plt.title("Detector Effective Volume")
-    plt.xlabel("Shower Energy (GeV)")
+    plt.xlabel("Neutrino Energy (GeV)")
     plt.ylabel("Effective Volume (km^3)")
     plt.show()
 
     # Then from the effecitve volumes, we can calculate the effective areas.
-    # First we need to account for the fact that our energy is the shower energy
-    # and convert to the neutrino energy. Then the effective area is the probability
-    # of interaction in the ice volume times the effective volume. The probability
-    # of interaction in the ice volume is given by the interaction cross section
-    # times the density of the ice. Since the neutrino type is not specified in the
-    # simulation, calculate the cross section as a weighted average of neutrino
-    # cross sections.
-    nu_energies = 9/5*np.array(energies)
+    # The effective area is the probability interaction in the ice volume times the
+    # effective volume. The probability of interaction in the ice volume is given by
+    # the interaction cross section times the density of the ice. Calculate the
+    # cross section as an average of the neutrino and antineutrino cross sections.
+    cross_sections = np.zeros(len(energies))
+    for i, energy in enumerate(energies):
+        nu = pyrex.Particle(particle_id="nu_e", vertex=(0, 0, 0),
+                            direction=(0, 0, 1), energy=energy)
+        nu_bar = pyrex.Particle(particle_id="nu_e_bar", vertex=(0, 0, 0),
+                                direction=(0, 0, 1), energy=energy)
+        cross_sections[i] = (nu.interaction.total_cross_section +
+                             nu_bar.interaction.total_cross_section) / 2
     ice_density = 0.92 # g/cm^3
     ice_density *= 1e15 # converted to g/km^3 = nucleons/km^3
-    cross_sections = (pyrex.particle.CC_NU.cross_section(nu_energies) +
-                      3*pyrex.particle.NC_NU.cross_section(nu_energies) +
-                      pyrex.particle.CC_NUBAR.cross_section(nu_energies) +
-                      3*pyrex.particle.NC_NUBAR.cross_section(nu_energies)) / 8
     effective_areas = 6.022e23 * ice_density * cross_sections * effective_volumes
     effective_areas *= 1e-4 # converted from cm^2 to m^2
-    area_errors = 6.022e23 * ice_density * cross_sections * volume_errors
+    area_errors = 6.022e23 * ice_density * cross_sections * volume_errors * 1e-4
 
-    plt.errorbar(nu_energies, effective_areas, area_errors,
+    plt.errorbar(energies, effective_areas, yerr=area_errors,
                  marker="o", markersize=5, linestyle=":", capsize=5)
     ax = plt.gca()
     ax.set_xscale("log")

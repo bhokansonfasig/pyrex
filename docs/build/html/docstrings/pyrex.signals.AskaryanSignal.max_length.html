@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.signals.AskaryanSignal.max_length &mdash; PyREx 1.6.0 documentation</title>
+    <title>pyrex.signals.AskaryanSignal.max_length &mdash; PyREx 1.7.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.6.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +49,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.6.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
 	 
     </ul>
               
@@ -78,17 +78,21 @@
             
   <div class="section" id="pyrex-signals-askaryansignal-max-length">
 <h1>pyrex.signals.AskaryanSignal.max_length<a class="headerlink" href="#pyrex-signals-askaryansignal-max-length" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="staticmethod">
 <dt id="pyrex.signals.AskaryanSignal.max_length">
-<code class="descclassname">AskaryanSignal.</code><code class="descname">max_length</code><span class="sig-paren">(</span><em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.AskaryanSignal.max_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the maximum length (or shower depth) of an EM shower.</p>
-<p>The maximum length of an EM shower is calculated for a given density,
-critical energy, and electron radiation length in ice.</p>
+<em class="property">static </em><code class="descclassname">AskaryanSignal.</code><code class="descname">max_length</code><span class="sig-paren">(</span><em>energy</em>, <em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.AskaryanSignal.max_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the depth of a particle shower maximum.</p>
+<p>The shower depth of a shower maximum is calculated for a given density,
+critical energy, and particle radiation length in ice.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>density</strong> : float, optional</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>energy</strong> : float</p>
+<blockquote>
+<div><p>Energy (GeV) of the shower.</p>
+</div></blockquote>
+<p><strong>density</strong> : float, optional</p>
 <blockquote>
 <div><p>Density (g/cm^3) of ice.</p>
 </div></blockquote>
@@ -98,13 +102,14 @@ critical energy, and electron radiation length in ice.</p>
 </div></blockquote>
 <p><strong>rad_length</strong> : float, optional</p>
 <blockquote>
-<div><p>Electron radiation length (g/cm^2) in ice.</p>
+<div><p>Radiation length (g/cm^2) in ice of the particle which makes up the
+shower.</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">float</p>
 <blockquote class="last">
-<div><p>The maximum length (m) of an EM shower.</p>
+<div><p>The depth (m) of the shower maximum for a particle shower.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -125,7 +130,7 @@ critical energy, and electron radiation length in ice.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.6.0</p>
+Version 1.7.0</p>
 
 
 

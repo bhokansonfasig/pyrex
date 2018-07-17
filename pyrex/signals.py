@@ -430,7 +430,8 @@ class ZHSAskaryanSignal(Signal):
     particle : Particle
         ``Particle`` object responsible for the shower which produces the
         Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
-        and ``id``, plus an ``interaction`` with an ``em_frac``.
+        and ``id``, plus an ``interaction`` with an ``em_frac`` and
+        ``had_frac``.
     viewing_angle : float
         Observation angle (radians) measured relative to the shower axis.
     viewing_distance : float, optional
@@ -467,6 +468,7 @@ class ZHSAskaryanSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
+    pyrex.Particle : Class for storing particle attributes.
 
     Notes
     -----
@@ -555,7 +557,8 @@ class ARVZAskaryanSignal(Signal):
     particle : Particle
         ``Particle`` object responsible for the showers which produce the
         Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
-        and ``id``, plus an ``interaction`` with an ``em_frac``.
+        and ``id``, plus an ``interaction`` with an ``em_frac`` and
+        ``had_frac``.
     viewing_angle : float
         Observation angle (radians) measured relative to the shower axis.
     viewing_distance : float, optional
@@ -594,6 +597,7 @@ class ARVZAskaryanSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
+    pyrex.Particle : Class for storing particle attributes.
 
     Notes
     -----

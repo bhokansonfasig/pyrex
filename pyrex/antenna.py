@@ -321,6 +321,10 @@ class Antenna:
         boolean
             Whether or not the antenna triggers on `signal`.
 
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
         """
         return True
 
@@ -470,6 +474,10 @@ class Antenna:
         ValueError
             If the given `signal` does not have a ``value_type`` of ``voltage``
             or ``field``.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
 
         """
         copy = Signal(signal.times, signal.values,
@@ -642,6 +650,10 @@ class DipoleAntenna(Antenna):
         -------
         boolean
             Whether or not the antenna triggers on `signal`.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
 
         """
         return max(np.abs(signal.values)) > self.threshold

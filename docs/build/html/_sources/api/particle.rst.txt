@@ -1,5 +1,5 @@
-Particles and Generators (:mod:`pyrex.particle`)
-================================================
+Particles and Interaction Models (:mod:`pyrex.particle`)
+========================================================
 
 .. currentmodule:: pyrex.particle
 
@@ -8,13 +8,9 @@ Particles and Generators (:mod:`pyrex.particle`)
 .. autosummary::
     :toctree: ../docstrings
 
-    NeutrinoInteraction
-    CC_NU
-    NC_NU
-    CC_NUBAR
-    NC_NUBAR
+    Event
     Particle
-    random_direction
-    ShadowGenerator
-    ListGenerator
-    FileGenerator
+    Interaction
+    GQRSInteraction
+    CTWInteraction
+    NeutrinoInteraction

@@ -38,7 +38,8 @@ class TestParticle:
     def test_id_coercion(self):
         """Test that the particle id can be set by enum value, int, or str"""
         p = Particle(particle_id=Particle.Type.electron,
-                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
+                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9,
+                     interaction_model=Interaction)
         assert p.id == Particle.Type.electron
         p = Particle(particle_id=-12,
                      vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
@@ -47,7 +48,8 @@ class TestParticle:
                      vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
         assert p.id == Particle.Type.muon_neutrino
         p = Particle(particle_id=None,
-                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9)
+                     vertex=[100, 200, -500], direction=[0, 0, 1], energy=1e9,
+                     interaction_model=Interaction)
         assert p.id == Particle.Type.undefined
 
     def test_interaction_type_setting(self):
@@ -75,10 +77,10 @@ class TestEvent:
         event = Event(particle)
         child1 = Particle(particle_id=Particle.Type.electron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         child2 = Particle(particle_id=Particle.Type.positron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         event.add_children(particle, [child1, child2])
         assert len(event.roots) == 1
         assert len(event) == 3
@@ -103,10 +105,10 @@ class TestEvent:
         event = Event(particle)
         child1 = Particle(particle_id=Particle.Type.electron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         child2 = Particle(particle_id=Particle.Type.positron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         with pytest.raises(ValueError):
             event.add_children(child1, [child2])
 
@@ -115,10 +117,10 @@ class TestEvent:
         event = Event(particle)
         child1 = Particle(particle_id=Particle.Type.electron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         child2 = Particle(particle_id=Particle.Type.positron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         event.add_children(particle, [child1, child2])
         expected_children = [child1, child2]
         for child in event.get_children(particle):
@@ -132,7 +134,7 @@ class TestEvent:
         event = Event(particle)
         child1 = Particle(particle_id=Particle.Type.electron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         with pytest.raises(ValueError):
             event.get_children(child1)
 
@@ -141,10 +143,10 @@ class TestEvent:
         event = Event(particle)
         child1 = Particle(particle_id=Particle.Type.electron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         child2 = Particle(particle_id=Particle.Type.positron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         event.add_children(particle, [child1, child2])
         assert event.get_parent(child1) == particle
         assert event.get_parent(child2) == particle
@@ -155,7 +157,7 @@ class TestEvent:
         event = Event(particle)
         child1 = Particle(particle_id=Particle.Type.electron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         with pytest.raises(ValueError):
             event.get_parent(child1)
 
@@ -164,10 +166,10 @@ class TestEvent:
         event = Event(particle)
         child1 = Particle(particle_id=Particle.Type.electron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         child2 = Particle(particle_id=Particle.Type.positron,
                           vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9)
+                          energy=1e9, interaction_model=Interaction)
         event.add_children(particle, [child1, child2])
         expected_level_0 = [particle]
         expected_level_1 = [child1, child2]

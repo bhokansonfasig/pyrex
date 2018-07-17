@@ -3,6 +3,45 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.7.0
+=============
+
+.. rubric:: New Features
+
+* Moved :mod:`pyrex.custom.ara` module into main PyREx package instead of being a plug-in.
+
+* All docstrings now follow numpy docstring style.
+
+* Added particle types and interaction information to :class:`Particle` class.
+
+* Added :class:`Interaction` classes :class:`GQRSInteraction` and :class:`CTWInteraction` for defining different neutrino interaction models. Preferred model (:class:`CTWInteraction`) aliased to :class:`NeutrinoInteraction`.
+
+* Added :meth:`ShadowGenerator.get_vertex`, :meth:`ShadowGenerator.get_direction`, :meth:`ShadowGenerator.get_particle_type`, :meth:`ShadowGenerator.get_exit_points`, and :meth:`ShadowGenerator.get_weight` methods for generating neutrinos more modularly.
+
+* Added :class:`Event` class for holding a tree of :class:`Particle` objects. :class:`Event` objects are now returned by generators and the :class:`EventKernel`.
+
+* Added :class:`ZHSAskaryanSignal` class for the Zas, Halzen, Stanev parameterization of Askaryan pulses. Mostly for comparison purposes.
+
+.. rubric:: Changes
+
+* :meth:`ShadowGenerator.create_particle` changed to :meth:`ShadowGenerator.create_event` and now returns an `Event` object.
+
+* Generator classes moved to :mod:`pyrex.generation` module.
+
+* :class:`Signal.ValueTypes` changed to :class:`Signal.Type` to match :class:`Particle.Type` and :class:`Interaction.Type`.
+
+* :class:`FastAskaryanSignal` changed to :class:`ARVZAskaryanSignal`. This class is still the preferred parameterization aliased to :class:`AskaryanSignal`.
+
+* Arguments of :class:`AskaryanSignal` changed to take a :class:`Particle` object rather than taking its parameters individually.
+
+* Removed unused :class:`SlowAskaryanSignal`.
+
+* Now that :class:`AskaryanSignal` can handle different particle and shower types, secondary particle generation was added to determine shower fractions: :attr:`NeutrinoInteraction.em_frac` and :attr:`NeutrinoInteraction.had_frac`.
+
+* Changed IREX envelope antennas to be an envelope front-end on top of an ARA antenna. Results in :class:`IREXAntennaSystem` becoming :class:`EnvelopeHpol` and :class:`EnvelopeVpol`.
+
+
+
 Version 1.6.0
 =============
 

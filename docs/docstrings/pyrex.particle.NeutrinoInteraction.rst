@@ -11,8 +11,9 @@ pyrex\.particle\.NeutrinoInteraction
       .. autosummary::
          :toctree:
       
-         NeutrinoInteraction.cross_section
-         NeutrinoInteraction.interaction_length
+         NeutrinoInteraction.choose_inelasticity
+         NeutrinoInteraction.choose_interaction
+         NeutrinoInteraction.choose_shower_fractions
 
 
 

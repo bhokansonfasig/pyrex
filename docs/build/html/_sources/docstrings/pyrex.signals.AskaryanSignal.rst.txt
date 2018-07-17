@@ -12,10 +12,12 @@ pyrex\.signals\.AskaryanSignal
          :toctree:
       
          AskaryanSignal.RAC
-         AskaryanSignal.charge_profile
+         AskaryanSignal.em_shower_profile
          AskaryanSignal.filter_frequencies
+         AskaryanSignal.had_shower_profile
          AskaryanSignal.max_length
          AskaryanSignal.resample
+         AskaryanSignal.shower_signal
          AskaryanSignal.with_times
 
 
