@@ -6,6 +6,7 @@ This section describes in detail how to use a majority of the functions and clas
     import numpy as np
     import matplotlib.pyplot as plt
     import scipy.fftpack
+    import scipy.signal
     import pyrex
 
 All of the following examples can also be found (and easily run) in the Code Examples python notebook found in the examples directory.
@@ -306,7 +307,7 @@ PyREx defines :class:`DipoleAntenna`, a subclass of :class:`Antenna` which provi
 AntennaSystem and Detector Classes
 ==================================
 
-The :class:`AntennaSystem` class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna's signals. It is designed to be subclassed, but by default it takes as an argument the :class:`Antenna` class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the :class:`Antenna` class, but where a :meth:`AntennaSystem.front_end` method (which by default does nothing) is applied to the extended antenna's signals.
+The :class:`AntennaSystem` class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna's signals. It is designed to be subclassed, but by default it takes as an argument the :class:`Antenna` class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the :class:`Antenna` class, but where an :meth:`AntennaSystem.front_end` method (which by default does nothing) is applied to the extended antenna's signals.
 
 To extend an :class:`Antenna` class or subclass into a full antenna system, inherit from the :class:`AntennaSystem` class and define the :meth:`AntennaSystem.front_end` method. A different trigger optionally can be defined for the antenna system (by default it uses the antenna's trigger)::
 

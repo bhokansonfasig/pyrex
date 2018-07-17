@@ -14,7 +14,7 @@ Version 1.7.0
 
 * Added particle types and interaction information to :class:`Particle` class.
 
-* Added :class:`Interaction` classes :class:`GQRSInteraction` and :class:`CTWInteraction` for defining different neutrino interaction models. Preferred model aliased to :class:`NeutrinoInteraction`.
+* Added :class:`Interaction` classes :class:`GQRSInteraction` and :class:`CTWInteraction` for defining different neutrino interaction models. Preferred model (:class:`CTWInteraction`) aliased to :class:`NeutrinoInteraction`.
 
 * Added :meth:`ShadowGenerator.get_vertex`, :meth:`ShadowGenerator.get_direction`, :meth:`ShadowGenerator.get_particle_type`, :meth:`ShadowGenerator.get_exit_points`, and :meth:`ShadowGenerator.get_weight` methods for generating neutrinos more modularly.
 

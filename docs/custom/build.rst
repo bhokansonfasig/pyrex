@@ -90,4 +90,4 @@ The :meth:`choose_interaction` method should return a value from :class:`Interac
 Particle Generator
 ------------------
 
-The particle generator classes are quite flexible. The only requirement is that they possess a :meth:`create_event` method which returns a :class:`Event` object consisting of at least one :class:`Particle`.
+The particle generator classes are quite flexible. The only requirement is that they possess an :meth:`create_event` method which returns a :class:`Event` object consisting of at least one :class:`Particle`.
