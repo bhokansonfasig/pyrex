@@ -33,10 +33,14 @@ In this example we will generate a single event with a given vertex, direction, 
 
     # Now set up a particle generator that will just throw the one event we're
     # interested in, and create an event kernel with our detector and our generator.
-    p = pyrex.Particle(vertex=[1002.65674195, -421.95118348, -586.0953201],
+    p = pyrex.Particle(particle_id=pyrex.Particle.Type.electron_neutrino,
+                       vertex=[1002.65674195, -421.95118348, -586.0953201],
                        direction=[-0.90615395, -0.41800062, -0.06450191],
                        energy=1e9)
-    gen = pyrex.ListGenerator(p)
+    p.interaction.kind = p.interaction.Type.charged_current
+    p.interaction.em_frac = 1
+    p.interaction.had_frac = 0
+    gen = pyrex.ListGenerator(pyrex.Event(p))
     kern = pyrex.EventKernel(antennas=det, generator=gen)
 
     # Then make sure our detector is cleared out and throw the event!
