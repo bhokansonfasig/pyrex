@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.custom.ara.RegularStation &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" >
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../../index.html" >
+    <link rel="up" title="Askaryan Radio Array (pyrex.custom.ara)" href="../custom-ara.html" >
+    <link rel="next" title="pyrex.custom.ara.AlbrechtStation" href="pyrex.custom.ara.AlbrechtStation.html" >
+    <link rel="prev" title="pyrex.custom.ara.PhasedArrayString" href="pyrex.custom.ara.PhasedArrayString.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">PyREx 1.7.0 documentation</a></li>
+	
+          <li class="active"><a href="../../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="docutils literal"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.custom.ara.AlbrechtStation.html" title="pyrex.custom.ara.AlbrechtStation"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.custom.ara.PhasedArrayString.html" title="pyrex.custom.ara.PhasedArrayString"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-custom-ara-regularstation">
+<h1>pyrex.custom.ara.RegularStation<a class="headerlink" href="#pyrex-custom-ara-regularstation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyrex.custom.ara.RegularStation">
+<em class="property">class </em><code class="descclassname">pyrex.custom.ara.</code><code class="descname">RegularStation</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=20</em>, <em>string_type=&lt;class 'pyrex.custom.ara.detector.ARAString'&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.RegularStation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station geometry with strings evenly spaced radially around the center.</p>
+<p>Sets the positions of strings around the station based on the parameters.
+Supports any string type and passes extra keyword arguments on to the
+string class. Once the antennas have been built with <a class="reference internal" href="pyrex.custom.ara.RegularStation.build_antennas.html#pyrex.custom.ara.RegularStation.build_antennas" title="pyrex.custom.ara.RegularStation.build_antennas"><code class="xref py py-obj docutils literal"><span class="pre">build_antennas</span></code></a>,
+the object can be directly iterated over to iterate over the antennas (as
+if the object were just a list of the antennas).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : float</p>
+<blockquote>
+<div><p>Cartesian x-position (m) of the station.</p>
+</div></blockquote>
+<p><strong>y</strong> : float</p>
+<blockquote>
+<div><p>Cartesian y-position (m) of the station.</p>
+</div></blockquote>
+<p><strong>strings_per_station</strong> : float, optional</p>
+<blockquote>
+<div><p>Number of strings to be placed evenly around the station.</p>
+</div></blockquote>
+<p><strong>station_diameter</strong> : float, optional</p>
+<blockquote>
+<div><p>Diameter (m) of the circle around which strings are placed.</p>
+</div></blockquote>
+<p><strong>string_type</strong> : optional</p>
+<blockquote>
+<div><p>Class to be used for creating string objects for <em class="xref py py-obj">subsets</em>.</p>
+</div></blockquote>
+<p><strong>**string_kwargs</strong></p>
+<blockquote>
+<div><p>Keyword arguments to be passed on to the <code class="docutils literal"><span class="pre">__init__</span></code> methods of
+the <em class="xref py py-obj">string_type</em> class.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>If <code class="docutils literal"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal"><span class="pre">True</span></code> and an antenna is found to be
+above the ice surface.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.custom.ara.HpolAntenna</span></code></a></dt>
+<dd>ARA Hpol (“quad-slot”) antenna system with front-end processing.</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.custom.ara.VpolAntenna</span></code></a></dt>
+<dd>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.ARAString.html#pyrex.custom.ara.ARAString" title="pyrex.custom.ara.ARAString"><code class="xref py py-obj docutils literal"><span class="pre">ARAString</span></code></a></dt>
+<dd>String of ARA Hpol and Vpol antennas.</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This class is designed to have string-like objects (which are subclasses of
+<code class="docutils literal"><span class="pre">Detector</span></code>) as its <em class="xref py py-obj">subsets</em>. Then whenver an object of this class is
+iterated, all the antennas of its strings will be yielded as in a 1D list.</p>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>antenna_positions</strong></td>
+<td>(list) List (potentially with sub-lists) of the positions of the antennas generated by the <a class="reference internal" href="pyrex.custom.ara.RegularStation.set_positions.html#pyrex.custom.ara.RegularStation.set_positions" title="pyrex.custom.ara.RegularStation.set_positions"><code class="xref py py-obj docutils literal"><span class="pre">set_positions</span></code></a> method.</td>
+</tr>
+<tr class="row-even"><td><strong>subsets</strong></td>
+<td>(list) List of the antenna or detector objects which make up the detector.</td>
+</tr>
+<tr class="row-odd"><td><strong>test_antenna_positions</strong></td>
+<td>(boolean) Class attribute for whether or not an error should be raised if antenna positions are found above the surface of the ice (where simulation behavior is ill-defined). Defaults to <code class="docutils literal"><span class="pre">True</span></code>.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.build_antennas.html#pyrex.custom.ara.RegularStation.build_antennas" title="pyrex.custom.ara.RegularStation.build_antennas"><code class="xref py py-obj docutils literal"><span class="pre">build_antennas</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td>Creates antenna objects at the set antenna positions.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.clear.html#pyrex.custom.ara.RegularStation.clear" title="pyrex.custom.ara.RegularStation.clear"><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></a>([reset_noise])</td>
+<td>Reset the detector to an empty state.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.set_positions.html#pyrex.custom.ara.RegularStation.set_positions" title="pyrex.custom.ara.RegularStation.set_positions"><code class="xref py py-obj docutils literal"><span class="pre">set_positions</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
+<td>Generates antenna positions around the station.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.triggered.html#pyrex.custom.ara.RegularStation.triggered" title="pyrex.custom.ara.RegularStation.triggered"><code class="xref py py-obj docutils literal"><span class="pre">triggered</span></code></a>([polarized_antenna_requirement])</td>
+<td>Check if the station is triggered based on its current state.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

@@ -1,54 +1,211 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>PyREx API &#8212; PyREx 1.6.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <meta charset="utf-8">
+    
+    <title>PyREx API &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
+    <link rel="stylesheet" href="_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" >
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="author" title="About these documents" href="about.html" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Version History" href="versions.html" />
-    <link rel="prev" title="Contributing to PyREx" href="contributing.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <script type="text/javascript" src="_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="about.html" >
+    <link rel="index" title="Index" href="genindex.html" >
+    <link rel="search" title="Search" href="search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="index.html" >
+    <link rel="next" title="pyrex.Signal" href="docstrings/pyrex.Signal.html" >
+    <link rel="prev" title="Contributing to PyREx" href="contributing.html" > 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="index.html">PyREx 1.7.0 documentation</a></li>
+	 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="docstrings/pyrex.Signal.html" title="pyrex.Signal"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="contributing.html" title="Contributing to PyREx"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-api">
+<span id="id1"></span><h1>PyREx API<a class="headerlink" href="#pyrex-api" title="Permalink to this headline">¶</a></h1>
+<p>The API documentation here is split into three sections.
+First, the <a class="reference internal" href="#api-1"><span class="std std-ref">PyREx Package Imports</span></a> section documents all classes and functions that are imported by PyREx under a <code class="docutils literal"><span class="pre">from</span> <span class="pre">pyrex</span> <span class="pre">import</span> <span class="pre">*</span></code> command.
+Next, the <a class="reference internal" href="#api-2"><span class="std std-ref">Individual Module APIs</span></a> section is a full documentation of all the modules which make up the base PyREx package.
+And finally, the <a class="reference internal" href="#api-3"><span class="std std-ref">Included Custom Sub-Packages</span></a> section documents the custom subpackages included with PyREx by default.</p>
+<div class="section" id="pyrex-package-imports">
+<span id="api-1"></span><h2>PyREx Package Imports<a class="headerlink" href="#pyrex-package-imports" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-obj docutils literal"><span class="pre">Signal</span></code></a>(times,&nbsp;values[,&nbsp;value_type])</td>
+<td>Base class for time-domain signals.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.EmptySignal.html#pyrex.EmptySignal" title="pyrex.EmptySignal"><code class="xref py py-obj docutils literal"><span class="pre">EmptySignal</span></code></a>(times[,&nbsp;value_type])</td>
+<td>Class for signal with zero amplitude (all values = 0).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-obj docutils literal"><span class="pre">FunctionSignal</span></code></a>(times,&nbsp;function[,&nbsp;value_type])</td>
+<td>Class for signals generated by a function.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal"><span class="pre">AskaryanSignal</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal"><span class="pre">ARVZAskaryanSignal</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-obj docutils literal"><span class="pre">ThermalNoise</span></code></a>(times,&nbsp;f_band[,&nbsp;f_amplitude,&nbsp;…])</td>
+<td>Class for thermal Rayleigh noise signals.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-obj docutils literal"><span class="pre">Antenna</span></code></a>(position[,&nbsp;z_axis,&nbsp;x_axis,&nbsp;…])</td>
+<td>Base class for antennas.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-obj docutils literal"><span class="pre">DipoleAntenna</span></code></a>(name,&nbsp;position,&nbsp;…[,&nbsp;…])</td>
+<td>Class for half-wave dipole antennas.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-obj docutils literal"><span class="pre">AntennaSystem</span></code></a>(antenna)</td>
+<td>Base class for antenna system with front-end processing.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-obj docutils literal"><span class="pre">Detector</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td>Base class for detectors for easily building up sets of antennas.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-obj docutils literal"><span class="pre">IceModel</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal"><span class="pre">AntarcticIce</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.prem_density.html#pyrex.prem_density" title="pyrex.prem_density"><code class="xref py py-obj docutils literal"><span class="pre">prem_density</span></code></a>(r)</td>
+<td>Calculates the Earth’s density at a given radius.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.slant_depth.html#pyrex.slant_depth" title="pyrex.slant_depth"><code class="xref py py-obj docutils literal"><span class="pre">slant_depth</span></code></a>(angle,&nbsp;depth[,&nbsp;step])</td>
+<td>Calculates the material thickness of a chord cutting through Earth.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-obj docutils literal"><span class="pre">NeutrinoInteraction</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a>(particle_id,&nbsp;vertex,&nbsp;direction,&nbsp;energy)</td>
+<td>Class for storing particle attributes.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a>(roots)</td>
+<td>Class for storing a tree of <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects representing an event.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.ShadowGenerator.html#pyrex.ShadowGenerator" title="pyrex.ShadowGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ShadowGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td>Class to generate neutrino vertices with Earth shadowing.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.ListGenerator.html#pyrex.ListGenerator" title="pyrex.ListGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ListGenerator</span></code></a>(events[,&nbsp;loop])</td>
+<td>Class to generate neutrino events from a list.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-obj docutils literal"><span class="pre">FileGenerator</span></code></a>(files[,&nbsp;interaction_model])</td>
+<td>Class to generate neutrino events from numpy file(s).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-obj docutils literal"><span class="pre">RayTracer</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracer</span></code></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-obj docutils literal"><span class="pre">RayTracePath</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-obj docutils literal"><span class="pre">EventKernel</span></code></a>(generator,&nbsp;antennas[,&nbsp;…])</td>
+<td>High-level kernel for controlling event simulation.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="individual-module-apis">
+<span id="api-2"></span><h2>Individual Module APIs<a class="headerlink" href="#individual-module-apis" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/internal_functions.html">Helper Functions (<code class="docutils literal"><span class="pre">pyrex.internal_functions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/signals.html">Signal Processing (<code class="docutils literal"><span class="pre">pyrex.signals</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/antenna.html">Antennas (<code class="docutils literal"><span class="pre">pyrex.antenna</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/detector.html">High-level Detectors (<code class="docutils literal"><span class="pre">pyrex.detector</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/earth_model.html">Earth Model (<code class="docutils literal"><span class="pre">pyrex.earth_model</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ice_model.html">Ice Models (<code class="docutils literal"><span class="pre">pyrex.ice_model</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ray_tracing.html">Ray Tracers (<code class="docutils literal"><span class="pre">pyrex.ray_tracing</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/particle.html">Particles and Interaction Models (<code class="docutils literal"><span class="pre">pyrex.particle</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/generation.html">Event Generators (<code class="docutils literal"><span class="pre">pyrex.generation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/kernel.html">Simulation Kernel (<code class="docutils literal"><span class="pre">pyrex.kernel</span></code>)</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="included-custom-sub-packages">
+<span id="api-3"></span><h2>Included Custom Sub-Packages<a class="headerlink" href="#included-custom-sub-packages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/custom-ara.html">Askaryan Radio Array (<code class="docutils literal"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/custom-irex.html">IceCube Radio Extension (<code class="docutils literal"><span class="pre">pyrex.custom.irex</span></code>)</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
         <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="index.html">
-    <img class="logo" src="_static/logo.png" alt="Logo"/>
-    
-  </a>
-</p>
+<h1 class="logo"><a href="index.html">PyREx</a></h1>
 
 
 
-<p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.6.0</p>
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
 
 
 
@@ -62,6 +219,19 @@ Version 1.6.0</p>
 
 
 
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
@@ -70,24 +240,9 @@ Version 1.6.0</p>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PyREx API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#package-contents">Package contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.signals">pyrex.signals module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.antenna">pyrex.antenna module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.detector">pyrex.detector module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.ice_model">pyrex.ice_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.earth_model">pyrex.earth_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.particle">pyrex.particle module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.ray_tracing">pyrex.ray_tracing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.kernel">pyrex.kernel module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.internal_functions">pyrex.internal_functions module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#pyrex-custom-subpackage">PyREx Custom Subpackage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.custom.pyspice">pyrex.custom.pyspice module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyrex.custom.irex">pyrex.custom.irex package</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
@@ -102,2236 +257,31 @@ Version 1.6.0</p>
     <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
     
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="contributing.html" title="previous chapter">Contributing to PyREx</a></li>
-      <li>Next: <a href="versions.html" title="next chapter">Version History</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+
         </div>
       </div>
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="pyrex-api">
-<span id="id1"></span><h1>PyREx API<a class="headerlink" href="#pyrex-api" title="Permalink to this headline">¶</a></h1>
-<p>The API documentation here is split into three sections.
-First, the <a class="reference internal" href="#api-1"><span class="std std-ref">Package contents</span></a> section documents all classes and functions that are imported by PyREx under a <code class="docutils literal"><span class="pre">from</span> <span class="pre">pyrex</span> <span class="pre">import</span> <span class="pre">*</span></code> command.
-Next, the <a class="reference internal" href="#api-2"><span class="std std-ref">Submodules</span></a> section is a full documentation of all the modules which make up the base PyREx package.
-And finally, the <a class="reference internal" href="#api-3"><span class="std std-ref">PyREx Custom Subpackage</span></a> section documents the custom subpackages contained in PyREx by default.</p>
-<div class="section" id="package-contents">
-<span id="api-1"></span><h2>Package contents<a class="headerlink" href="#package-contents" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="pyrex.Signal">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">Signal</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>value_type=&lt;ValueTypes.undefined: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Signal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for signals. Takes arrays of times and values
-(values array forced to size of times array by zero padding or slicing).
-Supports adding between signals with the same time values,
-resampling the signal, and calculating the signal’s envelope.</p>
-<dl class="class">
-<dt id="pyrex.Signal.ValueTypes">
-<em class="property">class </em><code class="descname">ValueTypes</code><a class="headerlink" href="#pyrex.Signal.ValueTypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enum containing possible types (units) for signal values.</p>
-<dl class="attribute">
-<dt id="pyrex.Signal.ValueTypes.undefined">
-<code class="descname">undefined</code><em class="property"> = 0</em><a class="headerlink" href="#pyrex.Signal.ValueTypes.undefined" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Signal.ValueTypes.voltage">
-<code class="descname">voltage</code><em class="property"> = 1</em><a class="headerlink" href="#pyrex.Signal.ValueTypes.voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Signal.ValueTypes.field">
-<code class="descname">field</code><em class="property"> = 2</em><a class="headerlink" href="#pyrex.Signal.ValueTypes.field" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Signal.ValueTypes.power">
-<code class="descname">power</code><em class="property"> = 3</em><a class="headerlink" href="#pyrex.Signal.ValueTypes.power" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Signal.dt">
-<code class="descname">dt</code><a class="headerlink" href="#pyrex.Signal.dt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the spacing of the time array, or None if invalid.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Signal.envelope">
-<code class="descname">envelope</code><a class="headerlink" href="#pyrex.Signal.envelope" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates envelope of the signal by Hilbert transform.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Signal.resample">
-<code class="descname">resample</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Signal.resample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resamples the signal into n points in the same time range.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Signal.with_times">
-<code class="descname">with_times</code><span class="sig-paren">(</span><em>new_times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Signal.with_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a signal object representing this signal with a different
-times array. Uses numpy.iterp on values by default.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Signal.spectrum">
-<code class="descname">spectrum</code><a class="headerlink" href="#pyrex.Signal.spectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the FFT spectrum of the signal.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Signal.frequencies">
-<code class="descname">frequencies</code><a class="headerlink" href="#pyrex.Signal.frequencies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the FFT frequencies of the signal.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Signal.filter_frequencies">
-<code class="descname">filter_frequencies</code><span class="sig-paren">(</span><em>freq_response</em>, <em>force_real=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Signal.filter_frequencies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies the given frequency response function to the signal.
-Optionally can attempt to force real results manually if the filter is
-only specified in positive frequencies.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.EmptySignal">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">EmptySignal</code><span class="sig-paren">(</span><em>times</em>, <em>value_type=&lt;ValueTypes.undefined: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EmptySignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Class for signal with no amplitude (all values = 0)</p>
-<dl class="method">
-<dt id="pyrex.EmptySignal.with_times">
-<code class="descname">with_times</code><span class="sig-paren">(</span><em>new_times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EmptySignal.with_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a signal object representing this signal with a different
-times array. Returns EmptySignal for new times.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.FunctionSignal">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">FunctionSignal</code><span class="sig-paren">(</span><em>times</em>, <em>function</em>, <em>value_type=&lt;ValueTypes.undefined: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.FunctionSignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Class for signals generated by a function</p>
-<dl class="method">
-<dt id="pyrex.FunctionSignal.with_times">
-<code class="descname">with_times</code><span class="sig-paren">(</span><em>new_times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.FunctionSignal.with_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a signal object representing this signal with a different
-times array. Leverages knowledge of the function to properly
-interpolate and extrapolate.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.AskaryanSignal">
-<code class="descclassname">pyrex.</code><code class="descname">AskaryanSignal</code><a class="headerlink" href="#pyrex.AskaryanSignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">FastAskaryanSignal</span></code></p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.signals.FastAskaryanSignal">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">FastAskaryanSignal</code><span class="sig-paren">(</span><em>times</em>, <em>energy</em>, <em>theta</em>, <em>n=1.78</em>, <em>t0=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.FastAskaryanSignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Askaryan pulse binned to times from a particle shower with given energy
-(GeV) observed at angle theta (radians) from the shower axis.
-Optional parameters are the index of refraction n, and pulse offset
-to start time t0 (s). Returned signal values are electric fields (V/m).</p>
-<p>Note that the amplitude of the pulse goes as 1/R, where R is the distance
-from source to observer. R is assumed to be 1 meter so that dividing by a
-different value produces the proper result.</p>
-<dl class="attribute">
-<dt id="pyrex.signals.FastAskaryanSignal.vector_potential">
-<code class="descname">vector_potential</code><a class="headerlink" href="#pyrex.signals.FastAskaryanSignal.vector_potential" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recover the vector_potential from the electric field.
-Mostly just for testing purposes.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.FastAskaryanSignal.RAC">
-<code class="descname">RAC</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.FastAskaryanSignal.RAC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates R * vector potential (A) at the Cherenkov angle in Vs
-at the given time (s).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.FastAskaryanSignal.charge_profile">
-<code class="descname">charge_profile</code><span class="sig-paren">(</span><em>z</em>, <em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.FastAskaryanSignal.charge_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the longitudinal charge profile in the EM shower at
-distance z (m) with parameters for the density (g/cm^3),
-critical energy (GeV), and electron radiation length (g/cm^2) in ice.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.FastAskaryanSignal.max_length">
-<code class="descname">max_length</code><span class="sig-paren">(</span><em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.FastAskaryanSignal.max_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the maximum length (m) of an EM shower
-with parameters for the density (g/cm^3), critical energy (GeV), and
-electron radiation length (g/cm^2) in ice.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ThermalNoise">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">ThermalNoise</code><span class="sig-paren">(</span><em>times</em>, <em>f_band</em>, <em>f_amplitude=1</em>, <em>rms_voltage=None</em>, <em>temperature=None</em>, <em>resistance=None</em>, <em>n_freqs=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ThermalNoise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.FunctionSignal" title="pyrex.signals.FunctionSignal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.FunctionSignal</span></code></a></p>
-<p>Thermal Rayleigh noise in the frequency band f_band=[f_min,f_max] (Hz)
-at a given temperature (K) and resistance (ohms) or with a given RMS
-voltage (V). Optional parameters are f_amplitude (default 1) which can be
-a number or a function designating the amplitudes at each frequency,
-and n_freqs which is the number of frequencies to use (in f_band)
-for the calculation (default is based on the FFT bin size of the given
-times array). Returned signal values are voltages (V).</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.Antenna">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">Antenna</code><span class="sig-paren">(</span><em>position</em>, <em>z_axis=(0</em>, <em>0</em>, <em>1)</em>, <em>x_axis=(1</em>, <em>0</em>, <em>0)</em>, <em>antenna_factor=1</em>, <em>efficiency=1</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em>, <em>freq_range=None</em>, <em>temperature=None</em>, <em>resistance=None</em>, <em>noise_rms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for an antenna with a given position (m), temperature (K),
-allowable frequency range (Hz), total resistance (ohm) used for Johnson
-noise, and whether or not to include noise in the antenna’s waveforms.
-Defines default trigger, frequency response, and signal reception functions
-that can be overwritten in base classes to customize the antenna.</p>
-<dl class="method">
-<dt id="pyrex.Antenna.set_orientation">
-<code class="descname">set_orientation</code><span class="sig-paren">(</span><em>z_axis=(0</em>, <em>0</em>, <em>1)</em>, <em>x_axis=(1</em>, <em>0</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.set_orientation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Antenna.is_hit">
-<code class="descname">is_hit</code><a class="headerlink" href="#pyrex.Antenna.is_hit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test for whether the antenna has been triggered.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.is_hit_during">
-<code class="descname">is_hit_during</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.is_hit_during" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test for whether the antenna has been triggered during the given
-times array.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>reset_noise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the antenna to a state of having received no signals.
-Can optionally reset noise, which will reset the noise waveform so that
-a new signal arriving at the same time does not have the same noise.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Antenna.waveforms">
-<code class="descname">waveforms</code><a class="headerlink" href="#pyrex.Antenna.waveforms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal + noise (if noisy) at each triggered antenna hit.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.Antenna.all_waveforms">
-<code class="descname">all_waveforms</code><a class="headerlink" href="#pyrex.Antenna.all_waveforms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal + noise (if noisy) at all antenna hits, even those that
-didn’t trigger.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.full_waveform">
-<code class="descname">full_waveform</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.full_waveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal + noise (if noisy) for the given times array.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.make_noise">
-<code class="descname">make_noise</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.make_noise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the noise signal generated by the antenna over
-the given array of times. Used to add noise to signal for production
-of the antenna’s waveforms.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.trigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to determine whether or not the antenna is triggered by
-the given Signal object.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.directional_gain">
-<code class="descname">directional_gain</code><span class="sig-paren">(</span><em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.directional_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to calculate the directive electric field gain of the
-antenna at given angles theta (polar) and phi (azimuthal)
-relative to the antenna’s orientation.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.polarization_gain">
-<code class="descname">polarization_gain</code><span class="sig-paren">(</span><em>polarization</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.polarization_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to calculate the electric field gain due to polarization
-for a given polarization direction.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.response">
-<code class="descname">response</code><span class="sig-paren">(</span><em>frequencies</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to return the frequency response of the antenna at the
-given frequencies (Hz). This function should return the response as
-imaginary numbers of the form A*exp(i*phi), where A is the amplitude
-response and phi is the phase shift.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Antenna.receive">
-<code class="descname">receive</code><span class="sig-paren">(</span><em>signal</em>, <em>direction=None</em>, <em>polarization=None</em>, <em>force_real=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.receive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process incoming signal according to the filter function and
-store it to the signals list. Optionally applies directional gain if
-direction is specified, applies polarization gain if polarization is
-specified, and forces any frequency response filters to return real
-signals if specified.
-Subclasses may extend this fuction, but should likely end with
-super().receive(signal).</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.DipoleAntenna">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">DipoleAntenna</code><span class="sig-paren">(</span><em>name</em>, <em>position</em>, <em>center_frequency</em>, <em>bandwidth</em>, <em>resistance</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>trigger_threshold=0</em>, <em>effective_height=None</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.DipoleAntenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.antenna.Antenna" title="pyrex.antenna.Antenna"><code class="xref py py-class docutils literal"><span class="pre">pyrex.antenna.Antenna</span></code></a></p>
-<p>Antenna with a given name, position (m), center frequency (Hz),
-bandwidth (Hz), resistance (ohm), effective height (m), polarization
-direction, and trigger threshold (V).</p>
-<dl class="method">
-<dt id="pyrex.DipoleAntenna.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.DipoleAntenna.trigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trigger on the signal if the maximum signal value is above the
-given threshold.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.DipoleAntenna.response">
-<code class="descname">response</code><span class="sig-paren">(</span><em>frequencies</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.DipoleAntenna.response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Butterworth filter response for the antenna’s frequency range.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.DipoleAntenna.directional_gain">
-<code class="descname">directional_gain</code><span class="sig-paren">(</span><em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.DipoleAntenna.directional_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Power gain of dipole antenna goes as sin(theta)^2, so electric field
-gain goes as sin(theta).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.DipoleAntenna.polarization_gain">
-<code class="descname">polarization_gain</code><span class="sig-paren">(</span><em>polarization</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.DipoleAntenna.polarization_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Polarization gain is simply the dot product of the polarization
-with the antenna’s z-axis.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.AntennaSystem">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">AntennaSystem</code><span class="sig-paren">(</span><em>antenna</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for an antenna system consisting of an antenna and some
-front-end processes.</p>
-<dl class="method">
-<dt id="pyrex.AntennaSystem.setup_antenna">
-<code class="descname">setup_antenna</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem.setup_antenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Setup the antenna by passing along its init arguments.
-This function can be overwritten if desired, just make sure to assign
-the self.antenna attribute in the function.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.AntennaSystem.front_end">
-<code class="descname">front_end</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem.front_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function should take the signal passed (from the antenna) and
-return the resulting signal after all processing by the antenna system’s
-front-end. By default it just returns the given signal.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.AntennaSystem.is_hit">
-<code class="descname">is_hit</code><a class="headerlink" href="#pyrex.AntennaSystem.is_hit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.AntennaSystem.is_hit_during">
-<code class="descname">is_hit_during</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem.is_hit_during" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.AntennaSystem.signals">
-<code class="descname">signals</code><a class="headerlink" href="#pyrex.AntennaSystem.signals" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.AntennaSystem.waveforms">
-<code class="descname">waveforms</code><a class="headerlink" href="#pyrex.AntennaSystem.waveforms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.AntennaSystem.all_waveforms">
-<code class="descname">all_waveforms</code><a class="headerlink" href="#pyrex.AntennaSystem.all_waveforms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.AntennaSystem.full_waveform">
-<code class="descname">full_waveform</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem.full_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.AntennaSystem.receive">
-<code class="descname">receive</code><span class="sig-paren">(</span><em>signal</em>, <em>direction=None</em>, <em>polarization=None</em>, <em>force_real=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem.receive" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.AntennaSystem.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>reset_noise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the antenna system to a state of having received no signals.
-Can optionally reset noise, which will reset the noise waveform so that
-a new signal arriving at the same time does not have the same noise.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.AntennaSystem.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem.trigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Antenna system trigger. Should return True or False for whether the
-passed signal triggers the antenna system. By default just matches
-the antenna’s trigger.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.Detector">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">Detector</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for automatically generating antenna positions based on geometry
-criteria. The set_positions method creates a list of antenna positions and
-the build_antennas method is responsible for actually placing antennas
-at the generated positions. Once antennas are placed, the class can be
-directly iterated over to iterate over the antennas (as if it were just
-a list of antennas itself).</p>
-<dl class="attribute">
-<dt id="pyrex.Detector.test_antenna_positions">
-<code class="descname">test_antenna_positions</code><em class="property"> = True</em><a class="headerlink" href="#pyrex.Detector.test_antenna_positions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Detector.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Not implemented. Should generate positions for the antennas based
-on the given arguments and assign those positions to the
-antenna_positions attribute.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Detector.build_antennas">
-<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.build_antennas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets up antenna objects at the positions stored in the class.
-By default takes an antenna class and passes a position to the
-‘position’ argument, followed by any other arguments to be passed to
-this class.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Detector.triggered">
-<code class="descname">triggered</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.triggered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test for whether the detector is triggered based on the current
-state of the antennas.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.Detector.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>reset_noise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Detector.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience method for clearing all antennas in the detector.
-Can optionally reset noise, which will reset the noise waveforms so that
-new signals arriving at the same time do not have the same noise.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.IceModel">
-<code class="descclassname">pyrex.</code><code class="descname">IceModel</code><a class="headerlink" href="#pyrex.IceModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">AntarcticIce</span></code></p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ice_model.ArasimIce">
-<em class="property">class </em><code class="descclassname">pyrex.ice_model.</code><code class="descname">ArasimIce</code><a class="headerlink" href="#pyrex.ice_model.ArasimIce" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.ice_model.AntarcticIce" title="pyrex.ice_model.AntarcticIce"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ice_model.AntarcticIce</span></code></a></p>
-<p>Class containing characteristics of ice at the south pole.
-In all cases, depth z is given with negative values in the ice and positive
-values above the ice. Ice model index is the same as used in the ARA
-collaboration’s AraSim package.</p>
-<dl class="attribute">
-<dt id="pyrex.ice_model.ArasimIce.k">
-<code class="descname">k</code><em class="property"> = 0.43</em><a class="headerlink" href="#pyrex.ice_model.ArasimIce.k" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.ArasimIce.a">
-<code class="descname">a</code><em class="property"> = 0.0132</em><a class="headerlink" href="#pyrex.ice_model.ArasimIce.a" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.ArasimIce.n0">
-<code class="descname">n0</code><em class="property"> = 1.78</em><a class="headerlink" href="#pyrex.ice_model.ArasimIce.n0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.ArasimIce.atten_depths">
-<code class="descname">atten_depths</code><em class="property"> = [72.7412, 76.5697, 80.3982, 91.8836, 95.7121, 107.198, 118.683, 133.997, 153.139, 179.939, 206.738, 245.023, 298.622, 356.049, 405.819, 470.904, 516.845, 566.616, 616.386, 669.985, 727.412, 784.839, 838.438, 899.694, 949.464, 1003.06, 1060.49, 1121.75, 1179.17, 1236.6, 1297.86, 1347.63, 1405.05, 1466.31, 1516.08, 1565.85, 1611.79, 1657.73, 1699.85, 1745.79, 1791.73, 1833.84, 1883.61, 1929.56, 1990.81, 2052.07, 2109.49, 2170.75, 2232.01, 2304.75, 2362.17, 2431.09, 2496.17]</em><a class="headerlink" href="#pyrex.ice_model.ArasimIce.atten_depths" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.ArasimIce.atten_lengths">
-<code class="descname">atten_lengths</code><em class="property"> = [1994.67, 1952, 1896, 1842.67, 1797.33, 1733.33, 1680, 1632, 1586.67, 1552, 1522.67, 1501.33, 1474.67, 1458.67, 1437.33, 1416, 1392, 1365.33, 1344, 1312, 1274.67, 1242.67, 1205.33, 1168, 1128, 1090.67, 1048, 1008, 965.333, 920, 874.667, 834.667, 797.333, 752, 714.667, 677.333, 648, 616, 589.333, 557.333, 530.667, 506.667, 477.333, 453.333, 418.667, 389.333, 362.667, 333.333, 309.333, 285.333, 264, 242.667, 221.333]</em><a class="headerlink" href="#pyrex.ice_model.ArasimIce.atten_lengths" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
-<dt id="pyrex.ice_model.ArasimIce.attenuation_length">
-<em class="property">classmethod </em><code class="descname">attenuation_length</code><span class="sig-paren">(</span><em>z</em>, <em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.ArasimIce.attenuation_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the attenuation length at depth z (m) and frequency f (Hz).
-Attenuation length not actually frequency dependent; according to
-AraSim always uses the 300 MHz value.
-Supports passing a numpy array of depths and/or frequencies.
-If both are passed as arrays, a 2-D array is returned where
-each row is a single depth and each column is a single frequency.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.prem_density">
-<code class="descclassname">pyrex.</code><code class="descname">prem_density</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.prem_density" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the earth’s density (g/cm^3) for a given radius r (m).
-Calculated by the Preliminary Earth Model (PREM).
-Supports passing a list of radii.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.slant_depth">
-<code class="descclassname">pyrex.</code><code class="descname">slant_depth</code><span class="sig-paren">(</span><em>angle</em>, <em>depth</em>, <em>step=500</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.slant_depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the material thickness (g/cm^2) for a chord cutting through
-earth at Nadir angle and starting at (positive-valued) depth (m).
-Can optionally specify the step size (m).</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.Particle">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">Particle</code><span class="sig-paren">(</span><em>vertex</em>, <em>direction</em>, <em>energy</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Particle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for storing particle attributes. Consists of a 3-D vertex (m),
-3-D direction vector (automatically normalized), and an energy (GeV).</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ShadowGenerator">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">ShadowGenerator</code><span class="sig-paren">(</span><em>dx</em>, <em>dy</em>, <em>dz</em>, <em>energy</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ShadowGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to generate UHE neutrino vertices in (relatively) shallow
-detectors. Takes into accout Earth shadowing (sort of).
-energy should be either an energy in GeV or a function that returns an
-energy in GeV. Note that the x and y ranges in which particles are created
-are (-dx/2, dx/2) and (-dy/2, dy/2) while the z range is (-dz, 0).</p>
-<dl class="method">
-<dt id="pyrex.ShadowGenerator.create_particle">
-<code class="descname">create_particle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ShadowGenerator.create_particle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a particle with random vertex in cube with a random
-direction.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.RayTracer">
-<code class="descclassname">pyrex.</code><code class="descname">RayTracer</code><a class="headerlink" href="#pyrex.RayTracer" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracer</span></code></p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ray_tracing.SpecializedRayTracer">
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">SpecializedRayTracer</code><span class="sig-paren">(</span><em>from_point</em>, <em>to_point</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>dz=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.ray_tracing.BasicRayTracer" title="pyrex.ray_tracing.BasicRayTracer"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ray_tracing.BasicRayTracer</span></code></a></p>
-<p>Ray tracer specifically for ice model with index of refraction
-n(z) = n0 - k*exp(a*z). Calculations performed using true integral
-evaluation. Ice model must use methods inherited from pyrex.AntarcticIce</p>
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracer.solution_class">
-<code class="descname">solution_class</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer.solution_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code></a></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracer.valid_ice_model">
-<code class="descname">valid_ice_model</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer.valid_ice_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracer.z_uniform">
-<code class="descname">z_uniform</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer.z_uniform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracer.direct_r_max">
-<code class="descname">direct_r_max</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer.direct_r_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracer.peak_angle">
-<code class="descname">peak_angle</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer.peak_angle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.RayTracePath">
-<code class="descclassname">pyrex.</code><code class="descname">RayTracePath</code><a class="headerlink" href="#pyrex.RayTracePath" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code></p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath">
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">SpecializedRayTracePath</code><span class="sig-paren">(</span><em>parent_tracer</em>, <em>launch_angle</em>, <em>direct</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.ray_tracing.BasicRayTracePath" title="pyrex.ray_tracing.BasicRayTracePath"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ray_tracing.BasicRayTracePath</span></code></a></p>
-<p>Class for storing a single ray-trace solution betwen points,
-specifically for ice model with index of refraction
-n(z) = n0 - k*exp(a*z). Calculations performed using true integral
-evaluation (except attenuation). Ice model must use methods inherited from
-pyrex.AntarcticIce</p>
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.uniformity_factor">
-<code class="descname">uniformity_factor</code><em class="property"> = 0.99999</em><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.uniformity_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.beta_tolerance">
-<code class="descname">beta_tolerance</code><em class="property"> = 0.005</em><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.beta_tolerance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.valid_ice_model">
-<code class="descname">valid_ice_model</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.valid_ice_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.z_uniform">
-<code class="descname">z_uniform</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.z_uniform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.z_integral">
-<code class="descname">z_integral</code><span class="sig-paren">(</span><em>integrand</em>, <em>numerical=False</em>, <em>x_func=&lt;function SpecializedRayTracePath.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.z_integral" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function for integrating a given integrand along the depths of
-the path.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.path_length">
-<code class="descname">path_length</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.path_length" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.tof">
-<code class="descname">tof</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.tof" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.attenuation">
-<code class="descname">attenuation</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.attenuation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the attenuation factor for a signal of frequency f (Hz)
-traveling along the path. Supports passing a list of frequencies.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.SpecializedRayTracePath.coordinates">
-<code class="descname">coordinates</code><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracePath.coordinates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.EventKernel">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">EventKernel</code><span class="sig-paren">(</span><em>generator</em>, <em>antennas</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em>signal_times=array([-2.000e-08</em>, <em>-1.995e-08</em>, <em>-1.990e-08</em>, <em>...</em>, <em>7.985e-08</em>, <em>7.990e-08</em>, <em>7.995e-08])</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Kernel for generation of events with a given particle generator,
-list of antennas, and optionally a non-default ice_model.</p>
-<dl class="method">
-<dt id="pyrex.EventKernel.event">
-<code class="descname">event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel.event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate particle, propagate signal through ice to antennas,
-process signal at antennas, and return the original particle.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="submodules">
-<span id="api-2"></span><h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="module-pyrex.signals">
-<span id="pyrex-signals-module"></span><h3>pyrex.signals module<a class="headerlink" href="#module-pyrex.signals" title="Permalink to this headline">¶</a></h3>
-<p>Module containing classes for digital signal processing</p>
-<dl class="class">
-<dt id="pyrex.signals.Signal">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">Signal</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>value_type=&lt;ValueTypes.undefined: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.Signal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Base class for signals. Takes arrays of times and values
-(values array forced to size of times array by zero padding or slicing).
-Supports adding between signals with the same time values,
-resampling the signal, and calculating the signal’s envelope.</p>
-<dl class="class">
-<dt id="pyrex.signals.Signal.ValueTypes">
-<em class="property">class </em><code class="descname">ValueTypes</code><a class="headerlink" href="#pyrex.signals.Signal.ValueTypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
-<p>Enum containing possible types (units) for signal values.</p>
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.ValueTypes.undefined">
-<code class="descname">undefined</code><em class="property"> = 0</em><a class="headerlink" href="#pyrex.signals.Signal.ValueTypes.undefined" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.ValueTypes.voltage">
-<code class="descname">voltage</code><em class="property"> = 1</em><a class="headerlink" href="#pyrex.signals.Signal.ValueTypes.voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.ValueTypes.field">
-<code class="descname">field</code><em class="property"> = 2</em><a class="headerlink" href="#pyrex.signals.Signal.ValueTypes.field" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.ValueTypes.power">
-<code class="descname">power</code><em class="property"> = 3</em><a class="headerlink" href="#pyrex.signals.Signal.ValueTypes.power" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.dt">
-<code class="descname">dt</code><a class="headerlink" href="#pyrex.signals.Signal.dt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the spacing of the time array, or None if invalid.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.envelope">
-<code class="descname">envelope</code><a class="headerlink" href="#pyrex.signals.Signal.envelope" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates envelope of the signal by Hilbert transform.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.Signal.resample">
-<code class="descname">resample</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.Signal.resample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resamples the signal into n points in the same time range.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.Signal.with_times">
-<code class="descname">with_times</code><span class="sig-paren">(</span><em>new_times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.Signal.with_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a signal object representing this signal with a different
-times array. Uses numpy.iterp on values by default.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.spectrum">
-<code class="descname">spectrum</code><a class="headerlink" href="#pyrex.signals.Signal.spectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the FFT spectrum of the signal.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.Signal.frequencies">
-<code class="descname">frequencies</code><a class="headerlink" href="#pyrex.signals.Signal.frequencies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the FFT frequencies of the signal.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.Signal.filter_frequencies">
-<code class="descname">filter_frequencies</code><span class="sig-paren">(</span><em>freq_response</em>, <em>force_real=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.Signal.filter_frequencies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies the given frequency response function to the signal.
-Optionally can attempt to force real results manually if the filter is
-only specified in positive frequencies.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.signals.EmptySignal">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">EmptySignal</code><span class="sig-paren">(</span><em>times</em>, <em>value_type=&lt;ValueTypes.undefined: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.EmptySignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Class for signal with no amplitude (all values = 0)</p>
-<dl class="method">
-<dt id="pyrex.signals.EmptySignal.with_times">
-<code class="descname">with_times</code><span class="sig-paren">(</span><em>new_times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.EmptySignal.with_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a signal object representing this signal with a different
-times array. Returns EmptySignal for new times.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.signals.FunctionSignal">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">FunctionSignal</code><span class="sig-paren">(</span><em>times</em>, <em>function</em>, <em>value_type=&lt;ValueTypes.undefined: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.FunctionSignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Class for signals generated by a function</p>
-<dl class="method">
-<dt id="pyrex.signals.FunctionSignal.with_times">
-<code class="descname">with_times</code><span class="sig-paren">(</span><em>new_times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.FunctionSignal.with_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a signal object representing this signal with a different
-times array. Leverages knowledge of the function to properly
-interpolate and extrapolate.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.signals.SlowAskaryanSignal">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">SlowAskaryanSignal</code><span class="sig-paren">(</span><em>times</em>, <em>energy</em>, <em>theta</em>, <em>n=1.78</em>, <em>t0=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.SlowAskaryanSignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Askaryan pulse binned to times from a particle shower with given energy
-(GeV) observed at angle theta (radians) from the shower axis.
-Optional parameters are the index of refraction n, and pulse offset
-to start time t0 (s). Returned signal values are electric fields (V/m).</p>
-<p>Note that the amplitude of the pulse goes as 1/R, where R is the distance
-from source to observer. R is assumed to be 1 meter so that dividing by a
-different value produces the proper result.</p>
-<dl class="method">
-<dt id="pyrex.signals.SlowAskaryanSignal.RAC">
-<code class="descname">RAC</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.SlowAskaryanSignal.RAC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates R * vector potential at the Cherenkov angle in Vs
-at the given time (s).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.SlowAskaryanSignal.charge_profile">
-<code class="descname">charge_profile</code><span class="sig-paren">(</span><em>z</em>, <em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.SlowAskaryanSignal.charge_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the longitudinal charge profile in the EM shower at
-distance z (m) with parameters for the density (g/cm^3),
-critical energy (GeV), and electron radiation length (g/cm^2) in ice.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.signals.SlowAskaryanSignal.max_length">
-<code class="descname">max_length</code><span class="sig-paren">(</span><em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.SlowAskaryanSignal.max_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the maximum length (m) of an EM shower
-with parameters for the density (g/cm^3), critical energy (GeV), and
-electron radiation length (g/cm^2) in ice.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">FastAskaryanSignal</code><span class="sig-paren">(</span><em>times</em>, <em>energy</em>, <em>theta</em>, <em>n=1.78</em>, <em>t0=0</em><span class="sig-paren">)</span></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Askaryan pulse binned to times from a particle shower with given energy
-(GeV) observed at angle theta (radians) from the shower axis.
-Optional parameters are the index of refraction n, and pulse offset
-to start time t0 (s). Returned signal values are electric fields (V/m).</p>
-<p>Note that the amplitude of the pulse goes as 1/R, where R is the distance
-from source to observer. R is assumed to be 1 meter so that dividing by a
-different value produces the proper result.</p>
-<dl class="attribute">
-<dt>
-<code class="descname">vector_potential</code></dt>
-<dd><p>Recover the vector_potential from the electric field.
-Mostly just for testing purposes.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">RAC</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span></dt>
-<dd><p>Calculates R * vector potential (A) at the Cherenkov angle in Vs
-at the given time (s).</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">charge_profile</code><span class="sig-paren">(</span><em>z</em>, <em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span></dt>
-<dd><p>Calculates the longitudinal charge profile in the EM shower at
-distance z (m) with parameters for the density (g/cm^3),
-critical energy (GeV), and electron radiation length (g/cm^2) in ice.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">max_length</code><span class="sig-paren">(</span><em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span></dt>
-<dd><p>Calculates the maximum length (m) of an EM shower
-with parameters for the density (g/cm^3), critical energy (GeV), and
-electron radiation length (g/cm^2) in ice.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.signals.AskaryanSignal">
-<code class="descclassname">pyrex.signals.</code><code class="descname">AskaryanSignal</code><a class="headerlink" href="#pyrex.signals.AskaryanSignal" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#pyrex.signals.FastAskaryanSignal" title="pyrex.signals.FastAskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">FastAskaryanSignal</span></code></a></p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.signals.GaussianNoise">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">GaussianNoise</code><span class="sig-paren">(</span><em>times</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.GaussianNoise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.Signal</span></code></a></p>
-<p>Gaussian noise signal with standard deviation sigma</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.signals.ThermalNoise">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">ThermalNoise</code><span class="sig-paren">(</span><em>times</em>, <em>f_band</em>, <em>f_amplitude=1</em>, <em>rms_voltage=None</em>, <em>temperature=None</em>, <em>resistance=None</em>, <em>n_freqs=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.ThermalNoise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.signals.FunctionSignal" title="pyrex.signals.FunctionSignal"><code class="xref py py-class docutils literal"><span class="pre">pyrex.signals.FunctionSignal</span></code></a></p>
-<p>Thermal Rayleigh noise in the frequency band f_band=[f_min,f_max] (Hz)
-at a given temperature (K) and resistance (ohms) or with a given RMS
-voltage (V). Optional parameters are f_amplitude (default 1) which can be
-a number or a function designating the amplitudes at each frequency,
-and n_freqs which is the number of frequencies to use (in f_band)
-for the calculation (default is based on the FFT bin size of the given
-times array). Returned signal values are voltages (V).</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.antenna">
-<span id="pyrex-antenna-module"></span><h3>pyrex.antenna module<a class="headerlink" href="#module-pyrex.antenna" title="Permalink to this headline">¶</a></h3>
-<p>Module containing antenna class capable of receiving signals</p>
-<dl class="class">
-<dt id="pyrex.antenna.Antenna">
-<em class="property">class </em><code class="descclassname">pyrex.antenna.</code><code class="descname">Antenna</code><span class="sig-paren">(</span><em>position</em>, <em>z_axis=(0</em>, <em>0</em>, <em>1)</em>, <em>x_axis=(1</em>, <em>0</em>, <em>0)</em>, <em>antenna_factor=1</em>, <em>efficiency=1</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em>, <em>freq_range=None</em>, <em>temperature=None</em>, <em>resistance=None</em>, <em>noise_rms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Base class for an antenna with a given position (m), temperature (K),
-allowable frequency range (Hz), total resistance (ohm) used for Johnson
-noise, and whether or not to include noise in the antenna’s waveforms.
-Defines default trigger, frequency response, and signal reception functions
-that can be overwritten in base classes to customize the antenna.</p>
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.set_orientation">
-<code class="descname">set_orientation</code><span class="sig-paren">(</span><em>z_axis=(0</em>, <em>0</em>, <em>1)</em>, <em>x_axis=(1</em>, <em>0</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.set_orientation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.antenna.Antenna.is_hit">
-<code class="descname">is_hit</code><a class="headerlink" href="#pyrex.antenna.Antenna.is_hit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test for whether the antenna has been triggered.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.is_hit_during">
-<code class="descname">is_hit_during</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.is_hit_during" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test for whether the antenna has been triggered during the given
-times array.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>reset_noise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the antenna to a state of having received no signals.
-Can optionally reset noise, which will reset the noise waveform so that
-a new signal arriving at the same time does not have the same noise.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.antenna.Antenna.waveforms">
-<code class="descname">waveforms</code><a class="headerlink" href="#pyrex.antenna.Antenna.waveforms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal + noise (if noisy) at each triggered antenna hit.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.antenna.Antenna.all_waveforms">
-<code class="descname">all_waveforms</code><a class="headerlink" href="#pyrex.antenna.Antenna.all_waveforms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal + noise (if noisy) at all antenna hits, even those that
-didn’t trigger.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.full_waveform">
-<code class="descname">full_waveform</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.full_waveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal + noise (if noisy) for the given times array.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.make_noise">
-<code class="descname">make_noise</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.make_noise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the noise signal generated by the antenna over
-the given array of times. Used to add noise to signal for production
-of the antenna’s waveforms.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.trigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to determine whether or not the antenna is triggered by
-the given Signal object.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.directional_gain">
-<code class="descname">directional_gain</code><span class="sig-paren">(</span><em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.directional_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to calculate the directive electric field gain of the
-antenna at given angles theta (polar) and phi (azimuthal)
-relative to the antenna’s orientation.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.polarization_gain">
-<code class="descname">polarization_gain</code><span class="sig-paren">(</span><em>polarization</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.polarization_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to calculate the electric field gain due to polarization
-for a given polarization direction.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.response">
-<code class="descname">response</code><span class="sig-paren">(</span><em>frequencies</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to return the frequency response of the antenna at the
-given frequencies (Hz). This function should return the response as
-imaginary numbers of the form A*exp(i*phi), where A is the amplitude
-response and phi is the phase shift.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.Antenna.receive">
-<code class="descname">receive</code><span class="sig-paren">(</span><em>signal</em>, <em>direction=None</em>, <em>polarization=None</em>, <em>force_real=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.Antenna.receive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process incoming signal according to the filter function and
-store it to the signals list. Optionally applies directional gain if
-direction is specified, applies polarization gain if polarization is
-specified, and forces any frequency response filters to return real
-signals if specified.
-Subclasses may extend this fuction, but should likely end with
-super().receive(signal).</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.antenna.DipoleAntenna">
-<em class="property">class </em><code class="descclassname">pyrex.antenna.</code><code class="descname">DipoleAntenna</code><span class="sig-paren">(</span><em>name</em>, <em>position</em>, <em>center_frequency</em>, <em>bandwidth</em>, <em>resistance</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>trigger_threshold=0</em>, <em>effective_height=None</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.DipoleAntenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.antenna.Antenna" title="pyrex.antenna.Antenna"><code class="xref py py-class docutils literal"><span class="pre">pyrex.antenna.Antenna</span></code></a></p>
-<p>Antenna with a given name, position (m), center frequency (Hz),
-bandwidth (Hz), resistance (ohm), effective height (m), polarization
-direction, and trigger threshold (V).</p>
-<dl class="method">
-<dt id="pyrex.antenna.DipoleAntenna.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.DipoleAntenna.trigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trigger on the signal if the maximum signal value is above the
-given threshold.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.DipoleAntenna.response">
-<code class="descname">response</code><span class="sig-paren">(</span><em>frequencies</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.DipoleAntenna.response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Butterworth filter response for the antenna’s frequency range.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.DipoleAntenna.directional_gain">
-<code class="descname">directional_gain</code><span class="sig-paren">(</span><em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.DipoleAntenna.directional_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Power gain of dipole antenna goes as sin(theta)^2, so electric field
-gain goes as sin(theta).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.antenna.DipoleAntenna.polarization_gain">
-<code class="descname">polarization_gain</code><span class="sig-paren">(</span><em>polarization</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.antenna.DipoleAntenna.polarization_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Polarization gain is simply the dot product of the polarization
-with the antenna’s z-axis.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.detector">
-<span id="pyrex-detector-module"></span><h3>pyrex.detector module<a class="headerlink" href="#module-pyrex.detector" title="Permalink to this headline">¶</a></h3>
-<p>Module containing higher-level AntennaSystem and Detector classes</p>
-<dl class="class">
-<dt id="pyrex.detector.AntennaSystem">
-<em class="property">class </em><code class="descclassname">pyrex.detector.</code><code class="descname">AntennaSystem</code><span class="sig-paren">(</span><em>antenna</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Base class for an antenna system consisting of an antenna and some
-front-end processes.</p>
-<dl class="method">
-<dt id="pyrex.detector.AntennaSystem.setup_antenna">
-<code class="descname">setup_antenna</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem.setup_antenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Setup the antenna by passing along its init arguments.
-This function can be overwritten if desired, just make sure to assign
-the self.antenna attribute in the function.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.AntennaSystem.front_end">
-<code class="descname">front_end</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem.front_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function should take the signal passed (from the antenna) and
-return the resulting signal after all processing by the antenna system’s
-front-end. By default it just returns the given signal.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.detector.AntennaSystem.is_hit">
-<code class="descname">is_hit</code><a class="headerlink" href="#pyrex.detector.AntennaSystem.is_hit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.AntennaSystem.is_hit_during">
-<code class="descname">is_hit_during</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem.is_hit_during" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.detector.AntennaSystem.signals">
-<code class="descname">signals</code><a class="headerlink" href="#pyrex.detector.AntennaSystem.signals" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.detector.AntennaSystem.waveforms">
-<code class="descname">waveforms</code><a class="headerlink" href="#pyrex.detector.AntennaSystem.waveforms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.detector.AntennaSystem.all_waveforms">
-<code class="descname">all_waveforms</code><a class="headerlink" href="#pyrex.detector.AntennaSystem.all_waveforms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.AntennaSystem.full_waveform">
-<code class="descname">full_waveform</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem.full_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.AntennaSystem.receive">
-<code class="descname">receive</code><span class="sig-paren">(</span><em>signal</em>, <em>direction=None</em>, <em>polarization=None</em>, <em>force_real=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem.receive" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.AntennaSystem.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>reset_noise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the antenna system to a state of having received no signals.
-Can optionally reset noise, which will reset the noise waveform so that
-a new signal arriving at the same time does not have the same noise.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.AntennaSystem.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem.trigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Antenna system trigger. Should return True or False for whether the
-passed signal triggers the antenna system. By default just matches
-the antenna’s trigger.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.detector.Detector">
-<em class="property">class </em><code class="descclassname">pyrex.detector.</code><code class="descname">Detector</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class for automatically generating antenna positions based on geometry
-criteria. The set_positions method creates a list of antenna positions and
-the build_antennas method is responsible for actually placing antennas
-at the generated positions. Once antennas are placed, the class can be
-directly iterated over to iterate over the antennas (as if it were just
-a list of antennas itself).</p>
-<dl class="attribute">
-<dt id="pyrex.detector.Detector.test_antenna_positions">
-<code class="descname">test_antenna_positions</code><em class="property"> = True</em><a class="headerlink" href="#pyrex.detector.Detector.test_antenna_positions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.Detector.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Not implemented. Should generate positions for the antennas based
-on the given arguments and assign those positions to the
-antenna_positions attribute.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.Detector.build_antennas">
-<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.build_antennas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets up antenna objects at the positions stored in the class.
-By default takes an antenna class and passes a position to the
-‘position’ argument, followed by any other arguments to be passed to
-this class.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.Detector.triggered">
-<code class="descname">triggered</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.triggered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test for whether the detector is triggered based on the current
-state of the antennas.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.detector.Detector.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>reset_noise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.Detector.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience method for clearing all antennas in the detector.
-Can optionally reset noise, which will reset the noise waveforms so that
-new signals arriving at the same time do not have the same noise.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.ice_model">
-<span id="pyrex-ice-model-module"></span><h3>pyrex.ice_model module<a class="headerlink" href="#module-pyrex.ice_model" title="Permalink to this headline">¶</a></h3>
-<p>Module containing ice models. Ice model classes contains static and class
-methods for convenience. IceModel class is set to the preferred ice model.</p>
-<dl class="class">
-<dt id="pyrex.ice_model.AntarcticIce">
-<em class="property">class </em><code class="descclassname">pyrex.ice_model.</code><code class="descname">AntarcticIce</code><a class="headerlink" href="#pyrex.ice_model.AntarcticIce" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class containing characteristics of ice at the south pole.
-In all cases, depth z is given with negative values in the ice and positive
-values above the ice. Index of refraction goes as n(z)=n0-k*exp(az).</p>
-<dl class="attribute">
-<dt id="pyrex.ice_model.AntarcticIce.k">
-<code class="descname">k</code><em class="property"> = 0.43</em><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.k" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.AntarcticIce.a">
-<code class="descname">a</code><em class="property"> = 0.0132</em><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.a" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.AntarcticIce.n0">
-<code class="descname">n0</code><em class="property"> = 1.78</em><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.n0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.AntarcticIce.thickness">
-<code class="descname">thickness</code><em class="property"> = 2850</em><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.thickness" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
-<dt id="pyrex.ice_model.AntarcticIce.gradient">
-<em class="property">classmethod </em><code class="descname">gradient</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.gradient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the gradient of the index of refraction at depth z (m).</p>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="pyrex.ice_model.AntarcticIce.index">
-<em class="property">classmethod </em><code class="descname">index</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the medium’s index of refraction, n, at depth z (m).
-Supports passing a numpy array of depths.</p>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="pyrex.ice_model.AntarcticIce.depth_with_index">
-<em class="property">classmethod </em><code class="descname">depth_with_index</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.depth_with_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the depth z (m) at which the medium has the given index
-of refraction (inverse of index function, assumes index function is
-monotonic so only one solution exists).
-Supports passing a numpy array of indices.</p>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="pyrex.ice_model.AntarcticIce.temperature">
-<em class="property">static </em><code class="descname">temperature</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.temperature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the temperature (K) of the ice at depth z (m).
-Supports passing a numpy array of depths.</p>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="pyrex.ice_model.AntarcticIce.attenuation_length">
-<em class="property">classmethod </em><code class="descname">attenuation_length</code><span class="sig-paren">(</span><em>z</em>, <em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.AntarcticIce.attenuation_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the attenuation length at depth z (m) and frequency f (Hz).
-Supports passing a numpy array of depths and/or frequencies.
-If both are passed as arrays, a 2-D array is returned where
-each row is a single depth and each column is a single frequency.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ice_model.NewcombIce">
-<em class="property">class </em><code class="descclassname">pyrex.ice_model.</code><code class="descname">NewcombIce</code><a class="headerlink" href="#pyrex.ice_model.NewcombIce" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.ice_model.AntarcticIce" title="pyrex.ice_model.AntarcticIce"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ice_model.AntarcticIce</span></code></a></p>
-<p>Class inheriting from AntarcticIce, with new attenuation_length function
-based on Matt Newcomb’s fit (DOESN’T CURRENTLY WORK).</p>
-<dl class="attribute">
-<dt id="pyrex.ice_model.NewcombIce.k">
-<code class="descname">k</code><em class="property"> = 0.438</em><a class="headerlink" href="#pyrex.ice_model.NewcombIce.k" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.NewcombIce.a">
-<code class="descname">a</code><em class="property"> = 0.0132</em><a class="headerlink" href="#pyrex.ice_model.NewcombIce.a" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.NewcombIce.n0">
-<code class="descname">n0</code><em class="property"> = 1.758</em><a class="headerlink" href="#pyrex.ice_model.NewcombIce.n0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
-<dt id="pyrex.ice_model.NewcombIce.attenuation_length">
-<em class="property">classmethod </em><code class="descname">attenuation_length</code><span class="sig-paren">(</span><em>z</em>, <em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.NewcombIce.attenuation_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the attenuation length at depth z (m) and frequency f (MHz)
-by Matt Newcomb’s fit (DOESN’T CURRENTLY WORK - USE BOGORODSKY).</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">pyrex.ice_model.</code><code class="descname">ArasimIce</code></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.ice_model.AntarcticIce" title="pyrex.ice_model.AntarcticIce"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ice_model.AntarcticIce</span></code></a></p>
-<p>Class containing characteristics of ice at the south pole.
-In all cases, depth z is given with negative values in the ice and positive
-values above the ice. Ice model index is the same as used in the ARA
-collaboration’s AraSim package.</p>
-<dl class="attribute">
-<dt>
-<code class="descname">k</code><em class="property"> = 0.43</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">a</code><em class="property"> = 0.0132</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">n0</code><em class="property"> = 1.78</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">atten_depths</code><em class="property"> = [72.7412, 76.5697, 80.3982, 91.8836, 95.7121, 107.198, 118.683, 133.997, 153.139, 179.939, 206.738, 245.023, 298.622, 356.049, 405.819, 470.904, 516.845, 566.616, 616.386, 669.985, 727.412, 784.839, 838.438, 899.694, 949.464, 1003.06, 1060.49, 1121.75, 1179.17, 1236.6, 1297.86, 1347.63, 1405.05, 1466.31, 1516.08, 1565.85, 1611.79, 1657.73, 1699.85, 1745.79, 1791.73, 1833.84, 1883.61, 1929.56, 1990.81, 2052.07, 2109.49, 2170.75, 2232.01, 2304.75, 2362.17, 2431.09, 2496.17]</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">atten_lengths</code><em class="property"> = [1994.67, 1952, 1896, 1842.67, 1797.33, 1733.33, 1680, 1632, 1586.67, 1552, 1522.67, 1501.33, 1474.67, 1458.67, 1437.33, 1416, 1392, 1365.33, 1344, 1312, 1274.67, 1242.67, 1205.33, 1168, 1128, 1090.67, 1048, 1008, 965.333, 920, 874.667, 834.667, 797.333, 752, 714.667, 677.333, 648, 616, 589.333, 557.333, 530.667, 506.667, 477.333, 453.333, 418.667, 389.333, 362.667, 333.333, 309.333, 285.333, 264, 242.667, 221.333]</em></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
-<dt>
-<em class="property">classmethod </em><code class="descname">attenuation_length</code><span class="sig-paren">(</span><em>z</em>, <em>f</em><span class="sig-paren">)</span></dt>
-<dd><p>Returns the attenuation length at depth z (m) and frequency f (Hz).
-Attenuation length not actually frequency dependent; according to
-AraSim always uses the 300 MHz value.
-Supports passing a numpy array of depths and/or frequencies.
-If both are passed as arrays, a 2-D array is returned where
-each row is a single depth and each column is a single frequency.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ice_model.IceModel">
-<code class="descclassname">pyrex.ice_model.</code><code class="descname">IceModel</code><a class="headerlink" href="#pyrex.ice_model.IceModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#pyrex.ice_model.AntarcticIce" title="pyrex.ice_model.AntarcticIce"><code class="xref py py-class docutils literal"><span class="pre">AntarcticIce</span></code></a></p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.earth_model">
-<span id="pyrex-earth-model-module"></span><h3>pyrex.earth_model module<a class="headerlink" href="#module-pyrex.earth_model" title="Permalink to this headline">¶</a></h3>
-<p>Module containing earth model. Uses PREM for density as a function of radius
-and a simple integrator for calculation of the slant depth as a function of
-nadir angle.</p>
-<dl class="function">
-<dt id="pyrex.earth_model.prem_density">
-<code class="descclassname">pyrex.earth_model.</code><code class="descname">prem_density</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.earth_model.prem_density" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the earth’s density (g/cm^3) for a given radius r (m).
-Calculated by the Preliminary Earth Model (PREM).
-Supports passing a list of radii.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.earth_model.slant_depth">
-<code class="descclassname">pyrex.earth_model.</code><code class="descname">slant_depth</code><span class="sig-paren">(</span><em>angle</em>, <em>depth</em>, <em>step=500</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.earth_model.slant_depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the material thickness (g/cm^2) for a chord cutting through
-earth at Nadir angle and starting at (positive-valued) depth (m).
-Can optionally specify the step size (m).</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.particle">
-<span id="pyrex-particle-module"></span><h3>pyrex.particle module<a class="headerlink" href="#module-pyrex.particle" title="Permalink to this headline">¶</a></h3>
-<p>Module for particles (namely neutrinos) and neutrino interactions in the ice.
-Interactions include Earth shadowing (absorption) effect.</p>
-<dl class="class">
-<dt id="pyrex.particle.NeutrinoInteraction">
-<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">NeutrinoInteraction</code><span class="sig-paren">(</span><em>c</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.NeutrinoInteraction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class for neutrino interaction attributes.</p>
-<dl class="method">
-<dt id="pyrex.particle.NeutrinoInteraction.cross_section">
-<code class="descname">cross_section</code><span class="sig-paren">(</span><em>E</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.NeutrinoInteraction.cross_section" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the cross section (cm^2) at a given energy E (GeV).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.particle.NeutrinoInteraction.interaction_length">
-<code class="descname">interaction_length</code><span class="sig-paren">(</span><em>E</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.NeutrinoInteraction.interaction_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the interaction length (cm) in water equivalent at a
-given energy E (GeV).</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.particle.Particle">
-<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">Particle</code><span class="sig-paren">(</span><em>vertex</em>, <em>direction</em>, <em>energy</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.Particle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class for storing particle attributes. Consists of a 3-D vertex (m),
-3-D direction vector (automatically normalized), and an energy (GeV).</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.particle.random_direction">
-<code class="descclassname">pyrex.particle.</code><code class="descname">random_direction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.random_direction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate an arbitrary 3D unit vector.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.particle.ShadowGenerator">
-<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">ShadowGenerator</code><span class="sig-paren">(</span><em>dx</em>, <em>dy</em>, <em>dz</em>, <em>energy</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.ShadowGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class to generate UHE neutrino vertices in (relatively) shallow
-detectors. Takes into accout Earth shadowing (sort of).
-energy should be either an energy in GeV or a function that returns an
-energy in GeV. Note that the x and y ranges in which particles are created
-are (-dx/2, dx/2) and (-dy/2, dy/2) while the z range is (-dz, 0).</p>
-<dl class="method">
-<dt id="pyrex.particle.ShadowGenerator.create_particle">
-<code class="descname">create_particle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.ShadowGenerator.create_particle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a particle with random vertex in cube with a random
-direction.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.particle.ListGenerator">
-<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">ListGenerator</code><span class="sig-paren">(</span><em>particles</em>, <em>loop=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.ListGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class to generate neutrinos by simply pulling them from a list of
-Particle objects. By default returns to the start of the list once the end
-is reached, but can optionally fail after reaching the list’s end.</p>
-<dl class="method">
-<dt id="pyrex.particle.ListGenerator.create_particle">
-<code class="descname">create_particle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.ListGenerator.create_particle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pulls next particle from the list.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.particle.FileGenerator">
-<em class="property">class </em><code class="descclassname">pyrex.particle.</code><code class="descname">FileGenerator</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.FileGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class to generate neutrinos by pulling their vertex, direction, and
-energy from a (list of) .npz file(s). Each file must have three arrays,
-containing the vertices, directions, and energies respectively so the first
-particle will have properties given by the first elements of these three
-arrays. Tries to smartly figure out which array is which based on their
-names, but if the arrays are unnamed, assumes they are in the order used
-above.</p>
-<dl class="method">
-<dt id="pyrex.particle.FileGenerator.create_particle">
-<code class="descname">create_particle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.FileGenerator.create_particle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pulls the next particle from the file(s).</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.ray_tracing">
-<span id="pyrex-ray-tracing-module"></span><h3>pyrex.ray_tracing module<a class="headerlink" href="#module-pyrex.ray_tracing" title="Permalink to this headline">¶</a></h3>
-<p>Module containing class for ray tracing through the ice.</p>
-<dl class="class">
-<dt id="pyrex.ray_tracing.BasicRayTracePath">
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">BasicRayTracePath</code><span class="sig-paren">(</span><em>parent_tracer</em>, <em>launch_angle</em>, <em>direct</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.internal_functions.LazyMutableClass" title="pyrex.internal_functions.LazyMutableClass"><code class="xref py py-class docutils literal"><span class="pre">pyrex.internal_functions.LazyMutableClass</span></code></a></p>
-<p>Class for storing a single ray-trace solution betwen points.
-Calculations preformed by integrating z-steps of size dz.
-Most properties lazily evaluated to save on re-computation time.</p>
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.z_turn_proximity">
-<code class="descname">z_turn_proximity</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.z_turn_proximity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parameter for how closely path approaches z_turn.
-Necessary to avoid diverging integrals.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.z0">
-<code class="descname">z0</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.z0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Depth of the launching point.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.z1">
-<code class="descname">z1</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.z1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Depth of the receiving point.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.n0">
-<code class="descname">n0</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.n0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.rho">
-<code class="descname">rho</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.rho" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.phi">
-<code class="descname">phi</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.phi" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.beta">
-<code class="descname">beta</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.beta" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.z_turn">
-<code class="descname">z_turn</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.z_turn" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.emitted_direction">
-<code class="descname">emitted_direction</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.emitted_direction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.received_direction">
-<code class="descname">received_direction</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.received_direction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.theta">
-<code class="descname">theta</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.theta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Polar angle of the ray at given depth or array of depths.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.z_integral">
-<code class="descname">z_integral</code><span class="sig-paren">(</span><em>integrand</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.z_integral" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the integral of the integrand (a function of z) along
-the path.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.path_length">
-<code class="descname">path_length</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.path_length" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.tof">
-<code class="descname">tof</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.tof" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.fresnel">
-<code class="descname">fresnel</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.fresnel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.attenuation">
-<code class="descname">attenuation</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.attenuation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the attenuation factor for a signal of frequency f (Hz)
-traveling along the path. Supports passing a list of frequencies.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.propagate">
-<code class="descname">propagate</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.propagate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies attenuation to the signal along the path.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracePath.coordinates">
-<code class="descname">coordinates</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.coordinates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">SpecializedRayTracePath</code><span class="sig-paren">(</span><em>parent_tracer</em>, <em>launch_angle</em>, <em>direct</em><span class="sig-paren">)</span></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.ray_tracing.BasicRayTracePath" title="pyrex.ray_tracing.BasicRayTracePath"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ray_tracing.BasicRayTracePath</span></code></a></p>
-<p>Class for storing a single ray-trace solution betwen points,
-specifically for ice model with index of refraction
-n(z) = n0 - k*exp(a*z). Calculations performed using true integral
-evaluation (except attenuation). Ice model must use methods inherited from
-pyrex.AntarcticIce</p>
-<dl class="attribute">
-<dt>
-<code class="descname">uniformity_factor</code><em class="property"> = 0.99999</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">beta_tolerance</code><em class="property"> = 0.005</em></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">valid_ice_model</code></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">z_uniform</code></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">z_integral</code><span class="sig-paren">(</span><em>integrand</em>, <em>numerical=False</em>, <em>x_func=&lt;function SpecializedRayTracePath.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span></dt>
-<dd><p>Function for integrating a given integrand along the depths of
-the path.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">path_length</code></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">tof</code></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">attenuation</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span></dt>
-<dd><p>Returns the attenuation factor for a signal of frequency f (Hz)
-traveling along the path. Supports passing a list of frequencies.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">coordinates</code></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ray_tracing.BasicRayTracer">
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">BasicRayTracer</code><span class="sig-paren">(</span><em>from_point</em>, <em>to_point</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>dz=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.internal_functions.LazyMutableClass" title="pyrex.internal_functions.LazyMutableClass"><code class="xref py py-class docutils literal"><span class="pre">pyrex.internal_functions.LazyMutableClass</span></code></a></p>
-<p>Class for proper ray tracing. Calculations performed by integrating
-z-steps with size dz. Most properties lazily evaluated to save on
-re-computation time.</p>
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.solution_class">
-<code class="descname">solution_class</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.solution_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#pyrex.ray_tracing.BasicRayTracePath" title="pyrex.ray_tracing.BasicRayTracePath"><code class="xref py py-class docutils literal"><span class="pre">BasicRayTracePath</span></code></a></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.z_turn_proximity">
-<code class="descname">z_turn_proximity</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.z_turn_proximity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parameter for how closely path approaches z_turn.
-Necessary to avoid diverging integrals.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.z0">
-<code class="descname">z0</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.z0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Depth of lower point. Ray tracing performed as if launching
-from lower point to higher point.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.z1">
-<code class="descname">z1</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.z1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Depth of higher point. Ray tracing performed as if launching
-from lower point to higher point.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.n0">
-<code class="descname">n0</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.n0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.rho">
-<code class="descname">rho</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.rho" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.max_angle">
-<code class="descname">max_angle</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.max_angle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.peak_angle">
-<code class="descname">peak_angle</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.peak_angle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.direct_r_max">
-<code class="descname">direct_r_max</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.direct_r_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.indirect_r_max">
-<code class="descname">indirect_r_max</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.indirect_r_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.exists">
-<code class="descname">exists</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.exists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.expected_solutions">
-<code class="descname">expected_solutions</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.expected_solutions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.solutions">
-<code class="descname">solutions</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.solutions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.direct_angle">
-<code class="descname">direct_angle</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.direct_angle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.indirect_angle_1">
-<code class="descname">indirect_angle_1</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.indirect_angle_1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.BasicRayTracer.indirect_angle_2">
-<code class="descname">indirect_angle_2</code><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.indirect_angle_2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="staticmethod">
-<dt id="pyrex.ray_tracing.BasicRayTracer.angle_search">
-<em class="property">static </em><code class="descname">angle_search</code><span class="sig-paren">(</span><em>true_r</em>, <em>r_function</em>, <em>min_angle</em>, <em>max_angle</em>, <em>tolerance=1e-12</em>, <em>max_iterations=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracer.angle_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Root-finding algorithm.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">SpecializedRayTracer</code><span class="sig-paren">(</span><em>from_point</em>, <em>to_point</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>dz=1</em><span class="sig-paren">)</span></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.ray_tracing.BasicRayTracer" title="pyrex.ray_tracing.BasicRayTracer"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ray_tracing.BasicRayTracer</span></code></a></p>
-<p>Ray tracer specifically for ice model with index of refraction
-n(z) = n0 - k*exp(a*z). Calculations performed using true integral
-evaluation. Ice model must use methods inherited from pyrex.AntarcticIce</p>
-<dl class="attribute">
-<dt>
-<code class="descname">solution_class</code></dt>
-<dd><p>alias of <a class="reference internal" href="#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code></a></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">valid_ice_model</code></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">z_uniform</code></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">direct_r_max</code></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">peak_angle</code></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.RayTracer">
-<code class="descclassname">pyrex.ray_tracing.</code><code class="descname">RayTracer</code><a class="headerlink" href="#pyrex.ray_tracing.RayTracer" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracer</span></code></a></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.RayTracePath">
-<code class="descclassname">pyrex.ray_tracing.</code><code class="descname">RayTracePath</code><a class="headerlink" href="#pyrex.ray_tracing.RayTracePath" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code></a></p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ray_tracing.PathFinder">
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">PathFinder</code><span class="sig-paren">(</span><em>ice_model</em>, <em>from_point</em>, <em>to_point</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.PathFinder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class for pseudo ray tracing. Just uses straight-line paths.</p>
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.PathFinder.exists">
-<code class="descname">exists</code><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Boolean of whether path exists based on basic total internal
-reflection calculation.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.PathFinder.emitted_ray">
-<code class="descname">emitted_ray</code><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.emitted_ray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Direction in which ray is emitted.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.PathFinder.received_ray">
-<code class="descname">received_ray</code><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.received_ray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Direction from which ray is received.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.PathFinder.path_length">
-<code class="descname">path_length</code><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.path_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Length of the path (m).</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.PathFinder.tof">
-<code class="descname">tof</code><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.tof" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of flight (s) for a particle along the path.
-Calculated using default values of self.time_of_flight()</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.PathFinder.time_of_flight">
-<code class="descname">time_of_flight</code><span class="sig-paren">(</span><em>n_steps=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.time_of_flight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of flight (s) for a particle along the path.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.PathFinder.attenuation">
-<code class="descname">attenuation</code><span class="sig-paren">(</span><em>f</em>, <em>n_steps=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.attenuation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the attenuation factor for a signal of frequency f (Hz)
-traveling along the path. Supports passing a list of frequencies.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.PathFinder.propagate">
-<code class="descname">propagate</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.PathFinder.propagate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies attenuation to the signal along the path.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder">
-<em class="property">class </em><code class="descclassname">pyrex.ray_tracing.</code><code class="descname">ReflectedPathFinder</code><span class="sig-paren">(</span><em>ice_model</em>, <em>from_point</em>, <em>to_point</em>, <em>reflection_depth=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class for pseudo ray tracing of ray reflected off ice surface.
-Just uses straight-line paths.</p>
-<dl class="method">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.get_bounce_point">
-<code class="descname">get_bounce_point</code><span class="sig-paren">(</span><em>reflection_depth=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.get_bounce_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculation of point at which signal is reflected by the ice surface
-(z=0).</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.exists">
-<code class="descname">exists</code><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Boolean of whether path exists based on whether its sub-paths
-exist and whether it could reflect off the ice surface.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.emitted_ray">
-<code class="descname">emitted_ray</code><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.emitted_ray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Direction in which ray is emitted.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.received_ray">
-<code class="descname">received_ray</code><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.received_ray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Direction from which ray is received.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.path_length">
-<code class="descname">path_length</code><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.path_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Length of the path (m).</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.tof">
-<code class="descname">tof</code><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.tof" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of flight (s) for a particle along the path.
-Calculated using default values of self.time_of_flight()</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.time_of_flight">
-<code class="descname">time_of_flight</code><span class="sig-paren">(</span><em>n_steps=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.time_of_flight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of flight (s) for a particle along the path.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.attenuation">
-<code class="descname">attenuation</code><span class="sig-paren">(</span><em>f</em>, <em>n_steps=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.attenuation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the attenuation factor for a signal of frequency f (Hz)
-traveling along the path. Supports passing a list of frequencies.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.ray_tracing.ReflectedPathFinder.propagate">
-<code class="descname">propagate</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.ReflectedPathFinder.propagate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies attenuation to the signal along the path.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.kernel">
-<span id="pyrex-kernel-module"></span><h3>pyrex.kernel module<a class="headerlink" href="#module-pyrex.kernel" title="Permalink to this headline">¶</a></h3>
-<p>Module for the simulation kernel. Includes neutrino generation,
-ray tracking (no raytracing yet), and hit generation.</p>
-<dl class="class">
-<dt id="pyrex.kernel.EventKernel">
-<em class="property">class </em><code class="descclassname">pyrex.kernel.</code><code class="descname">EventKernel</code><span class="sig-paren">(</span><em>generator</em>, <em>antennas</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em>signal_times=array([-2.000e-08</em>, <em>-1.995e-08</em>, <em>-1.990e-08</em>, <em>...</em>, <em>7.985e-08</em>, <em>7.990e-08</em>, <em>7.995e-08])</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.kernel.EventKernel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Kernel for generation of events with a given particle generator,
-list of antennas, and optionally a non-default ice_model.</p>
-<dl class="method">
-<dt id="pyrex.kernel.EventKernel.event">
-<code class="descname">event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.kernel.EventKernel.event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate particle, propagate signal through ice to antennas,
-process signal at antennas, and return the original particle.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.internal_functions">
-<span id="pyrex-internal-functions-module"></span><h3>pyrex.internal_functions module<a class="headerlink" href="#module-pyrex.internal_functions" title="Permalink to this headline">¶</a></h3>
-<p>Helper functions for use in PyREx modules.</p>
-<dl class="function">
-<dt id="pyrex.internal_functions.normalize">
-<code class="descclassname">pyrex.internal_functions.</code><code class="descname">normalize</code><span class="sig-paren">(</span><em>vector</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.normalize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the normalized form of the given vector.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.internal_functions.flatten">
-<code class="descclassname">pyrex.internal_functions.</code><code class="descname">flatten</code><span class="sig-paren">(</span><em>iterator</em>, <em>dont_flatten=()</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.flatten" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flattens all iterable elements in the given iterator recursively and
-returns the resulting flat iterator. Can optionally be passed a list of
-classes to avoid flattening. Will not flatten strings or bytes due to
-recursion errors.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.internal_functions.mirror_func">
-<code class="descclassname">pyrex.internal_functions.</code><code class="descname">mirror_func</code><span class="sig-paren">(</span><em>match_func</em>, <em>run_func</em>, <em>self=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.mirror_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a function which operates like run_func, but has all the
-attributes of match_func. If self argument is not None, it will be passed
-as the first argument to run_func.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.internal_functions.lazy_property">
-<code class="descclassname">pyrex.internal_functions.</code><code class="descname">lazy_property</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.lazy_property" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decorator that makes a property lazily evaluated.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.internal_functions.LazyMutableClass">
-<em class="property">class </em><code class="descclassname">pyrex.internal_functions.</code><code class="descname">LazyMutableClass</code><span class="sig-paren">(</span><em>static_attributes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.LazyMutableClass" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Class whose properties can be lazily evaluated by using lazy_property
-decorator, but will re-evaluate lazy properties if any of its specified
-static_attributes change. By default, static_attributes is set to all
-attributes of the class at the time of the init call.</p>
-</dd></dl>
-
-</div>
-</div>
-<div class="section" id="pyrex-custom-subpackage">
-<span id="api-3"></span><h2>PyREx Custom Subpackage<a class="headerlink" href="#pyrex-custom-subpackage" title="Permalink to this headline">¶</a></h2>
-<p>Note that more modules may be available as plug-ins, see <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a>.</p>
-<div class="section" id="module-pyrex.custom.pyspice">
-<span id="pyrex-custom-pyspice-module"></span><h3>pyrex.custom.pyspice module<a class="headerlink" href="#module-pyrex.custom.pyspice" title="Permalink to this headline">¶</a></h3>
-<p>Module containing setup and wrappers for PySpice module into PyREx</p>
-</div>
-<div class="section" id="module-pyrex.custom.irex">
-<span id="pyrex-custom-irex-package"></span><h3>pyrex.custom.irex package<a class="headerlink" href="#module-pyrex.custom.irex" title="Permalink to this headline">¶</a></h3>
-<p>Customizations of pyrex package specific to IREX (IceCube Radio Extension)</p>
-<div class="section" id="module-pyrex.custom.irex.antenna">
-<span id="pyrex-custom-irex-antenna-module"></span><h4>pyrex.custom.irex.antenna module<a class="headerlink" href="#module-pyrex.custom.irex.antenna" title="Permalink to this headline">¶</a></h4>
-<p>Module containing customized antenna classes for IREX</p>
-<dl class="class">
-<dt id="pyrex.custom.irex.antenna.IREXAntenna">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.antenna.</code><code class="descname">IREXAntenna</code><span class="sig-paren">(</span><em>position</em>, <em>center_frequency</em>, <em>bandwidth</em>, <em>resistance</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>effective_height=None</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.antenna.Antenna" title="pyrex.antenna.Antenna"><code class="xref py py-class docutils literal"><span class="pre">pyrex.antenna.Antenna</span></code></a></p>
-<p>Antenna to be used in IREX. Has a position (m),
-center frequency (Hz), bandwidth (Hz), resistance (ohm),
-effective height (m), and polarization direction.</p>
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntenna.response">
-<code class="descname">response</code><span class="sig-paren">(</span><em>frequencies</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna.response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Butterworth filter response for the antenna’s frequency range.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntenna.directional_gain">
-<code class="descname">directional_gain</code><span class="sig-paren">(</span><em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna.directional_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Power gain of dipole antenna goes as sin(theta)^2, so electric field
-gain goes as sin(theta).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntenna.polarization_gain">
-<code class="descname">polarization_gain</code><span class="sig-paren">(</span><em>polarization</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntenna.polarization_gain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Polarization gain is simply the dot product of the polarization
-with the antenna’s z-axis.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.antenna.</code><code class="descname">IREXAntennaSystem</code><span class="sig-paren">(</span><em>name</em>, <em>position</em>, <em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>amplification=1</em>, <em>amplifier_clipping=3</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em>, <em>envelope_method='analytic'</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.AntennaSystem" title="pyrex.detector.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.AntennaSystem</span></code></a></p>
-<p>IREX antenna system consisting of dipole antenna, low-noise amplifier,
-optional bandpass filter, and envelope circuit.</p>
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.setup_antenna">
-<code class="descname">setup_antenna</code><span class="sig-paren">(</span><em>center_frequency=250000000.0</em>, <em>bandwidth=300000000.0</em>, <em>resistance=100</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>effective_height=None</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.setup_antenna" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets attributes of the antenna including center frequency (Hz),
-bandwidth (Hz), resistance (ohms), orientation, and effective
-height (m).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.make_envelope">
-<code class="descname">make_envelope</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.make_envelope" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the signal envelope based on the antenna’s envelope_method.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.front_end">
-<code class="descname">front_end</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.front_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply the front-end processing of the antenna signal, including
-amplification, clipping, and envelope processing.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.all_waveforms">
-<code class="descname">all_waveforms</code><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.all_waveforms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.full_waveform">
-<code class="descname">full_waveform</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.full_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.antenna.IREXAntennaSystem.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.IREXAntennaSystem.trigger" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.custom.irex.detector">
-<span id="pyrex-custom-irex-detector-module"></span><h4>pyrex.custom.irex.detector module<a class="headerlink" href="#module-pyrex.custom.irex.detector" title="Permalink to this headline">¶</a></h4>
-<p>Module containing customized detector geometry classes for IREX</p>
-<dl class="class">
-<dt id="pyrex.custom.irex.detector.IREXString">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">IREXString</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=50</em>, <em>lowest_antenna=-100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
-<p>String of IREXAntennas. Sets positions of antennas on string based on
-the given arguments. Sets build_antennas method for setting antenna
-characteristics.</p>
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXString.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>antennas_per_string=2</em>, <em>antenna_separation=50</em>, <em>lowest_antenna=-100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates antenna positions along the string.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXString.build_antennas">
-<code class="descname">build_antennas</code><span class="sig-paren">(</span><em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>amplification=1</em>, <em>naming_scheme=&lt;function IREXString.&lt;lambda&gt;&gt;</em>, <em>orientation_scheme=&lt;function IREXString.&lt;lambda&gt;&gt;</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em>, <em>envelope_method='analytic'</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString.build_antennas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets up IREXAntennaSystems at the positions stored in the class.
-Takes as arguments the trigger threshold, optional time over
-threshold, and whether to add noise to the waveforms.
-Other optional arguments include a naming scheme and orientation scheme
-which are functions taking the antenna index i and the antenna object.
-The naming scheme should return the name and the orientation scheme
-should return the orientation z-axis and x-axis of the antenna.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.IREXString.triggered">
-<code class="descname">triggered</code><span class="sig-paren">(</span><em>antenna_requirement=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.IREXString.triggered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test whether the number of hit antennas meets the given antenna
-trigger requirement.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.custom.irex.detector.RegularStation">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">RegularStation</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
-<p>Station geometry with a number of strings evenly spaced radially around
-the station center. Supports any string type and passes extra keyword
-arguments on to the string class.</p>
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.RegularStation.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates string positions around the station.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.RegularStation.triggered">
-<code class="descname">triggered</code><span class="sig-paren">(</span><em>antenna_requirement=1</em>, <em>string_requirement=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation.triggered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test whether the number of hit antennas meets the given antenna
-and string trigger requirements.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.custom.irex.detector.CoxeterStation">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">CoxeterStation</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
-<p>Station geometry with one string at the station center and the rest of
-the strings evenly spaced radially around the station center. Supports any
-string type and passes extra keyword arguments on to the string class.</p>
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.CoxeterStation.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates string positions around the station.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.CoxeterStation.triggered">
-<code class="descname">triggered</code><span class="sig-paren">(</span><em>antenna_requirement=1</em>, <em>string_requirement=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation.triggered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test whether the number of hit antennas meets the given antenna
-and string trigger requirements.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyrex.custom.irex.detector.StationGrid">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.detector.</code><code class="descname">StationGrid</code><span class="sig-paren">(</span><em>stations=1</em>, <em>station_separation=500</em>, <em>station_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em>**station_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.StationGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyrex.detector.Detector" title="pyrex.detector.Detector"><code class="xref py py-class docutils literal"><span class="pre">pyrex.detector.Detector</span></code></a></p>
-<p>Rectangular grid of stations or strings, in a square layout if possible,
-separated by the given distance. Supports any station or string type and
-passes extra keyword arguments on to the station or string class.</p>
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.StationGrid.set_positions">
-<code class="descname">set_positions</code><span class="sig-paren">(</span><em>stations=1</em>, <em>station_separation=500</em>, <em>station_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em>**station_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.StationGrid.set_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates rectangular grid of stations.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyrex.custom.irex.detector.StationGrid.triggered">
-<code class="descname">triggered</code><span class="sig-paren">(</span><em>station_requirement=1</em>, <em>**station_trigger_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.StationGrid.triggered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test whether the number of hit stations meets the given station
-trigger requirement.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.custom.irex.frontends">
-<span id="pyrex-custom-irex-frontends-module"></span><h4>pyrex.custom.irex.frontends module<a class="headerlink" href="#module-pyrex.custom.irex.frontends" title="Permalink to this headline">¶</a></h4>
-<p>Module containing IREX front-end circuit models</p>
-<dl class="function">
-<dt id="pyrex.custom.irex.frontends.basic_envelope_model">
-<code class="descclassname">pyrex.custom.irex.frontends.</code><code class="descname">basic_envelope_model</code><span class="sig-paren">(</span><em>signal</em>, <em>cap=2e-11</em>, <em>res=500</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.frontends.basic_envelope_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Model of a basic diode-capacitor-resistor envelope circuit. Takes a
-signal object as the input voltage and returns the output voltage signal
-object.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pyrex.custom.irex.frontends.bridge_rectifier_envelope_model">
-<code class="descclassname">pyrex.custom.irex.frontends.</code><code class="descname">bridge_rectifier_envelope_model</code><span class="sig-paren">(</span><em>signal</em>, <em>cap=2e-11</em>, <em>res=500</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.frontends.bridge_rectifier_envelope_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Model of a diode bridge rectifier envelope circuit. Takes a
-signal object as the input voltage and returns the output voltage signal
-object.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-pyrex.custom.irex.reconstruction">
-<span id="pyrex-custom-irex-reconstruction-module"></span><h4>pyrex.custom.irex.reconstruction module<a class="headerlink" href="#module-pyrex.custom.irex.reconstruction" title="Permalink to this headline">¶</a></h4>
-<p>Module containing reconstruction methods for IREX</p>
-<dl class="function">
-<dt id="pyrex.custom.irex.reconstruction.quick_vertex_reconstruction">
-<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">quick_vertex_reconstruction</code><span class="sig-paren">(</span><em>detector</em>, <em>threshold=None</em>, <em>get_waveform=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.quick_vertex_reconstruction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pyrex.custom.irex.reconstruction.full_vertex_reconstruction">
-<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">full_vertex_reconstruction</code><span class="sig-paren">(</span><em>detector</em>, <em>threshold=None</em>, <em>get_waveform=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.full_vertex_reconstruction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pyrex.custom.irex.reconstruction.get_xcorr_times">
-<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">get_xcorr_times</code><span class="sig-paren">(</span><em>waveforms</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.get_xcorr_times" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pyrex.custom.irex.reconstruction.minimizer_vertex_reconstruction">
-<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">minimizer_vertex_reconstruction</code><span class="sig-paren">(</span><em>positions</em>, <em>times</em>, <em>guess=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.minimizer_vertex_reconstruction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pyrex.custom.irex.reconstruction.least_squares">
-<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">least_squares</code><span class="sig-paren">(</span><em>vertex</em>, <em>positions</em>, <em>times</em>, <em>method='trace'</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.least_squares" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pyrex.custom.irex.reconstruction.bancroft_vertex">
-<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">bancroft_vertex</code><span class="sig-paren">(</span><em>positions</em>, <em>times</em>, <em>velocity=170940170.94017094</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.bancroft_vertex" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pyrex.custom.irex.reconstruction.bancroft_scan_vertex">
-<code class="descclassname">pyrex.custom.irex.reconstruction.</code><code class="descname">bancroft_scan_vertex</code><span class="sig-paren">(</span><em>positions</em>, <em>times</em>, <em>velocity=170940170.94017094</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.reconstruction.bancroft_scan_vertex" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-</div>
-</div>
-</div>
-
-
-          </div>
         </div>
       </div>
-    <div class="clearer"></div>
-  </div>
-    <div class="footer">
-      &copy;2018, Benjamin Hokanson-Fasig.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/api.rst.txt"
-          rel="nofollow">Page source</a>
     </div>
 
-    
-
-    
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
   </body>
 </html>

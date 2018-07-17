@@ -1,4 +1,13 @@
-"""Module containing antenna class capable of receiving signals"""
+"""
+Module containing antenna classes responsible of receiving signals.
+
+These classes are intended to model the properties of antennas including
+how signals are received as well as the production of noise. A number of
+attributes like directional gain, frequency response, and antenna factor
+may be necessary to calculate how signals are manipulated upon reception by
+an antenna.
+
+"""
 
 import logging
 import numpy as np
@@ -12,11 +21,80 @@ logger = logging.getLogger(__name__)
 
 
 class Antenna:
-    """Base class for an antenna with a given position (m), temperature (K),
-    allowable frequency range (Hz), total resistance (ohm) used for Johnson
-    noise, and whether or not to include noise in the antenna's waveforms.
-    Defines default trigger, frequency response, and signal reception functions
-    that can be overwritten in base classes to customize the antenna."""
+    """
+    Base class for antennas.
+
+    Stores the attributes of an antenna as well as handling receiving,
+    processing, and storing signals and adding noise.
+
+    Parameters
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    z_axis : array_like, optional
+        Vector direction of the z-axis of the antenna.
+    x_axis : array_like, optional
+        Vector direction of the x-axis of the antenna.
+    antenna_factor : float, optional
+        Antenna factor used for converting electric field values to voltages.
+    efficiency : float, optional
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+    freq_range : array_like, optional
+        The frequency band in which the antenna operates (used for noise
+        production).
+    temperature : float, optional
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
+    resistance : float, optional
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
+    noise_rms : float, optional
+        The RMS voltage (V) of the antenna noise. If specified, this value will
+        be used instead of the RMS voltage calculated from the values of
+        `temperature` and `resistance`.
+
+    Attributes
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    z_axis : ndarray
+        Vector direction of the z-axis of the antenna.
+    x_axis : ndarray
+        Vector direction of the x-axis of the antenna.
+    antenna_factor : float
+        Antenna factor used for converting electric field values to voltages.
+    efficiency : float
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noises : int
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+    freq_range : array_like
+        The frequency band in which the antenna operates (used for noise
+        production).
+    temperature : float or None
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
+    resistance : float or None
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
+    noise_rms : float or None
+        The RMS voltage (v) of the antenna noise. If not ``None``, this value
+        will be used instead of the RMS voltage calculated from the values of
+        `temperature` and `resistance`.
+    signals : list of Signal
+        The signals which have been received by the antenna.
+    is_hit
+    waveforms
+    all_waveforms
+
+    """
     def __init__(self, position, z_axis=(0,0,1), x_axis=(1,0,0),
                  antenna_factor=1, efficiency=1, noisy=True,
                  unique_noise_waveforms=10, freq_range=None,
@@ -41,6 +119,25 @@ class Antenna:
         return self.__class__.__name__+"(position="+repr(self.position)+")"
 
     def set_orientation(self, z_axis=(0,0,1), x_axis=(1,0,0)):
+        """
+        Sets the orientation of the antenna.
+
+        Sets up the z-axis and the x-axis of the antenna according to the given
+        parameters. Fails if the z-axis and x-axis aren't perpendicular.
+
+        Parameters
+        ----------
+        z_axis : array_like, optional
+            Vector direction of the z-axis of the antenna.
+        x_axis : array_like, optional
+            Vector direction of the x-axis of the antenna.
+
+        Raises
+        ------
+        ValueError
+            If the z-axis and x-axis aren't perpendicular.
+
+        """
         self.z_axis = normalize(z_axis)
         self.x_axis = normalize(x_axis)
         if np.dot(self.z_axis, self.x_axis)!=0:
@@ -49,18 +146,43 @@ class Antenna:
 
     @property
     def is_hit(self):
-        """Test for whether the antenna has been triggered."""
+        """Boolean of whether the antenna has been triggered."""
         return len(self.waveforms)>0
 
     def is_hit_during(self, times):
-        """Test for whether the antenna has been triggered during the given
-        times array."""
+        """
+        Check if the antenna is triggered in a time range.
+
+        Generate the full waveform of the antenna over the given `times` array
+        and check whether it triggers the antenna.
+
+        Parameters
+        ----------
+        times : array_like
+            1D array of times during which to check for a trigger.
+
+        Returns
+        -------
+        boolean
+            Whether or not the antenna triggered during the given `times`.
+
+        """
         return self.trigger(self.full_waveform(times))
 
     def clear(self, reset_noise=False):
-        """Reset the antenna to a state of having received no signals.
-        Can optionally reset noise, which will reset the noise waveform so that
-        a new signal arriving at the same time does not have the same noise."""
+        """
+        Reset the antenna to an empty state.
+
+        Clears all signals, noises, and triggers from the antenna state. Can
+        also optionally recalibrate the noise so that a new signal arriving
+        at the same times as a previous signal will not have the same noise.
+
+        Parameters
+        ----------
+        reset_noise : boolean, optional
+            Whether or not to recalibrate the noise.
+
+        """
         self.signals.clear()
         self._noises.clear()
         self._triggers.clear()
@@ -69,7 +191,7 @@ class Antenna:
 
     @property
     def waveforms(self):
-        """Signal + noise (if noisy) at each triggered antenna hit."""
+        """Signal + noise (if ``noisy``) for each triggered antenna hit."""
         # Process any unprocessed triggers
         all_waves = self.all_waveforms
         while len(self._triggers)<len(all_waves):
@@ -81,8 +203,7 @@ class Antenna:
 
     @property
     def all_waveforms(self):
-        """Signal + noise (if noisy) at all antenna hits, even those that
-        didn't trigger."""
+        """Signal + noise (if ``noisy``) for all antenna hits."""
         if not(self.noisy):
             return self.signals
 
@@ -95,7 +216,23 @@ class Antenna:
         return [s + n for s, n in zip(self.signals, self._noises)]
 
     def full_waveform(self, times):
-        """Signal + noise (if noisy) for the given times array."""
+        """
+        Signal + noise (if ``noisy``) for the given times.
+
+        Creates the complete waveform of the antenna including noise and all
+        received signals for the given `times` array.
+
+        Parameters
+        ----------
+        times : array_like
+            1D array of times during which to produce the full waveform.
+
+        Returns
+        -------
+        Signal
+            Complete waveform with noise and all signals.
+
+        """
         if self.noisy:
             waveform = self.make_noise(times)
         else:
@@ -106,9 +243,29 @@ class Antenna:
         return waveform
 
     def make_noise(self, times):
-        """Returns the noise signal generated by the antenna over
-        the given array of times. Used to add noise to signal for production
-        of the antenna's waveforms."""
+        """
+        Creates a noise signal over the given times.
+
+        In order to add noise to signal to produce the waveforms of the
+        antenna, this function is used to create the noise values at specific
+        times. Makes use of the antenna's noise-related attributes.
+
+        Parameters
+        ----------
+        times : array_like
+            1D array of times during which to produce noise values.
+
+        Returns
+        -------
+        ThermalNoise
+            Noise values during the `times` array.
+
+        Raises
+        ------
+        ValueError
+            If not enough noise-related attributes are defined for the antenna.
+
+        """
         if self._noise_master is None:
             if self.freq_range is None:
                 raise ValueError("A frequency range is required to generate"
@@ -147,11 +304,54 @@ class Antenna:
 
 
     def trigger(self, signal):
-        """Function to determine whether or not the antenna is triggered by
-        the given Signal object."""
+        """
+        Check if the antenna triggers on a given signal.
+
+        This function defines the trigger condition for the antenna: Given a
+        signal does the antenna trigger? It is expected to be overridden in
+        subclasses, as for the base class it simply triggers on any signal.
+
+        Parameters
+        ----------
+        signal : Signal
+            ``Signal`` object on which to test the trigger condition.
+
+        Returns
+        -------
+        boolean
+            Whether or not the antenna triggers on `signal`.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
         return True
 
     def _convert_to_antenna_coordinates(self, point):
+        """
+        Convert the given point to the coordinate system of the antenna.
+
+        For the cartesian vector `point`, calculate the spherical coordinate
+        values relative to the position and orientation of the antenna.
+
+        Parameters
+        ----------
+        point : array_like
+            Vector position of the point to convert.
+
+        Returns
+        -------
+        r : float
+            r-distance to the point from the antenna position.
+        theta : float
+            Polar angle (radians) of the point relative to the antenna's
+            z-axis.
+        phi : float
+            Azimuthal angle (radians) of the point relative to the antenna's
+            x-axis.
+
+        """
         # Get cartesian point relative to antenna position
         rel_point = np.array(point) - np.array(self.position)
         # Matrix multiplication using antenna axes as rows in transformation
@@ -168,40 +368,120 @@ class Antenna:
         return r, theta, phi
 
     def directional_gain(self, theta, phi):
-        """Function to calculate the directive electric field gain of the
-        antenna at given angles theta (polar) and phi (azimuthal)
-        relative to the antenna's orientation."""
+        """
+        Calculate the (complex) directional gain of the antenna.
+
+        This function defines the directionality of the antenna: Given `theta`
+        and `phi` in the antenna's coordinate system, what is the (complex)
+        gain? It is expected to be overridden in subclasses, as for the base
+        class it simply returns 1 for any `theta` and `phi`.
+
+        Parameters
+        ----------
+        theta : float
+            Polar angle (radians) from which a signal is arriving.
+        phi : float
+            Azimuthal angle (radians) from which a signal is arriving.
+
+        Returns
+        -------
+        complex
+            Complex gain in voltage for the given incoming angles.
+
+        """
         logger.debug("Using default directional_gain from "+
                      "pyrex.antenna.Antenna")
         return 1
 
     def polarization_gain(self, polarization):
-        """Function to calculate the electric field gain due to polarization
-        for a given polarization direction."""
+        """
+        Calculate the (complex) polarization gain of the antenna.
+
+        This function defines the gain of the antenna due to signal
+        polarization: Given a vector signal `polarization`, what is the
+        (complex) antenna gain? It is expected to be overridden in subclasses,
+        as for the base class it simply returns 1 for any `polarization`.
+
+        Parameters
+        ----------
+        polarization : array_like
+            Vector polarization direction of the signal.
+
+        Returns
+        -------
+        complex
+            Complex gain in voltage for the given signal polarization.
+
+        """
         logger.debug("Using default polarization_gain from "+
                      "pyrex.antenna.Antenna")
         return 1
 
     def response(self, frequencies):
-        """Function to return the frequency response of the antenna at the
-        given frequencies (Hz). This function should return the response as
-        imaginary numbers of the form A*exp(i*phi), where A is the amplitude
-        response and phi is the phase shift."""
+        """
+        Calculate the (complex) frequency response of the antenna.
+
+        This function defines the frequency response of the antenna: Given
+        some frequencies, what are the corresponding (complex) gains? It is
+        expected to be overridden in subclasses, as for the base class it
+        simply returns 1 for any frequency.
+
+        Parameters
+        ----------
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
+
+        Returns
+        -------
+        array_like
+            Complex gains in voltage for the given `frequencies`.
+
+        """
         logger.debug("Using default response from "+
                      "pyrex.antenna.Antenna")
         return np.ones(len(frequencies))
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=False):
-        """Process incoming signal according to the filter function and
-        store it to the signals list. Optionally applies directional gain if
-        direction is specified, applies polarization gain if polarization is
-        specified, and forces any frequency response filters to return real
-        signals if specified.
-        Subclasses may extend this fuction, but should likely end with
-        super().receive(signal)."""
+        """
+        Process and store an incoming signal.
+
+        Processes the incoming signal according to the frequency response of
+        the antenna, the efficiency, and the antenna factor. May also apply the
+        directionality and the polarization gain depending on the provided
+        parameters. Finally stores the processed signal to the signals list.
+        Subclasses may extend this function, but likely should end with
+        ``super().receive(signal)`` unless planning to fully reimplement the
+        function.
+
+        Parameters
+        ----------
+        signal : Signal
+            Incoming ``Signal`` object to process and store.
+        direction : array_like, optional
+            Vector denoting the direction of travel of the signal as it reaches
+            the antenna. If ``None`` no directional response will be applied.
+        polarization : array_like, optional
+            Vector denoting the signal's polarization direction. If ``None``
+            no polarization gain will be applied.
+        force_real : boolean, optional
+            Whether or not the frequency response should be redefined in the
+            negative-frequency domain to keep the values of the filtered signal
+            real.
+
+        Raises
+        ------
+        ValueError
+            If the given `signal` does not have a ``value_type`` of ``voltage``
+            or ``field``.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
         copy = Signal(signal.times, signal.values,
-                      value_type=Signal.ValueTypes.voltage)
+                      value_type=Signal.Type.voltage)
         copy.filter_frequencies(self.response, force_real=force_real)
 
         if direction is None:
@@ -219,9 +499,9 @@ class Antenna:
 
         signal_factor = d_gain * p_gain * self.efficiency
 
-        if signal.value_type==Signal.ValueTypes.voltage:
+        if signal.value_type==Signal.Type.voltage:
             pass
-        elif signal.value_type==Signal.ValueTypes.field:
+        elif signal.value_type==Signal.Type.field:
             signal_factor /= self.antenna_factor
         else:
             raise ValueError("Signal's value type must be either "
@@ -233,9 +513,91 @@ class Antenna:
 
 
 class DipoleAntenna(Antenna):
-    """Antenna with a given name, position (m), center frequency (Hz),
-    bandwidth (Hz), resistance (ohm), effective height (m), polarization
-    direction, and trigger threshold (V)."""
+    """
+    Class for half-wave dipole antennas.
+
+    Stores the attributes of an antenna as well as handling receiving,
+    processing, and storing signals and adding noise. Uses a first-order
+    butterworth filter for the frequency response. Includes a simple threshold
+    trigger.
+
+    Parameters
+    ----------
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    center_frequency : float
+        Tuned frequency (Hz) of the dipole.
+    bandwidth : float
+        Bandwidth (Hz) of the antenna.
+    resistance : float
+        The noise resistance (ohm) of the antenna. Used to calculate the RMS
+        voltage of the antenna noise.
+    orientation : array_like, optional
+        Vector direction of the z-axis of the antenna.
+    trigger_threshold : float, optional
+        Voltage threshold (V) above which signals will trigger.
+    effective_height : float, optional
+        Effective length (m) of the antenna. By default calculated by the tuned
+        `center_frequency` of the dipole.
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+
+    Attributes
+    ----------
+    name : str
+        Name of the antenna.
+    position : array_like
+        Vector position of the antenna.
+    z_axis : ndarray
+        Vector direction of the z-axis of the antenna.
+    x_axis : ndarray
+        Vector direction of the x-axis of the antenna.
+    antenna_factor : float
+        Antenna factor used for converting electric field values to voltages.
+    efficiency : float
+        Antenna efficiency applied to incoming signal values.
+    threshold : float, optional
+        Voltage threshold (V) above which signals will trigger.
+    effective_height : float, optional
+        Effective length of the antenna. By default calculated by the tuned
+        `center_frequency` of the dipole.
+    filter_coeffs : tuple of ndarray
+        Coefficients of the transfer function of the butterworth bandpass
+        filter to be used for frequency response.
+    noisy : boolean
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noises : int
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+    freq_range : array_like
+        The frequency band in which the antenna operates (used for noise
+        production).
+    temperature : float or None
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
+    resistance : float or None
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
+    noise_rms : float or None
+        The RMS voltage (V) of the antenna noise. If not ``None``, this value
+        will be used instead of the RMS voltage calculated from the values of
+        `temperature` and `resistance`.
+    signals : list of Signal
+        The signals which have been received by the antenna.
+    is_hit
+    waveforms
+    all_waveforms
+
+    See Also
+    --------
+    Antenna : Base class for antennas.
+
+    """
     def __init__(self, name, position, center_frequency, bandwidth, resistance,
                  orientation=(0,0,1), trigger_threshold=0,
                  effective_height=None, noisy=True,
@@ -273,23 +635,90 @@ class DipoleAntenna(Antenna):
 
 
     def trigger(self, signal):
-        """Trigger on the signal if the maximum signal value is above the
-        given threshold."""
+        """
+        Check if the antenna triggers on a given signal.
+
+        Antenna triggers if any single time bin has a voltage above the trigger
+        threshold.
+
+        Parameters
+        ----------
+        signal : Signal
+            ``Signal`` object on which to test the trigger condition.
+
+        Returns
+        -------
+        boolean
+            Whether or not the antenna triggers on `signal`.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
         return max(np.abs(signal.values)) > self.threshold
 
     def response(self, frequencies):
-        """Butterworth filter response for the antenna's frequency range."""
+        """
+        Calculate the (complex) frequency response of the antenna.
+
+        Dipole antenna frequency response is a first order butterworth bandpass
+        filter in the antenna's frequency range.
+
+        Parameters
+        ----------
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
+
+        Returns
+        -------
+        array_like
+            Complex gains in voltage for the given `frequencies`.
+
+        """
         angular_freqs = np.array(frequencies) * 2*np.pi
         w, h = scipy.signal.freqs(self.filter_coeffs[0], self.filter_coeffs[1],
                                   angular_freqs)
         return h
 
     def directional_gain(self, theta, phi):
-        """Power gain of dipole antenna goes as sin(theta)^2, so electric field
-        gain goes as sin(theta)."""
+        """
+        Calculate the (complex) directional gain of the antenna.
+
+        Power gain of dipole antenna goes as sin(theta)^2, so electric field
+        gain goes as sin(theta).
+
+        Parameters
+        ----------
+        theta : float
+            Polar angle (radians) from which a signal is arriving.
+        phi : float
+            Azimuthal angle (radians) from which a signal is arriving.
+
+        Returns
+        -------
+        complex
+            Complex gain in voltage for the given incoming angles.
+
+        """
         return np.sin(theta)
 
     def polarization_gain(self, polarization):
-        """Polarization gain is simply the dot product of the polarization
-        with the antenna's z-axis."""
+        """
+        Calculate the (complex) polarization gain of the antenna.
+
+        Polarization gain is simply the dot product of the polarization
+        with the antenna's z-axis.
+
+        Parameters
+        ----------
+        polarization : array_like
+            Vector polarization direction of the signal.
+
+        Returns
+        -------
+        complex
+            Complex gain in voltage for the given signal polarization.
+
+        """
         return np.vdot(self.z_axis, polarization)

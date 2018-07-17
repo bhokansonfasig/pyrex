@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.ice_model.AntarcticIce &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
+    <link rel="up" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" >
+    <link rel="next" title="pyrex.ice_model.NewcombIce" href="pyrex.ice_model.NewcombIce.html" >
+    <link rel="prev" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="docutils literal"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.ice_model.NewcombIce.html" title="pyrex.ice_model.NewcombIce"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="../api/ice_model.html" title="Ice Models (pyrex.ice_model)"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-ice-model-antarcticice">
+<h1>pyrex.ice_model.AntarcticIce<a class="headerlink" href="#pyrex-ice-model-antarcticice" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyrex.ice_model.AntarcticIce">
+<em class="property">class </em><code class="descclassname">pyrex.ice_model.</code><code class="descname">AntarcticIce</code><a class="headerlink" href="#pyrex.ice_model.AntarcticIce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class describing the ice at the south pole.</p>
+<p>For convenience, consists of static methods and class methods, so creating
+an instance of the class may not be necessary. In all methods, the depth
+z should be given as a negative value if it is below the surface of the
+ice.</p>
+<p class="rubric">Notes</p>
+<p>Mostly based on ice characteristics outlined by Matt Newcomb.</p>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>k, a, n0</strong></td>
+<td>(float) Parameters of the index of refraction of the ice.</td>
+</tr>
+<tr class="row-even"><td><strong>thickness</strong></td>
+<td>(float) Thickness of the ice sheet.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.attenuation_length.html#pyrex.ice_model.AntarcticIce.attenuation_length" title="pyrex.ice_model.AntarcticIce.attenuation_length"><code class="xref py py-obj docutils literal"><span class="pre">attenuation_length</span></code></a>(z,&nbsp;f)</td>
+<td>Calculates attenuation lengths for given depths and frequencies.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.depth_with_index.html#pyrex.ice_model.AntarcticIce.depth_with_index" title="pyrex.ice_model.AntarcticIce.depth_with_index"><code class="xref py py-obj docutils literal"><span class="pre">depth_with_index</span></code></a>(n)</td>
+<td>Calculates the corresponding depth for a given index of refraction.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.gradient.html#pyrex.ice_model.AntarcticIce.gradient" title="pyrex.ice_model.AntarcticIce.gradient"><code class="xref py py-obj docutils literal"><span class="pre">gradient</span></code></a>(z)</td>
+<td>Calculates the gradient of the index of refraction at a given depth.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.index.html#pyrex.ice_model.AntarcticIce.index" title="pyrex.ice_model.AntarcticIce.index"><code class="xref py py-obj docutils literal"><span class="pre">index</span></code></a>(z)</td>
+<td>Calculates the index of refraction of the ice at a given depth.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.temperature.html#pyrex.ice_model.AntarcticIce.temperature" title="pyrex.ice_model.AntarcticIce.temperature"><code class="xref py py-obj docutils literal"><span class="pre">temperature</span></code></a>(z)</td>
+<td>Calculates the temperature of the ice at a given depth.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

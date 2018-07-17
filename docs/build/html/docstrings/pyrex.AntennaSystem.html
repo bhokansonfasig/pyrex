@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.AntennaSystem &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
+    <link rel="up" title="PyREx API" href="../api.html" >
+    <link rel="next" title="pyrex.Detector" href="pyrex.Detector.html" >
+    <link rel="prev" title="pyrex.DipoleAntenna" href="pyrex.DipoleAntenna.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.Detector.html" title="pyrex.Detector"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.DipoleAntenna.html" title="pyrex.DipoleAntenna"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-antennasystem">
+<h1>pyrex.AntennaSystem<a class="headerlink" href="#pyrex-antennasystem" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyrex.AntennaSystem">
+<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">AntennaSystem</code><span class="sig-paren">(</span><em>antenna</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AntennaSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for antenna system with front-end processing.</p>
+<p>Behaves similarly to an antenna by passing some functionality downward to
+an antenna class, but additionally applies some front-end processing (e.g.
+an electronics chain) to the signals received.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>antenna</strong> : Antenna</p>
+<blockquote class="last">
+<div><p><code class="docutils literal"><span class="pre">Antenna</span></code> class or subclass to be extended with a front end. Can also
+accept an <code class="docutils literal"><span class="pre">Antenna</span></code> object directly.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Antenna</span></code></a></dt>
+<dd>Base class for antennas.</dd>
+</dl>
+</div>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">is_hit</span></code></td>
+<td>Boolean of whether the antenna system has been triggered.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">signals</span></code></td>
+<td>The signals received by the antenna with front-end processing.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">waveforms</span></code></td>
+<td>The antenna system signal + noise for each triggered hit.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">all_waveforms</span></code></td>
+<td>The antenna system signal + noise for all hits.</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>antenna</strong></td>
+<td>(Antenna) <code class="docutils literal"><span class="pre">Antenna</span></code> object extended by the front end.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.AntennaSystem.clear.html#pyrex.AntennaSystem.clear" title="pyrex.AntennaSystem.clear"><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></a>([reset_noise])</td>
+<td>Reset the antenna system to an empty state.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.AntennaSystem.front_end.html#pyrex.AntennaSystem.front_end" title="pyrex.AntennaSystem.front_end"><code class="xref py py-obj docutils literal"><span class="pre">front_end</span></code></a>(signal)</td>
+<td>Apply front-end processes to a signal and return the output.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.AntennaSystem.full_waveform.html#pyrex.AntennaSystem.full_waveform" title="pyrex.AntennaSystem.full_waveform"><code class="xref py py-obj docutils literal"><span class="pre">full_waveform</span></code></a>(times)</td>
+<td>Signal + noise (if <code class="docutils literal"><span class="pre">noisy</span></code>) for the given times.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.AntennaSystem.is_hit_during.html#pyrex.AntennaSystem.is_hit_during" title="pyrex.AntennaSystem.is_hit_during"><code class="xref py py-obj docutils literal"><span class="pre">is_hit_during</span></code></a>(times)</td>
+<td>Check if the antenna system is triggered in a time range.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.AntennaSystem.receive.html#pyrex.AntennaSystem.receive" title="pyrex.AntennaSystem.receive"><code class="xref py py-obj docutils literal"><span class="pre">receive</span></code></a>(signal[,&nbsp;direction,&nbsp;polarization,&nbsp;…])</td>
+<td>Process and store an incoming signal.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.AntennaSystem.setup_antenna.html#pyrex.AntennaSystem.setup_antenna" title="pyrex.AntennaSystem.setup_antenna"><code class="xref py py-obj docutils literal"><span class="pre">setup_antenna</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td>Setup the antenna by passing along its init arguments.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.AntennaSystem.trigger.html#pyrex.AntennaSystem.trigger" title="pyrex.AntennaSystem.trigger"><code class="xref py py-obj docutils literal"><span class="pre">trigger</span></code></a>(signal)</td>
+<td>Check if the antenna system triggers on a given signal.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

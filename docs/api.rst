@@ -4,157 +4,70 @@ PyREx API
 *********
 
 The API documentation here is split into three sections.
-First, the `api-1` section documents all classes and functions that are imported by PyREx under a ``from pyrex import *`` command.
-Next, the `api-2` section is a full documentation of all the modules which make up the base PyREx package.
-And finally, the `api-3` section documents the custom subpackages contained in PyREx by default.
-
-
-
-.. _api-1:
-
-Package contents
-================
+First, the :ref:`api-1` section documents all classes and functions that are imported by PyREx under a ``from pyrex import *`` command.
+Next, the :ref:`api-2` section is a full documentation of all the modules which make up the base PyREx package.
+And finally, the :ref:`api-3` section documents the custom subpackages included with PyREx by default.
 
 .. currentmodule:: pyrex
 
-.. autoclass:: Signal
-    :no-show-inheritance:
+.. _api-1:
 
-.. autoclass:: EmptySignal
+PyREx Package Imports
+=====================
 
-.. autoclass:: FunctionSignal
+.. autosummary::
+    :toctree: docstrings
 
-.. autoclass:: AskaryanSignal
-
-.. autoclass:: pyrex.signals.FastAskaryanSignal
-
-.. autoclass:: ThermalNoise
-
-.. autoclass:: Antenna
-    :no-show-inheritance:
-
-.. autoclass:: DipoleAntenna
-
-.. autoclass:: AntennaSystem
-    :no-show-inheritance:
-
-.. autoclass:: Detector
-    :no-show-inheritance:
-
-.. autoclass:: IceModel
-    :no-show-inheritance:
-
-.. autoclass:: pyrex.ice_model.ArasimIce
-
-.. autofunction:: prem_density
-
-.. autofunction:: slant_depth
-
-.. autoclass:: Particle
-    :no-show-inheritance:
-
-.. autoclass:: ShadowGenerator
-    :no-show-inheritance:
-
-.. autoclass:: RayTracer
-
-.. autoclass:: pyrex.ray_tracing.SpecializedRayTracer
-
-.. autoclass:: RayTracePath
-
-.. autoclass:: pyrex.ray_tracing.SpecializedRayTracePath
-
-.. autoclass:: EventKernel
-    :no-show-inheritance:
-
+    Signal
+    EmptySignal
+    FunctionSignal
+    AskaryanSignal
+    ThermalNoise
+    Antenna
+    DipoleAntenna
+    AntennaSystem
+    Detector
+    IceModel
+    prem_density
+    slant_depth
+    NeutrinoInteraction
+    Particle
+    Event
+    ShadowGenerator
+    ListGenerator
+    FileGenerator
+    RayTracer
+    RayTracePath
+    EventKernel
 
 
 .. _api-2:
 
-Submodules
-==========
+Individual Module APIs
+======================
 
-pyrex\.signals module
----------------------
+.. toctree::
+    :maxdepth: 1
 
-.. automodule:: pyrex.signals
-
-pyrex\.antenna module
----------------------
-
-.. automodule:: pyrex.antenna
-
-pyrex\.detector module
-----------------------
-
-.. automodule:: pyrex.detector
-
-pyrex\.ice\_model module
-------------------------
-
-.. automodule:: pyrex.ice_model
-
-pyrex\.earth\_model module
---------------------------
-
-.. automodule:: pyrex.earth_model
-
-pyrex\.particle module
-----------------------
-
-.. automodule:: pyrex.particle
-
-pyrex\.ray\_tracing module
---------------------------
-
-.. automodule:: pyrex.ray_tracing
-
-pyrex\.kernel module
---------------------
-
-.. automodule:: pyrex.kernel
-
-pyrex\.internal\_functions module
----------------------------------
-
-.. automodule:: pyrex.internal_functions
-
+    api/internal_functions
+    api/signals
+    api/antenna
+    api/detector
+    api/earth_model
+    api/ice_model
+    api/ray_tracing
+    api/particle
+    api/generation
+    api/kernel
 
 
 .. _api-3:
 
-PyREx Custom Subpackage
-=======================
+Included Custom Sub-Packages
+============================
 
-Note that more modules may be available as plug-ins, see `custom-package`.
+.. toctree::
+    :maxdepth: 1
 
-pyrex\.custom\.pyspice module
------------------------------
-
-.. automodule:: pyrex.custom.pyspice
-
-pyrex\.custom\.irex package
----------------------------
-
-.. automodule:: pyrex.custom.irex
-
-pyrex\.custom\.irex\.antenna module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyrex.custom.irex.antenna
-
-pyrex\.custom\.irex\.detector module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyrex.custom.irex.detector
-
-pyrex\.custom\.irex\.frontends module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyrex.custom.irex.frontends
-
-pyrex\.custom\.irex\.reconstruction module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyrex.custom.irex.reconstruction
-
+    api/custom-ara
+    api/custom-irex

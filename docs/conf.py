@@ -38,8 +38,12 @@ with open(os.path.join(os.path.join("..", "pyrex"), "__about__.py")) as f:
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage']
+              'numpydoc',
+              'sphinx.ext.autosummary',
+            #   'fulltoc',
+            #   'sphinx.ext.todo',
+            #   'sphinx.ext.coverage',
+              ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -86,35 +90,60 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
+# todo_include_todos = True
 
 
-default_role = 'any'
+# default_role = 'any'
+default_role = 'autolink'
+
+
+# -- Options for docstrings -----------------------------------------------
+
+# For some reason this is necessary to suppress unknown document errors
+# see https://github.com/numpy/numpydoc/issues/69
+numpydoc_class_members_toctree = False
+
+# Generate referenced documentation
+autosummary_generate = True
 
 
 # -- Options for HTML output ----------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
+# The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'scipy'
+html_theme_path = ['_theme']
+# html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
+# further. For a list of options available for each theme, see the
 # documentation.
 
 html_theme_options = {
+    "edit_link": False,
+    "sidebar": "right",
+    "scipy_org_logo": True, # edited to PyREx logo in layout.html
+    "rootlinks": [],
     "description": description+"\nVersion "+VERSION,
-    "description_font_style": "italic",
     "github_user": "bhokansonfasig",
     "github_repo": "pyrex",
-    "logo": "logo.png",
+    # "logo": "logo.png",
+    "nav_depth": 2,
     "extra_nav_links": {
         "Source (GitHub)": "https://github.com/bhokansonfasig/pyrex",
         "Report an Issue": "https://github.com/bhokansonfasig/pyrex/issues",
     },
-    "fixed_sidebar": True,
-    "page_width": "1100px",
+}
+# html_logo = '_static/logo.png'
+
+# Sidebar navigation
+html_sidebars = {
+    '**': [
+        'about.html',
+        'searchbox.html',
+        'navigation.html',
+    ]
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -122,15 +151,8 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-# Sidebar navigation
-html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'relations.html',
-        'searchbox.html',
-    ]
-}
+html_domain_indices = True
+
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -198,15 +220,22 @@ texinfo_documents = [
 # -- Options for autodoc --------------------------------------------------
 
 # Sort member functions as they are in the source code
-autodoc_member_order = 'bysource'
+# autodoc_member_order = 'bysource'
 
 # Flags automatically added
-autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
+# autodoc_default_flags = ['members', 'show-inheritance',
+#                          'inherited-members']
 
-# # Special controls for processing the docstrings
+# Special controls for processing the docstrings
 # def custom_process_docstring(app, what, name, obj, options, lines):
 #     if what=="attribute" and "Particle" in name:
 #         lines.clear()
 
+# def custom_skip_init(app, what, name, obj, skip, options):
+#     if name=="__init__":
+#         return True
+#     return skip
+
 # def setup(app):
 #     app.connect('autodoc-process-docstring', custom_process_docstring)
+#     app.connect('autodoc-skip-member', custom_skip_init)

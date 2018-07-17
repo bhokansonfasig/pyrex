@@ -32,7 +32,7 @@ if [ $action == "new" ]; then
     echo "${BLU}git checkout -b $name develop$NC" &&
     git checkout -b $name develop &&
     echo "${BLU}git push origin $name$NC" &&
-    git push origin &&
+    git push origin $name &&
     echo "${GRN}Now add your new feature$NC"
 elif [ $action == "private" ]; then
     echo "${GRN}Making new feature branch $name$NC" &&

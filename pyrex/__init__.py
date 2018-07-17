@@ -1,4 +1,7 @@
-"""PyREx radio neutrino simulation package."""
+"""
+PyREx radio neutrino simulation package.
+
+"""
 
 import os
 import os.path
@@ -12,7 +15,8 @@ from .antenna import Antenna, DipoleAntenna
 from .detector import AntennaSystem, Detector
 from .ice_model import IceModel
 from .earth_model import prem_density, slant_depth
-from .particle import Particle, ShadowGenerator, ListGenerator, FileGenerator
+from .particle import Event, Particle, NeutrinoInteraction
+from .generation import ShadowGenerator, ListGenerator, FileGenerator
 from .ray_tracing import RayTracer, RayTracePath
 from .kernel import EventKernel
 

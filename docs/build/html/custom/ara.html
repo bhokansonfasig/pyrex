@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>&lt;no title&gt; &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
+	 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <p>The ARA module contains classes for antennas and detectors as found or proposed for the ARA project.</p>
+<p>The <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">HpolAntenna</span></code></a> and <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">VpolAntenna</span></code></a> classes are models of ARA Hpol and Vpol antennas using data lifted from AraSim. They use the antenna directional gains in <code class="docutils literal"><span class="pre">data/ARA_dipoletest1_output_MY_fixed.txt</span></code> and <code class="docutils literal"><span class="pre">data/ARA_bicone6in_output_MY_fixed.txt</span></code> respectively, and the electronics gains in <code class="docutils literal"><span class="pre">data/ARA_Electronics_TotalGain_TwoFilters.txt</span></code>. The trigger condition of these antennas is based on a comparison of the maximum value of the tunnel-diode-convolved waveforms with the rms value of a tunnel-diode-convolved noise waveform.</p>
+<p>The <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.ARAString.html#pyrex.custom.ara.ARAString" title="pyrex.custom.ara.ARAString"><code class="xref py py-class docutils literal"><span class="pre">ARAString</span></code></a> class creates a string of alternating <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">HpolAntenna</span></code></a> and <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">VpolAntenna</span></code></a> ojbects, as in a typical ARA station. The <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.PhasedArrayString.html#pyrex.custom.ara.PhasedArrayString" title="pyrex.custom.ara.PhasedArrayString"><code class="xref py py-class docutils literal"><span class="pre">PhasedArrayString</span></code></a> class implements a more densely-packed string of antennas which trigger based on a threshold trigger on the best beam-formed combination of the antenna waveforms. The <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.RegularStation.html#pyrex.custom.ara.RegularStation" title="pyrex.custom.ara.RegularStation"><code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code></a> class creates a station at the given position with 4 (or another given number) strings spaced evenly around the station center. The <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.AlbrechtStation.html#pyrex.custom.ara.AlbrechtStation" title="pyrex.custom.ara.AlbrechtStation"><code class="xref py py-class docutils literal"><span class="pre">AlbrechtStation</span></code></a> class (proposed by Albrecht Karle) creates two phased array strings at the station center, one of <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">VpolAntenna</span></code></a> objects and the other of <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">HpolAntenna</span></code></a> objects, as well as 3 (or another given number) outrigger strings spaced evenly around the station center. The <a class="reference internal" href="../api/docstrings/pyrex.custom.ara.HexagonalGrid.html#pyrex.custom.ara.HexagonalGrid" title="pyrex.custom.ara.HexagonalGrid"><code class="xref py py-class docutils literal"><span class="pre">HexagonalGrid</span></code></a> class creates a hexagonal grid of stations, spiralling outward from the center.</p>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">PyREx API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

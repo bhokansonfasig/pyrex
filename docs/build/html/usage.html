@@ -1,121 +1,90 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>How to Use PyREx &#8212; PyREx 1.6.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <meta charset="utf-8">
+    
+    <title>How to Use PyREx &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
+    <link rel="stylesheet" href="_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" >
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="author" title="About these documents" href="about.html" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Custom Sub-Package" href="customize.html" />
-    <link rel="prev" title="About PyREx" href="about.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <script type="text/javascript" src="_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="about.html" >
+    <link rel="index" title="Index" href="genindex.html" >
+    <link rel="search" title="Search" href="search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="index.html" >
+    <link rel="next" title="Custom Sub-Package" href="customize.html" >
+    <link rel="prev" title="About PyREx" href="about.html" > 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="index.html">
-    <img class="logo" src="_static/logo.png" alt="Logo"/>
-    
-  </a>
-</p>
 
-
-
-<p class="blurb">A Python package for simulation of Askaryan pulses and radio antennas in ice.
-Version 1.6.0</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">How to Use PyREx</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-signal-objects">Working with Signal Objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#antenna-class-and-subclasses">Antenna Class and Subclasses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#antennasystem-and-detector-classes">AntennaSystem and Detector Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ice-and-earth-models">Ice and Earth Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#particle-generation">Particle Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ray-tracing">Ray Tracing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#full-simulation">Full Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#more-examples">More Examples</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
-</ul>
-
-
-<hr />
-<ul>
-    
-    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
-    
-    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
-    
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="about.html" title="previous chapter">About PyREx</a></li>
-      <li>Next: <a href="customize.html" title="next chapter">Custom Sub-Package</a></li>
-  </ul></li>
-</ul>
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="documentwrapper">
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="index.html">PyREx 1.7.0 documentation</a></li>
+	 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="customize.html" title="Custom Sub-Package"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="about.html" title="About PyREx"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
         <div class="bodywrapper">
-          <div class="body" role="main">
+          <div class="body" id="spc-section-body">
             
   <div class="section" id="how-to-use-pyrex">
 <h1>How to Use PyREx<a class="headerlink" href="#how-to-use-pyrex" title="Permalink to this headline">¶</a></h1>
@@ -123,29 +92,31 @@ Version 1.6.0</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">scipy.fftpack</span>
+<span class="kn">import</span> <span class="nn">scipy.signal</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
 </pre></div>
 </div>
-<p>All of the following examples can also be found (and quickly run) in the Code Examples python notebook found in the examples directory.</p>
+<p>All of the following examples can also be found (and easily run) in the Code Examples python notebook found in the examples directory.</p>
 <div class="section" id="working-with-signal-objects">
 <h2>Working with Signal Objects<a class="headerlink" href="#working-with-signal-objects" title="Permalink to this headline">¶</a></h2>
-<p>The base <code class="docutils literal"><span class="pre">Signal</span></code> class is simply an array of times and an array of signal values, and is instantiated with these two arrays. The <code class="docutils literal"><span class="pre">times</span></code> array is assumed to be in units of seconds, but there are no general units for the <code class="docutils literal"><span class="pre">values</span></code> array. It is worth noting that the Signal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the <code class="docutils literal"><span class="pre">Signal</span></code> object.</p>
+<p>The base <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> class consists of an array of times and an array of corresponding signal values, and is instantiated with these two arrays. The <code class="xref py py-attr docutils literal"><span class="pre">times</span></code> array is assumed to be in units of seconds, but there are no general units for the <code class="xref py py-attr docutils literal"><span class="pre">values</span></code> array. It is worth noting that the Signal object stores shallow copies of the passed arrays, so changing the original arrays will not affect the <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">value_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
 <span class="n">my_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">value_array</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Plotting the <code class="docutils literal"><span class="pre">Signal</span></code> object is as simple as plotting the times vs the values:</p>
+<p>Plotting the <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object is as simple as plotting the times vs the values:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>While there are no specified units for a <code class="docutils literal"><span class="pre">Signal.values</span></code>, there is the option to specify the <code class="docutils literal"><span class="pre">value_type</span></code> of the <code class="docutils literal"><span class="pre">values</span></code>. This is done using the <code class="docutils literal"><span class="pre">Signal.ValueTypes</span></code> enum. By default, a <code class="docutils literal"><span class="pre">Signal</span></code> object has <code class="docutils literal"><span class="pre">value_type=ValueTypes.unknown</span></code>. However, if the signal represents a voltage, electric field, or electric power; <code class="docutils literal"><span class="pre">value_type</span></code> can be set to <code class="docutils literal"><span class="pre">Signal.ValueTypes.voltage</span></code>, <code class="docutils literal"><span class="pre">Signal.ValueTypes.field</span></code>, or <code class="docutils literal"><span class="pre">Signal.ValueTypes.power</span></code> respectively:</p>
+<img alt="_images/signal_1.png" src="_images/signal_1.png" />
+<p>While there are no specified units for <code class="xref py py-attr docutils literal"><span class="pre">Signal.values</span></code>, there is the option to specify the <code class="xref py py-attr docutils literal"><span class="pre">value_type</span></code> of the <code class="xref py py-attr docutils literal"><span class="pre">values</span></code>. This is done using the <code class="xref py py-attr docutils literal"><span class="pre">Signal.Type</span></code> enum. By default, a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object has <code class="docutils literal"><span class="pre">value_type=Type.unknown</span></code>. However, if the signal represents a voltage, electric field, or power; <code class="xref py py-attr docutils literal"><span class="pre">value_type</span></code> can be set to <code class="xref py py-attr docutils literal"><span class="pre">Signal.Type.voltage</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">Signal.Type.field</span></code>, or <code class="xref py py-attr docutils literal"><span class="pre">Signal.Type.power</span></code> respectively:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_voltage_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">value_array</span><span class="p">,</span>
-                                 <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+                                 <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">Signal</span></code> objects can be added as long as they have the same time array and <code class="docutils literal"><span class="pre">value_type</span></code>. <code class="docutils literal"><span class="pre">Signal</span></code> objects also support the python <code class="docutils literal"><span class="pre">sum</span></code> function:</p>
+<p><a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> objects can be added as long as they have the same time array and <code class="xref py py-attr docutils literal"><span class="pre">value_type</span></code>. <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> objects also support the python <code class="xref py py-func docutils literal"><span class="pre">sum()</span></code> function:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">values1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
 <span class="n">values2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
@@ -162,7 +133,8 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">Signal</span></code> class provides many convenience attributes for dealing with signals:</p>
+<img alt="_images/signal_2.png" src="_images/signal_2.png" />
+<p>The <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> class provides many convenience attributes for dealing with signals:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_signal</span><span class="o">.</span><span class="n">dt</span> <span class="o">==</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">my_signal</span><span class="o">.</span><span class="n">spectrum</span> <span class="o">==</span> <span class="n">scipy</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <span class="n">my_signal</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">==</span> <span class="n">scipy</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
@@ -170,7 +142,7 @@ Version 1.6.0</p>
 <span class="n">my_signal</span><span class="o">.</span><span class="n">envelope</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">hilbert</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">Signal</span></code> class also provides functions for manipulating the signal. The <code class="docutils literal"><span class="pre">resample</span></code> function will resample the times and values arrays to the given number of points (with the same endpoints):</p>
+<p>The <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> class also provides functions for manipulating the signal. The <a class="reference internal" href="docstrings/pyrex.Signal.resample.html#pyrex.Signal.resample" title="pyrex.Signal.resample"><code class="xref py py-meth docutils literal"><span class="pre">Signal.resample()</span></code></a> method will resample the times and values arrays to the given number of points (with the same endpoints):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_signal</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">1001</span><span class="p">)</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1001</span>
 <span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
@@ -179,7 +151,8 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">with_times</span></code> function will interpolate/extrapolate the signal’s values onto a new times array:</p>
+<img alt="_images/signal_3.png" src="_images/signal_3.png" />
+<p>The <a class="reference internal" href="docstrings/pyrex.Signal.with_times.html#pyrex.Signal.with_times" title="pyrex.Signal.with_times"><code class="xref py py-meth docutils literal"><span class="pre">Signal.with_times()</span></code></a> method will interpolate/extrapolate the signal’s values onto a new times array:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">new_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
 <span class="n">new_signal</span> <span class="o">=</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">with_times</span><span class="p">(</span><span class="n">new_times</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">new_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">new_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;new signal&quot;</span><span class="p">)</span>
@@ -188,7 +161,8 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">filter_frequencies</span></code> function will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive freqeuncies (as below) the filtered frequency may have strange behavior including having an imaginary part. To resolve that issue, pass <code class="docutils literal"><span class="pre">force_real=True</span></code> to the <code class="docutils literal"><span class="pre">filter_frequencies</span></code> function which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal.</p>
+<img alt="_images/signal_4.png" src="_images/signal_4.png" />
+<p>The <a class="reference internal" href="docstrings/pyrex.Signal.filter_frequencies.html#pyrex.Signal.filter_frequencies" title="pyrex.Signal.filter_frequencies"><code class="xref py py-meth docutils literal"><span class="pre">Signal.filter_frequencies()</span></code></a> method will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive freqeuncies (as below) the filtered frequency may exhibit strange behavior, including potentially having an imaginary part. To resolve that issue, pass <code class="docutils literal"><span class="pre">force_real=True</span></code> to the <a class="reference internal" href="docstrings/pyrex.Signal.filter_frequencies.html#pyrex.Signal.filter_frequencies" title="pyrex.Signal.filter_frequencies"><code class="xref py py-meth docutils literal"><span class="pre">Signal.filter_frequencies()</span></code></a> method which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lowpass_filter</span><span class="p">(</span><span class="n">frequency</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">frequency</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">1</span>
@@ -199,20 +173,23 @@ Version 1.6.0</p>
 <span class="n">value_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.1</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">time_array</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">time_array</span><span class="p">)</span>
 <span class="n">my_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">value_array</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;original&quot;</span><span class="p">)</span>
 <span class="n">my_signal</span><span class="o">.</span><span class="n">filter_frequencies</span><span class="p">(</span><span class="n">lowpass_filter</span><span class="p">,</span> <span class="n">force_real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;filtered&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>A number of classes which inherit from the Signal class are included in PyREx: <code class="docutils literal"><span class="pre">EmptySignal</span></code>, <code class="docutils literal"><span class="pre">FunctionSignal</span></code>, <code class="docutils literal"><span class="pre">AskaryanSignal</span></code>, and <code class="docutils literal"><span class="pre">ThermalNoise</span></code>. <code class="docutils literal"><span class="pre">EmptySignal</span></code> is simply a signal whose values are all zero:</p>
+<img alt="_images/signal_5.png" src="_images/signal_5.png" />
+<p>A number of classes which inherit from the <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> class are included in PyREx: <a class="reference internal" href="docstrings/pyrex.EmptySignal.html#pyrex.EmptySignal" title="pyrex.EmptySignal"><code class="xref py py-class docutils literal"><span class="pre">EmptySignal</span></code></a>, <a class="reference internal" href="docstrings/pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-class docutils literal"><span class="pre">FunctionSignal</span></code></a>, <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a>, and <a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal"><span class="pre">ThermalNoise</span></code></a>. <a class="reference internal" href="docstrings/pyrex.EmptySignal.html#pyrex.EmptySignal" title="pyrex.EmptySignal"><code class="xref py py-class docutils literal"><span class="pre">EmptySignal</span></code></a> is simply a signal whose values are all zero:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">empty</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EmptySignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">empty</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">empty</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">FunctionSignal</span></code> takes a function of time and creates a signal based on that function:</p>
+<img alt="_images/signal_6.png" src="_images/signal_6.png" />
+<p><a class="reference internal" href="docstrings/pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-class docutils literal"><span class="pre">FunctionSignal</span></code></a> takes a function of time and creates a signal based on that function:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">101</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">square_wave</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
@@ -224,27 +201,36 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Additionally, <code class="docutils literal"><span class="pre">FunctionSignal</span></code> leverages its knowledge of the function to more accurately interpolate and extrapolate values for the <code class="docutils literal"><span class="pre">with_times</span></code> function:</p>
+<img alt="_images/signal_7.png" src="_images/signal_7.png" />
+<p>Additionally, <a class="reference internal" href="docstrings/pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-class docutils literal"><span class="pre">FunctionSignal</span></code></a> leverages its knowledge of the function to more accurately interpolate and extrapolate values for the <a class="reference internal" href="docstrings/pyrex.Signal.with_times.html#pyrex.Signal.with_times" title="pyrex.Signal.with_times"><code class="xref py py-meth docutils literal"><span class="pre">Signal.with_times()</span></code></a> method:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">new_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
 <span class="n">long_square_signal</span> <span class="o">=</span> <span class="n">square_signal</span><span class="o">.</span><span class="n">with_times</span><span class="p">(</span><span class="n">new_times</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">long_square_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">long_square_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;new signal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">square_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">square_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;original signal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">long_square_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">long_square_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;extrapolated&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">square_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">square_signal</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;original&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">AskaryanSignal</span></code> produces an Askaryan pulse (in V/m) on a time array due to a neutrino of given energy observed at a given angle from the shower axis:</p>
+<img alt="_images/signal_8.png" src="_images/signal_8.png" />
+<p><a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a> produces an Askaryan pulse (in V/m) on a time array resulting from a given neutrino observed at a given angle from the shower axis and at a given distance from the shower vertex. For more about using the <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> class, see <a class="reference internal" href="#particle-generation"><span class="std std-ref">Particle Generation</span></a>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10e-9</span><span class="p">,</span> <span class="mf">40e-9</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
 <span class="n">neutrino_energy</span> <span class="o">=</span> <span class="mf">1e8</span> <span class="c1"># GeV</span>
+<span class="n">neutrino</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="s2">&quot;nu_e&quot;</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                          <span class="n">energy</span><span class="o">=</span><span class="n">neutrino_energy</span><span class="p">)</span>
+<span class="n">neutrino</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">em_frac</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">neutrino</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">had_frac</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">observation_angle</span> <span class="o">=</span> <span class="mi">45</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span> <span class="c1"># radians</span>
-<span class="n">askaryan</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">neutrino_energy</span><span class="p">,</span>
-                                <span class="n">theta</span><span class="o">=</span><span class="n">observation_angle</span><span class="p">)</span>
+<span class="n">observation_distance</span> <span class="o">=</span> <span class="mi">2000</span> <span class="c1"># meters</span>
+<span class="n">askaryan</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">particle</span><span class="o">=</span><span class="n">neutrino</span><span class="p">,</span>
+                                <span class="n">viewing_angle</span><span class="o">=</span><span class="n">observation_angle</span><span class="p">,</span>
+                                <span class="n">viewing_distance</span><span class="o">=</span><span class="n">observation_distance</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">askaryan</span><span class="o">.</span><span class="n">value_type</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">askaryan</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">askaryan</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">ThermalNoise</span></code> produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range:</p>
+<img alt="_images/signal_9.png" src="_images/signal_9.png" />
+<p><a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal"><span class="pre">ThermalNoise</span></code></a> produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10e-9</span><span class="p">,</span> <span class="mf">40e-9</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
 <span class="n">noise_temp</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># K</span>
 <span class="n">system_resistance</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># ohm</span>
@@ -257,7 +243,8 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Note that since <code class="docutils literal"><span class="pre">ThermalNoise</span></code> inherits from <code class="docutils literal"><span class="pre">FunctionSignal</span></code>, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a large number of frequencies is requested on initialization.</p>
+<img alt="_images/signal_10.png" src="_images/signal_10.png" />
+<p>Note that since <a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal"><span class="pre">ThermalNoise</span></code></a> inherits from <a class="reference internal" href="docstrings/pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-class docutils literal"><span class="pre">FunctionSignal</span></code></a>, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a larger number of frequencies is requested on initialization.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">short_noise</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ThermalNoise</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">time_array</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">noise_temp</span><span class="p">,</span>
                                  <span class="n">resistance</span><span class="o">=</span><span class="n">system_resistance</span><span class="p">,</span>
                                  <span class="n">f_band</span><span class="o">=</span><span class="p">(</span><span class="mf">100e6</span><span class="p">,</span> <span class="mf">400e6</span><span class="p">))</span>
@@ -269,11 +256,13 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="_images/signal_11.png" src="_images/signal_11.png" />
+<img alt="_images/signal_12.png" src="_images/signal_12.png" />
 </div>
 <div class="section" id="antenna-class-and-subclasses">
 <h2>Antenna Class and Subclasses<a class="headerlink" href="#antenna-class-and-subclasses" title="Permalink to this headline">¶</a></h2>
-<p>The base <code class="docutils literal"><span class="pre">Antenna</span></code> class provided by PyREx is designed to be inherited from to match the needs of each project. At its core, an <code class="docutils literal"><span class="pre">Antenna</span></code> object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance for noise calculations and a boolean dictating whether or not noise should be added to the antenna’s signals (note that if noise is to be added, a resistance must be specified).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Please note that some values are unrealistic in order to simplify demonstration</span>
+<p>The base <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class provided by PyREx is designed to be subclassed in order to match the needs of each project. At its core, an <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> object is initialized with a position, a temperature, and a frequency range, as well as optionally a resistance (for noise calculations) and a boolean dictating whether or not noise should be added to the antenna’s signals (note that if noise is to be added, a resistance must be specified).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Please note that some values are unrealistic for demonstration purposes</span>
 <span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span> <span class="c1"># m</span>
 <span class="n">temperature</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># K</span>
 <span class="n">resistance</span> <span class="o">=</span> <span class="mf">1e17</span> <span class="c1"># ohm</span>
@@ -284,12 +273,12 @@ Version 1.6.0</p>
 <span class="n">noiseless_antenna</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The basic properties of an <code class="docutils literal"><span class="pre">Antenna</span></code> object are <code class="docutils literal"><span class="pre">is_hit</span></code> and <code class="docutils literal"><span class="pre">waveforms</span></code>. <code class="docutils literal"><span class="pre">is_hit</span></code> specifies whether or not the antenna has been triggered by an event. <code class="docutils literal"><span class="pre">waveforms</span></code> is a list of all the waveforms which have triggered the antenna. The antenna also defines <code class="docutils literal"><span class="pre">signals</span></code>, which is a list of all signals the antenna has received, and <code class="docutils literal"><span class="pre">all_waveforms</span></code> which is a list of all waveforms (signal plus noise) the antenna has received including those which didn’t trigger.</p>
+<p>The basic properties of an <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> object are <code class="xref py py-attr docutils literal"><span class="pre">is_hit</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">waveforms</span></code>. The <code class="xref py py-attr docutils literal"><span class="pre">is_hit</span></code> property specifies whether or not the antenna has been triggered by an event. <code class="xref py py-attr docutils literal"><span class="pre">waveforms</span></code> is a list of all the waveforms which have triggered the antenna. The antenna also defines a <a class="reference internal" href="api/signals.html#module-pyrex.signals" title="pyrex.signals"><code class="xref py py-attr docutils literal"><span class="pre">signals</span></code></a> attribute, which is a list of all signals the antenna has received, and <code class="xref py py-attr docutils literal"><span class="pre">all_waveforms</span></code> which is a list of all waveforms (signal plus noise) the antenna has received including those which didn’t trigger.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">waveforms</span> <span class="o">==</span> <span class="p">[]</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">Antenna</span></code> class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are <code class="docutils literal"><span class="pre">efficiency</span></code> and <code class="docutils literal"><span class="pre">antenna_factor</span></code>, and the methods are <code class="docutils literal"><span class="pre">response</span></code>, <code class="docutils literal"><span class="pre">directional_gain</span></code>, and <code class="docutils literal"><span class="pre">polarization_gain</span></code>. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. <code class="docutils literal"><span class="pre">efficiency</span></code> is simply a scalar which multiplies the signal the antenna receives (default value is <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">antenna_factor</span></code> is a factor used in converting received electric fields into voltages (<code class="docutils literal"><span class="pre">antenna_factor</span></code> = E / V; default value is <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">response</span></code> takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">directional_gain</span></code> takes angles theta and phi in the antenna’s coordinates and returns the antenna’s gain for a signal coming from that direction (default always returns <code class="docutils literal"><span class="pre">1</span></code>). <code class="docutils literal"><span class="pre">directional_gain</span></code> is dependent on the antenna’s orientation, which is defined by its <code class="docutils literal"><span class="pre">z_axis</span></code> and <code class="docutils literal"><span class="pre">x_axis</span></code> attributes. To change the antenna’s orientation, use the <code class="docutils literal"><span class="pre">set_orientation</span></code> method which takes <code class="docutils literal"><span class="pre">z_axis</span></code> and <code class="docutils literal"><span class="pre">x_axis</span></code> arguments. Finally, <code class="docutils literal"><span class="pre">polarization_gain</span></code> takes a polarization vector and returns the antenna’s gain for a signal with that polarization (default always returns <code class="docutils literal"><span class="pre">1</span></code>).</p>
+<p>The <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are <code class="xref py py-attr docutils literal"><span class="pre">efficiency</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">antenna_factor</span></code>, and the methods are <a class="reference internal" href="docstrings/pyrex.Antenna.response.html#pyrex.Antenna.response" title="pyrex.Antenna.response"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.response()</span></code></a>, <a class="reference internal" href="docstrings/pyrex.Antenna.directional_gain.html#pyrex.Antenna.directional_gain" title="pyrex.Antenna.directional_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.directional_gain()</span></code></a>, and <a class="reference internal" href="docstrings/pyrex.Antenna.polarization_gain.html#pyrex.Antenna.polarization_gain" title="pyrex.Antenna.polarization_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.polarization_gain()</span></code></a>. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. <code class="xref py py-attr docutils literal"><span class="pre">efficiency</span></code> is simply a scalar which multiplies the signal the antenna receives (default value is <code class="docutils literal"><span class="pre">1</span></code>). <code class="xref py py-attr docutils literal"><span class="pre">antenna_factor</span></code> is a factor used in converting received electric fields into voltages (<code class="xref py py-attr docutils literal"><span class="pre">antenna_factor</span></code> = E / V; default value is <code class="docutils literal"><span class="pre">1</span></code>). <a class="reference internal" href="docstrings/pyrex.Antenna.response.html#pyrex.Antenna.response" title="pyrex.Antenna.response"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.response()</span></code></a> takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns <code class="docutils literal"><span class="pre">1</span></code>). <a class="reference internal" href="docstrings/pyrex.Antenna.directional_gain.html#pyrex.Antenna.directional_gain" title="pyrex.Antenna.directional_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.directional_gain()</span></code></a> takes angles theta and phi in the antenna’s coordinates and returns the antenna’s gain for a signal coming from that direction (default always returns <code class="docutils literal"><span class="pre">1</span></code>). <a class="reference internal" href="docstrings/pyrex.Antenna.directional_gain.html#pyrex.Antenna.directional_gain" title="pyrex.Antenna.directional_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.directional_gain()</span></code></a> is dependent on the antenna’s orientation, which is defined by its <code class="xref py py-attr docutils literal"><span class="pre">z_axis</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">x_axis</span></code> attributes. To change the antenna’s orientation, use the <a class="reference internal" href="docstrings/pyrex.Antenna.set_orientation.html#pyrex.Antenna.set_orientation" title="pyrex.Antenna.set_orientation"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.set_orientation()</span></code></a> method which takes <code class="docutils literal"><span class="pre">z_axis</span></code> and <code class="docutils literal"><span class="pre">x_axis</span></code> arguments. Finally, <a class="reference internal" href="docstrings/pyrex.Antenna.polarization_gain.html#pyrex.Antenna.polarization_gain" title="pyrex.Antenna.polarization_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.polarization_gain()</span></code></a> takes a polarization vector and returns the antenna’s gain for a signal with that polarization (default always returns <code class="docutils literal"><span class="pre">1</span></code>).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">==</span> <span class="mi">1</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">antenna_factor</span> <span class="o">==</span> <span class="mi">1</span>
 <span class="n">freqs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
@@ -298,15 +287,15 @@ Version 1.6.0</p>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">polarization_gain</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">Antenna</span></code> class defines a <code class="docutils literal"><span class="pre">trigger</span></code> method which is also expected to be overwritten. <code class="docutils literal"><span class="pre">trigger</span></code> takes a <code class="docutils literal"><span class="pre">Signal</span></code> object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns <code class="docutils literal"><span class="pre">True</span></code>).</p>
+<p>The <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class defines an <a class="reference internal" href="docstrings/pyrex.Antenna.trigger.html#pyrex.Antenna.trigger" title="pyrex.Antenna.trigger"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.trigger()</span></code></a> method which is also expected to be overwritten. <a class="reference internal" href="docstrings/pyrex.Antenna.trigger.html#pyrex.Antenna.trigger" title="pyrex.Antenna.trigger"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.trigger()</span></code></a> takes a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object as an argument and returns a boolean of whether or not the antenna would trigger on that signal (default always returns <code class="docutils literal"><span class="pre">True</span></code>).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">([</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">==</span> <span class="kc">True</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">Antenna</span></code> class also defines a <code class="docutils literal"><span class="pre">receive</span></code> method which takes a <code class="docutils literal"><span class="pre">Signal</span></code> object and processes the signal according to the antenna’s attributes (<code class="docutils literal"><span class="pre">efficiency</span></code>, <code class="docutils literal"><span class="pre">antenna_factor</span></code>, <code class="docutils literal"><span class="pre">response</span></code>, <code class="docutils literal"><span class="pre">directional_gain</span></code>, and <code class="docutils literal"><span class="pre">polarization_gain</span></code> as described above). To use the <code class="docutils literal"><span class="pre">receive</span></code> function, simply pass it the <code class="docutils literal"><span class="pre">Signal</span></code> object the antenna sees, and the <code class="docutils literal"><span class="pre">Antenna</span></code> class will handle the rest. You can also optionally specify the direction of travel of the signal (used in <code class="docutils literal"><span class="pre">directional_gain</span></code> calculation) and the polarization direction of the signal (used in <code class="docutils literal"><span class="pre">polarization_gain</span></code> calculation). If either of these is unspecified, the corresponding gain will simply be set to <code class="docutils literal"><span class="pre">1</span></code>.</p>
+<p>The <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class also defines an <a class="reference internal" href="docstrings/pyrex.Antenna.receive.html#pyrex.Antenna.receive" title="pyrex.Antenna.receive"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.receive()</span></code></a> method which takes a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object and processes the signal according to the antenna’s attributes (<code class="xref py py-attr docutils literal"><span class="pre">efficiency</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">antenna_factor</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">response</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">directional_gain</span></code>, and <code class="xref py py-attr docutils literal"><span class="pre">polarization_gain</span></code> as described above). To use the <a class="reference internal" href="docstrings/pyrex.Antenna.receive.html#pyrex.Antenna.receive" title="pyrex.Antenna.receive"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.receive()</span></code></a> method, simply pass it the <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object the antenna sees, and the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class will handle the rest. You can also optionally specify the direction of travel of the signal (used in the <a class="reference internal" href="docstrings/pyrex.Antenna.directional_gain.html#pyrex.Antenna.directional_gain" title="pyrex.Antenna.directional_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.directional_gain()</span></code></a> calculation) and the polarization direction of the signal (used in the <a class="reference internal" href="docstrings/pyrex.Antenna.polarization_gain.html#pyrex.Antenna.polarization_gain" title="pyrex.Antenna.polarization_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.polarization_gain()</span></code></a> calculation). If either of these is unspecified, the corresponding gain will simply be set to <code class="docutils literal"><span class="pre">1</span></code>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">incoming_signal_1</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
 <span class="n">incoming_signal_2</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">6</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_1</span><span class="p">)</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_2</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">polarization</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">True</span>
@@ -318,7 +307,9 @@ Version 1.6.0</p>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Beyond <code class="docutils literal"><span class="pre">Antenna.waveforms</span></code>, the <code class="docutils literal"><span class="pre">Antenna</span></code> object also provides methods for checking the waveform and trigger status for arbitrary times: <code class="docutils literal"><span class="pre">full_waveform</span></code> and <code class="docutils literal"><span class="pre">is_hit_during</span></code>. Both of these methods take a time array as an argument and return the waveform <code class="docutils literal"><span class="pre">Signal</span></code> object for those times and whether said waveform triggered the antenna, respectively.</p>
+<img alt="_images/antenna_1.png" src="_images/antenna_1.png" />
+<img alt="_images/antenna_2.png" src="_images/antenna_2.png" />
+<p>Beyond <code class="xref py py-attr docutils literal"><span class="pre">Antenna.waveforms</span></code>, the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> object also provides methods for checking the waveform and trigger status for arbitrary times: <a class="reference internal" href="docstrings/pyrex.Antenna.full_waveform.html#pyrex.Antenna.full_waveform" title="pyrex.Antenna.full_waveform"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.full_waveform()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Antenna.is_hit_during.html#pyrex.Antenna.is_hit_during" title="pyrex.Antenna.is_hit_during"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.is_hit_during()</span></code></a>. Both of these methods take a time array as an argument and return either the waveform <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object for those times or whether said waveform triggered the antenna, respectively.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">total_waveform</span> <span class="o">=</span> <span class="n">basic_antenna</span><span class="o">.</span><span class="n">full_waveform</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">total_waveform</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">total_waveform</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Total Waveform&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">incoming_signal_1</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">incoming_signal_1</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Pure Signals&quot;</span><span class="p">)</span>
@@ -329,13 +320,14 @@ Version 1.6.0</p>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit_during</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">200e-9</span><span class="p">))</span> <span class="o">==</span> <span class="kc">True</span>
 </pre></div>
 </div>
-<p>Finally, the <code class="docutils literal"><span class="pre">Antenna</span></code> class defines a <code class="docutils literal"><span class="pre">clear</span></code> method which will reset the antenna to a state of having received no signals:</p>
+<img alt="_images/antenna_3.png" src="_images/antenna_3.png" />
+<p>Finally, the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class defines an <a class="reference internal" href="docstrings/pyrex.Antenna.clear.html#pyrex.Antenna.clear" title="pyrex.Antenna.clear"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.clear()</span></code></a> method which will reset the antenna to a state of having received no signals:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">clear</span></code> method can also optionally reset the source of noise waveforms by passing <code class="docutils literal"><span class="pre">reset_noise=True</span></code> so that if the same signals are given after the antenna is cleared, the noise waveforms will be different:</p>
+<p>The <a class="reference internal" href="docstrings/pyrex.Antenna.clear.html#pyrex.Antenna.clear" title="pyrex.Antenna.clear"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.clear()</span></code></a> method can also optionally reset the source of noise waveforms by passing <code class="docutils literal"><span class="pre">reset_noise=True</span></code> so that if the same signals are given after the antenna is cleared, the noise waveforms will be different:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">noise_before</span> <span class="o">=</span> <span class="n">basic_antenna</span><span class="o">.</span><span class="n">make_noise</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">noise_before</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">noise_before</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Noise Before Clear&quot;</span><span class="p">)</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">reset_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -345,7 +337,8 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>To create a custom antenna, simply inherit from the <code class="docutils literal"><span class="pre">Antenna</span></code> class:</p>
+<img alt="_images/antenna_4.png" src="_images/antenna_4.png" />
+<p>To create a custom antenna, simply inherit from the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NoiselessThresholdAntenna</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -358,11 +351,11 @@ Version 1.6.0</p>
             <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>Our custom <code class="docutils literal"><span class="pre">NoiselessThresholdAntenna</span></code> should only trigger when the amplitude of a signal exceeds its threshold value:</p>
+<p>Our custom <code class="xref py py-class docutils literal"><span class="pre">NoiselessThresholdAntenna</span></code> should only trigger when the amplitude of a signal exceeds its threshold value:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_antenna</span> <span class="o">=</span> <span class="n">NoiselessThresholdAntenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="n">incoming_signal</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                       <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+                                       <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
 <span class="n">my_antenna</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal</span><span class="p">)</span>
 <span class="n">my_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">my_antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
@@ -382,8 +375,9 @@ Version 1.6.0</p>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="_images/antenna_5.png" src="_images/antenna_5.png" />
 <p>For more on customizing PyREx, see the <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a> section.</p>
-<p>PyREx defines <code class="docutils literal"><span class="pre">DipoleAntenna</span></code>, a subclass of <code class="docutils literal"><span class="pre">Antenna</span></code> which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A <code class="docutils literal"><span class="pre">DipoleAntenna</span></code> object is created as follows:</p>
+<p>PyREx also defines <a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-class docutils literal"><span class="pre">DipoleAntenna</span></code></a>, a subclass of <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A <a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-class docutils literal"><span class="pre">DipoleAntenna</span></code></a> object can be created as follows:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">antenna_identifier</span> <span class="o">=</span> <span class="s2">&quot;antenna 1&quot;</span>
 <span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">center_frequency</span> <span class="o">=</span> <span class="mf">250e6</span> <span class="c1"># Hz</span>
@@ -403,8 +397,8 @@ Version 1.6.0</p>
 </div>
 <div class="section" id="antennasystem-and-detector-classes">
 <h2>AntennaSystem and Detector Classes<a class="headerlink" href="#antennasystem-and-detector-classes" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">AntennaSystem</span></code> class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna’s signals. It is designed to be subclassed, but by default it takes as an argument the <code class="docutils literal"><span class="pre">Antenna</span></code> class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the <code class="docutils literal"><span class="pre">Antenna</span></code> class, but where a <code class="docutils literal"><span class="pre">front_end</span></code> method (which by default does nothing) is applied to the extended antenna’s signals.</p>
-<p>To extend an <code class="docutils literal"><span class="pre">Antenna</span></code> class or subclass into a full antenna system, subclass the <code class="docutils literal"><span class="pre">AntennaSystem</span></code> class and define the <code class="docutils literal"><span class="pre">front_end</span></code> method. Optionally a trigger can be defined for the antenna system (by default it uses the antenna’s trigger):</p>
+<p>The <a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">AntennaSystem</span></code></a> class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna’s signals. It is designed to be subclassed, but by default it takes as an argument the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class, but where an <a class="reference internal" href="docstrings/pyrex.AntennaSystem.front_end.html#pyrex.AntennaSystem.front_end" title="pyrex.AntennaSystem.front_end"><code class="xref py py-meth docutils literal"><span class="pre">AntennaSystem.front_end()</span></code></a> method (which by default does nothing) is applied to the extended antenna’s signals.</p>
+<p>To extend an <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class or subclass into a full antenna system, inherit from the <a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">AntennaSystem</span></code></a> class and define the <a class="reference internal" href="docstrings/pyrex.AntennaSystem.front_end.html#pyrex.AntennaSystem.front_end" title="pyrex.AntennaSystem.front_end"><code class="xref py py-meth docutils literal"><span class="pre">AntennaSystem.front_end()</span></code></a> method. A different trigger optionally can be defined for the antenna system (by default it uses the antenna’s trigger):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PowerAntennaSystem</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">AntennaSystem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Antenna system whose signals and waveforms are powers instead of</span>
 <span class="sd">    voltages.&quot;&quot;&quot;</span>
@@ -419,7 +413,7 @@ Version 1.6.0</p>
 
     <span class="k">def</span> <span class="nf">front_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">values</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-                            <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">power</span><span class="p">)</span>
+                            <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">power</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Objects of this class can then, for the most part, be interacted with as though they were regular antenna objects:</p>
@@ -436,9 +430,9 @@ Version 1.6.0</p>
 <span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="p">([</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">==</span> <span class="kc">True</span>
 
 <span class="n">incoming_signal_1</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
 <span class="n">incoming_signal_2</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">6</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">ValueTypes</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+                                         <span class="n">value_type</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
 <span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_1</span><span class="p">)</span>
 <span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">incoming_signal_2</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
                              <span class="n">polarization</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
@@ -465,7 +459,10 @@ Version 1.6.0</p>
 <span class="nb">len</span><span class="p">(</span><span class="n">basic_antenna_system</span><span class="o">.</span><span class="n">waveforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">Detector</span></code> class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used to build a detector). Subclasses must define a <code class="docutils literal"><span class="pre">set_positions</span></code> method to assign vector positions to the self.antenna_positions attribute. By default <code class="docutils literal"><span class="pre">set_positions</span></code> will raise a <code class="docutils literal"><span class="pre">NotImplementedError</span></code>. Additionally subclasses may extend the default <code class="docutils literal"><span class="pre">build_antennas</span></code> method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the <code class="docutils literal"><span class="pre">Detector</span></code> class is that once the <code class="docutils literal"><span class="pre">build_antennas</span></code> method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the <code class="docutils literal"><span class="pre">Detector</span></code> class is shown below:</p>
+<img alt="_images/detector_1.png" src="_images/detector_1.png" />
+<img alt="_images/detector_2.png" src="_images/detector_2.png" />
+<img alt="_images/detector_3.png" src="_images/detector_3.png" />
+<p>The <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal"><span class="pre">Detector</span></code></a> class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used in a detector). Subclasses must define a <a class="reference internal" href="docstrings/pyrex.Detector.set_positions.html#pyrex.Detector.set_positions" title="pyrex.Detector.set_positions"><code class="xref py py-meth docutils literal"><span class="pre">Detector.set_positions()</span></code></a> method to assign vector positions to the self.antenna_positions attribute. By default <a class="reference internal" href="docstrings/pyrex.Detector.set_positions.html#pyrex.Detector.set_positions" title="pyrex.Detector.set_positions"><code class="xref py py-meth docutils literal"><span class="pre">Detector.set_positions()</span></code></a> will raise a <code class="xref py py-exc docutils literal"><span class="pre">NotImplementedError</span></code>. Additionally subclasses may extend the default <a class="reference internal" href="docstrings/pyrex.Detector.build_antennas.html#pyrex.Detector.build_antennas" title="pyrex.Detector.build_antennas"><code class="xref py py-meth docutils literal"><span class="pre">Detector.build_antennas()</span></code></a> method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal"><span class="pre">Detector</span></code></a> class is that once the <a class="reference internal" href="docstrings/pyrex.Detector.build_antennas.html#pyrex.Detector.build_antennas" title="pyrex.Detector.build_antennas"><code class="xref py py-meth docutils literal"><span class="pre">Detector.build_antennas()</span></code></a> method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal"><span class="pre">Detector</span></code></a> class is shown below:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AntennaGrid</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Detector</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A detector composed of a plane of antennas in a rectangular grid layout</span>
 <span class="sd">    some distance below the ice.&quot;&quot;&quot;</span>
@@ -500,7 +497,8 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Due to the parallels between <code class="docutils literal"><span class="pre">Antenna</span></code> and <code class="docutils literal"><span class="pre">AntennaSystem</span></code>, an antenna system may also be used in the custom detector class. Note however, that the antenna positions must be accessed as <code class="docutils literal"><span class="pre">antenna.antenna.position</span></code> since we didn’t define a position attribute for the <code class="docutils literal"><span class="pre">PowerAntennaSystem</span></code>:</p>
+<img alt="_images/detector_4.png" src="_images/detector_4.png" />
+<p>Due to the parallels between <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> and <a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">AntennaSystem</span></code></a>, an antenna system may also be used in the custom detector class. Note however, that the antenna positions must be accessed as <code class="xref py py-attr docutils literal"><span class="pre">antenna.antenna.position</span></code> since we didn’t define a position attribute for the <code class="xref py py-class docutils literal"><span class="pre">PowerAntennaSystem</span></code>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">grid_detector</span> <span class="o">=</span> <span class="n">AntennaGrid</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
 
 <span class="c1"># Build the antennas</span>
@@ -518,10 +516,11 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="_images/detector_5.png" src="_images/detector_5.png" />
 </div>
 <div class="section" id="ice-and-earth-models">
 <h2>Ice and Earth Models<a class="headerlink" href="#ice-and-earth-models" title="Permalink to this headline">¶</a></h2>
-<p>PyREx provides a class <code class="docutils literal"><span class="pre">IceModel</span></code>, which is an alias for whichever south pole ice model class is the preferred (currently just the basic <code class="docutils literal"><span class="pre">AntarcticIce</span></code>). The <code class="docutils literal"><span class="pre">IceModel</span></code> class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below:</p>
+<p>PyREx provides a class <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal"><span class="pre">IceModel</span></code></a>, which is an alias for whichever south pole ice model class is preferred (currently <a class="reference internal" href="docstrings/pyrex.ice_model.AntarcticIce.html#pyrex.ice_model.AntarcticIce" title="pyrex.ice_model.AntarcticIce"><code class="xref py py-class docutils literal"><span class="pre">pyrex.ice_model.AntarcticIce</span></code></a>). The <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal"><span class="pre">IceModel</span></code></a> class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">depth</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span> <span class="c1"># m</span>
 <span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">temperature</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
 <span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
@@ -530,53 +529,32 @@ Version 1.6.0</p>
 <span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">attenuation_length</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">frequency</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>PyREx also provides two functions realted to its earth model: <code class="docutils literal"><span class="pre">prem_density</span></code> and <code class="docutils literal"><span class="pre">slant_depth</span></code>. <code class="docutils literal"><span class="pre">prem_density</span></code> calculates the density in grams per cubic centimeter of the earth at a given radius:</p>
+<p>PyREx also provides two functions realted to its earth model: <a class="reference internal" href="docstrings/pyrex.prem_density.html#pyrex.prem_density" title="pyrex.prem_density"><code class="xref py py-func docutils literal"><span class="pre">prem_density()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.slant_depth.html#pyrex.slant_depth" title="pyrex.slant_depth"><code class="xref py py-func docutils literal"><span class="pre">slant_depth()</span></code></a>. <a class="reference internal" href="docstrings/pyrex.prem_density.html#pyrex.prem_density" title="pyrex.prem_density"><code class="xref py py-func docutils literal"><span class="pre">prem_density()</span></code></a> calculates the density in grams per cubic centimeter of the earth at a given radius:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">radius</span> <span class="o">=</span> <span class="mi">6360000</span> <span class="c1"># m</span>
 <span class="n">pyrex</span><span class="o">.</span><span class="n">prem_density</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">slant_depth</span></code> calculates the material thickness in grams per square centimeter of a chord cutting through the earth at a given nadir angle, starting from a given depth:</p>
+<p><a class="reference internal" href="docstrings/pyrex.slant_depth.html#pyrex.slant_depth" title="pyrex.slant_depth"><code class="xref py py-func docutils literal"><span class="pre">slant_depth()</span></code></a> calculates the material thickness in grams per square centimeter of a chord cutting through the earth at a given nadir angle, starting from a given depth:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">nadir_angle</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span> <span class="c1"># radians</span>
 <span class="n">depth</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># m</span>
 <span class="n">pyrex</span><span class="o">.</span><span class="n">slant_depth</span><span class="p">(</span><span class="n">nadir_angle</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="particle-generation">
-<h2>Particle Generation<a class="headerlink" href="#particle-generation" title="Permalink to this headline">¶</a></h2>
-<p>PyREx includes <code class="docutils literal"><span class="pre">Particle</span></code> as a container for information about neutrinos which are generated to produce Askaryan pulses. <code class="docutils literal"><span class="pre">Particle</span></code> contains three attributes: <code class="docutils literal"><span class="pre">vertex</span></code>, <code class="docutils literal"><span class="pre">direction</span></code>, and <code class="docutils literal"><span class="pre">energy</span></code>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># m</span>
-<span class="n">direction_vector</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">particle_energy</span> <span class="o">=</span> <span class="mf">1e8</span> <span class="c1"># GeV</span>
-<span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="n">vertex</span><span class="o">=</span><span class="n">initial_position</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction_vector</span><span class="p">,</span>
-               <span class="n">energy</span><span class="o">=</span><span class="n">particle_energy</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>PyREx also includes a <code class="docutils literal"><span class="pre">ShadowGenerator</span></code> class for generating random neutrinos, taking into account some Earth shadowing. The neutrinos are generated in a box of given size, and with a given energy (which can be a scalar value or a function returning scalar values):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">box_width</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># m</span>
-<span class="n">box_depth</span> <span class="o">=</span> <span class="mi">500</span> <span class="c1"># m</span>
-<span class="n">my_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="n">box_width</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="n">box_width</span><span class="p">,</span>
-                                     <span class="n">dz</span><span class="o">=</span><span class="n">box_depth</span><span class="p">,</span>
-                                     <span class="n">energy</span><span class="o">=</span><span class="n">particle_energy</span><span class="p">)</span>
-<span class="n">my_generator</span><span class="o">.</span><span class="n">create_particle</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Lastly, PyREx includes <code class="docutils literal"><span class="pre">ListGenerator</span></code> and <code class="docutils literal"><span class="pre">FileGenerator</span></code> classes which can be used to reproduce pre-generated particles from either a list or from numpy files, respectively.</p>
-</div>
 <div class="section" id="ray-tracing">
 <h2>Ray Tracing<a class="headerlink" href="#ray-tracing" title="Permalink to this headline">¶</a></h2>
-<p>PyREx provides ray tracing in the <code class="docutils literal"><span class="pre">RayTracer</span></code> and <code class="docutils literal"><span class="pre">RayTracerPath</span></code> classes. <code class="docutils literal"><span class="pre">RayTracer</span></code> takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as <code class="docutils literal"><span class="pre">RayTracerPath</span></code> objects).</p>
+<p>PyREx provides ray tracing in the <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a> classes. <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal"><span class="pre">RayTracer</span></code></a> takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a> objects).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">250</span><span class="p">)</span> <span class="c1"># m</span>
 <span class="n">finish</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span> <span class="c1"># m</span>
 <span class="n">my_ray_tracer</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">RayTracer</span><span class="p">(</span><span class="n">from_point</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">to_point</span><span class="o">=</span><span class="n">finish</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The two most useful properties of <code class="docutils literal"><span class="pre">RayTracer</span></code> are <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> and <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code>. <code class="docutils literal"><span class="pre">RayTracer.exists</span></code> is a boolean value of whether or not path solutions exist between the launch and receiving points. <code class="docutils literal"><span class="pre">RayTracer.solutions</span></code> is the list of (zero or two) <code class="docutils literal"><span class="pre">RayTracerPath</span></code> objects which exist between the launch and receiving points. There are many other properties available in <code class="docutils literal"><span class="pre">RayTracer</span></code>, outlined in the <a class="reference internal" href="api.html#pyrex-api"><span class="std std-ref">PyREx API</span></a> section, which are mostly used internally and maybe not interesting otherwise.</p>
+<p>The two most useful properties of <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal"><span class="pre">RayTracer</span></code></a> are <code class="xref py py-attr docutils literal"><span class="pre">exists</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">solutions</span></code>. The <code class="xref py py-attr docutils literal"><span class="pre">exists</span></code> property is a boolean value of whether or not path solutions exist between the launch and receiving points. <code class="xref py py-attr docutils literal"><span class="pre">solutions</span></code> is the list of (zero or two) <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a> objects which exist between the launch and receiving points. There are many other properties available in <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal"><span class="pre">RayTracer</span></code></a>, outlined in the <a class="reference internal" href="api.html#pyrex-api"><span class="std std-ref">PyREx API</span></a> section, which are mostly used internally and maybe not interesting otherwise.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">exists</span>
 <span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">solutions</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">RayTracerPath</span></code> class contains the attributes of the paths between points. The most useful properties of <code class="docutils literal"><span class="pre">RayTracerPath</span></code> are <code class="docutils literal"><span class="pre">RayTracerPath.tof</span></code>, <code class="docutils literal"><span class="pre">RayTracerPath.path_length</span></code>, <code class="docutils literal"><span class="pre">RayTracerPath.emitted_direction</span></code>, and <code class="docutils literal"><span class="pre">RayTracerPath.received_direction</span></code>. These properties provide the time of flight, path length, and direction of rays at the launch and receiving points respectively.</p>
+<p>The <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a> class contains the attributes of the paths between points. The most useful properties of <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a> are <code class="xref py py-attr docutils literal"><span class="pre">tof</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">path_length</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">emitted_direction</span></code>, and <code class="xref py py-attr docutils literal"><span class="pre">received_direction</span></code>. These properties provide the time of flight, path length, and direction of rays at the launch and receiving points respectively.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">my_path</span> <span class="o">=</span> <span class="n">my_ray_tracer</span><span class="o">.</span><span class="n">solutions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">my_path</span><span class="o">.</span><span class="n">tof</span>
 <span class="n">my_path</span><span class="o">.</span><span class="n">path_length</span>
@@ -584,7 +562,7 @@ Version 1.6.0</p>
 <span class="n">my_path</span><span class="o">.</span><span class="n">received_direction</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">RayTracePath</span></code> also provides the <code class="docutils literal"><span class="pre">RayTracePath.attenuation()</span></code> method which gives the attenuation of the signal at a given frequency (or frequencies), and the <code class="docutils literal"><span class="pre">RayTracePath.coordinates</span></code> property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not garuanteed to be accurate for other purposes).</p>
+<p><a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a> also provides a <a class="reference internal" href="docstrings/pyrex.RayTracePath.attenuation.html#pyrex.RayTracePath.attenuation" title="pyrex.RayTracePath.attenuation"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.attenuation()</span></code></a> method which gives the attenuation of the signal at a given frequency (or frequencies), and a <code class="xref py py-attr docutils literal"><span class="pre">RayTracePath.coordinates</span></code> property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not guaranteed to be accurate for other purposes).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">frequency</span> <span class="o">=</span> <span class="mf">500e6</span> <span class="c1"># Hz</span>
 <span class="n">my_path</span><span class="o">.</span><span class="n">attenuation</span><span class="p">(</span><span class="mf">100e6</span><span class="p">)</span>
 <span class="n">my_path</span><span class="o">.</span><span class="n">attenuation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e8</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
@@ -592,7 +570,8 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Finally, <code class="docutils literal"><span class="pre">RayTracePath.propagate()</span></code> propagates a <code class="docutils literal"><span class="pre">Signal</span></code> object from the launch point to the receiving point by applying the frequency-dependent attenuation of <code class="docutils literal"><span class="pre">RayTracePath.attenuation()</span></code>, and shifting the signal times by <code class="docutils literal"><span class="pre">RayTracePath.tof</span></code>. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually.</p>
+<img alt="_images/ray_tracing_1.png" src="_images/ray_tracing_1.png" />
+<p>Finally, <a class="reference internal" href="docstrings/pyrex.RayTracePath.propagate.html#pyrex.RayTracePath.propagate" title="pyrex.RayTracePath.propagate"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.propagate()</span></code></a> propagates a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from <a class="reference internal" href="docstrings/pyrex.RayTracePath.attenuation.html#pyrex.RayTracePath.attenuation" title="pyrex.RayTracePath.attenuation"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.attenuation()</span></code></a>, and shifting the signal times by <code class="xref py py-attr docutils literal"><span class="pre">RayTracePath.tof</span></code>. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">5e-9</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
 <span class="n">my_signal</span> <span class="o">=</span> <span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e9</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
             <span class="o">+</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e10</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)))</span>
@@ -600,15 +579,56 @@ Version 1.6.0</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="n">my_path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">my_signal</span><span class="p">)</span>
-<span class="n">my_signal</span><span class="o">.</span><span class="n">values</span> <span class="o">/=</span> <span class="n">my_path</span><span class="o">.</span><span class="n">path_length</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/ray_tracing_2.png" src="_images/ray_tracing_2.png" />
+<img alt="_images/ray_tracing_3.png" src="_images/ray_tracing_3.png" />
+</div>
+<div class="section" id="particle-generation">
+<span id="id1"></span><h2>Particle Generation<a class="headerlink" href="#particle-generation" title="Permalink to this headline">¶</a></h2>
+<p>PyREx includes the <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> class as a container for information about neutrinos which are generated to produce Askaryan pulses. A <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> contains an <code class="xref py py-attr docutils literal"><span class="pre">id</span></code>, a <code class="xref py py-attr docutils literal"><span class="pre">vertex</span></code>, a <code class="xref py py-attr docutils literal"><span class="pre">direction</span></code>, an <code class="xref py py-attr docutils literal"><span class="pre">energy</span></code>, an <code class="xref py py-attr docutils literal"><span class="pre">interaction</span></code>, and a <code class="xref py py-attr docutils literal"><span class="pre">weight</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">particle_type</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">electron_neutrino</span>
+<span class="n">initial_position</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># m</span>
+<span class="n">direction_vector</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">particle_energy</span> <span class="o">=</span> <span class="mf">1e8</span> <span class="c1"># GeV</span>
+<span class="n">particle</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="n">particle_id</span><span class="o">=</span><span class="n">particle_type</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="n">initial_position</span><span class="p">,</span>
+                          <span class="n">direction</span><span class="o">=</span><span class="n">direction_vector</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">particle_energy</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-attr docutils literal"><span class="pre">interaction</span></code> attribute is an instance of an <code class="xref py py-class docutils literal"><span class="pre">Interaction</span></code> class (<a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-class docutils literal"><span class="pre">NeutrinoInteraction</span></code></a> by default) which is a model for how the neutrino interacts in the ice. It has a <code class="xref py py-attr docutils literal"><span class="pre">kind</span></code> denoting whether the interaction will be charged-current or neutral-current, an <code class="xref py py-attr docutils literal"><span class="pre">inelasticity</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">em_frac</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">had_frac</span></code> describing the resulting particle shower(s), and <code class="xref py py-attr docutils literal"><span class="pre">cross_section</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">interaction_length</span></code> in the ice at the energy of the parent <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> object:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="p">)</span>
+<span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">kind</span>
+<span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">inelasticity</span>
+<span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">em_frac</span>
+<span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">had_frac</span>
+<span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">cross_section</span>
+<span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">interaction_length</span>
+</pre></div>
+</div>
+<p>PyREx also includes a <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.html#pyrex.ShadowGenerator" title="pyrex.ShadowGenerator"><code class="xref py py-class docutils literal"><span class="pre">ShadowGenerator</span></code></a> class for generating random neutrinos, taking into account Earth shadowing. The neutrinos are generated in a box of given size, and with a given energy (which can be a scalar value or a function returning scalar values). A desired flavor ratio can also be given:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">box_width</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># m</span>
+<span class="n">box_depth</span> <span class="o">=</span> <span class="mi">500</span> <span class="c1"># m</span>
+<span class="n">flavor_ratio</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># even distribution of neutrino flavors</span>
+<span class="n">my_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="n">box_width</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="n">box_width</span><span class="p">,</span>
+                                     <span class="n">dz</span><span class="o">=</span><span class="n">box_depth</span><span class="p">,</span>
+                                     <span class="n">energy</span><span class="o">=</span><span class="n">particle_energy</span><span class="p">,</span>
+                                     <span class="n">flavor_ratio</span><span class="o">=</span><span class="n">flavor_ratio</span><span class="p">)</span>
+<span class="n">my_generator</span><span class="o">.</span><span class="n">create_event</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.create_event.html#pyrex.ShadowGenerator.create_event" title="pyrex.ShadowGenerator.create_event"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.create_event()</span></code></a> method returns an <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a> object, which contains a tree of <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> objects representing the event. Currently this tree will only contain a single neutrino, but could be expanded in the future in order to describe more exotic events. The neutrino is available as the only element in the list <code class="xref py py-attr docutils literal"><span class="pre">Event.roots</span></code>. It could also be accessed by iterating the <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a> object.</p>
+<p>Lastly, PyREx includes <a class="reference internal" href="docstrings/pyrex.ListGenerator.html#pyrex.ListGenerator" title="pyrex.ListGenerator"><code class="xref py py-class docutils literal"><span class="pre">ListGenerator</span></code></a> and <a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-class docutils literal"><span class="pre">FileGenerator</span></code></a> classes which can be used to reproduce pre-generated events from either a list or from numpy files, respectively. For example, to continuously re-throw our <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> object from above:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">repetitive_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ListGenerator</span><span class="p">([</span><span class="n">pyrex</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">particle</span><span class="p">)])</span>
+<span class="n">repetitive_generator</span><span class="o">.</span><span class="n">create_event</span><span class="p">()</span>
+<span class="n">repetitive_generator</span><span class="o">.</span><span class="n">create_event</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="full-simulation">
 <h2>Full Simulation<a class="headerlink" href="#full-simulation" title="Permalink to this headline">¶</a></h2>
-<p>PyREx provides the <code class="docutils literal"><span class="pre">EventKernel</span></code> class to control a basic simulation including the creation of neutrinos, the propagation of their pulses to the antennas, and the triggering of the antennas. The <code class="docutils literal"><span class="pre">EventKernel</span></code> is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below):</p>
+<p>PyREx provides the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
                                            <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
 <span class="n">detector</span> <span class="o">=</span> <span class="p">[]</span>
@@ -617,7 +637,7 @@ Version 1.6.0</p>
         <span class="n">pyrex</span><span class="o">.</span><span class="n">DipoleAntenna</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;antenna_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span>
                             <span class="n">center_frequency</span><span class="o">=</span><span class="mf">250e6</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mf">300e6</span><span class="p">,</span>
                             <span class="n">resistance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">effective_height</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
-                            <span class="n">trigger_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                            <span class="n">trigger_threshold</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="p">)</span>
 <span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">particle_generator</span><span class="p">,</span>
                            <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
@@ -628,11 +648,21 @@ Version 1.6.0</p>
 
 <span class="n">triggered</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">while</span> <span class="ow">not</span> <span class="n">triggered</span><span class="p">:</span>
-    <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">antenna</span> <span class="ow">in</span> <span class="n">detector</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">antenna</span><span class="o">.</span><span class="n">is_hit</span><span class="p">:</span>
             <span class="n">triggered</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">break</span>
+
+<span class="n">particle</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Particle type:   &quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shower vertex:   &quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">vertex</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shower axis:     &quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">direction</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Particle energy: &quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interaction type:&quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Electromagnetic shower fraction:&quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">em_frac</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hadronic shower fraction:       &quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">interaction</span><span class="o">.</span><span class="n">had_frac</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event weight:&quot;</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">antenna</span> <span class="ow">in</span> <span class="n">detector</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wave</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">antenna</span><span class="o">.</span><span class="n">waveforms</span><span class="p">):</span>
@@ -642,6 +672,8 @@ Version 1.6.0</p>
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">antenna</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; - waveform &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 </pre></div>
 </div>
+<img alt="_images/full_sim_1.png" src="_images/full_sim_1.png" />
+<img alt="_images/full_sim_2.png" src="_images/full_sim_2.png" />
 </div>
 <div class="section" id="more-examples">
 <h2>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
@@ -652,23 +684,96 @@ Version 1.6.0</p>
 
           </div>
         </div>
-      </div>
-    <div class="clearer"></div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
   </div>
-    <div class="footer">
-      &copy;2018, Benjamin Hokanson-Fasig.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/usage.rst.txt"
-          rel="nofollow">Page source</a>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to Use PyREx</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-signal-objects">Working with Signal Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#antenna-class-and-subclasses">Antenna Class and Subclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#antennasystem-and-detector-classes">AntennaSystem and Detector Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ice-and-earth-models">Ice and Earth Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ray-tracing">Ray Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#particle-generation">Particle Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#full-simulation">Full Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-examples">More Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
     </div>
 
-    
-
-    
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
   </body>
 </html>

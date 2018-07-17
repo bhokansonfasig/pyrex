@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.EventKernel &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
+    <link rel="up" title="PyREx API" href="../api.html" >
+    <link rel="next" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
+    <link rel="prev" title="pyrex.RayTracePath" href="pyrex.RayTracePath.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="../api/internal_functions.html" title="Helper Functions (pyrex.internal_functions)"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.RayTracePath.html" title="pyrex.RayTracePath"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-eventkernel">
+<h1>pyrex.EventKernel<a class="headerlink" href="#pyrex-eventkernel" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyrex.EventKernel">
+<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">EventKernel</code><span class="sig-paren">(</span><em>generator</em>, <em>antennas</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em>signal_model=&lt;class 'pyrex.signals.ARVZAskaryanSignal'&gt;</em>, <em>signal_times=array([-2.000e-08</em>, <em>-1.995e-08</em>, <em>-1.990e-08</em>, <em>...</em>, <em>7.985e-08</em>, <em>7.990e-08</em>, <em>7.995e-08])</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>High-level kernel for controlling event simulation.</p>
+<p>The kernel is responsible for handling the classes and objects which
+control the major simulation steps: particle creation, signal production,
+signal propagation, and antenna response. The modular kernel structure
+allows for easy switching of the classes or objects which handle any of the
+simulation steps.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>generator</strong></p>
+<blockquote>
+<div><p>A particle generator to create neutrino events.</p>
+</div></blockquote>
+<p><strong>antennas</strong></p>
+<blockquote>
+<div><p>An iterable object consisting of antenna objects which can receive and
+store signals.</p>
+</div></blockquote>
+<p><strong>ice_model</strong> : optional</p>
+<blockquote>
+<div><p>An ice model describing the ice surrounding the <em class="xref py py-obj">antennas</em>.</p>
+</div></blockquote>
+<p><strong>ray_tracer</strong> : optional</p>
+<blockquote>
+<div><p>A ray tracer capable of propagating signals from the neutrino vertex
+to the antenna positions.</p>
+</div></blockquote>
+<p><strong>signal_model</strong> : optional</p>
+<blockquote>
+<div><p>A signal class which generates signals based on the particle.</p>
+</div></blockquote>
+<p><strong>signal_times</strong> : array_like, optional</p>
+<blockquote class="last">
+<div><p>The array of times over which the neutrino signal should be generated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Event</span></code></a></dt>
+<dd>Class for storing a tree of <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects representing an event.</dd>
+<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Particle</span></code></a></dt>
+<dd>Class for storing particle attributes.</dd>
+<dt><a class="reference internal" href="pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.IceModel</span></code></a></dt>
+<dd>Class describing the ice at the south pole.</dd>
+<dt><a class="reference internal" href="pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.RayTracer</span></code></a></dt>
+<dd>Class for calculating the ray-trace solutions between points.</dd>
+<dt><a class="reference internal" href="pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.AskaryanSignal</span></code></a></dt>
+<dd>Class for generating Askaryan signals according to ARVZ parameterization.</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The kernel is designed to be modular so individual parts of the simulation
+chain can be exchanged. In order to interchange the pieces, their classes
+require the following at a minimum:</p>
+<p>The particle generator <em class="xref py py-obj">generator</em> must have a <code class="docutils literal"><span class="pre">create_event</span></code> method
+which takes no arguments and returns a <a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a> object consisting of
+<a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects with <code class="docutils literal"><span class="pre">vertex</span></code>, <code class="docutils literal"><span class="pre">direction</span></code>, <code class="docutils literal"><span class="pre">energy</span></code>, and
+<code class="docutils literal"><span class="pre">weight</span></code> attributes.</p>
+<p>The antenna iterable <em class="xref py py-obj">antennas</em> must yield each antenna object once when
+iterating directly over <em class="xref py py-obj">antennas</em>. Each antenna object must have a
+<code class="docutils literal"><span class="pre">position</span></code> attribute and a <code class="docutils literal"><span class="pre">receive</span></code> method which takes a signal object
+as its first argument, and <code class="docutils literal"><span class="pre">ndarray</span></code> objects as <code class="docutils literal"><span class="pre">direction</span></code> and
+<code class="docutils literal"><span class="pre">polarization</span></code> keyword arguments.</p>
+<p>The <a class="reference internal" href="../api/ice_model.html#module-pyrex.ice_model" title="pyrex.ice_model"><code class="xref py py-obj docutils literal"><span class="pre">ice_model</span></code></a> must have an <code class="docutils literal"><span class="pre">index</span></code> method returning the index of
+refraction given a (negative-valued) depth, and it must support anything
+required of it by the <em class="xref py py-obj">ray_tracer</em>.</p>
+<p>The <em class="xref py py-obj">ray_tracer</em> must be initialized with the particle vertex and an
+antenna position as its first two arguments, and the <a class="reference internal" href="../api/ice_model.html#module-pyrex.ice_model" title="pyrex.ice_model"><code class="xref py py-obj docutils literal"><span class="pre">ice_model</span></code></a> of the
+kernel as the <code class="docutils literal"><span class="pre">ice_model</span></code> keyword argument. The ray tracer must also have
+<code class="docutils literal"><span class="pre">exists</span></code> and <code class="docutils literal"><span class="pre">solutions</span></code> attributes, the first of which denotes whether
+any paths exist between the given points and the second of which is an
+iterable revelaing each path between the points. These paths must have
+<code class="docutils literal"><span class="pre">emitted_direction</span></code>, <code class="docutils literal"><span class="pre">received_direction</span></code>, and <code class="docutils literal"><span class="pre">path_length</span></code>
+attributes, as well as a <code class="docutils literal"><span class="pre">propagate</span></code> method which takes a signal object
+and applies the propagation effects of the path in-place to that object.</p>
+<p>The <em class="xref py py-obj">signal_model</em> must be initialized with the <em class="xref py py-obj">signal_times</em> array,
+a <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> object from the <a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a>, the <code class="docutils literal"><span class="pre">viewing_angle</span></code> and
+<code class="docutils literal"><span class="pre">viewing_distance</span></code> according to the <em class="xref py py-obj">ray_tracer</em>, and the <a class="reference internal" href="../api/ice_model.html#module-pyrex.ice_model" title="pyrex.ice_model"><code class="xref py py-obj docutils literal"><span class="pre">ice_model</span></code></a>.
+The object created should be a <a class="reference internal" href="pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-obj docutils literal"><span class="pre">Signal</span></code></a> object with <code class="docutils literal"><span class="pre">times</span></code> and
+<code class="docutils literal"><span class="pre">values</span></code> attributes representing the time-domain Askaryan signal produced
+by the <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a>.</p>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="87%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>gen</strong></td>
+<td>The particle generator responsible for particle creation.</td>
+</tr>
+<tr class="row-even"><td><strong>antennas</strong></td>
+<td>The iterable of antennas responsible for handling applying their response and storing the resulting signals.</td>
+</tr>
+<tr class="row-odd"><td><strong>ice</strong></td>
+<td>The ice model describing the ice containing the <em class="xref py py-obj">antennas</em>.</td>
+</tr>
+<tr class="row-even"><td><strong>ray_tracer</strong></td>
+<td>The ray tracer responsible for signal propagation through the <em class="xref py py-obj">ice</em>.</td>
+</tr>
+<tr class="row-odd"><td><strong>signal_model</strong></td>
+<td>The signal class to use to generate signals based on the particle.</td>
+</tr>
+<tr class="row-even"><td><strong>signal_times</strong></td>
+<td>The array of times over which the neutrino signal should be generated.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.EventKernel.event.html#pyrex.EventKernel.event" title="pyrex.EventKernel.event"><code class="xref py py-obj docutils literal"><span class="pre">event</span></code></a>()</td>
+<td>Create a neutrino event and run it through the simulation chain.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

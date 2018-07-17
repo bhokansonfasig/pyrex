@@ -25,7 +25,9 @@ setup(
     author = about["__author__"],
     author_email = about["__author_email__"],
     license = about["__license__"],
-    packages = ['pyrex', 'pyrex.custom', 'pyrex.custom.irex'],
+    # Not using find_packages since it clashes with PEP 420 use
+    packages = ['pyrex', 'pyrex.custom', 'pyrex.custom.irex',
+                'pyrex.custom.ara'],
     python_requires = '>= 3.6',
     install_requires = [
         'numpy>=1.13',
@@ -34,8 +36,8 @@ setup(
     setup_requires = ['pytest-runner'],
     tests_require = ['pytest'],
     package_data = {
-        '': ['README.rst', 'LICENSE', 'PyREx Documentation.pdf',
-             'Code Examples.ipynb', 'PyREx Demo.ipynb'],
-        'pyrex': [],
+        '': ['README.rst', 'LICENSE', 'PyREx Documentation.pdf'],
+        'pyrex': ['data/secondary/*/*.vec'],
+        'pyrex.custom.ara': ['data/*.txt'],
     },
 )

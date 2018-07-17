@@ -1,4 +1,10 @@
-"""Module containing IREX front-end circuit models"""
+"""
+Module containing IREX front-end circuit models.
+
+Contains wrappers for PySpice circuits as well as analytical forms for some
+envelope circuits.
+
+"""
 
 import os.path
 import numpy as np
@@ -191,9 +197,40 @@ if pyspice.__available__:
 #             gnd
 #
 def basic_envelope_model(signal, cap=20e-12, res=500):
-    """Model of a basic diode-capacitor-resistor envelope circuit. Takes a
-    signal object as the input voltage and returns the output voltage signal
-    object."""
+    """
+    Model of a basic diode-capacitor-resistor envelope circuit.
+
+    Passes the input signal through a basic envelope circuit consisting of a
+    diode, a capacitor, and a resistor. The diode used is modeled after an
+    HSMS 2852 diode.
+
+    Parameters
+    ----------
+    signal : Signal
+        Signal object used as input to the circuit.
+    cap : float, optional
+        Capacitance (F) of the circuit's capacitor ``C1``.
+    res : float, optional
+        Resistance (ohm) of the circuit's resistor ``R1``.
+
+    Returns
+    -------
+    Signal
+        Output of the envelope circuit for the given input.
+
+    Notes
+    -----
+    Ascii depiction of the basic envelope circuit::
+
+        Vin---D1---+---+---out
+                   |   |
+                  C1   R1
+                   |   |
+                   +---+
+                   |
+                  gnd
+
+    """
     v_c = 0
     v_out = []
 
@@ -231,7 +268,7 @@ def basic_envelope_model(signal, cap=20e-12, res=500):
         v_c = v_c*charge_exp - discharge + lambert_factor*lambert_term
         v_out.append(v_c)
 
-    return Signal(signal.times, v_out, value_type=Signal.ValueTypes.voltage)
+    return Signal(signal.times, v_out, value_type=Signal.Type.voltage)
 
 
 # Bridge rectifier envelope circuit:
@@ -245,7 +282,7 @@ def basic_envelope_model(signal, cap=20e-12, res=500):
 #   |       |       |
 #  Vin      +--gnd  +-----+---+---out
 #   |       |       |     |   |
-#   |      D4       ^
+#   |      D4       ^     |   |
 #   |       v       D2   C1   R1
 #   |       |       |     |   |
 #   |       +---+---+     +---+
@@ -253,9 +290,48 @@ def basic_envelope_model(signal, cap=20e-12, res=500):
 #   +-----------+        gnd
 #
 def bridge_rectifier_envelope_model(signal, cap=20e-12, res=500):
-    """Model of a diode bridge rectifier envelope circuit. Takes a
-    signal object as the input voltage and returns the output voltage signal
-    object."""
+    """
+    Model of a diode bridge rectifier envelope circuit.
+
+    Passes the input signal through a diode bridge rectifier envelope circuit
+    consisting of four diodes in a diode bridge, a capacitor, and a resistor.
+    The diode used is modeled after an HSMS 2852 diode.
+
+    Parameters
+    ----------
+    signal : Signal
+        Signal object used as input to the circuit.
+    cap : float, optional
+        Capacitance (F) of the circuit's capacitor ``C1``.
+    res : float, optional
+        Resistance (ohm) of the circuit's resistor ``R1``.
+
+    Returns
+    -------
+    Signal
+        Output of the envelope circuit for the given input.
+
+    Notes
+    -----
+    Ascii depiction of the diode bridge rectifier envelope circuit::
+
+         +-----------+
+         |           |
+         |       +---+---+
+         |       |       |
+         |       ^       D1
+         |      D3       v
+         |       |       |
+        Vin      +--gnd  +-----+---+---out
+         |       |       |     |   |
+         |      D4       ^     |   |
+         |       v       D2   C1   R1
+         |       |       |     |   |
+         |       +---+---+     +---+
+         |           |         |
+         +-----------+        gnd
+
+    """
     v_c = 0
     v_out = []
 
@@ -293,4 +369,4 @@ def bridge_rectifier_envelope_model(signal, cap=20e-12, res=500):
         v_c = v_c*charge_exp - discharge + lambert_factor*lambert_term
         v_out.append(v_c)
 
-    return Signal(signal.times, v_out, value_type=Signal.ValueTypes.voltage)
+    return Signal(signal.times, v_out, value_type=Signal.Type.voltage)

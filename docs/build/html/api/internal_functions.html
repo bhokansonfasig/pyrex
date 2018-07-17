@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Helper Functions (pyrex.internal_functions) &mdash; PyREx 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.7.0 documentation" href="../index.html" >
+    <link rel="up" title="PyREx API" href="../api.html" >
+    <link rel="next" title="pyrex.internal_functions.normalize" href="../docstrings/pyrex.internal_functions.normalize.html" >
+    <link rel="prev" title="pyrex.EventKernel" href="../docstrings/pyrex.EventKernel.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.7.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="../docstrings/pyrex.internal_functions.normalize.html" title="pyrex.internal_functions.normalize"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="../docstrings/pyrex.EventKernel.html" title="pyrex.EventKernel"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="module-pyrex.internal_functions">
+<span id="helper-functions-pyrex-internal-functions"></span><h1>Helper Functions (<a class="reference internal" href="#module-pyrex.internal_functions" title="pyrex.internal_functions"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.internal_functions</span></code></a>)<a class="headerlink" href="#module-pyrex.internal_functions" title="Permalink to this headline">¶</a></h1>
+<p>Helper functions and classes for use in PyREx modules.</p>
+<p>This module is intended as a container for functions, typically used in more
+than one PyREx module, which are not physics-motivated and are instead used
+mainly to clean up code. Functions and classes in this module may also be
+computer-science-motivated structures that python doesn’t include naturally.</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.normalize.html#pyrex.internal_functions.normalize" title="pyrex.internal_functions.normalize"><code class="xref py py-obj docutils literal"><span class="pre">normalize</span></code></a>(vector)</td>
+<td>Normalize the given vector.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.flatten.html#pyrex.internal_functions.flatten" title="pyrex.internal_functions.flatten"><code class="xref py py-obj docutils literal"><span class="pre">flatten</span></code></a>(iterator[,&nbsp;dont_flatten])</td>
+<td>Flattens an iterator to iterate over all elements individually.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.mirror_func.html#pyrex.internal_functions.mirror_func" title="pyrex.internal_functions.mirror_func"><code class="xref py py-obj docutils literal"><span class="pre">mirror_func</span></code></a>(match_func,&nbsp;run_func[,&nbsp;self])</td>
+<td>Mirror the attributes of one function onto another.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.lazy_property.html#pyrex.internal_functions.lazy_property" title="pyrex.internal_functions.lazy_property"><code class="xref py py-obj docutils literal"><span class="pre">lazy_property</span></code></a>(fn)</td>
+<td>Decorator that makes a property lazily evaluated.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.LazyMutableClass.html#pyrex.internal_functions.LazyMutableClass" title="pyrex.internal_functions.LazyMutableClass"><code class="xref py py-obj docutils literal"><span class="pre">LazyMutableClass</span></code></a>([static_attributes])</td>
+<td>Class with lazy properties which may depend on other class attributes.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.7.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
