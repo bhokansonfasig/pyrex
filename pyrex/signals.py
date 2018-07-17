@@ -468,6 +468,7 @@ class ZHSAskaryanSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
+    pyrex.Particle : Class for storing particle attributes.
 
     Notes
     -----
@@ -596,6 +597,7 @@ class ARVZAskaryanSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
+    pyrex.Particle : Class for storing particle attributes.
 
     Notes
     -----

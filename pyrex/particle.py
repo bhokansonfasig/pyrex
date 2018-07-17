@@ -166,6 +166,10 @@ class Interaction:
     cross_section
     interaction_length
 
+    See Also
+    --------
+    Particle : Class for storing particle attributes.
+
     """
 
     class Type(Enum):
@@ -344,6 +348,11 @@ class GQRSInteraction(Interaction):
     cross_section
     interaction_length
 
+    See Also
+    --------
+    Interaction : Base class for describing neutrino interaction attributes.
+    Particle : Class for storing particle attributes.
+
     Notes
     -----
     Neutrino intractions based on the GQRS Ultrahigh-Energy Neutrino
@@ -419,6 +428,7 @@ class GQRSInteraction(Interaction):
             Electromagnetic shower fraction.
         had_frac : float
             Hadronic shower fraction.
+
         """
         # Calculate shower fractions for primary particle
         if self.kind==self.Type.neutral_current:
@@ -693,6 +703,11 @@ class CTWInteraction(GQRSInteraction):
     total_interaction_length
     cross_section
     interaction_length
+
+    See Also
+    --------
+    Interaction : Base class for describing neutrino interaction attributes.
+    Particle : Class for storing particle attributes.
 
     Notes
     -----
@@ -975,6 +990,10 @@ class Particle:
     weight : float
         Monte Carlo weight of the particle.
 
+    See Also
+    --------
+    Interaction : Base class for describing neutrino interaction attributes.
+
     """
     class Type(Enum):
         """
@@ -1082,6 +1101,10 @@ class Event:
     roots : Particle or list of Particle
         Root `Particle` objects for the event tree.
 
+    See Also
+    --------
+    Particle : Class for storing particle attributes.
+
     """
     def __init__(self, roots):
         if isinstance(roots, Particle):
@@ -1111,6 +1134,10 @@ class Event:
         ValueError
             If the `parent` is not a part of the event tree.
 
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
+
         """
         if parent not in self._all:
             raise ValueError("Parent particle is not in the event tree")
@@ -1133,10 +1160,19 @@ class Event:
         parent : Particle
             `Particle` object in the tree.
 
+        Returns
+        -------
+        list of Particle
+            List of the `Particle` objects which are children of the `parent`.
+
         Raises
         ------
         ValueError
             If the `parent` is not a part of the event tree.
+
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
 
         """
         if parent not in self._all:
@@ -1155,10 +1191,19 @@ class Event:
             `Particle` object in the tree. ``None`` if the `child` has no
             parent.
 
+        Returns
+        -------
+        Particle
+            `Particle` object which is the parent of the `child`.
+
         Raises
         ------
         ValueError
             If the `child` is not a part of the event tree.
+
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
 
         """
         if child not in self._all:
@@ -1183,6 +1228,10 @@ class Event:
         -------
         list of Particle
             All `Particle` objects at the given `level` in the tree.
+
+        See Also
+        --------
+        Particle : Class for storing particle attributes.
 
         """
         # This method could be sped up by working exclusively with indices

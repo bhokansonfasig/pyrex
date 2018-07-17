@@ -315,6 +315,10 @@ class BasicRayTracePath(LazyMutableClass):
         signal : Signal
             ``Signal`` object to propagate.
 
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
         """
         signal.filter_frequencies(self.attenuation)
         signal.times += self.tof
@@ -1748,6 +1752,10 @@ class PathFinder:
         RuntimeError
             If the path does not exist.
 
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
         """
         if not self.exists:
             raise RuntimeError("Cannot propagate signal along a path that "+
@@ -1946,6 +1954,10 @@ class ReflectedPathFinder:
         ------
         RuntimeError
             If the path does not exist.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
 
         """
         self.path_1.propagate(signal)

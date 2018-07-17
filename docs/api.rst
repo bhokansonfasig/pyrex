@@ -30,8 +30,12 @@ PyREx Package Imports
     IceModel
     prem_density
     slant_depth
+    NeutrinoInteraction
     Particle
+    Event
     ShadowGenerator
+    ListGenerator
+    FileGenerator
     RayTracer
     RayTracePath
     EventKernel

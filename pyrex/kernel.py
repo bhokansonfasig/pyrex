@@ -61,6 +61,17 @@ class EventKernel:
     signal_times
         The array of times over which the neutrino signal should be generated.
 
+    See Also
+    --------
+    pyrex.Event : Class for storing a tree of `Particle` objects
+                  representing an event.
+    pyrex.Particle : Class for storing particle attributes.
+    pyrex.IceModel : Class describing the ice at the south pole.
+    pyrex.RayTracer : Class for calculating the ray-trace solutions between
+                      points.
+    pyrex.AskaryanSignal : Class for generating Askaryan signals according to
+                           ARVZ parameterization.
+
     Notes
     -----
     The kernel is designed to be modular so individual parts of the simulation
@@ -124,6 +135,12 @@ class EventKernel:
         Event
             The neutrino event generated which is responsible for the waveforms
             on the antennas.
+
+        See Also
+        --------
+        pyrex.Event : Class for storing a tree of `Particle` objects
+                      representing an event.
+        pyrex.Particle : Class for storing particle attributes.
 
         """
         event = self.gen.create_event()
