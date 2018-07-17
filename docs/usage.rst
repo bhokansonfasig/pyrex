@@ -29,6 +29,8 @@ Plotting the :class:`Signal` object is as simple as plotting the times vs the va
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
+.. image:: _static/example_outputs/signal_1.png
+
 While there are no specified units for :attr:`Signal.values`, there is the option to specify the :attr:`value_type` of the :attr:`values`. This is done using the :attr:`Signal.Type` enum. By default, a :class:`Signal` object has ``value_type=Type.unknown``. However, if the signal represents a voltage, electric field, or power; :attr:`value_type` can be set to :attr:`Signal.Type.voltage`, :attr:`Signal.Type.field`, or :attr:`Signal.Type.power` respectively::
 
     my_voltage_signal = pyrex.Signal(times=time_array, values=value_array,
@@ -51,6 +53,8 @@ While there are no specified units for :attr:`Signal.values`, there is the optio
     plt.legend()
     plt.show()
 
+.. image:: _static/example_outputs/signal_2.png
+
 The :class:`Signal` class provides many convenience attributes for dealing with signals::
 
     my_signal.dt == my_signal.times[1] - my_signal.times[0]
@@ -68,6 +72,8 @@ The :class:`Signal` class also provides functions for manipulating the signal. T
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
 
+.. image:: _static/example_outputs/signal_3.png
+
 The :meth:`Signal.with_times` method will interpolate/extrapolate the signal's values onto a new times array::
 
     new_times = np.linspace(-5, 15)
@@ -76,6 +82,8 @@ The :meth:`Signal.with_times` method will interpolate/extrapolate the signal's v
     plt.plot(my_signal.times, my_signal.values, label="original signal")
     plt.legend()
     plt.show()
+
+.. image:: _static/example_outputs/signal_4.png
 
 The :meth:`Signal.filter_frequencies` method will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive freqeuncies (as below) the filtered frequency may exhibit strange behavior, including potentially having an imaginary part. To resolve that issue, pass ``force_real=True`` to the :meth:`Signal.filter_frequencies` method which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal. ::
 
@@ -95,6 +103,8 @@ The :meth:`Signal.filter_frequencies` method will apply a frequency-domain filte
     plt.legend()
     plt.show()
 
+.. image:: _static/example_outputs/signal_5.png
+
 
 A number of classes which inherit from the :class:`Signal` class are included in PyREx: :class:`EmptySignal`, :class:`FunctionSignal`, :class:`AskaryanSignal`, and :class:`ThermalNoise`. :class:`EmptySignal` is simply a signal whose values are all zero::
 
@@ -102,6 +112,8 @@ A number of classes which inherit from the :class:`Signal` class are included in
     empty = pyrex.EmptySignal(times=time_array)
     plt.plot(empty.times, empty.values)
     plt.show()
+
+.. image:: _static/example_outputs/signal_6.png
 
 :class:`FunctionSignal` takes a function of time and creates a signal based on that function::
 
@@ -115,6 +127,8 @@ A number of classes which inherit from the :class:`Signal` class are included in
     plt.plot(square_signal.times, square_signal.values)
     plt.show()
 
+.. image:: _static/example_outputs/signal_7.png
+
 Additionally, :class:`FunctionSignal` leverages its knowledge of the function to more accurately interpolate and extrapolate values for the :meth:`Signal.with_times` method::
 
     new_times = np.linspace(0, 20, num=201)
@@ -123,6 +137,8 @@ Additionally, :class:`FunctionSignal` leverages its knowledge of the function to
     plt.plot(square_signal.times, square_signal.values, label="original")
     plt.legend()
     plt.show()
+
+.. image:: _static/example_outputs/signal_8.png
 
 :class:`AskaryanSignal` produces an Askaryan pulse (in V/m) on a time array resulting from a given neutrino observed at a given angle from the shower axis and at a given distance from the shower vertex. For more about using the :class:`Particle` class, see :ref:`particle-generation`. ::
 
@@ -141,6 +157,8 @@ Additionally, :class:`FunctionSignal` leverages its knowledge of the function to
     plt.plot(askaryan.times, askaryan.values)
     plt.show()
 
+.. image:: _static/example_outputs/signal_9.png
+
 :class:`ThermalNoise` produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range::
 
     time_array = np.linspace(-10e-9, 40e-9, 1001)
@@ -154,6 +172,8 @@ Additionally, :class:`FunctionSignal` leverages its knowledge of the function to
     plt.plot(noise.times, noise.values)
     plt.show()
 
+.. image:: _static/example_outputs/signal_10.png
+
 Note that since :class:`ThermalNoise` inherits from :class:`FunctionSignal`, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a larger number of frequencies is requested on initialization. ::
 
     short_noise = pyrex.ThermalNoise(times=time_array, temperature=noise_temp,
@@ -165,6 +185,9 @@ Note that since :class:`ThermalNoise` inherits from :class:`FunctionSignal`, it 
     plt.show()
     plt.plot(long_noise.times, long_noise.values)
     plt.show()
+
+.. image:: _static/example_outputs/signal_11.png
+.. image:: _static/example_outputs/signal_12.png
 
 
 
@@ -217,6 +240,9 @@ The :class:`Antenna` class also defines an :meth:`Antenna.receive` method which 
         plt.legend()
         plt.show()
 
+.. image:: _static/example_outputs/antenna_1.png
+.. image:: _static/example_outputs/antenna_2.png
+
 Beyond :attr:`Antenna.waveforms`, the :class:`Antenna` object also provides methods for checking the waveform and trigger status for arbitrary times: :meth:`Antenna.full_waveform` and :meth:`Antenna.is_hit_during`. Both of these methods take a time array as an argument and return either the waveform :class:`Signal` object for those times or whether said waveform triggered the antenna, respectively. ::
 
     total_waveform = basic_antenna.full_waveform(np.linspace(0,20))
@@ -227,6 +253,8 @@ Beyond :attr:`Antenna.waveforms`, the :class:`Antenna` object also provides meth
     plt.show()
 
     basic_antenna.is_hit_during(np.linspace(0, 200e-9)) == True
+
+.. image:: _static/example_outputs/antenna_3.png
 
 Finally, the :class:`Antenna` class defines an :meth:`Antenna.clear` method which will reset the antenna to a state of having received no signals::
 
@@ -243,6 +271,8 @@ The :meth:`Antenna.clear` method can also optionally reset the source of noise w
     plt.plot(noise_after.times, noise_after.values, label="Noise After Clear")
     plt.legend()
     plt.show()
+
+.. image:: _static/example_outputs/antenna_4.png
 
 
 To create a custom antenna, simply inherit from the :class:`Antenna` class::
@@ -282,10 +312,12 @@ Our custom :class:`NoiselessThresholdAntenna` should only trigger when the ampli
         plt.plot(wave.times, wave.values)
         plt.show()
 
+.. image:: _static/example_outputs/antenna_5.png
+
 For more on customizing PyREx, see the :ref:`custom-package` section.
 
 
-PyREx defines :class:`DipoleAntenna`, a subclass of :class:`Antenna` which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A :class:`DipoleAntenna` object can be created as follows::
+PyREx also defines :class:`DipoleAntenna`, a subclass of :class:`Antenna` which provides a basic threshold trigger, a basic bandpass filter frequency response, a sine-function directional gain, and a typical dot-product polarization effect. A :class:`DipoleAntenna` object can be created as follows::
 
     antenna_identifier = "antenna 1"
     position = (0, 0, -100)
@@ -370,6 +402,10 @@ Objects of this class can then, for the most part, be interacted with as though 
     basic_antenna_system.is_hit == False
     len(basic_antenna_system.waveforms) == 0
 
+.. image:: _static/example_outputs/detector_1.png
+.. image:: _static/example_outputs/detector_2.png
+.. image:: _static/example_outputs/detector_3.png
+
 
 The :class:`Detector` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used in a detector). Subclasses must define a :meth:`Detector.set_positions` method to assign vector positions to the self.antenna_positions attribute. By default :meth:`Detector.set_positions` will raise a :exc:`NotImplementedError`. Additionally subclasses may extend the default :meth:`Detector.build_antennas` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the :class:`Detector` class is that once the :meth:`Detector.build_antennas` method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the :class:`Detector` class is shown below::
 
@@ -406,6 +442,8 @@ The :class:`Detector` class is another convenience class meant to be subclassed.
     plt.ylim(plt.xlim())
     plt.show()
 
+.. image:: _static/example_outputs/detector_4.png
+
 Due to the parallels between :class:`Antenna` and :class:`AntennaSystem`, an antenna system may also be used in the custom detector class. Note however, that the antenna positions must be accessed as :attr:`antenna.antenna.position` since we didn't define a position attribute for the :class:`PowerAntennaSystem`::
 
     grid_detector = AntennaGrid(12)
@@ -423,6 +461,8 @@ Due to the parallels between :class:`Antenna` and :class:`AntennaSystem`, an ant
         y = antenna.antenna.position[1]
         plt.plot(x, y, "kD")
     plt.show()
+
+.. image:: _static/example_outputs/detector_5.png
 
 
 
@@ -481,6 +521,8 @@ The :class:`RayTracePath` class contains the attributes of the paths between poi
     plt.plot(my_path.coordinates[0], my_path.coordinates[2])
     plt.show()
 
+.. image:: _static/example_outputs/ray_tracing_1.png
+
 Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. ::
 
     time_array = np.linspace(0, 5e-9, 1001)
@@ -492,6 +534,9 @@ Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from
     my_path.propagate(my_signal)
     plt.plot(my_signal.times, my_signal.values)
     plt.show()
+
+.. image:: _static/example_outputs/ray_tracing_2.png
+.. image:: _static/example_outputs/ray_tracing_3.png
 
 
 
@@ -586,6 +631,9 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
             plt.xlabel("Time (ns)")
             plt.ylabel("Voltage (V)")
             plt.title(antenna.name + " - waveform "+str(i))
+
+.. image:: _static/example_outputs/full_sim_1.png
+.. image:: _static/example_outputs/full_sim_2.png
 
 
 
