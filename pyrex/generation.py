@@ -272,6 +272,11 @@ class ShadowGenerator:
         Event
             Random neutrino event not shadowed by the Earth.
 
+        See Also
+        --------
+        pyrex.particle.Event : Class for storing a tree of `Particle` objects
+                               representing an event.
+
         """
         vtx = self.get_vertex()
         u = self.get_direction()
@@ -342,6 +347,11 @@ class ListGenerator:
         -------
         Event
             Next `Event` object in the list of events.
+
+        See Also
+        --------
+        pyrex.particle.Event : Class for storing a tree of `Particle` objects
+                               representing an event.
 
         Raises
         ------
@@ -503,6 +513,11 @@ class FileGenerator:
         -------
         Event
             Next neutrino `Event` object from the file(s).
+
+        See Also
+        --------
+        pyrex.particle.Event : Class for storing a tree of `Particle` objects
+                               representing an event.
 
         Raises
         ------

@@ -157,6 +157,10 @@ class Interaction:
     inelasticity : float
         Inelasticity value from `choose_inelasticity` distribution for the
         interaction.
+    em_frac : float
+        Fraction of `particle` energy deposited into an electromagnetic shower.
+    had_frac : float
+        Fraction of `particle` energy deposited into a hadronic shower.
     total_cross_section
     total_interaction_length
     cross_section
@@ -331,6 +335,10 @@ class GQRSInteraction(Interaction):
     inelasticity : float
         Inelasticity value from `choose_inelasticity` distribution for the
         interaction.
+    em_frac : float
+        Fraction of `particle` energy deposited into an electromagnetic shower.
+    had_frac : float
+        Fraction of `particle` energy deposited into a hadronic shower.
     total_cross_section
     total_interaction_length
     cross_section
@@ -403,7 +411,7 @@ class GQRSInteraction(Interaction):
 
         Calculates the maximal electromagnetic and hadronic shower fractions
         based on the primary ``particle`` and randomly generated secondary
-        interactions.
+        interactions. Method pulled from AraSim, which is unchanged from icemc.
 
         Returns
         -------
@@ -476,7 +484,7 @@ class GQRSInteraction(Interaction):
 
         Generate random secondary interactions for the given `lepton_energy`
         and return the largest electromagnetic and hadronic fractions from the
-        secondaries.
+        secondaries. Method pulled from AraSim, which is unchanged from icemc.
 
         Parameters
         ----------
@@ -567,13 +575,19 @@ class GQRSInteraction(Interaction):
             rand_interaction = np.random.rand()
             if rand_interaction<0.65011:
                 interaction = "hadrdecay"
-                cum_dist = _y_cum_tauon_hadrdecay
+                cum_dist = _y_cum_tauon_hadrdecay[energy_index]
             elif rand_interaction<0.8219:
                 interaction = "mudecay"
-                cum_dist = _y_cum_tauon_mudecay
+                cum_dist = _y_cum_tauon_mudecay[energy_index]
             else:
                 interaction = "edecay"
-                cum_dist = _y_cum_tauon_edecay
+                cum_dist = _y_cum_tauon_edecay[energy_index]
+            # Calculate inelasticity according to cumulative
+            # distribution
+            rand_inelasticity = np.random.rand()
+            y = np.interp(rand_inelasticity, cum_dist,
+                          np.linspace(0, 1, len(cum_dist)))
+            # Store if the largest interaction thus far
             if y*lepton_energy>max(em_max, had_max):
                 if interaction=="edecay":
                     em_max = y*lepton_energy
@@ -645,7 +659,7 @@ class GQRSInteraction(Interaction):
         return coeff * self.particle.energy**power
 
 
-class CTWInteraction(Interaction):
+class CTWInteraction(GQRSInteraction):
     """
     Class for describing neutrino interaction attributes.
 
@@ -671,6 +685,10 @@ class CTWInteraction(Interaction):
     inelasticity : float
         Inelasticity value from `choose_inelasticity` distribution for the
         interaction.
+    em_frac : float
+        Fraction of `particle` energy deposited into an electromagnetic shower.
+    had_frac : float
+        Fraction of `particle` energy deposited into a hadronic shower.
     total_cross_section
     total_interaction_length
     cross_section
@@ -679,7 +697,8 @@ class CTWInteraction(Interaction):
     Notes
     -----
     Neutrino intractions based on the CTW High Energy Neutrino-Nucleon Cross
-    Sections paper [1]_.
+    Sections paper [1]_. Secondary generation method to determine shower
+    fractions was pulled from AraSim, which is unchanged from icemc.
 
     References
     ----------
@@ -1013,12 +1032,6 @@ class Particle:
         else:
             raise ValueError("Particle class interaction_model must be a class")
         self.weight = weight
-
-    def __str__(self):
-        string = self.__class__.__name__+"("
-        for key, val in self.__dict__.items():
-            string += key+"="+repr(val)+", "
-        return string[:-2]+")"
 
     @property
     def id(self):
