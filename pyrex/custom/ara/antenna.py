@@ -868,8 +868,6 @@ class ARAAntennaSystem(AntennaSystem):
                               resistance=resistance,
                               orientation=orientation,
                               efficiency=efficiency,
-                              directionality_data=directionality_data,
-                              directionality_freqs=directionality_freqs,
                               noisy=noisy,
                               unique_noise_waveforms=unique_noise_waveforms)
 
