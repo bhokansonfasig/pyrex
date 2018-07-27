@@ -269,17 +269,20 @@ class ARAAntenna(Antenna):
         self._filter_data = ALL_FILTERS
 
 
-    def polarization_gain(self, polarization):
+    def polarization_gain(self, polarization, direction):
         """
         Calculate the (complex) polarization gain of the antenna.
 
-        Polarization gain is simply the dot product of the polarization
-        with the antenna's z-axis.
+        This function is expected to be overridden in subclasses, as for the
+        base class it simply returns 1 for any inputs.
 
         Parameters
         ----------
         polarization : array_like
             Vector polarization direction of the signal.
+        direction : array_like
+            Vector denoting the direction of travel of the signal as it reaches
+            the antenna.
 
         Returns
         -------
@@ -287,7 +290,7 @@ class ARAAntenna(Antenna):
             Complex gain in voltage for the given signal polarization.
 
         """
-        return np.vdot(self.z_axis, polarization)
+        return 1
 
 
     def generate_directionality_gains(self, theta, phi):
@@ -480,7 +483,8 @@ class ARAAntenna(Antenna):
         if polarization is None:
             p_gain = 1
         else:
-            p_gain = self.polarization_gain(normalize(polarization))
+            p_gain = self.polarization_gain(normalize(polarization),
+                                            normalize(direction))
 
         signal_factor = p_gain * self.efficiency
 
@@ -496,6 +500,234 @@ class ARAAntenna(Antenna):
         self.signals.append(copy)
 
 
+class HpolBase(ARAAntenna):
+    """
+    Antenna class to be used for ARA Hpol antennas.
+
+    Stores the attributes of an antenna as well as handling receiving,
+    processing, and storing signals and adding noise. Directionality data
+    and antenna polarization gain specific to the Hpol ("quad-slot") antenna.
+
+    Parameters
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    center_frequency : float
+        Frequency (Hz) at the center of the antenna's frequency range.
+    bandwidth : float
+        Bandwidth (Hz) of the antenna.
+    resistance : float
+        The noise resistance (ohm) of the antenna. Used to calculate the RMS
+        voltage of the antenna noise.
+    orientation : array_like, optional
+        Vector direction of the z-axis of the antenna.
+    efficiency : float, optional
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+
+    Attributes
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    z_axis : ndarray
+        Vector direction of the z-axis of the antenna.
+    x_axis : ndarray
+        Vector direction of the x-axis of the antenna.
+    antenna_factor : float
+        Antenna factor used for converting fields to voltages.
+    efficiency : float
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noises : int
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+    freq_range : array_like
+        The frequency band in which the antenna operates (used for noise
+        production).
+    temperature : float or None
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
+    resistance : float or None
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
+    noise_rms : float or None
+        The RMS voltage (v) of the antenna noise. If not ``None``, this value
+        will be used instead of the RMS voltage calculated from the values of
+        `temperature` and `resistance`.
+    signals : list of Signal
+        The signals which have been received by the antenna.
+    is_hit
+    waveforms
+    all_waveforms
+
+    See Also
+    --------
+    ARAAntenna : Antenna class to be used for ARA antennas.
+
+    """
+    def __init__(self, position, center_frequency, bandwidth, resistance,
+                 orientation=(0,0,1), efficiency=1, noisy=True,
+                 unique_noise_waveforms=10):
+        super().__init__(position=position,
+                         center_frequency=center_frequency,
+                         bandwidth=bandwidth,
+                         resistance=resistance,
+                         orientation=orientation,
+                         efficiency=efficiency,
+                         noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms,
+                         directionality_data=HPOL_DIRECTIONALITY,
+                         directionality_freqs=HPOL_FREQS)
+
+    def polarization_gain(self, polarization, direction):
+        """
+        Calculate the (complex) polarization gain of the antenna.
+
+        Polarization gain for the Hpol antenna is the dot product of the
+        polarization magnetic field direction with the antenna's z-axis.
+
+        Parameters
+        ----------
+        polarization : array_like
+            Vector polarization direction of the signal.
+        direction : array_like
+            Vector denoting the direction of travel of the signal as it reaches
+            the antenna.
+
+        Returns
+        -------
+        complex
+            Complex gain in voltage for the given signal polarization.
+
+        Notes
+        -----
+        Since the Hpol antenna is sensitive to magnetic fields rather than
+        electric fields, the polarization gain will be given by the dot product
+        of the signal's magnetic field with the z-axis of the antenna. This is
+        equivalent to the AraSim prescription of taking the dot product of the
+        signal's electric field (polarization) with the cross-product of the
+        antenna's z-axis and the signal direction (a vector in the antenna's
+        x-y plane perpendicular to the signal direction).
+
+        """
+        magnetic_polarization = np.cross(direction, polarization)
+        return np.vdot(self.z_axis, magnetic_polarization)
+
+
+class VpolBase(ARAAntenna):
+    """
+    Antenna class to be used for ARA Vpol antennas.
+
+    Stores the attributes of an antenna as well as handling receiving,
+    processing, and storing signals and adding noise. Directionality data
+    and antenna polarization gain specific to the Vpol ("bicone" or "birdcage")
+    antenna.
+
+    Parameters
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    center_frequency : float
+        Frequency (Hz) at the center of the antenna's frequency range.
+    bandwidth : float
+        Bandwidth (Hz) of the antenna.
+    resistance : float
+        The noise resistance (ohm) of the antenna. Used to calculate the RMS
+        voltage of the antenna noise.
+    orientation : array_like, optional
+        Vector direction of the z-axis of the antenna.
+    efficiency : float, optional
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean, optional
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noise_waveforms : int, optional
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+
+    Attributes
+    ----------
+    position : array_like
+        Vector position of the antenna.
+    z_axis : ndarray
+        Vector direction of the z-axis of the antenna.
+    x_axis : ndarray
+        Vector direction of the x-axis of the antenna.
+    antenna_factor : float
+        Antenna factor used for converting fields to voltages.
+    efficiency : float
+        Antenna efficiency applied to incoming signal values.
+    noisy : boolean
+        Whether or not the antenna should add noise to incoming signals.
+    unique_noises : int
+        The number of expected noise waveforms needed for each received signal
+        to have its own noise.
+    freq_range : array_like
+        The frequency band in which the antenna operates (used for noise
+        production).
+    temperature : float or None
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
+    resistance : float or None
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
+    noise_rms : float or None
+        The RMS voltage (v) of the antenna noise. If not ``None``, this value
+        will be used instead of the RMS voltage calculated from the values of
+        `temperature` and `resistance`.
+    signals : list of Signal
+        The signals which have been received by the antenna.
+    is_hit
+    waveforms
+    all_waveforms
+
+    See Also
+    --------
+    ARAAntenna : Antenna class to be used for ARA antennas.
+
+    """
+    def __init__(self, position, center_frequency, bandwidth, resistance,
+                 orientation=(0,0,1), efficiency=1, noisy=True,
+                 unique_noise_waveforms=10):
+        super().__init__(position=position,
+                         center_frequency=center_frequency,
+                         bandwidth=bandwidth,
+                         resistance=resistance,
+                         orientation=orientation,
+                         efficiency=efficiency,
+                         noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms,
+                         directionality_data=VPOL_DIRECTIONALITY,
+                         directionality_freqs=VPOL_FREQS)
+
+    def polarization_gain(self, polarization, direction):
+        """
+        Calculate the (complex) polarization gain of the antenna.
+
+        Polarization gain for the Vpol antenna is simply the dot product of the
+        polarization with the antenna's z-axis.
+
+        Parameters
+        ----------
+        polarization : array_like
+            Vector polarization direction of the signal.
+        direction : array_like
+            Vector denoting the direction of travel of the signal as it reaches
+            the antenna.
+
+        Returns
+        -------
+        complex
+            Complex gain in voltage for the given signal polarization.
+
+        """
+        return np.vdot(self.z_axis, polarization)
+
+
 
 class ARAAntennaSystem(AntennaSystem):
     """
@@ -507,6 +739,8 @@ class ARAAntennaSystem(AntennaSystem):
 
     Parameters
     ----------
+    base_antenna : Antenna
+        ``Antenna`` class or subclass to be extended with an ARA front end.
     name : str
         Name of the antenna.
     position : array_like
@@ -515,12 +749,6 @@ class ARAAntennaSystem(AntennaSystem):
         Power threshold for trigger condition. Antenna triggers if a signal
         passed through the tunnel diode exceeds this threshold times the noise
         RMS of the tunnel diode.
-    directionality_data : None or dict, optional
-        Dictionary containing data on the directionality of the antenna. If
-        ``None``, behavior is undefined.
-    directionality_freqs : None or set, optional
-        Set of frequencies in the directionality data ``dict`` keys. If
-        ``None``, calculated automatically from `directionality_data`.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     amplification : float, optional
@@ -534,6 +762,14 @@ class ARAAntennaSystem(AntennaSystem):
     unique_noise_waveforms : int, optional
         The number of expected noise waveforms needed for each received signal
         to have its own noise.
+    directionality_data : dict, optional
+        Dictionary containing data on the directionality of the antenna.
+        Should not be given if the `base_antenna` class does not accept a
+        `directionality_data` argument.
+    directionality_freqs : set, optional
+        Set of frequencies in the directionality data ``dict`` keys.
+        Should not be given if the `base_antenna` class does not accept a
+        `directionality_freqs` argument.
 
     Attributes
     ----------
@@ -565,11 +801,10 @@ class ARAAntennaSystem(AntennaSystem):
     ARAAntenna : Antenna class to be used for ARA antennas.
 
     """
-    def __init__(self, name, position, power_threshold,
-                 directionality_data=None, directionality_freqs=None,
+    def __init__(self, base_antenna, name, position, power_threshold,
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
-                 noisy=True, unique_noise_waveforms=10):
-        super().__init__(ARAAntenna)
+                 noisy=True, unique_noise_waveforms=10, **kwargs):
+        super().__init__(base_antenna)
 
         self.name = str(name)
         self.position = position
@@ -577,10 +812,9 @@ class ARAAntennaSystem(AntennaSystem):
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
 
-        self.setup_antenna(directionality_data=directionality_data,
-                           directionality_freqs=directionality_freqs,
-                           orientation=orientation, noisy=noisy,
-                           unique_noise_waveforms=unique_noise_waveforms)
+        self.setup_antenna(orientation=orientation, noisy=noisy,
+                           unique_noise_waveforms=unique_noise_waveforms,
+                           **kwargs)
 
         self.power_threshold = power_threshold
         self._power_mean = None
@@ -869,16 +1103,15 @@ class HpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    ARAAntenna : Antenna class to be used for ARA antennas.
+    HpolBase : Antenna class to be used for ARA Hpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,
                  amplification=1, amplifier_clipping=1, noisy=True,
                  unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
+        super().__init__(base_antenna=HpolBase,
+                         name=name, position=position,
                          power_threshold=power_threshold,
-                         directionality_data=HPOL_DIRECTIONALITY,
-                         directionality_freqs=HPOL_FREQS,
                          orientation=(0,0,1),
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
@@ -943,16 +1176,15 @@ class VpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    ARAAntenna : Antenna class to be used for ARA antennas.
+    VpolBase : Antenna class to be used for ARA Vpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,
                  amplification=1, amplifier_clipping=1, noisy=True,
                  unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
+        super().__init__(base_antenna=VpolBase,
+                         name=name, position=position,
                          power_threshold=power_threshold,
-                         directionality_data=VPOL_DIRECTIONALITY,
-                         directionality_freqs=VPOL_FREQS,
                          orientation=(0,0,1),
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
