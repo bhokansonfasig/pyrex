@@ -16,6 +16,11 @@ __pycache__/
 # Visual Studio Code settings
 .vscode/
 
+# Large data files
+pyrex/custom/arianna/*.ad1
+pyrex/custom/arianna/*.ra1
+pyrex/custom/arianna/*.pkl
+
 # Bug testing items
 tests/Bug*
 tests/bug*
