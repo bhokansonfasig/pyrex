@@ -822,8 +822,8 @@ class ARAAntennaSystem(AntennaSystem):
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=8.5, orientation=(0,0,1),
-                      directionality_data=None, directionality_freqs=None,
-                      efficiency=1, noisy=True, unique_noise_waveforms=10):
+                      efficiency=1, noisy=True, unique_noise_waveforms=10,
+                      **kwargs):
         """
         Setup the antenna by passing along its init arguments.
 
@@ -841,12 +841,6 @@ class ARAAntennaSystem(AntennaSystem):
             RMS voltage of the antenna noise.
         orientation : array_like, optional
             Vector direction of the z-axis of the antenna.
-        directionality_data : None or dict, optional
-            Dictionary containing data on the directionality of the antenna. If
-            ``None``, behavior is undefined.
-        directionality_freqs : None or set, optional
-            Set of frequencies in the directionality data ``dict`` keys. If
-            ``None``, calculated automatically from `directionality_data`.
         efficiency : float, optional
             Antenna efficiency applied to incoming signal values.
         noisy : boolean, optional
@@ -854,6 +848,14 @@ class ARAAntennaSystem(AntennaSystem):
         unique_noise_waveforms : int, optional
             The number of expected noise waveforms needed for each received
             signal to have its own noise.
+        directionality_data : None or dict, optional
+            Dictionary containing data on the directionality of the antenna.
+            Should not be given if the `base_antenna` class does not accept a
+            `directionality_data` argument.
+        directionality_freqs : None or set, optional
+            Set of frequencies in the directionality data ``dict`` keys.
+            Should not be given if the `base_antenna` class does not accept a
+            `directionality_freqs` argument.
 
         """
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
@@ -869,7 +871,8 @@ class ARAAntennaSystem(AntennaSystem):
                               orientation=orientation,
                               efficiency=efficiency,
                               noisy=noisy,
-                              unique_noise_waveforms=unique_noise_waveforms)
+                              unique_noise_waveforms=unique_noise_waveforms,
+                              **kwargs)
 
     # Tunnel diode response functions pulled from arasim
     _td_args = {
