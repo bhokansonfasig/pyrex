@@ -178,10 +178,69 @@ def _read_response_pickle(filename):
             return pickle.load(f)
 
 
+def _read_filter_data(filename):
+    """
+    Gather frequency-dependent filtering data from a data file.
+
+    The data file should have columns for frequency, non-dB gain, and phase
+    (in radians).
+
+    Parameters
+    ----------
+    filename : str
+        Name of the data file.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the data with keys (freq) and values
+        (gain, phase).
+
+    """
+    data = {}
+    freq_scale = 0
+    phase_offset = 0
+    prev_phase = 0
+    with open(filename) as f:
+        for line in f:
+            words = line.split()
+            if line.startswith('Freq'):
+                _, scale = words[0].split("(")
+                scale = scale.rstrip(")")
+                if scale=="Hz":
+                    freq_scale = 1
+                elif scale=="kHz":
+                    freq_scale = 1e3
+                elif scale=="MHz":
+                    freq_scale = 1e6
+                elif scale=="GHz":
+                    freq_scale = 1e9
+                else:
+                    raise ValueError("Cannot parse line: '"+line+"'")
+            elif len(words)==3 and words[0]!="Total":
+                f, g, p = line.split(",")
+                freq = float(f) * freq_scale
+                gain = float(g)
+                phase = float(p)
+                # In order to smoothly interpolate phases, don't allow the phase
+                # to wrap from -pi to +pi, but instead apply an offset
+                if phase-prev_phase>np.pi:
+                    phase_offset -= 2*np.pi
+                elif prev_phase-phase>np.pi:
+                    phase_offset += 2*np.pi
+                prev_phase = phase
+                data[freq] = (gain, phase+phase_offset)
+
+    return data
+
+
 ARIANNA_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 LPDA_DATA_FILE = os.path.join(ARIANNA_DATA_DIR,
                               "createLPDA_100MHz_InfFirn")
+FILT_DATA_FILE = os.path.join(ARIANNA_DATA_DIR,
+                              "ARA_Electronics_TotalGain_TwoFilters.txt")
 LPDA_RESPONSE, LPDA_FREQS, LPDA_Z = _read_response_pickle(LPDA_DATA_FILE)
+ALL_FILTERS = _read_filter_data(FILT_DATA_FILE)
 
 
 class ARIANNAAntenna(Antenna):
@@ -286,6 +345,8 @@ class ARIANNAAntenna(Antenna):
             self._resp_freqs = set()
             for key in self._resp_data:
                 self._resp_freqs.add(key[0])
+
+        self._filter_data = ALL_FILTERS
 
 
     def generate_response_gains(self, theta, phi):
@@ -393,6 +454,32 @@ class ARIANNAAntenna(Antenna):
         Z_rx = Z_rx_func(np.abs(frequencies[frequencies!=0]))
         heff[frequencies!=0] = 2 * 3e8/frequencies[frequencies!=0] * Z_rx/377j
         return heff
+
+
+    def interpolate_filter(self, frequencies):
+        """
+        Generate interpolated filter values for given frequencies.
+
+        Calculate the interpolated values of the antenna's filter gain data
+        for some frequencies.
+
+        Parameters
+        ----------
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
+
+        Returns
+        -------
+        array_like
+            Complex filter gain in voltage for the given `frequencies`.
+
+        """
+        freqs = sorted(self._filter_data.keys())
+        gains = [self._filter_data[f][0] for f in freqs]
+        phases = [self._filter_data[f][1] for f in freqs]
+        interp_gains = np.interp(frequencies, freqs, gains, left=0, right=0)
+        interp_phases = np.interp(frequencies, freqs, phases, left=0, right=0)
+        return interp_gains * np.exp(1j * interp_phases)
 
 
     def receive(self, signal, direction=None, polarization=None,
@@ -508,7 +595,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
     """
     Antenna system extending base ARIANNA antenna with front-end processing.
 
-    Applies as the front end signal amplification and signal clipping.
+    Applies as the front end a filter representing the full ARA electronics
+    chain (including amplification) and signal clipping.
 
     Parameters
     ----------
@@ -592,6 +680,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         self.threshold = threshold
 
+        self._noise_mean = None
+        self._noise_rms = None
+
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=8.5, z_axis=(0,0,1), x_axis=(1,0,0),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
@@ -631,7 +722,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Array of impedances corresponding to the `response_freqs`.
 
         """
-        # Noise rms should be about 40 mV (after filtering with gain of ~5000).
+        # The defaults for this method are pulled from the ARA antennas, where
+        # noise rms should be about 40 mV (after filtering with gain of ~5000).
         # This is satisfied for most ice temperatures by using an effective
         # resistance of ~8.5 Ohm
         # Additionally, the bandwidth of the antenna is set slightly larger
@@ -654,7 +746,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
         """
         Apply front-end processes to a signal and return the output.
 
-        The front-end consists of amplification and signal clipping.
+        The front-end consists of the full ARA electronics chain (including
+        amplification) and signal clipping.
 
         Parameters
         ----------
@@ -667,7 +760,10 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        clipped_values = np.clip(signal.values*self.amplification,
+        copy = Signal(signal.times, signal.values)
+        copy.filter_frequencies(self.antenna.interpolate_filter,
+                                force_real=True)
+        clipped_values = np.clip(copy.values * self.amplification,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
         return Signal(signal.times, clipped_values,
@@ -677,8 +773,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
         """
         Check if the antenna system triggers on a given signal.
 
-        Antenna triggers if any single time bin has a voltage above the trigger
-        threshold.
+        Compares the maximum and minimum values to a noise signal. Triggers if
+        both the maximum and minimum values exceed the noise mean +/- the noise
+        rms times the threshold.
 
         Parameters
         ----------
@@ -695,7 +792,20 @@ class ARIANNAAntennaSystem(AntennaSystem):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        return max(np.abs(signal.values)) > self.threshold
+        if self._noise_mean is None or self._noise_rms is None:
+            # Prepare for antenna trigger by finding rms of noise waveform
+            # (1 microsecond) passed through front-end
+            long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
+            processed_noise = self.front_end(long_noise)
+            self._noise_mean = np.mean(processed_noise.values)
+            self._noise_rms = np.sqrt(np.mean(processed_noise.values**2))
+
+        low_trigger = (self._noise_mean -
+                       self._noise_rms*np.abs(self.threshold))
+        high_trigger = (self._noise_mean +
+                        self._noise_rms*np.abs(self.threshold))
+        return (np.min(signal.values)<low_trigger and
+                np.max(signal.values)>high_trigger)
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=True):
@@ -739,9 +849,10 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
 class LPDA(ARIANNAAntennaSystem):
     """
-    ARIANNA LPDA antenna system with front-end processing.
+    ARIANNA LPDA antenna system with ARA front-end processing.
 
-    Applies as the front end signal amplification and signal clipping.
+    Applies as the front end a filter representing the full ARA electronics
+    chain (including amplification) and signal clipping.
 
     Parameters
     ----------
