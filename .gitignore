@@ -17,9 +17,9 @@ __pycache__/
 .vscode/
 
 # Large data files
-pyrex/custom/arianna/*.ad1
-pyrex/custom/arianna/*.ra1
-pyrex/custom/arianna/*.pkl
+pyrex/custom/arianna/data/*.ad1
+pyrex/custom/arianna/data/*.ra1
+pyrex/custom/arianna/data/*.pkl
 
 # Bug testing items
 tests/Bug*
