@@ -140,7 +140,7 @@ class Antenna:
         """
         self.z_axis = normalize(z_axis)
         self.x_axis = normalize(x_axis)
-        if np.dot(self.z_axis, self.x_axis)!=0:
+        if not np.isclose(np.dot(self.z_axis, self.x_axis), 0, rtol=0):
             raise ValueError("Antenna's x_axis must be perpendicular to its "
                              +"z_axis")
 
