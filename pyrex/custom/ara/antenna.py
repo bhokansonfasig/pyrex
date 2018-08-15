@@ -818,7 +818,7 @@ class ARAAntennaSystem(AntennaSystem):
 
         self.power_threshold = power_threshold
         self._power_mean = None
-        self._power_rms = None
+        self._power_std = None
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=8.5, orientation=(0,0,1),
@@ -993,21 +993,23 @@ class ARAAntennaSystem(AntennaSystem):
             Whether or not the antenna triggers on `signal`.
 
         """
-        if self._power_mean is None or self._power_rms is None:
-            # Prepare for antenna trigger by finding rms of noise waveform
-            # (1 microsecond) convolved with tunnel diode response
+        if self._power_mean is None or self._power_std is None:
+            # Prepare for antenna trigger by finding mean and standard
+            # deviation of a long noise waveform (1 microsecond) convolved with
+            # the tunnel diode response
             long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
             power_noise = self.tunnel_diode(self.front_end(long_noise))
             self._power_mean = np.mean(power_noise.values)
-            self._power_rms = np.sqrt(np.mean(power_noise.values**2))
+            self._power_std = np.sqrt(np.mean((power_noise.values
+                                               -self._power_mean)**2))
 
         power_signal = self.tunnel_diode(signal)
+        # Use the absolute value of the power_threshold value so that the value
+        # can be specified as positive or negative (compatible with AraSim
+        # which only works with negative values, resulting in some confusion)
         low_trigger = (self._power_mean -
-                       self._power_rms*np.abs(self.power_threshold))
-        high_trigger = (self._power_mean +
-                        self._power_rms*np.abs(self.power_threshold))
-        return (np.min(power_signal.values)<low_trigger or
-                np.max(power_signal.values)>high_trigger)
+                       self._power_std*np.abs(self.power_threshold))
+        return np.min(power_signal.values)<low_trigger
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=True):
