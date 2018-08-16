@@ -681,7 +681,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
         self.threshold = threshold
 
         self._noise_mean = None
-        self._noise_rms = None
+        self._noise_std = None
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=8.5, z_axis=(0,0,1), x_axis=(1,0,0),
@@ -792,18 +792,20 @@ class ARIANNAAntennaSystem(AntennaSystem):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        if self._noise_mean is None or self._noise_rms is None:
-            # Prepare for antenna trigger by finding rms of noise waveform
-            # (1 microsecond) passed through front-end
+        if self._noise_mean is None or self._noise_std is None:
+            # Prepare for antenna trigger by finding mean and standard
+            # deviation of a long noise waveform (1 microsecond) passed through
+            # the front-end
             long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
             processed_noise = self.front_end(long_noise)
             self._noise_mean = np.mean(processed_noise.values)
-            self._noise_rms = np.sqrt(np.mean(processed_noise.values**2))
+            self._noise_std = np.sqrt(np.mean((processed_noise.values
+                                               -self._noise_mean)**2))
 
         low_trigger = (self._noise_mean -
-                       self._noise_rms*np.abs(self.threshold))
+                       self._noise_std*np.abs(self.threshold))
         high_trigger = (self._noise_mean +
-                        self._noise_rms*np.abs(self.threshold))
+                        self._noise_std*np.abs(self.threshold))
         return (np.min(signal.values)<low_trigger and
                 np.max(signal.values)>high_trigger)
 
