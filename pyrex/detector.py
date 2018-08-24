@@ -70,6 +70,28 @@ class AntennaSystem:
         """
         self.antenna = self._antenna_class(*args, **kwargs)
 
+    def set_orientation(self, z_axis=(0,0,1), x_axis=(1,0,0)):
+        """
+        Sets the orientation of the antenna system.
+
+        Sets up the z-axis and the x-axis of the antenna according to the given
+        parameters. Fails if the z-axis and x-axis aren't perpendicular.
+
+        Parameters
+        ----------
+        z_axis : array_like, optional
+            Vector direction of the z-axis of the antenna.
+        x_axis : array_like, optional
+            Vector direction of the x-axis of the antenna.
+
+        Raises
+        ------
+        ValueError
+            If the z-axis and x-axis aren't perpendicular.
+
+        """
+        self.antenna.set_orientation(z_axis=z_axis, x_axis=x_axis)
+
     def front_end(self, signal):
         """
         Apply front-end processes to a signal and return the output.
@@ -127,6 +149,29 @@ class AntennaSystem:
 
         """
         return self.trigger(self.full_waveform(times))
+
+    def clear(self, reset_noise=False):
+        """
+        Reset the antenna system to an empty state.
+
+        Clears all signals, noises, and triggers from the antenna state. Can
+        also optionally recalibrate the noise so that a new signal arriving
+        at the same times as a previous signal will not have the same noise.
+
+        Parameters
+        ----------
+        reset_noise : boolean, optional
+            Whether or not to recalibrate the noise.
+
+        See Also
+        --------
+        pyrex.Antenna.clear : Reset an antenna to an empty state.
+
+        """
+        self._signals.clear()
+        self._all_waves.clear()
+        self._triggers.clear()
+        self.antenna.clear(reset_noise=reset_noise)
 
     @property
     def signals(self):
@@ -190,6 +235,56 @@ class AntennaSystem:
         preprocessed = self.antenna.full_waveform(times)
         return self.front_end(preprocessed)
 
+    def make_noise(self, times):
+        """
+        Creates a noise signal over the given times.
+
+        Passes a noise signal of the antenna through the front-end.
+
+        Parameters
+        ----------
+        times : array_like
+            1D array of times during which to produce noise values.
+
+        Returns
+        -------
+        Signal
+            Antenna system noise values during the `times` array.
+
+        Raises
+        ------
+        ValueError
+            If not enough noise-related attributes are defined for the antenna.
+
+        """
+        preprocessed = self.antenna.make_noise(times)
+        return self.front_end(preprocessed)
+
+    def trigger(self, signal):
+        """
+        Check if the antenna system triggers on a given signal.
+
+        By default just matches the antenna's trigger. It may be overridden in
+        subclasses.
+
+        Parameters
+        ----------
+        signal : Signal
+            ``Signal`` object on which to test the trigger condition.
+
+        Returns
+        -------
+        boolean
+            Whether or not the antenna triggers on `signal`.
+
+        See Also
+        --------
+        pyrex.Antenna.trigger : Check if an antenna triggers on a given signal.
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
+        return self.antenna.trigger(signal)
+
     def receive(self, signal, direction=None, polarization=None,
                 force_real=False):
         """
@@ -228,54 +323,6 @@ class AntennaSystem:
         return self.antenna.receive(signal, direction=direction,
                                     polarization=polarization,
                                     force_real=force_real)
-
-    def clear(self, reset_noise=False):
-        """
-        Reset the antenna system to an empty state.
-
-        Clears all signals, noises, and triggers from the antenna state. Can
-        also optionally recalibrate the noise so that a new signal arriving
-        at the same times as a previous signal will not have the same noise.
-
-        Parameters
-        ----------
-        reset_noise : boolean, optional
-            Whether or not to recalibrate the noise.
-
-        See Also
-        --------
-        pyrex.Antenna.clear : Reset an antenna to an empty state.
-
-        """
-        self._signals.clear()
-        self._all_waveforms.clear()
-        self._triggers.clear()
-        self.antenna.clear(reset_noise=reset_noise)
-
-    def trigger(self, signal):
-        """
-        Check if the antenna system triggers on a given signal.
-
-        By default just matches the antenna's trigger. It may be overridden in
-        subclasses.
-
-        Parameters
-        ----------
-        signal : Signal
-            ``Signal`` object on which to test the trigger condition.
-
-        Returns
-        -------
-        boolean
-            Whether or not the antenna triggers on `signal`.
-
-        See Also
-        --------
-        pyrex.Antenna.trigger : Check if an antenna triggers on a given signal.
-        pyrex.Signal : Base class for time-domain signals.
-
-        """
-        return self.antenna.trigger(signal)
 
 
 

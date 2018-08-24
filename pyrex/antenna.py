@@ -184,6 +184,7 @@ class Antenna:
 
         """
         self.signals.clear()
+        self._all_waves.clear()
         self._triggers.clear()
         if reset_noise:
             self._noise_master = None
