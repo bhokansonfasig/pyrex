@@ -174,6 +174,7 @@ class ARAString(Detector):
             signal to have its own noise (per antenna).
 
         """
+        self.subsets = []
         for i, pos in enumerate(self.antenna_positions):
             AntennaClass = class_scheme(i)
             self.subsets.append(
@@ -338,6 +339,7 @@ class PhasedArrayString(Detector):
             signal to have its own noise (per antenna).
 
         """
+        self.subsets = []
         for i, pos in enumerate(self.antenna_positions):
             self.subsets.append(
                 self.antenna_type(name=self.antenna_type.__name__, position=pos,

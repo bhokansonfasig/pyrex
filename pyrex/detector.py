@@ -404,6 +404,7 @@ class Detector:
             else:
                 antenna_class = args[0]
                 args = args[1:]
+            self.subsets = []
             for p in self.antenna_positions:
                 self.subsets.append(antenna_class(position=p, *args, **kwargs))
         else:
