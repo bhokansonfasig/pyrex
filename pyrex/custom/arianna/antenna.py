@@ -23,11 +23,12 @@ def _read_response_data(filename):
     Data files should exist with names `filename`.ra1 and `filename`.ad1.
     The ``.ad1`` file should contain frequencies in the first column and real
     and imaginary parts of the impedance in the sixth and seventh columns.
-    The ``.ra1`` file should have columns for theta, phi, .........
-    dB gain, non-dB gain, and
-    phase (in degrees). This should be divided into sections for each frequency
-    with a header line "  >  Gen. no.    1 X  GHz   73   91  Gain" where "X" is
-    the gain in GHz.
+    The ``.ra1`` file should contain phi and theta in the first two columns,
+    the real and imaginary parts of the phi gain in the next two columns,
+    and the real and imaginary parts of the theta gain in the next two columns.
+    This should be divided into sections for each frequency with a header line
+    "  >  Gen. no.    1 X  GHz   73   91  Gain" where "X" is the frequency in
+    GHz.
 
     Parameters
     ----------
@@ -178,6 +179,69 @@ def _read_response_pickle(filename):
             return pickle.load(f)
 
 
+def _read_amplifier_data(gain_filename, phase_filename, gain_offset=0):
+    """
+    Gather frequency-dependent amplifier data from data files.
+
+    Each data file should have columns for frequency, gain or phase data, and a
+    third empty column. The gain should be in dB and the phase should be in
+    degrees.
+
+    Parameters
+    ----------
+    gain_filename : str
+        Name of the data file containing gains (in dB).
+    phase_filename : str
+        Name of the data file containing phases (in degrees).
+    gain_offset : float
+        Offset to apply to the gain values (in dB).
+
+    Returns
+    -------
+    dict
+        Dictionary containing the data with keys (freq) and values
+        (gain, phase).
+
+    """
+    data = {}
+    with open(gain_filename) as f:
+        for line in f:
+            words = line.split()
+            if line.startswith('"'):
+                continue
+            elif len(words)==3 and words[0]!="Frequency":
+                f, g, _ = line.split(",")
+                freq = float(f)
+                gain = 10**((float(g)+gain_offset)/20)
+                data[freq] = (gain, 0)
+
+    phase_offset = 0
+    prev_phase = 0
+    with open(phase_filename) as f:
+        for line in f:
+            words = line.split()
+            if line.startswith('"'):
+                continue
+            elif len(words)==3 and words[0]!="Frequency":
+                f, p, _ = line.split(",")
+                freq = float(f)
+                phase = np.radians(float(p))
+                # In order to smoothly interpolate phases, don't allow the phase
+                # to wrap from -pi to +pi, but instead apply an offset
+                if phase-prev_phase>np.pi:
+                    phase_offset -= 2*np.pi
+                elif prev_phase-phase>np.pi:
+                    phase_offset += 2*np.pi
+                prev_phase = phase
+                if freq not in data:
+                    raise ValueError("Frequency values must match between "
+                                     +"gain and phase files")
+                gain = data[freq][0]
+                data[freq] = (gain, phase+phase_offset)
+
+    return data
+
+
 def _read_filter_data(filename):
     """
     Gather frequency-dependent filtering data from a data file.
@@ -237,10 +301,19 @@ def _read_filter_data(filename):
 ARIANNA_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 LPDA_DATA_FILE = os.path.join(ARIANNA_DATA_DIR,
                               "createLPDA_100MHz_InfFirn")
-FILT_DATA_FILE = os.path.join(ARIANNA_DATA_DIR,
-                              "ARA_Electronics_TotalGain_TwoFilters.txt")
+AMP_GAIN_FILE = os.path.join(ARIANNA_DATA_DIR,
+                             "amp_300_gain.csv")
+AMP_PHASE_FILE = os.path.join(ARIANNA_DATA_DIR,
+                              "amp_300_phase.csv")
+ARA_FILT_DATA_FILE = os.path.join(ARIANNA_DATA_DIR,
+                                  "ARA_Electronics_TotalGain_TwoFilters.txt")
 LPDA_RESPONSE, LPDA_FREQS, LPDA_Z = _read_response_pickle(LPDA_DATA_FILE)
-ALL_FILTERS = _read_filter_data(FILT_DATA_FILE)
+AMPLIFIER_GAIN = _read_amplifier_data(AMP_GAIN_FILE, AMP_PHASE_FILE,
+                                      gain_offset=40)
+# Series 100 and 200 amps should have gain_offset=60,
+# series 300 should have gain_offset=40
+ARA_FILTERS = _read_filter_data(ARA_FILT_DATA_FILE)
+
 
 
 class ARIANNAAntenna(Antenna):
@@ -346,7 +419,7 @@ class ARIANNAAntenna(Antenna):
             for key in self._resp_data:
                 self._resp_freqs.add(key[0])
 
-        self._filter_data = ALL_FILTERS
+        self._filter_data = AMPLIFIER_GAIN
 
 
     def generate_response_gains(self, theta, phi):
@@ -595,8 +668,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
     """
     Antenna system extending base ARIANNA antenna with front-end processing.
 
-    Applies as the front end a filter representing the full ARA electronics
-    chain (including amplification) and signal clipping.
+    Applies as the front end a filter representing the ARIANNA amplifier and
+    signal clipping.
 
     Parameters
     ----------
@@ -605,8 +678,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
     position : array_like
         Vector position of the antenna.
     threshold : float
-        Voltage threshold (V) for trigger condition. Antenna triggers if a the
-        signal voltage exceeds this threshold at any time.
+        Voltage sigma threshold for the trigger condition.
+    trigger_window : float
+        Time window (ns) for the trigger condition.
     z_axis : array_like, optional
         Vector direction of the z-axis of the antenna.
     x_axis : array_like, optional
@@ -640,8 +714,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
     position : array_like
         Vector position of the antenna.
     threshold : float
-        Voltage threshold (V) for trigger condition. Antenna triggers if a the
-        signal voltage exceeds this threshold at any time.
+        Voltage sigma threshold for the trigger condition.
+    trigger_window : float
+        Time window (ns) for the trigger condition.
     amplification : float
         Amplification to be applied to the signal pre-clipping. Note that the
         usual ARA electronics amplification is already applied without this.
@@ -660,9 +735,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
     ARIANNAAntenna : Antenna class to be used for ARIANNA antennas.
 
     """
-    def __init__(self, name, position, threshold, z_axis=(0,0,1),
-                 x_axis=(1,0,0), amplification=1, amplifier_clipping=1,
-                 noisy=True, unique_noise_waveforms=10,
+    def __init__(self, name, position, threshold, trigger_window=5e-9,
+                 z_axis=(0,0,1), x_axis=(1,0,0), amplification=1,
+                 amplifier_clipping=1, noisy=True, unique_noise_waveforms=10,
                  response_data=None, response_freqs=None, response_zs=None):
         super().__init__(ARIANNAAntenna)
 
@@ -679,11 +754,12 @@ class ARIANNAAntennaSystem(AntennaSystem):
                            response_zs=response_zs)
 
         self.threshold = threshold
+        self.trigger_window = trigger_window
 
         self._noise_mean = None
         self._noise_std = None
 
-    def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
+    def setup_antenna(self, center_frequency=350e6, bandwidth=600e6,
                       resistance=8.5, z_axis=(0,0,1), x_axis=(1,0,0),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
                       response_data=None, response_freqs=None,
@@ -746,8 +822,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
         """
         Apply front-end processes to a signal and return the output.
 
-        The front-end consists of the full ARA electronics chain (including
-        amplification) and signal clipping.
+        The front-end consists of amplification according to data taken from
+        NuRadioReco, bandpass filtering, and signal clipping.
 
         Parameters
         ----------
@@ -775,7 +851,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         Compares the maximum and minimum values to a noise signal. Triggers if
         both the maximum and minimum values exceed the noise mean +/- the noise
-        rms times the threshold.
+        rms times the threshold within the set trigger window.
 
         Parameters
         ----------
@@ -806,8 +882,24 @@ class ARIANNAAntennaSystem(AntennaSystem):
                        self._noise_std*np.abs(self.threshold))
         high_trigger = (self._noise_mean +
                         self._noise_std*np.abs(self.threshold))
-        return (np.min(signal.values)<low_trigger and
-                np.max(signal.values)>high_trigger)
+
+        # Check whether low and high triggers occur within 5 ns
+        low_bins = np.where(signal.values<low_trigger)[0]
+        high_bins = np.where(signal.values>high_trigger)[0]
+        # Find minimum bin distance between low and high
+        i = 0
+        j = 0
+        min_diff = np.inf
+        while i<len(low_bins) and j<len(high_bins):
+            diff = np.abs(low_bins[i] - high_bins[j])
+            if diff<min_diff:
+                min_diff = diff
+            if low_bins[i]<high_bins[j]:
+                i += 1
+            else:
+                j += 1
+
+        return min_diff*signal.dt<=self.trigger_window
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=True):
@@ -851,10 +943,10 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
 class LPDA(ARIANNAAntennaSystem):
     """
-    ARIANNA LPDA antenna system with ARA front-end processing.
+    ARIANNA LPDA antenna system.
 
-    Applies as the front end a filter representing the full ARA electronics
-    chain (including amplification) and signal clipping.
+    Applies as the front end a filter representing the ARIANNA amplifier and
+    signal clipping.
 
     Parameters
     ----------
@@ -863,8 +955,9 @@ class LPDA(ARIANNAAntennaSystem):
     position : array_like
         Vector position of the antenna.
     threshold : float
-        Voltage threshold (V) for trigger condition. Antenna triggers if a the
-        signal voltage exceeds this threshold at any time.
+        Voltage sigma threshold for the trigger condition.
+    trigger_window : float
+        Time window (ns) for the trigger condition.
     z_axis : array_like, optional
         Vector direction of the z-axis of the antenna.
     x_axis : array_like, optional
@@ -889,8 +982,9 @@ class LPDA(ARIANNAAntennaSystem):
     position : array_like
         Vector position of the antenna.
     threshold : float
-        Voltage threshold (V) for trigger condition. Antenna triggers if a the
-        signal voltage exceeds this threshold at any time.
+        Voltage sigma threshold for the trigger condition.
+    trigger_window : float
+        Time window (ns) for the trigger condition.
     amplification : float
         Amplification to be applied to the signal pre-clipping. Note that the
         usual ARA electronics amplification is already applied without this.
@@ -909,10 +1003,11 @@ class LPDA(ARIANNAAntennaSystem):
     ARIANNAAntenna : Antenna class to be used for ARIANNA antennas.
 
     """
-    def __init__(self, name, position, threshold, z_axis=(0,0,1),
-                 x_axis=(1,0,0), amplification=1, amplifier_clipping=1,
-                 noisy=True, unique_noise_waveforms=10):
+    def __init__(self, name, position, threshold, trigger_window=5e-9,
+                 z_axis=(0,0,1), x_axis=(1,0,0), amplification=1,
+                 amplifier_clipping=1, noisy=True, unique_noise_waveforms=10):
         super().__init__(name=name, position=position, threshold=threshold,
+                         trigger_window=trigger_window,
                          z_axis=z_axis, x_axis=x_axis,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
