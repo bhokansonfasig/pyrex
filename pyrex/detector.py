@@ -124,6 +124,21 @@ class AntennaSystem:
         """Boolean of whether the antenna system has been triggered."""
         return len(self.waveforms)>0
 
+    @property
+    def is_hit_mc_truth(self):
+        """
+        Boolean of whether the antenna has been triggered by signal.
+
+        The decision is based on the Monte Carlo truth of whether noise would
+        have triggered without the signal. If a signal triggered, but the noise
+        alone in the same timeframe would have triggered as well, the trigger
+        is not counted.
+        """
+        for wave in self.waveforms:
+            if not self.trigger(self.make_noise(wave.times)):
+                return True
+        return False
+
     def is_hit_during(self, times):
         """
         Check if the antenna system is triggered in a time range.
@@ -460,12 +475,18 @@ class Detector:
             for sub in self.subsets:
                 sub.build_antennas(*args, **kwargs)
 
-    def triggered(self, *args, **kwargs):
+    def triggered(self, *args, require_mc_truth=False, **kwargs):
         """
         Check if the detector is triggered based on its current state.
 
         By default just checks whether any antenna in the detector is hit.
         This method may be overridden in subclasses.
+
+        Parameters
+        ----------
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -480,7 +501,8 @@ class Detector:
 
         """
         for ant in self:
-            if ant.is_hit:
+            if ((require_mc_truth and ant.is_hit_mc_truth) or
+                    (not require_mc_truth and ant.is_hit)):
                 return True
         return False
 

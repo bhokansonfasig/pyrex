@@ -187,7 +187,7 @@ class ARAString(Detector):
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))
 
-    def triggered(self, antenna_requirement=1):
+    def triggered(self, antenna_requirement=1, require_mc_truth=False):
         """
         Check if the string is triggered based on its current state.
 
@@ -199,6 +199,9 @@ class ARAString(Detector):
         ----------
         antenna_requirement : float, optional
             The number of antennas which must be hit for the string to trigger.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -213,7 +216,10 @@ class ARAString(Detector):
                                                triggers on a given signal.
 
         """
-        antennas_hit = sum(1 for ant in self if ant.is_hit)
+        if require_mc_truth:
+            antennas_hit = sum(1 for ant in self if ant.is_hit_mc_truth)
+        else:
+            antennas_hit = sum(1 for ant in self if ant.is_hit)
         return antennas_hit>=antenna_requirement
 
 
@@ -351,7 +357,8 @@ class PhasedArrayString(Detector):
         for i, ant in enumerate(self.subsets):
             ant.name = str(naming_scheme(i, ant))
 
-    def triggered(self, beam_threshold, delays=None, angles=None):
+    def triggered(self, beam_threshold, delays=None, angles=None,
+                  require_mc_truth=False):
         """
         Check if the string is triggered based on its current state.
 
@@ -375,6 +382,9 @@ class PhasedArrayString(Detector):
             and `delays` is ``None``, default beam delays are used based on
             the typical ARA phased array delays (19 delays from -5.94 ns to
             5.94 ns).
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -568,7 +578,8 @@ class RegularStation(Detector):
                 string_type(x_str, y_str, **string_kwargs)
             )
 
-    def triggered(self, polarized_antenna_requirement=1):
+    def triggered(self, polarized_antenna_requirement=1,
+                  require_mc_truth=False):
         """
         Check if the station is triggered based on its current state.
 
@@ -581,6 +592,9 @@ class RegularStation(Detector):
         polarized_antenna_requirement : float, optional
             The number of antennas in a single polarization which must be hit
             for the station to trigger.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -595,10 +609,20 @@ class RegularStation(Detector):
                                                triggers on a given signal.
 
         """
-        hpol_hit = sum(1 for ant in self
-                       if isinstance(ant, HpolAntenna) and ant.is_hit)
-        vpol_hit = sum(1 for ant in self
-                       if isinstance(ant, VpolAntenna) and ant.is_hit)
+        if require_mc_truth:
+            hpol_hit = sum(1 for ant in self
+                           if isinstance(ant, HpolAntenna)
+                           and ant.is_hit_mc_truth)
+            vpol_hit = sum(1 for ant in self
+                           if isinstance(ant, VpolAntenna)
+                           and ant.is_hit_mc_truth)
+        else:
+            hpol_hit = sum(1 for ant in self
+                           if isinstance(ant, HpolAntenna)
+                           and ant.is_hit)
+            vpol_hit = sum(1 for ant in self
+                           if isinstance(ant, VpolAntenna)
+                           and ant.is_hit)
         return (hpol_hit>=polarized_antenna_requirement or
                 vpol_hit>=polarized_antenna_requirement)
 
@@ -765,7 +789,7 @@ class AlbrechtStation(Detector):
             )
 
     def triggered(self, beam_threshold, outrigger_antenna_requirement=None,
-                  beam_delays=None, beam_angles=None):
+                  beam_delays=None, beam_angles=None, require_mc_truth=False):
         """
         Check if the station is triggered based on its current state.
 
@@ -792,6 +816,9 @@ class AlbrechtStation(Detector):
             Polar angles (degrees) at which to form phased beams. If ``None``
             and `delays` is ``None``, default beam delays are used based on
             the typical ARA phased array delays.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -813,12 +840,20 @@ class AlbrechtStation(Detector):
             hpol_outriggers_hit = 0
             vpol_outriggers_hit = 0
             for string in self.subsets[2:]:
-                hpol_outriggers_hit += sum(1 for ant in string
-                                           if isinstance(ant, HpolAntenna)
-                                           and ant.is_hit)
-                vpol_outriggers_hit += sum(1 for ant in string
-                                           if isinstance(ant, VpolAntenna)
-                                           and ant.is_hit)
+                if require_mc_truth:
+                    hpol_outriggers_hit += sum(1 for ant in string
+                                               if isinstance(ant, HpolAntenna)
+                                               and ant.is_hit_mc_truth)
+                    vpol_outriggers_hit += sum(1 for ant in string
+                                               if isinstance(ant, VpolAntenna)
+                                               and ant.is_hit_mc_truth)
+                else:
+                    hpol_outriggers_hit += sum(1 for ant in string
+                                               if isinstance(ant, HpolAntenna)
+                                               and ant.is_hit)
+                    vpol_outriggers_hit += sum(1 for ant in string
+                                               if isinstance(ant, VpolAntenna)
+                                               and ant.is_hit)
             if (hpol_outriggers_hit>=outrigger_antenna_requirement or
                     vpol_outriggers_hit>=outrigger_antenna_requirement):
                 return True
@@ -826,9 +861,11 @@ class AlbrechtStation(Detector):
         # Check for phased array trigger
         return (
             self.subsets[0].triggered(beam_threshold=beam_threshold,
-                                      delays=beam_delays, angles=beam_angles) or
+                                      delays=beam_delays, angles=beam_angles,
+                                      require_mc_truth=require_mc_truth) or
             self.subsets[1].triggered(beam_threshold=beam_threshold,
-                                      delays=beam_delays, angles=beam_angles)
+                                      delays=beam_delays, angles=beam_angles,
+                                      require_mc_truth=require_mc_truth)
         )
 
 
@@ -954,7 +991,8 @@ class HexagonalGrid(Detector):
                 station_type(base_pos[0], base_pos[1], **station_kwargs)
             )
 
-    def triggered(self, station_requirement=1, **station_trigger_kwargs):
+    def triggered(self, station_requirement=1, require_mc_truth=False,
+                  **station_trigger_kwargs):
         """
         Check if the detector is triggered based on its current state.
 
@@ -968,6 +1006,9 @@ class HexagonalGrid(Detector):
         station_requirement : float, optional
             The number of stations which must be triggered for the detector to
             trigger.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
         **station_trigger_kwargs
             Keyword arguments to be passed on to the ``triggered`` methods of
             the station objects in `subsets`.
@@ -985,7 +1026,8 @@ class HexagonalGrid(Detector):
         """
         stations_hit = 0
         for station in self.subsets:
-            if station.triggered(**station_trigger_kwargs):
+            if station.triggered(require_mc_truth=require_mc_truth,
+                                 **station_trigger_kwargs):
                 stations_hit += 1
             if stations_hit>=station_requirement:
                 return True

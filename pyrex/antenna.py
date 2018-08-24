@@ -149,6 +149,21 @@ class Antenna:
         """Boolean of whether the antenna has been triggered."""
         return len(self.waveforms)>0
 
+    @property
+    def is_hit_mc_truth(self):
+        """
+        Boolean of whether the antenna has been triggered by signal.
+
+        The decision is based on the Monte Carlo truth of whether noise would
+        have triggered without the signal. If a signal triggered, but the noise
+        alone in the same timeframe would have triggered as well, the trigger
+        is not counted.
+        """
+        for wave in self.waveforms:
+            if not self.trigger(self.make_noise(wave.times)):
+                return True
+        return False
+
     def is_hit_during(self, times):
         """
         Check if the antenna is triggered in a time range.
