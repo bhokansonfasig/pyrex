@@ -462,27 +462,6 @@ class EnvelopeSystem(ARAAntennaSystem):
         """
         return super().front_end(signal)
 
-    @property
-    def all_waveforms(self):
-        """
-        The antenna system signal + noise for all hits.
-
-        Adds a lead-in time period equal to the signal length so the envelope
-        circuit has time to equilibrate.
-
-        """
-        # Process any unprocessed antenna waveforms
-        while len(self._all_waveforms)<len(self.antenna.signals):
-            signal = self.antenna.signals[len(self._all_waveforms)]
-            t = signal.times
-            long_times = np.concatenate((t-t[-1]+t[0], t[1:]))
-            long_signal = signal.with_times(long_times)
-            long_noise = self.antenna.make_noise(long_times)
-            long_waveform = self.front_end(long_signal+long_noise)
-            self._all_waveforms.append(long_waveform.with_times(t))
-        # Return envelopes of antenna waveforms
-        return self._all_waveforms
-
     def full_waveform(self, times):
         """
         Signal + noise (if noisy) for the given times.
@@ -510,7 +489,6 @@ class EnvelopeSystem(ARAAntennaSystem):
         """
         # Process full antenna waveform
         # TODO: Optimize this so it doesn't have to double the amount of time
-        # And same for the similar method above in all_waveforms
         long_times = np.concatenate((times-times[-1]+times[0], times[1:]))
         preprocessed = self.antenna.full_waveform(long_times)
         long_waveform = self.front_end(preprocessed)

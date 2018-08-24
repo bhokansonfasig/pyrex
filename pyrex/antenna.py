@@ -112,7 +112,7 @@ class Antenna:
 
         self.signals = []
         self._noise_master = None
-        self._noises = []
+        self._all_waves = []
         self._triggers = []
 
     def __str__(self):
@@ -184,7 +184,6 @@ class Antenna:
 
         """
         self.signals.clear()
-        self._noises.clear()
         self._triggers.clear()
         if reset_noise:
             self._noise_master = None
@@ -204,16 +203,12 @@ class Antenna:
     @property
     def all_waveforms(self):
         """Signal + noise (if ``noisy``) for all antenna hits."""
-        if not(self.noisy):
-            return self.signals
-
-        # Generate noise as necessary
-        while len(self._noises)<len(self.signals):
-            self._noises.append(
-                self.make_noise(self.signals[len(self._noises)].times)
+        # Process any unprocessed signals
+        while len(self._all_waves)<len(self.signals):
+            self._all_waves.append(
+                self.full_waveform(self.signals[len(self._all_waves)].times)
             )
-
-        return [s + n for s, n in zip(self.signals, self._noises)]
+        return self._all_waves
 
     def full_waveform(self, times):
         """

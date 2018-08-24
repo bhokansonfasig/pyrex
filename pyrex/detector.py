@@ -51,7 +51,7 @@ class AntennaSystem:
             self._antenna_class = antenna.__class__
 
         self._signals = []
-        self._all_waveforms = []
+        self._all_waves = []
         self._triggers = []
 
     def __str__(self):
@@ -153,12 +153,14 @@ class AntennaSystem:
     @property
     def all_waveforms(self):
         """The antenna system signal + noise for all hits."""
-        # Process any unprocessed antenna waveforms
-        while len(self._all_waveforms)<len(self.antenna.signals):
-            wave = self.antenna.all_waveforms[len(self._all_waveforms)]
-            self._all_waveforms.append(self.front_end(wave))
-        # Return processed antenna waveforms
-        return self._all_waveforms
+        # Process any unprocessed antenna signals
+        while len(self._all_waves)<len(self.antenna.signals):
+            self._all_waves.append(
+                self.full_waveform(
+                    self.antenna.signals[len(self._all_waves)].times
+                )
+            )
+        return self._all_waves
 
     def full_waveform(self, times):
         """
