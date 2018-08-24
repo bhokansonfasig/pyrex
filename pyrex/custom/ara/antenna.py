@@ -967,7 +967,7 @@ class ARAAntennaSystem(AntennaSystem):
         copy = Signal(signal.times, signal.values)
         copy.filter_frequencies(self.antenna.interpolate_filter,
                                 force_real=True)
-        clipped_values = np.clip(copy.values,
+        clipped_values = np.clip(copy.values * self.amplification,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
         return Signal(signal.times, clipped_values,
