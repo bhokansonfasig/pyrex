@@ -266,9 +266,6 @@ class ARAAntenna(Antenna):
             for key in self._dir_data:
                 self._dir_freqs.add(key[0])
 
-        self._filter_data = ALL_FILTERS
-
-
     def polarization_gain(self, polarization, direction):
         """
         Calculate the (complex) polarization gain of the antenna.
@@ -359,31 +356,6 @@ class ARAAntenna(Antenna):
                   (1-t)*u*phase_ij1 + t*u*phase_i1j1)
 
         return freqs, gains, phases
-
-    def interpolate_filter(self, frequencies):
-        """
-        Generate interpolated filter values for given frequencies.
-
-        Calculate the interpolated values of the antenna's filter gain data
-        for some frequencies.
-
-        Parameters
-        ----------
-        frequencies : array_like
-            1D array of frequencies (Hz) at which to calculate gains.
-
-        Returns
-        -------
-        array_like
-            Complex filter gain in voltage for the given `frequencies`.
-
-        """
-        freqs = sorted(self._filter_data.keys())
-        gains = [self._filter_data[f][0] for f in freqs]
-        phases = [self._filter_data[f][1] for f in freqs]
-        interp_gains = np.interp(frequencies, freqs, gains, left=0, right=0)
-        interp_phases = np.interp(frequencies, freqs, phases, left=0, right=0)
-        return interp_gains * np.exp(1j * interp_phases)
 
     def response(self, frequencies):
         """
@@ -820,6 +792,8 @@ class ARAAntennaSystem(AntennaSystem):
         self._power_mean = None
         self._power_std = None
 
+        self._filter_data = ALL_FILTERS
+
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=8.5, orientation=(0,0,1),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
@@ -946,6 +920,31 @@ class ARAAntennaSystem(AntennaSystem):
                         value_type=Signal.Type.power)
         return output
 
+    def interpolate_filter(self, frequencies):
+        """
+        Generate interpolated filter values for given frequencies.
+
+        Calculate the interpolated values of the antenna system's filter gain
+        data for some frequencies.
+
+        Parameters
+        ----------
+        frequencies : array_like
+            1D array of frequencies (Hz) at which to calculate gains.
+
+        Returns
+        -------
+        array_like
+            Complex filter gain in voltage for the given `frequencies`.
+
+        """
+        freqs = sorted(self._filter_data.keys())
+        gains = [self._filter_data[f][0] for f in freqs]
+        phases = [self._filter_data[f][1] for f in freqs]
+        interp_gains = np.interp(frequencies, freqs, gains, left=0, right=0)
+        interp_phases = np.interp(frequencies, freqs, phases, left=0, right=0)
+        return interp_gains * np.exp(1j * interp_phases)
+
     def front_end(self, signal):
         """
         Apply front-end processes to a signal and return the output.
@@ -965,7 +964,7 @@ class ARAAntennaSystem(AntennaSystem):
 
         """
         copy = Signal(signal.times, signal.values)
-        copy.filter_frequencies(self.antenna.interpolate_filter,
+        copy.filter_frequencies(self.interpolate_filter,
                                 force_real=True)
         clipped_values = np.clip(copy.values * self.amplification,
                                  a_min=-self.amplifier_clipping,
