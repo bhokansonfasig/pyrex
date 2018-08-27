@@ -124,24 +124,24 @@ class TestAntenna:
         assert antenna.waveforms != []
         assert antenna.all_waveforms != []
         assert isinstance(antenna.waveforms[0], Signal)
-        assert antenna._noises != []
+        assert antenna._noise_master is not None
         assert antenna._triggers == [True]
 
     def test_delay_noise_calculation(self, antenna):
         """Test that antenna noise isn't calculated until it is needed"""
         antenna.receive(Signal([0,1e-9,2e-9], [0,1,0], Signal.Type.voltage))
-        assert antenna._noises == []
+        assert antenna._noise_master is None
         antenna.waveforms
-        assert antenna._noises != []
+        assert antenna._noise_master is not None
 
     def test_noises_not_recalculated(self, antenna):
         """Test that noise signals aren't recalculated every time"""
         antenna.signals.append(Signal([0],[1]))
         waveforms1 = antenna.waveforms
-        noises1 = antenna._noises
+        noise_master_1 = antenna._noise_master
         waveforms2 = antenna.waveforms
-        noises2 = antenna._noises
-        assert noises1 == noises2
+        noise_master_2 = antenna._noise_master
+        assert noise_master_1 == noise_master_2
 
     def test_no_trigger_no_waveform(self, antenna):
         """Test that signals which don't trigger don't appear in waveforms,
