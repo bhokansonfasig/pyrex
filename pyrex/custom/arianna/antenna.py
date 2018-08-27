@@ -687,13 +687,16 @@ class ARIANNAAntennaSystem(AntennaSystem):
     threshold : float
         Voltage sigma threshold for the trigger condition.
     trigger_window : float
-        Time window (ns) for the trigger condition.
+        Time window (s) for the trigger condition.
     amplification : float
         Amplification to be applied to the signal pre-clipping. Note that the
         usual ARA electronics amplification is already applied without this.
     amplifier_clipping : float
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
+    lead_in_time : float
+        Lead-in time (s) required for the front end to equilibrate.
+        Automatically added in before calculation of signals and waveforms.
     is_hit
     signals
     waveforms
@@ -706,6 +709,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
     ARIANNAAntenna : Antenna class to be used for ARIANNA antennas.
 
     """
+    lead_in_time = 25e-9
+
     def __init__(self, name, position, threshold, trigger_window=5e-9,
                  z_axis=(0,0,1), x_axis=(1,0,0), amplification=1,
                  amplifier_clipping=1, noisy=True, unique_noise_waveforms=10,

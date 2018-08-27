@@ -10,6 +10,7 @@ functions like front-end electronics chains and trigger systems.
 import collections
 import inspect
 import logging
+import numpy as np
 from pyrex.internal_functions import flatten, mirror_func
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,9 @@ class AntennaSystem:
     ----------
     antenna : Antenna
         ``Antenna`` object extended by the front end.
+    lead_in_time : float
+        Lead-in time (s) required for the front end to equilibrate.
+        Automatically added in before calculation of signals and waveforms.
     is_hit
     signals
     waveforms
@@ -43,6 +47,8 @@ class AntennaSystem:
     pyrex.Antenna : Base class for antennas.
 
     """
+    lead_in_time = 0
+
     def __init__(self, antenna):
         if inspect.isclass(antenna):
             self._antenna_class = antenna
@@ -119,6 +125,20 @@ class AntennaSystem:
                      "pyrex.detector.AntennaSystem")
         return signal
 
+    def _calculate_lead_in_times(self, times):
+        t0 = times[0]
+        t_min = t0-self.lead_in_time
+        t_max = times[-1]
+        dt = times[1]-t0
+        # Number of points in the lead-in array
+        n_pts = int((t_max-t_min)/dt)+2 - len(times)
+        # Proper starting point of lead-in array to preserve dt
+        t_min = t0-n_pts*dt
+        return np.concatenate(
+            (np.linspace(t_min, t0, n_pts, endpoint=False),
+             times)
+        )
+
     @property
     def is_hit(self):
         """Boolean of whether the antenna system has been triggered."""
@@ -191,10 +211,14 @@ class AntennaSystem:
     @property
     def signals(self):
         """The signals received by the antenna with front-end processing."""
-        # Process any unprocessed antenna signals
+        # Process any unprocessed antenna signals, including the appropriate
+        # amount of front-end lead-in time
         while len(self._signals)<len(self.antenna.signals):
             signal = self.antenna.signals[len(self._signals)]
-            self._signals.append(self.front_end(signal))
+            long_times = self._calculate_lead_in_times(signal.times)
+            preprocessed = signal.with_times(long_times)
+            processed = self.front_end(preprocessed)
+            self._signals.append(processed.with_times(signal.times))
         # Return processed antenna signals
         return self._signals
 
@@ -213,7 +237,8 @@ class AntennaSystem:
     @property
     def all_waveforms(self):
         """The antenna system signal + noise for all hits."""
-        # Process any unprocessed antenna signals
+        # Process any unprocessed antenna signals, including the appropriate
+        # amount of front-end lead-in time
         while len(self._all_waves)<len(self.antenna.signals):
             self._all_waves.append(
                 self.full_waveform(
@@ -224,11 +249,11 @@ class AntennaSystem:
 
     def full_waveform(self, times):
         """
-        Signal + noise (if ``noisy``) for the given times.
+        Signal + noise for the antenna system for the given times.
 
         Creates the complete waveform of the antenna system including noise and
         all received signals for the given `times` array. Includes front-end
-        processing.
+        processing with the required lead-in time.
 
         Parameters
         ----------
@@ -247,8 +272,10 @@ class AntennaSystem:
 
         """
         # Process full antenna waveform
-        preprocessed = self.antenna.full_waveform(times)
-        return self.front_end(preprocessed)
+        long_times = self._calculate_lead_in_times(times)
+        preprocessed = self.antenna.full_waveform(long_times)
+        processed = self.front_end(preprocessed)
+        return processed.with_times(times)
 
     def make_noise(self, times):
         """
@@ -272,8 +299,10 @@ class AntennaSystem:
             If not enough noise-related attributes are defined for the antenna.
 
         """
-        preprocessed = self.antenna.make_noise(times)
-        return self.front_end(preprocessed)
+        long_times = self._calculate_lead_in_times(times)
+        preprocessed = self.antenna.make_noise(long_times)
+        processed = self.front_end(preprocessed)
+        return processed.with_times(times)
 
     def trigger(self, signal):
         """

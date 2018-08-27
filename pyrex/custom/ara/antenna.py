@@ -761,6 +761,9 @@ class ARAAntennaSystem(AntennaSystem):
     amplifier_clipping : float
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
+    lead_in_time : float
+        Lead-in time (s) required for the front end to equilibrate.
+        Automatically added in before calculation of signals and waveforms.
     is_hit
     signals
     waveforms
@@ -773,6 +776,8 @@ class ARAAntennaSystem(AntennaSystem):
     ARAAntenna : Antenna class to be used for ARA antennas.
 
     """
+    lead_in_time = 5e-9
+
     def __init__(self, base_antenna, name, position, power_threshold,
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  noisy=True, unique_noise_waveforms=10, **kwargs):
@@ -883,7 +888,7 @@ class ARAAntennaSystem(AntennaSystem):
         """
         Calculate a signal as processed by the tunnel diode.
 
-        The given signal is convolved with the tunnel diodde response as in
+        The given signal is convolved with the tunnel diode response as in
         AraSim.
 
         Parameters
@@ -915,7 +920,7 @@ class ARAAntennaSystem(AntennaSystem):
         # Signal class will automatically only take the first part of conv,
         # which is what we want.
         # conv multiplied by dt so that the amplitude stays constant for
-        # varying dts (determined emperically, see ARVZAskaryanSignal comments)
+        # varying dts (determined empirically, see ARVZAskaryanSignal comments)
         output = Signal(signal.times, conv*signal.dt,
                         value_type=Signal.Type.power)
         return output

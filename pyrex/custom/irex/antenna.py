@@ -261,6 +261,9 @@ class EnvelopeSystem(ARAAntennaSystem):
     envelope_method : str
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
+    lead_in_time : float
+        Lead-in time (s) required for the front end to equilibrate.
+        Automatically added in before calculation of signals and waveforms.
     is_hit
     signals
     waveforms
@@ -275,6 +278,8 @@ class EnvelopeSystem(ARAAntennaSystem):
                                           antennas.
 
     """
+    lead_in_time = 25e-9
+
     def __init__(self, base_antenna, name, position, trigger_threshold,
                  time_over_threshold=0, orientation=(0,0,1), amplification=1,
                  amplifier_clipping=1, envelope_amplification=1,
@@ -453,38 +458,6 @@ class EnvelopeSystem(ARAAntennaSystem):
 
         """
         return super().front_end(signal)
-
-    def full_waveform(self, times):
-        """
-        Signal + noise (if noisy) for the given times.
-
-        Creates the complete waveform of the antenna system including noise and
-        all received signals for the given `times` array. Includes front-end
-        processing. Adds a lead-in time period equal to the signal length so
-        the envelope circuit has time to equilibrate.
-
-        Parameters
-        ----------
-        times : array_like
-            1D array of times during which to produce the full waveform.
-
-        Returns
-        -------
-        Signal
-            Complete waveform with noise and all signals.
-
-        See Also
-        --------
-        pyrex.Antenna.full_waveform : Signal + noise for an antenna for the
-                                      given times.
-
-        """
-        # Process full antenna waveform
-        # TODO: Optimize this so it doesn't have to double the amount of time
-        long_times = np.concatenate((times-times[-1]+times[0], times[1:]))
-        preprocessed = self.antenna.full_waveform(long_times)
-        long_waveform = self.front_end(preprocessed)
-        return long_waveform.with_times(times)
 
     def trigger(self, signal):
         """
