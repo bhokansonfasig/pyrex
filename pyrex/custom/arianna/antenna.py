@@ -1,6 +1,8 @@
 """
 Module containing customized antenna classes for ARIANNA.
 
+Based primarily on the LPDA implementation (and data) in NuRadioReco.
+
 """
 
 import os.path
@@ -826,7 +828,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
         Apply front-end processes to a signal and return the output.
 
         The front-end consists of amplification according to data taken from
-        NuRadioReco, bandpass filtering, and signal clipping.
+        NuRadioReco and signal clipping.
 
         Parameters
         ----------
