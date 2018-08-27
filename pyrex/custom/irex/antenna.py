@@ -13,9 +13,7 @@ from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.ice_model import IceModel
 
-from pyrex.custom.ara.antenna import (ARAAntennaSystem,
-                                      HPOL_DIRECTIONALITY, HPOL_FREQS,
-                                      VPOL_DIRECTIONALITY, VPOL_FREQS)
+from pyrex.custom.ara.antenna import ARAAntennaSystem, HpolBase, VpolBase
 from .frontends import (pyspice, spice_circuits,
                         basic_envelope_model, bridge_rectifier_envelope_model)
 
@@ -206,6 +204,8 @@ class EnvelopeSystem(ARAAntennaSystem):
 
     Parameters
     ----------
+    base_antenna : Antenna
+        ``Antenna`` class or subclass to be extended with an ARA front end.
     name : str
         Name of the antenna.
     position : array_like
@@ -216,12 +216,6 @@ class EnvelopeSystem(ARAAntennaSystem):
     time_over_threshold : float, optional
         Time (s) that the voltage waveform must exceed `trigger_threshold` for
         the antenna to trigger.
-    directionality_data : None or dict, optional
-        Dictionary containing data on the directionality of the antenna. If
-        ``None``, behavior is undefined.
-    directionality_freqs : None or set, optional
-        Set of frequencies in the directionality data ``dict`` keys. If
-        ``None``, calculated automatically from `directionality_data`.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     amplification : float, optional
@@ -281,15 +275,13 @@ class EnvelopeSystem(ARAAntennaSystem):
                                           antennas.
 
     """
-    def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
-                 directionality_data=None, directionality_freqs=None,
-                 orientation=(0,0,1), amplification=1, amplifier_clipping=1,
-                 envelope_amplification=1, envelope_method="analytic",
-                 noisy=True, unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
-                         power_threshold=0,
-                         directionality_data=directionality_data,
-                         directionality_freqs=directionality_freqs,
+    def __init__(self, base_antenna, name, position, trigger_threshold,
+                 time_over_threshold=0, orientation=(0,0,1), amplification=1,
+                 amplifier_clipping=1, envelope_amplification=1,
+                 envelope_method="analytic", noisy=True,
+                 unique_noise_waveforms=10):
+        super().__init__(base_antenna=base_antenna, name=name,
+                         position=position, power_threshold=0,
                          orientation=orientation,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
@@ -602,11 +594,10 @@ class EnvelopeHpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
+        super().__init__(base_antenna=HpolBase,
+                         name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,
-                         directionality_data=HPOL_DIRECTIONALITY,
-                         directionality_freqs=HPOL_FREQS,
                          orientation=orientation,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
@@ -691,11 +682,10 @@ class EnvelopeVpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
+        super().__init__(base_antenna=VpolBase,
+                         name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,
-                         directionality_data=VPOL_DIRECTIONALITY,
-                         directionality_freqs=VPOL_FREQS,
                          orientation=orientation,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
