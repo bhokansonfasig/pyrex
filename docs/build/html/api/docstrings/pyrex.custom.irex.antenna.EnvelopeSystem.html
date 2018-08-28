@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.antenna.EnvelopeSystem &mdash; PyREx 1.7.0 documentation</title>
+    <title>pyrex.custom.irex.antenna.EnvelopeSystem &mdash; PyREx 1.8.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.7.0',
+        VERSION:     '1.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.7.0 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.8.0 documentation" href="../../index.html" >
     <link rel="up" title="Custom Antennas (pyrex.custom.irex.antenna)" href="../custom-irex/antenna.html" >
     <link rel="next" title="pyrex.custom.irex.antenna.EnvelopeHpol" href="pyrex.custom.irex.antenna.EnvelopeHpol.html" >
     <link rel="prev" title="pyrex.custom.irex.antenna.DipoleTester" href="pyrex.custom.irex.antenna.DipoleTester.html" > 
@@ -52,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.7.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
           <li class="active"><a href="../custom-irex.html" >IceCube Radio Extension (<code class="docutils literal"><span class="pre">pyrex.custom.irex</span></code>)</a></li>
@@ -94,7 +94,7 @@
 <h1>pyrex.custom.irex.antenna.EnvelopeSystem<a class="headerlink" href="#pyrex-custom-irex-antenna-envelopesystem" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.custom.irex.antenna.EnvelopeSystem">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.antenna.</code><code class="descname">EnvelopeSystem</code><span class="sig-paren">(</span><em>name</em>, <em>position</em>, <em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>directionality_data=None</em>, <em>directionality_freqs=None</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>amplification=1</em>, <em>amplifier_clipping=1</em>, <em>envelope_amplification=1</em>, <em>envelope_method='analytic'</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.EnvelopeSystem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyrex.custom.irex.antenna.</code><code class="descname">EnvelopeSystem</code><span class="sig-paren">(</span><em>base_antenna</em>, <em>name</em>, <em>position</em>, <em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>amplification=1</em>, <em>amplifier_clipping=1</em>, <em>envelope_amplification=1</em>, <em>envelope_method='analytic'</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.EnvelopeSystem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Antenna system extending ARA antennas with an envelope circuit.</p>
 <p>Consists of an ARA antenna with typical responses, front-end electronics,
 and amplifier clipping, but with an additional amplification and envelope
@@ -103,7 +103,11 @@ circuit applied after all other front-end processing.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>base_antenna</strong> : Antenna</p>
+<blockquote>
+<div><p><code class="docutils literal"><span class="pre">Antenna</span></code> class or subclass to be extended with an ARA front end.</p>
+</div></blockquote>
+<p><strong>name</strong> : str</p>
 <blockquote>
 <div><p>Name of the antenna.</p>
 </div></blockquote>
@@ -120,16 +124,6 @@ value of the waveform exceeds this value.</p>
 <blockquote>
 <div><p>Time (s) that the voltage waveform must exceed <em class="xref py py-obj">trigger_threshold</em> for
 the antenna to trigger.</p>
-</div></blockquote>
-<p><strong>directionality_data</strong> : None or dict, optional</p>
-<blockquote>
-<div><p>Dictionary containing data on the directionality of the antenna. If
-<code class="docutils literal"><span class="pre">None</span></code>, behavior is undefined.</p>
-</div></blockquote>
-<p><strong>directionality_freqs</strong> : None or set, optional</p>
-<blockquote>
-<div><p>Set of frequencies in the directionality data <code class="docutils literal"><span class="pre">dict</span></code> keys. If
-<code class="docutils literal"><span class="pre">None</span></code>, calculated automatically from <em class="xref py py-obj">directionality_data</em>.</p>
 </div></blockquote>
 <p><strong>orientation</strong> : array_like, optional</p>
 <blockquote>
@@ -229,6 +223,9 @@ to have its own noise.</p>
 <tr class="row-odd"><td><strong>envelope_method</strong></td>
 <td>(str) String describing the circuit (and calculation method) to be used for envelope calculation.</td>
 </tr>
+<tr class="row-even"><td><strong>lead_in_time</strong></td>
+<td>(float) Lead-in time (s) required for the front end to equilibrate. Automatically added in before calculation of signals and waveforms.</td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
@@ -248,24 +245,33 @@ to have its own noise.</p>
 <td>Apply front-end processes to a signal and return the output.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.full_waveform.html#pyrex.custom.irex.antenna.EnvelopeSystem.full_waveform" title="pyrex.custom.irex.antenna.EnvelopeSystem.full_waveform"><code class="xref py py-obj docutils literal"><span class="pre">full_waveform</span></code></a>(times)</td>
-<td>Signal + noise (if noisy) for the given times.</td>
+<td>Signal + noise for the antenna system for the given times.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.is_hit_during.html#pyrex.custom.irex.antenna.EnvelopeSystem.is_hit_during" title="pyrex.custom.irex.antenna.EnvelopeSystem.is_hit_during"><code class="xref py py-obj docutils literal"><span class="pre">is_hit_during</span></code></a>(times)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.interpolate_filter.html#pyrex.custom.irex.antenna.EnvelopeSystem.interpolate_filter" title="pyrex.custom.irex.antenna.EnvelopeSystem.interpolate_filter"><code class="xref py py-obj docutils literal"><span class="pre">interpolate_filter</span></code></a>(frequencies)</td>
+<td>Generate interpolated filter values for given frequencies.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.is_hit_during.html#pyrex.custom.irex.antenna.EnvelopeSystem.is_hit_during" title="pyrex.custom.irex.antenna.EnvelopeSystem.is_hit_during"><code class="xref py py-obj docutils literal"><span class="pre">is_hit_during</span></code></a>(times)</td>
 <td>Check if the antenna system is triggered in a time range.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.make_envelope.html#pyrex.custom.irex.antenna.EnvelopeSystem.make_envelope" title="pyrex.custom.irex.antenna.EnvelopeSystem.make_envelope"><code class="xref py py-obj docutils literal"><span class="pre">make_envelope</span></code></a>(signal)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.make_envelope.html#pyrex.custom.irex.antenna.EnvelopeSystem.make_envelope" title="pyrex.custom.irex.antenna.EnvelopeSystem.make_envelope"><code class="xref py py-obj docutils literal"><span class="pre">make_envelope</span></code></a>(signal)</td>
 <td>Return the signal envelope based on the antenna’s <code class="docutils literal"><span class="pre">envelope_method</span></code>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.make_noise.html#pyrex.custom.irex.antenna.EnvelopeSystem.make_noise" title="pyrex.custom.irex.antenna.EnvelopeSystem.make_noise"><code class="xref py py-obj docutils literal"><span class="pre">make_noise</span></code></a>(times)</td>
+<td>Creates a noise signal over the given times.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.receive.html#pyrex.custom.irex.antenna.EnvelopeSystem.receive" title="pyrex.custom.irex.antenna.EnvelopeSystem.receive"><code class="xref py py-obj docutils literal"><span class="pre">receive</span></code></a>(signal[,&nbsp;direction,&nbsp;polarization,&nbsp;…])</td>
 <td>Process and store an incoming signal.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.setup_antenna.html#pyrex.custom.irex.antenna.EnvelopeSystem.setup_antenna" title="pyrex.custom.irex.antenna.EnvelopeSystem.setup_antenna"><code class="xref py py-obj docutils literal"><span class="pre">setup_antenna</span></code></a>([center_frequency,&nbsp;bandwidth,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.set_orientation.html#pyrex.custom.irex.antenna.EnvelopeSystem.set_orientation" title="pyrex.custom.irex.antenna.EnvelopeSystem.set_orientation"><code class="xref py py-obj docutils literal"><span class="pre">set_orientation</span></code></a>([z_axis,&nbsp;x_axis])</td>
+<td>Sets the orientation of the antenna system.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.setup_antenna.html#pyrex.custom.irex.antenna.EnvelopeSystem.setup_antenna" title="pyrex.custom.irex.antenna.EnvelopeSystem.setup_antenna"><code class="xref py py-obj docutils literal"><span class="pre">setup_antenna</span></code></a>([center_frequency,&nbsp;bandwidth,&nbsp;…])</td>
 <td>Setup the antenna by passing along its init arguments.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.trigger.html#pyrex.custom.irex.antenna.EnvelopeSystem.trigger" title="pyrex.custom.irex.antenna.EnvelopeSystem.trigger"><code class="xref py py-obj docutils literal"><span class="pre">trigger</span></code></a>(signal)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.trigger.html#pyrex.custom.irex.antenna.EnvelopeSystem.trigger" title="pyrex.custom.irex.antenna.EnvelopeSystem.trigger"><code class="xref py py-obj docutils literal"><span class="pre">trigger</span></code></a>(signal)</td>
 <td>Check if the antenna triggers on a given signal.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.tunnel_diode.html#pyrex.custom.irex.antenna.EnvelopeSystem.tunnel_diode" title="pyrex.custom.irex.antenna.EnvelopeSystem.tunnel_diode"><code class="xref py py-obj docutils literal"><span class="pre">tunnel_diode</span></code></a>(signal)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.antenna.EnvelopeSystem.tunnel_diode.html#pyrex.custom.irex.antenna.EnvelopeSystem.tunnel_diode" title="pyrex.custom.irex.antenna.EnvelopeSystem.tunnel_diode"><code class="xref py py-obj docutils literal"><span class="pre">tunnel_diode</span></code></a>(signal)</td>
 <td>Calculate a signal as processed by the tunnel diode.</td>
 </tr>
 </tbody>
@@ -285,7 +291,7 @@ to have its own noise.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.7.0</p>
+Version 1.8.0</p>
 
 
 

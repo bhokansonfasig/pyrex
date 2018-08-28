@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>How to Use PyREx &mdash; PyREx 1.7.0 documentation</title>
+    <title>How to Use PyREx &mdash; PyREx 1.8.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.7.0',
+        VERSION:     '1.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.7.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.0 documentation" href="index.html" >
     <link rel="next" title="Custom Sub-Package" href="customize.html" >
     <link rel="prev" title="About PyREx" href="about.html" > 
   </head>
@@ -51,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.7.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.0 documentation</a></li>
 	 
     </ul>
               
@@ -273,7 +273,7 @@
 <span class="n">noiseless_antenna</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The basic properties of an <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> object are <code class="xref py py-attr docutils literal"><span class="pre">is_hit</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">waveforms</span></code>. The <code class="xref py py-attr docutils literal"><span class="pre">is_hit</span></code> property specifies whether or not the antenna has been triggered by an event. <code class="xref py py-attr docutils literal"><span class="pre">waveforms</span></code> is a list of all the waveforms which have triggered the antenna. The antenna also defines a <a class="reference internal" href="api/signals.html#module-pyrex.signals" title="pyrex.signals"><code class="xref py py-attr docutils literal"><span class="pre">signals</span></code></a> attribute, which is a list of all signals the antenna has received, and <code class="xref py py-attr docutils literal"><span class="pre">all_waveforms</span></code> which is a list of all waveforms (signal plus noise) the antenna has received including those which didn’t trigger.</p>
+<p>The basic properties of an <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> object are <code class="xref py py-attr docutils literal"><span class="pre">is_hit</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">waveforms</span></code>. The <code class="xref py py-attr docutils literal"><span class="pre">is_hit</span></code> property specifies whether or not the antenna has been triggered by an event. <code class="xref py py-attr docutils literal"><span class="pre">waveforms</span></code> is a list of all the waveforms which have triggered the antenna. The antenna also defines a <a class="reference internal" href="api/signals.html#module-pyrex.signals" title="pyrex.signals"><code class="xref py py-attr docutils literal"><span class="pre">signals</span></code></a> attribute, which is a list of all signals the antenna has received, and <code class="xref py py-attr docutils literal"><span class="pre">all_waveforms</span></code> which is a list of all waveforms (signal plus noise) the antenna has received including those which didn’t trigger. Finally, the antenna has an <code class="xref py py-attr docutils literal"><span class="pre">is_hit_mc</span></code> property which is similar to <code class="xref py py-attr docutils literal"><span class="pre">is_hit</span></code>, but does not count triggers where noise alone would have triggered the antenna.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">basic_antenna</span><span class="o">.</span><span class="n">is_hit</span> <span class="o">==</span> <span class="kc">False</span>
 <span class="n">basic_antenna</span><span class="o">.</span><span class="n">waveforms</span> <span class="o">==</span> <span class="p">[]</span>
 </pre></div>
@@ -398,7 +398,7 @@
 <div class="section" id="antennasystem-and-detector-classes">
 <h2>AntennaSystem and Detector Classes<a class="headerlink" href="#antennasystem-and-detector-classes" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">AntennaSystem</span></code></a> class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna’s signals. It is designed to be subclassed, but by default it takes as an argument the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class, but where an <a class="reference internal" href="docstrings/pyrex.AntennaSystem.front_end.html#pyrex.AntennaSystem.front_end" title="pyrex.AntennaSystem.front_end"><code class="xref py py-meth docutils literal"><span class="pre">AntennaSystem.front_end()</span></code></a> method (which by default does nothing) is applied to the extended antenna’s signals.</p>
-<p>To extend an <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class or subclass into a full antenna system, inherit from the <a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">AntennaSystem</span></code></a> class and define the <a class="reference internal" href="docstrings/pyrex.AntennaSystem.front_end.html#pyrex.AntennaSystem.front_end" title="pyrex.AntennaSystem.front_end"><code class="xref py py-meth docutils literal"><span class="pre">AntennaSystem.front_end()</span></code></a> method. A different trigger optionally can be defined for the antenna system (by default it uses the antenna’s trigger):</p>
+<p>To extend an <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class or subclass into a full antenna system, inherit from the <a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-class docutils literal"><span class="pre">AntennaSystem</span></code></a> class and define the <a class="reference internal" href="docstrings/pyrex.AntennaSystem.front_end.html#pyrex.AntennaSystem.front_end" title="pyrex.AntennaSystem.front_end"><code class="xref py py-meth docutils literal"><span class="pre">AntennaSystem.front_end()</span></code></a> method. If the front end of the antenna system requires some time to equilibrate to noise signals, that can be specified in the <code class="xref py py-attr docutils literal"><span class="pre">AntennaSystem.lead_in_time</span></code> attribute, adding that amount of time before any waveforms to be processed. A different trigger also optionally can be defined for the antenna system (by default it uses the antenna’s trigger):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PowerAntennaSystem</span><span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">AntennaSystem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Antenna system whose signals and waveforms are powers instead of</span>
 <span class="sd">    voltages.&quot;&quot;&quot;</span>
@@ -692,7 +692,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.7.0</p>
+Version 1.8.0</p>
 
 
 

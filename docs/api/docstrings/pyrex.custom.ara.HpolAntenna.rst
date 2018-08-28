@@ -14,8 +14,11 @@ pyrex\.custom\.ara\.HpolAntenna
          HpolAntenna.clear
          HpolAntenna.front_end
          HpolAntenna.full_waveform
+         HpolAntenna.interpolate_filter
          HpolAntenna.is_hit_during
+         HpolAntenna.make_noise
          HpolAntenna.receive
+         HpolAntenna.set_orientation
          HpolAntenna.setup_antenna
          HpolAntenna.trigger
          HpolAntenna.tunnel_diode

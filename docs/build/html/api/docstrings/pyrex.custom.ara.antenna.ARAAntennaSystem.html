@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.antenna.ARAAntennaSystem &mdash; PyREx 1.7.0 documentation</title>
+    <title>pyrex.custom.ara.antenna.ARAAntennaSystem &mdash; PyREx 1.8.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.7.0',
+        VERSION:     '1.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,10 +27,10 @@
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.7.0 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.8.0 documentation" href="../../index.html" >
     <link rel="up" title="Custom Antennas (pyrex.custom.ara.antenna)" href="../custom-ara/antenna.html" >
     <link rel="next" title="pyrex.custom.ara.antenna.HpolAntenna" href="pyrex.custom.ara.antenna.HpolAntenna.html" >
-    <link rel="prev" title="pyrex.custom.ara.antenna.ARAAntenna" href="pyrex.custom.ara.antenna.ARAAntenna.html" > 
+    <link rel="prev" title="pyrex.custom.ara.antenna.VpolBase" href="pyrex.custom.ara.antenna.VpolBase.html" > 
   </head>
   <body>
 
@@ -52,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.7.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
           <li class="active"><a href="../custom-ara.html" >Askaryan Radio Array (<code class="docutils literal"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
@@ -74,7 +74,7 @@
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="pyrex.custom.ara.antenna.ARAAntenna.html" title="pyrex.custom.ara.antenna.ARAAntenna"
+        <a href="pyrex.custom.ara.antenna.VpolBase.html" title="pyrex.custom.ara.antenna.VpolBase"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -94,7 +94,7 @@
 <h1>pyrex.custom.ara.antenna.ARAAntennaSystem<a class="headerlink" href="#pyrex-custom-ara-antenna-araantennasystem" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.custom.ara.antenna.ARAAntennaSystem">
-<em class="property">class </em><code class="descclassname">pyrex.custom.ara.antenna.</code><code class="descname">ARAAntennaSystem</code><span class="sig-paren">(</span><em>name</em>, <em>position</em>, <em>power_threshold</em>, <em>directionality_data=None</em>, <em>directionality_freqs=None</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>amplification=1</em>, <em>amplifier_clipping=1</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.antenna.ARAAntennaSystem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyrex.custom.ara.antenna.</code><code class="descname">ARAAntennaSystem</code><span class="sig-paren">(</span><em>base_antenna</em>, <em>name</em>, <em>position</em>, <em>power_threshold</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>amplification=1</em>, <em>amplifier_clipping=1</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.antenna.ARAAntennaSystem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Antenna system extending base ARA antenna with front-end processing.</p>
 <p>Applies as the front end a filter representing the full ARA electronics
 chain (including amplification) and signal clipping. Additionally provides
@@ -103,7 +103,11 @@ a method for passing a signal through the tunnel diode.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>base_antenna</strong> : Antenna</p>
+<blockquote>
+<div><p><code class="docutils literal"><span class="pre">Antenna</span></code> class or subclass to be extended with an ARA front end.</p>
+</div></blockquote>
+<p><strong>name</strong> : str</p>
 <blockquote>
 <div><p>Name of the antenna.</p>
 </div></blockquote>
@@ -116,16 +120,6 @@ a method for passing a signal through the tunnel diode.</p>
 <div><p>Power threshold for trigger condition. Antenna triggers if a signal
 passed through the tunnel diode exceeds this threshold times the noise
 RMS of the tunnel diode.</p>
-</div></blockquote>
-<p><strong>directionality_data</strong> : None or dict, optional</p>
-<blockquote>
-<div><p>Dictionary containing data on the directionality of the antenna. If
-<code class="docutils literal"><span class="pre">None</span></code>, behavior is undefined.</p>
-</div></blockquote>
-<p><strong>directionality_freqs</strong> : None or set, optional</p>
-<blockquote>
-<div><p>Set of frequencies in the directionality data <code class="docutils literal"><span class="pre">dict</span></code> keys. If
-<code class="docutils literal"><span class="pre">None</span></code>, calculated automatically from <em class="xref py py-obj">directionality_data</em>.</p>
 </div></blockquote>
 <p><strong>orientation</strong> : array_like, optional</p>
 <blockquote>
@@ -146,9 +140,21 @@ and negative values).</p>
 <div><p>Whether or not the antenna should add noise to incoming signals.</p>
 </div></blockquote>
 <p><strong>unique_noise_waveforms</strong> : int, optional</p>
-<blockquote class="last">
+<blockquote>
 <div><p>The number of expected noise waveforms needed for each received signal
 to have its own noise.</p>
+</div></blockquote>
+<p><strong>directionality_data</strong> : dict, optional</p>
+<blockquote>
+<div><p>Dictionary containing data on the directionality of the antenna.
+Should not be given if the <em class="xref py py-obj">base_antenna</em> class does not accept a
+<em class="xref py py-obj">directionality_data</em> argument.</p>
+</div></blockquote>
+<p><strong>directionality_freqs</strong> : set, optional</p>
+<blockquote class="last">
+<div><p>Set of frequencies in the directionality data <code class="docutils literal"><span class="pre">dict</span></code> keys.
+Should not be given if the <em class="xref py py-obj">base_antenna</em> class does not accept a
+<em class="xref py py-obj">directionality_freqs</em> argument.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -208,6 +214,9 @@ to have its own noise.</p>
 <tr class="row-even"><td><strong>amplifier_clipping</strong></td>
 <td>(float) Voltage (V) above which the amplified signal is clipped (in positive and negative values).</td>
 </tr>
+<tr class="row-odd"><td><strong>lead_in_time</strong></td>
+<td>(float) Lead-in time (s) required for the front end to equilibrate. Automatically added in before calculation of signals and waveforms.</td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
@@ -224,21 +233,30 @@ to have its own noise.</p>
 <td>Apply front-end processes to a signal and return the output.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.full_waveform.html#pyrex.custom.ara.antenna.ARAAntennaSystem.full_waveform" title="pyrex.custom.ara.antenna.ARAAntennaSystem.full_waveform"><code class="xref py py-obj docutils literal"><span class="pre">full_waveform</span></code></a>(times)</td>
-<td>Signal + noise (if <code class="docutils literal"><span class="pre">noisy</span></code>) for the given times.</td>
+<td>Signal + noise for the antenna system for the given times.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.is_hit_during.html#pyrex.custom.ara.antenna.ARAAntennaSystem.is_hit_during" title="pyrex.custom.ara.antenna.ARAAntennaSystem.is_hit_during"><code class="xref py py-obj docutils literal"><span class="pre">is_hit_during</span></code></a>(times)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.interpolate_filter.html#pyrex.custom.ara.antenna.ARAAntennaSystem.interpolate_filter" title="pyrex.custom.ara.antenna.ARAAntennaSystem.interpolate_filter"><code class="xref py py-obj docutils literal"><span class="pre">interpolate_filter</span></code></a>(frequencies)</td>
+<td>Generate interpolated filter values for given frequencies.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.is_hit_during.html#pyrex.custom.ara.antenna.ARAAntennaSystem.is_hit_during" title="pyrex.custom.ara.antenna.ARAAntennaSystem.is_hit_during"><code class="xref py py-obj docutils literal"><span class="pre">is_hit_during</span></code></a>(times)</td>
 <td>Check if the antenna system is triggered in a time range.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.make_noise.html#pyrex.custom.ara.antenna.ARAAntennaSystem.make_noise" title="pyrex.custom.ara.antenna.ARAAntennaSystem.make_noise"><code class="xref py py-obj docutils literal"><span class="pre">make_noise</span></code></a>(times)</td>
+<td>Creates a noise signal over the given times.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.receive.html#pyrex.custom.ara.antenna.ARAAntennaSystem.receive" title="pyrex.custom.ara.antenna.ARAAntennaSystem.receive"><code class="xref py py-obj docutils literal"><span class="pre">receive</span></code></a>(signal[,&nbsp;direction,&nbsp;polarization,&nbsp;…])</td>
 <td>Process and store an incoming signal.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.setup_antenna.html#pyrex.custom.ara.antenna.ARAAntennaSystem.setup_antenna" title="pyrex.custom.ara.antenna.ARAAntennaSystem.setup_antenna"><code class="xref py py-obj docutils literal"><span class="pre">setup_antenna</span></code></a>([center_frequency,&nbsp;bandwidth,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.set_orientation.html#pyrex.custom.ara.antenna.ARAAntennaSystem.set_orientation" title="pyrex.custom.ara.antenna.ARAAntennaSystem.set_orientation"><code class="xref py py-obj docutils literal"><span class="pre">set_orientation</span></code></a>([z_axis,&nbsp;x_axis])</td>
+<td>Sets the orientation of the antenna system.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.setup_antenna.html#pyrex.custom.ara.antenna.ARAAntennaSystem.setup_antenna" title="pyrex.custom.ara.antenna.ARAAntennaSystem.setup_antenna"><code class="xref py py-obj docutils literal"><span class="pre">setup_antenna</span></code></a>([center_frequency,&nbsp;bandwidth,&nbsp;…])</td>
 <td>Setup the antenna by passing along its init arguments.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.trigger.html#pyrex.custom.ara.antenna.ARAAntennaSystem.trigger" title="pyrex.custom.ara.antenna.ARAAntennaSystem.trigger"><code class="xref py py-obj docutils literal"><span class="pre">trigger</span></code></a>(signal)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.trigger.html#pyrex.custom.ara.antenna.ARAAntennaSystem.trigger" title="pyrex.custom.ara.antenna.ARAAntennaSystem.trigger"><code class="xref py py-obj docutils literal"><span class="pre">trigger</span></code></a>(signal)</td>
 <td>Check if the antenna system triggers on a given signal.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.tunnel_diode.html#pyrex.custom.ara.antenna.ARAAntennaSystem.tunnel_diode" title="pyrex.custom.ara.antenna.ARAAntennaSystem.tunnel_diode"><code class="xref py py-obj docutils literal"><span class="pre">tunnel_diode</span></code></a>(signal)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.tunnel_diode.html#pyrex.custom.ara.antenna.ARAAntennaSystem.tunnel_diode" title="pyrex.custom.ara.antenna.ARAAntennaSystem.tunnel_diode"><code class="xref py py-obj docutils literal"><span class="pre">tunnel_diode</span></code></a>(signal)</td>
 <td>Calculate a signal as processed by the tunnel diode.</td>
 </tr>
 </tbody>
@@ -258,7 +276,7 @@ to have its own noise.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.7.0</p>
+Version 1.8.0</p>
 
 
 

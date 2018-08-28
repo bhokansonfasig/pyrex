@@ -159,6 +159,8 @@ class Antenna:
         alone in the same timeframe would have triggered as well, the trigger
         is not counted.
         """
+        if not self.noisy:
+            return self.is_hit
         for wave in self.waveforms:
             if not self.trigger(self.make_noise(wave.times)):
                 return True
