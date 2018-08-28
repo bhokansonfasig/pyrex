@@ -18,7 +18,7 @@ Version 1.8.0
 
 .. rubric:: Changes
 
-* :attr:`Antenna.waveforms` and :attr:`Antenna.all_waveforms` now include all relevant signals in the waveform (similar to :meth:`Antenna.full_waveform`) during that time.
+* :attr:`Antenna.waveforms` and :attr:`Antenna.all_waveforms` now include all relevant signals in the waveform during that time, similar to :meth:`Antenna.full_waveform`.
 
 * :meth:`ARAAntenna.interpolate_filter` moved to :meth:`ARAAntennaSystem.interpolate_filter`, since this better matches the logical location of the front-end electronics.
 

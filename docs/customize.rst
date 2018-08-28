@@ -54,15 +54,20 @@ As an example, in the following filesystem layout (which is not meant to reflect
     |   |   |-- my_analysis.py
 
 
-IREX Custom Module
-==================
-
-.. include:: custom/irex.rst
-
 ARA Custom Module
 =================
 
 .. include:: custom/ara.rst
+
+ARIANNA Custom Module
+=================
+
+.. include:: custom/arianna.rst
+
+IREX Custom Module
+==================
+
+.. include:: custom/irex.rst
 
 Build Your Own Custom Module
 ============================
