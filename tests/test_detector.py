@@ -77,12 +77,12 @@ class TestAntennaSystem:
     def test_is_hit(self, ant_obj_sys):
         """Test that is_hit forwards on from the antenna"""
         assert ant_obj_sys.is_hit == ant_obj_sys.antenna.is_hit == False
-        ant_obj_sys.antenna.signals.append(Signal([0], [1]))
+        ant_obj_sys.antenna.signals.append(Signal([0, 1e-9], [1, 1]))
         assert ant_obj_sys.is_hit == ant_obj_sys.antenna.is_hit == True
 
     def test_signals(self, halver):
         """Test that front end is applied to signals array"""
-        halver.antenna.signals.append(Signal([0], [2]))
+        halver.antenna.signals.append(Signal([0, 1e-9], [2, 2]))
         assert halver.signals != []
         assert np.array_equal(halver.signals[0].values,
                               halver.antenna.signals[0].values/2)

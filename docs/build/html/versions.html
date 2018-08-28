@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Version History &mdash; PyREx 1.7.0 documentation</title>
+    <title>Version History &mdash; PyREx 1.8.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.7.0',
+        VERSION:     '1.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.7.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.0 documentation" href="index.html" >
     <link rel="prev" title="pyrex.custom.irex.detector.StationGrid" href="api/docstrings/pyrex.custom.irex.detector.StationGrid.html" > 
   </head>
   <body>
@@ -50,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.7.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.0 documentation</a></li>
 	 
     </ul>
               
@@ -83,6 +83,29 @@
             
   <div class="section" id="version-history">
 <h1>Version History<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-8-0">
+<h2>Version 1.8.0<a class="headerlink" href="#version-1-8-0" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
+<ul class="simple">
+<li>Added model of the ARIANNA LPDA based primarily on the implementation in <a class="reference external" href="https://github.com/nu-radio/NuRadioReco">NuRadioReco</a>.</li>
+<li>Added <code class="xref py py-attr docutils literal"><span class="pre">Antenna.is_hit_mc</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">AntennaSystem.is_hit_mc</span></code> which test noise-only triggers to determine whether a triggered antenna as truly triggered by signal or not.</li>
+<li>Added <code class="docutils literal"><span class="pre">require_mc_truth</span></code> argument to <a class="reference internal" href="docstrings/pyrex.Detector.triggered.html#pyrex.Detector.triggered" title="pyrex.Detector.triggered"><code class="xref py py-meth docutils literal"><span class="pre">Detector.triggered()</span></code></a> to toggle whether a true Monte Carlo signal trigger (described above with <code class="xref py py-attr docutils literal"><span class="pre">Antenna.is_hit_mc</span></code>) is required for a detector trigger.</li>
+<li>Added <code class="xref py py-attr docutils literal"><span class="pre">AntennaSystem.lead_in_time</span></code> which allows front-end systems time to equilibrate before waveforms are recorded.</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li><code class="xref py py-attr docutils literal"><span class="pre">Antenna.waveforms</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">Antenna.all_waveforms</span></code> now include all relevant signals in the waveform during that time, similar to <a class="reference internal" href="docstrings/pyrex.Antenna.full_waveform.html#pyrex.Antenna.full_waveform" title="pyrex.Antenna.full_waveform"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.full_waveform()</span></code></a>.</li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">ARAAntenna.interpolate_filter()</span></code> moved to <code class="xref py py-meth docutils literal"><span class="pre">ARAAntennaSystem.interpolate_filter()</span></code>, since this better matches the logical location of the front-end electronics.</li>
+</ul>
+<p class="rubric">Bug Fixes</p>
+<ul class="simple">
+<li>Fixed error in calculation of ARA Hpol polarization gain.</li>
+<li>Corrected amplification of <code class="xref py py-class docutils literal"><span class="pre">ARAAntennaSystem</span></code> (previously was silently ignored).</li>
+<li>Corrected tunnel diode and other triggers to use standard deviation from mean rather than rms.</li>
+<li>Fixed accidental duplication of antennas when <a class="reference internal" href="docstrings/pyrex.Detector.build_antennas.html#pyrex.Detector.build_antennas" title="pyrex.Detector.build_antennas"><code class="xref py py-meth docutils literal"><span class="pre">Detector.build_antennas()</span></code></a> is called more than once.</li>
+<li>Fixed numerical issue when checking that antenna axes are perpendicular.</li>
+</ul>
+</div>
 <div class="section" id="version-1-7-0">
 <h2>Version 1.7.0<a class="headerlink" href="#version-1-7-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
@@ -390,7 +413,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.7.0</p>
+Version 1.8.0</p>
 
 
 
@@ -426,6 +449,7 @@ Version 1.7.0</p>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Version History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-8-0">Version 1.8.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-7-0">Version 1.7.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-6-0">Version 1.6.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-5-0">Version 1.5.0</a></li>

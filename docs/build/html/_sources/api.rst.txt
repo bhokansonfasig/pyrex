@@ -70,4 +70,5 @@ Included Custom Sub-Packages
     :maxdepth: 1
 
     api/custom-ara
+    api/custom-arianna
     api/custom-irex

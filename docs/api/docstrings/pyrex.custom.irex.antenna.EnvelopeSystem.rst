@@ -15,9 +15,12 @@ pyrex\.custom\.irex\.antenna\.EnvelopeSystem
          EnvelopeSystem.envelopeless_front_end
          EnvelopeSystem.front_end
          EnvelopeSystem.full_waveform
+         EnvelopeSystem.interpolate_filter
          EnvelopeSystem.is_hit_during
          EnvelopeSystem.make_envelope
+         EnvelopeSystem.make_noise
          EnvelopeSystem.receive
+         EnvelopeSystem.set_orientation
          EnvelopeSystem.setup_antenna
          EnvelopeSystem.trigger
          EnvelopeSystem.tunnel_diode

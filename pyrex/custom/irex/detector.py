@@ -157,7 +157,7 @@ class IREXString(Detector):
             ant.name = str(naming_scheme(i, ant))
             ant.antenna.set_orientation(*orientation_scheme(i, ant))
 
-    def triggered(self, antenna_requirement=1):
+    def triggered(self, antenna_requirement=1, require_mc_truth=False):
         """
         Check if the string is triggered based on its current state.
 
@@ -169,6 +169,9 @@ class IREXString(Detector):
         ----------
         antenna_requirement : float, optional
             The number of antennas which must be hit for the string to trigger.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -183,7 +186,10 @@ class IREXString(Detector):
                                                  on a given signal.
 
         """
-        antennas_hit = sum(1 for ant in self if ant.is_hit)
+        if require_mc_truth:
+            antennas_hit = sum(1 for ant in self if ant.is_hit_mc_truth)
+        else:
+            antennas_hit = sum(1 for ant in self if ant.is_hit)
         return antennas_hit>=antenna_requirement
 
 
@@ -284,7 +290,8 @@ class RegularStation(Detector):
                 string_type(x_str, y_str, **string_kwargs)
             )
 
-    def triggered(self, antenna_requirement=1, string_requirement=1):
+    def triggered(self, antenna_requirement=1, string_requirement=1,
+                  require_mc_truth=False):
         """
         Check if the station is triggered based on its current state.
 
@@ -300,6 +307,9 @@ class RegularStation(Detector):
             trigger.
         string_requirement : float, optional
             The number of strings which must be hit for the station to trigger.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -316,8 +326,13 @@ class RegularStation(Detector):
                                current state.
 
         """
-        antennas_hit = sum(1 for ant in self if ant.is_hit)
-        strings_hit = sum(1 for string in self.subsets if string.triggered(1))
+        if require_mc_truth:
+            antennas_hit = sum(1 for ant in self if ant.is_hit_mc_truth)
+        else:
+            antennas_hit = sum(1 for ant in self if ant.is_hit)
+        strings_hit = sum(1 for string in self.subsets if
+                          string.triggered(1,
+                                           require_mc_truth=require_mc_truth))
         return (antennas_hit>=antenna_requirement and
                 strings_hit>=string_requirement)
 
@@ -427,7 +442,8 @@ class CoxeterStation(Detector):
                 string_type(x_str, y_str, **string_kwargs)
             )
 
-    def triggered(self, antenna_requirement=1, string_requirement=1):
+    def triggered(self, antenna_requirement=1, string_requirement=1,
+                  require_mc_truth=False):
         """
         Check if the station is triggered based on its current state.
 
@@ -444,6 +460,9 @@ class CoxeterStation(Detector):
             trigger.
         string_requirement : float, optional
             The number of strings which must be hit for the station to trigger.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -460,8 +479,13 @@ class CoxeterStation(Detector):
                                current state.
 
         """
-        antennas_hit = sum(1 for ant in self if ant.is_hit)
-        strings_hit = sum(1 for string in self.subsets if string.triggered(1))
+        if require_mc_truth:
+            antennas_hit = sum(1 for ant in self if ant.is_hit_mc_truth)
+        else:
+            antennas_hit = sum(1 for ant in self if ant.is_hit)
+        strings_hit = sum(1 for string in self.subsets if
+                          string.triggered(1,
+                                           require_mc_truth=require_mc_truth))
         return (antennas_hit>=antenna_requirement and
                 strings_hit>=string_requirement)
 
@@ -570,7 +594,8 @@ class StationGrid(Detector):
                     station_type(x, y, **station_kwargs)
                 )
 
-    def triggered(self, station_requirement=1, **station_trigger_kwargs):
+    def triggered(self, station_requirement=1, require_mc_truth=False,
+                  **station_trigger_kwargs):
         """
         Check if the detector is triggered based on its current state.
 
@@ -584,6 +609,9 @@ class StationGrid(Detector):
         station_requirement : float, optional
             The number of stations which must be triggered for the detector to
             trigger.
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
         **station_trigger_kwargs
             Keyword arguments to be passed on to the ``triggered`` methods of
             the station objects in `subsets`.
@@ -605,7 +633,8 @@ class StationGrid(Detector):
         """
         stations_hit = 0
         for station in self.subsets:
-            if station.triggered(**station_trigger_kwargs):
+            if station.triggered(require_mc_truth=require_mc_truth,
+                                 **station_trigger_kwargs):
                 stations_hit += 1
             if stations_hit>=station_requirement:
                 return True

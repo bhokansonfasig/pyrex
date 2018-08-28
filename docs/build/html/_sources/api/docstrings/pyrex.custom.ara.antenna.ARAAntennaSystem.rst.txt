@@ -14,8 +14,11 @@ pyrex\.custom\.ara\.antenna\.ARAAntennaSystem
          ARAAntennaSystem.clear
          ARAAntennaSystem.front_end
          ARAAntennaSystem.full_waveform
+         ARAAntennaSystem.interpolate_filter
          ARAAntennaSystem.is_hit_during
+         ARAAntennaSystem.make_noise
          ARAAntennaSystem.receive
+         ARAAntennaSystem.set_orientation
          ARAAntennaSystem.setup_antenna
          ARAAntennaSystem.trigger
          ARAAntennaSystem.tunnel_diode

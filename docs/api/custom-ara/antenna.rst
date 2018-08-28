@@ -11,6 +11,8 @@ Custom Antennas (:mod:`pyrex.custom.ara.antenna`)
     _read_directionality_data
     _read_filter_data
     ARAAntenna
+    HpolBase
+    VpolBase
     ARAAntennaSystem
     HpolAntenna
     VpolAntenna

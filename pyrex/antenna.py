@@ -112,7 +112,7 @@ class Antenna:
 
         self.signals = []
         self._noise_master = None
-        self._noises = []
+        self._all_waves = []
         self._triggers = []
 
     def __str__(self):
@@ -140,7 +140,7 @@ class Antenna:
         """
         self.z_axis = normalize(z_axis)
         self.x_axis = normalize(x_axis)
-        if np.dot(self.z_axis, self.x_axis)!=0:
+        if not np.isclose(np.dot(self.z_axis, self.x_axis), 0, rtol=0):
             raise ValueError("Antenna's x_axis must be perpendicular to its "
                              +"z_axis")
 
@@ -148,6 +148,23 @@ class Antenna:
     def is_hit(self):
         """Boolean of whether the antenna has been triggered."""
         return len(self.waveforms)>0
+
+    @property
+    def is_hit_mc_truth(self):
+        """
+        Boolean of whether the antenna has been triggered by signal.
+
+        The decision is based on the Monte Carlo truth of whether noise would
+        have triggered without the signal. If a signal triggered, but the noise
+        alone in the same timeframe would have triggered as well, the trigger
+        is not counted.
+        """
+        if not self.noisy:
+            return self.is_hit
+        for wave in self.waveforms:
+            if not self.trigger(self.make_noise(wave.times)):
+                return True
+        return False
 
     def is_hit_during(self, times):
         """
@@ -184,7 +201,7 @@ class Antenna:
 
         """
         self.signals.clear()
-        self._noises.clear()
+        self._all_waves.clear()
         self._triggers.clear()
         if reset_noise:
             self._noise_master = None
@@ -204,16 +221,12 @@ class Antenna:
     @property
     def all_waveforms(self):
         """Signal + noise (if ``noisy``) for all antenna hits."""
-        if not(self.noisy):
-            return self.signals
-
-        # Generate noise as necessary
-        while len(self._noises)<len(self.signals):
-            self._noises.append(
-                self.make_noise(self.signals[len(self._noises)].times)
+        # Process any unprocessed signals
+        while len(self._all_waves)<len(self.signals):
+            self._all_waves.append(
+                self.full_waveform(self.signals[len(self._all_waves)].times)
             )
-
-        return [s + n for s, n in zip(self.signals, self._noises)]
+        return self._all_waves
 
     def full_waveform(self, times):
         """
