@@ -856,7 +856,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         Compares the maximum and minimum values to a noise signal. Triggers if
         both the maximum and minimum values exceed the noise mean +/- the noise
-        rms times the threshold within the set trigger window.
+        standard deviation times the threshold within the set trigger window.
 
         Parameters
         ----------
