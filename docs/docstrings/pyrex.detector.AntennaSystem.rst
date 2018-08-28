@@ -15,7 +15,9 @@ pyrex\.detector\.AntennaSystem
          AntennaSystem.front_end
          AntennaSystem.full_waveform
          AntennaSystem.is_hit_during
+         AntennaSystem.make_noise
          AntennaSystem.receive
+         AntennaSystem.set_orientation
          AntennaSystem.setup_antenna
          AntennaSystem.trigger
 

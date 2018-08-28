@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.HpolAntenna.setup_antenna &mdash; PyREx 1.7.0 documentation</title>
+    <title>pyrex.custom.ara.HpolAntenna.setup_antenna &mdash; PyREx 1.8.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.7.0',
+        VERSION:     '1.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.7.0 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.8.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -49,7 +49,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.7.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.0 documentation</a></li>
 	 
     </ul>
               
@@ -80,7 +80,7 @@
 <h1>pyrex.custom.ara.HpolAntenna.setup_antenna<a class="headerlink" href="#pyrex-custom-ara-hpolantenna-setup-antenna" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.custom.ara.HpolAntenna.setup_antenna">
-<code class="descclassname">HpolAntenna.</code><code class="descname">setup_antenna</code><span class="sig-paren">(</span><em>center_frequency=500000000.0</em>, <em>bandwidth=800000000.0</em>, <em>resistance=8.5</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>directionality_data=None</em>, <em>directionality_freqs=None</em>, <em>efficiency=1</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.HpolAntenna.setup_antenna" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">HpolAntenna.</code><code class="descname">setup_antenna</code><span class="sig-paren">(</span><em>center_frequency=500000000.0</em>, <em>bandwidth=800000000.0</em>, <em>resistance=8.5</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>efficiency=1</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.HpolAntenna.setup_antenna" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the antenna by passing along its init arguments.</p>
 <p>Any arguments passed to this method are directly passed to the
 <code class="docutils literal"><span class="pre">__init__</span></code> methods of the <code class="docutils literal"><span class="pre">antenna</span></code>’s class.</p>
@@ -105,16 +105,6 @@ RMS voltage of the antenna noise.</p>
 <blockquote>
 <div><p>Vector direction of the z-axis of the antenna.</p>
 </div></blockquote>
-<p><strong>directionality_data</strong> : None or dict, optional</p>
-<blockquote>
-<div><p>Dictionary containing data on the directionality of the antenna. If
-<code class="docutils literal"><span class="pre">None</span></code>, behavior is undefined.</p>
-</div></blockquote>
-<p><strong>directionality_freqs</strong> : None or set, optional</p>
-<blockquote>
-<div><p>Set of frequencies in the directionality data <code class="docutils literal"><span class="pre">dict</span></code> keys. If
-<code class="docutils literal"><span class="pre">None</span></code>, calculated automatically from <em class="xref py py-obj">directionality_data</em>.</p>
-</div></blockquote>
 <p><strong>efficiency</strong> : float, optional</p>
 <blockquote>
 <div><p>Antenna efficiency applied to incoming signal values.</p>
@@ -124,9 +114,21 @@ RMS voltage of the antenna noise.</p>
 <div><p>Whether or not the antenna should add noise to incoming signals.</p>
 </div></blockquote>
 <p><strong>unique_noise_waveforms</strong> : int, optional</p>
-<blockquote class="last">
+<blockquote>
 <div><p>The number of expected noise waveforms needed for each received
 signal to have its own noise.</p>
+</div></blockquote>
+<p><strong>directionality_data</strong> : None or dict, optional</p>
+<blockquote>
+<div><p>Dictionary containing data on the directionality of the antenna.
+Should not be given if the <em class="xref py py-obj">base_antenna</em> class does not accept a
+<em class="xref py py-obj">directionality_data</em> argument.</p>
+</div></blockquote>
+<p><strong>directionality_freqs</strong> : None or set, optional</p>
+<blockquote class="last">
+<div><p>Set of frequencies in the directionality data <code class="docutils literal"><span class="pre">dict</span></code> keys.
+Should not be given if the <em class="xref py py-obj">base_antenna</em> class does not accept a
+<em class="xref py py-obj">directionality_freqs</em> argument.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -147,7 +149,7 @@ signal to have its own noise.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.7.0</p>
+Version 1.8.0</p>
 
 
 

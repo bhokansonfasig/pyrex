@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.antenna.EnvelopeHpol.full_waveform &mdash; PyREx 1.7.0 documentation</title>
+    <title>pyrex.custom.irex.antenna.EnvelopeHpol.full_waveform &mdash; PyREx 1.8.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.7.0',
+        VERSION:     '1.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.7.0 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.8.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -49,7 +49,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.7.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,11 +81,10 @@
 <dl class="method">
 <dt id="pyrex.custom.irex.antenna.EnvelopeHpol.full_waveform">
 <code class="descclassname">EnvelopeHpol.</code><code class="descname">full_waveform</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.antenna.EnvelopeHpol.full_waveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal + noise (if noisy) for the given times.</p>
+<dd><p>Signal + noise for the antenna system for the given times.</p>
 <p>Creates the complete waveform of the antenna system including noise and
 all received signals for the given <em class="xref py py-obj">times</em> array. Includes front-end
-processing. Adds a lead-in time period equal to the signal length so
-the envelope circuit has time to equilibrate.</p>
+processing with the required lead-in time.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -126,7 +125,7 @@ the envelope circuit has time to equilibrate.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.7.0</p>
+Version 1.8.0</p>
 
 
 

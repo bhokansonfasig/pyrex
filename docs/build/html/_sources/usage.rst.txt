@@ -206,7 +206,7 @@ The base :class:`Antenna` class provided by PyREx is designed to be subclassed i
                                   freq_range=frequency_range)
     noiseless_antenna = pyrex.Antenna(position=position, noisy=False)
 
-The basic properties of an :class:`Antenna` object are :attr:`is_hit` and :attr:`waveforms`. The :attr:`is_hit` property specifies whether or not the antenna has been triggered by an event. :attr:`waveforms` is a list of all the waveforms which have triggered the antenna. The antenna also defines a :attr:`signals` attribute, which is a list of all signals the antenna has received, and :attr:`all_waveforms` which is a list of all waveforms (signal plus noise) the antenna has received including those which didn't trigger. ::
+The basic properties of an :class:`Antenna` object are :attr:`is_hit` and :attr:`waveforms`. The :attr:`is_hit` property specifies whether or not the antenna has been triggered by an event. :attr:`waveforms` is a list of all the waveforms which have triggered the antenna. The antenna also defines a :attr:`signals` attribute, which is a list of all signals the antenna has received, and :attr:`all_waveforms` which is a list of all waveforms (signal plus noise) the antenna has received including those which didn't trigger. Finally, the antenna has an :attr:`is_hit_mc` property which is similar to :attr:`is_hit`, but does not count triggers where noise alone would have triggered the antenna. ::
 
     basic_antenna.is_hit == False
     basic_antenna.waveforms == []
@@ -341,7 +341,7 @@ AntennaSystem and Detector Classes
 
 The :class:`AntennaSystem` class is designed to bridge the gap between the basic antenna classes and realistic antenna systems including front-end processing of the antenna's signals. It is designed to be subclassed, but by default it takes as an argument the :class:`Antenna` class or subclass it is extending, or an object of that class. It provides an interface nearly identical to that of the :class:`Antenna` class, but where an :meth:`AntennaSystem.front_end` method (which by default does nothing) is applied to the extended antenna's signals.
 
-To extend an :class:`Antenna` class or subclass into a full antenna system, inherit from the :class:`AntennaSystem` class and define the :meth:`AntennaSystem.front_end` method. A different trigger optionally can be defined for the antenna system (by default it uses the antenna's trigger)::
+To extend an :class:`Antenna` class or subclass into a full antenna system, inherit from the :class:`AntennaSystem` class and define the :meth:`AntennaSystem.front_end` method. If the front end of the antenna system requires some time to equilibrate to noise signals, that can be specified in the :attr:`AntennaSystem.lead_in_time` attribute, adding that amount of time before any waveforms to be processed. A different trigger also optionally can be defined for the antenna system (by default it uses the antenna's trigger)::
 
     class PowerAntennaSystem(pyrex.AntennaSystem):
         """Antenna system whose signals and waveforms are powers instead of
