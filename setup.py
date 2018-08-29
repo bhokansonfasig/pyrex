@@ -27,7 +27,7 @@ setup(
     license = about["__license__"],
     # Not using find_packages since it clashes with PEP 420 use
     packages = ['pyrex', 'pyrex.custom', 'pyrex.custom.irex',
-                'pyrex.custom.ara'],
+                'pyrex.custom.ara', 'pyrex.custom.arianna'],
     python_requires = '>= 3.6',
     install_requires = [
         'numpy>=1.13',
@@ -39,5 +39,6 @@ setup(
         '': ['README.rst', 'LICENSE', 'PyREx Documentation.pdf'],
         'pyrex': ['data/secondary/*/*.vec'],
         'pyrex.custom.ara': ['data/*.txt'],
+        'pyrex.custom.arianna': ['data/*.txt', 'data/*.csv', 'data/*.tar.gz']
     },
 )
