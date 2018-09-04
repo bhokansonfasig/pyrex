@@ -13,9 +13,7 @@ from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.ice_model import IceModel
 
-from pyrex.custom.ara.antenna import (ARAAntennaSystem,
-                                      HPOL_DIRECTIONALITY, HPOL_FREQS,
-                                      VPOL_DIRECTIONALITY, VPOL_FREQS)
+from pyrex.custom.ara.antenna import ARAAntennaSystem, HpolBase, VpolBase
 from .frontends import (pyspice, spice_circuits,
                         basic_envelope_model, bridge_rectifier_envelope_model)
 
@@ -206,6 +204,8 @@ class EnvelopeSystem(ARAAntennaSystem):
 
     Parameters
     ----------
+    base_antenna : Antenna
+        ``Antenna`` class or subclass to be extended with an ARA front end.
     name : str
         Name of the antenna.
     position : array_like
@@ -216,12 +216,6 @@ class EnvelopeSystem(ARAAntennaSystem):
     time_over_threshold : float, optional
         Time (s) that the voltage waveform must exceed `trigger_threshold` for
         the antenna to trigger.
-    directionality_data : None or dict, optional
-        Dictionary containing data on the directionality of the antenna. If
-        ``None``, behavior is undefined.
-    directionality_freqs : None or set, optional
-        Set of frequencies in the directionality data ``dict`` keys. If
-        ``None``, calculated automatically from `directionality_data`.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     amplification : float, optional
@@ -267,6 +261,9 @@ class EnvelopeSystem(ARAAntennaSystem):
     envelope_method : str
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
+    lead_in_time : float
+        Lead-in time (s) required for the front end to equilibrate.
+        Automatically added in before calculation of signals and waveforms.
     is_hit
     signals
     waveforms
@@ -281,15 +278,15 @@ class EnvelopeSystem(ARAAntennaSystem):
                                           antennas.
 
     """
-    def __init__(self, name, position, trigger_threshold, time_over_threshold=0,
-                 directionality_data=None, directionality_freqs=None,
-                 orientation=(0,0,1), amplification=1, amplifier_clipping=1,
-                 envelope_amplification=1, envelope_method="analytic",
-                 noisy=True, unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
-                         power_threshold=0,
-                         directionality_data=directionality_data,
-                         directionality_freqs=directionality_freqs,
+    lead_in_time = 25e-9
+
+    def __init__(self, base_antenna, name, position, trigger_threshold,
+                 time_over_threshold=0, orientation=(0,0,1), amplification=1,
+                 amplifier_clipping=1, envelope_amplification=1,
+                 envelope_method="analytic", noisy=True,
+                 unique_noise_waveforms=10):
+        super().__init__(base_antenna=base_antenna, name=name,
+                         position=position, power_threshold=0,
                          orientation=orientation,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
@@ -462,60 +459,6 @@ class EnvelopeSystem(ARAAntennaSystem):
         """
         return super().front_end(signal)
 
-    @property
-    def all_waveforms(self):
-        """
-        The antenna system signal + noise for all hits.
-
-        Adds a lead-in time period equal to the signal length so the envelope
-        circuit has time to equilibrate.
-
-        """
-        # Process any unprocessed antenna waveforms
-        while len(self._all_waveforms)<len(self.antenna.signals):
-            signal = self.antenna.signals[len(self._all_waveforms)]
-            t = signal.times
-            long_times = np.concatenate((t-t[-1]+t[0], t[1:]))
-            long_signal = signal.with_times(long_times)
-            long_noise = self.antenna.make_noise(long_times)
-            long_waveform = self.front_end(long_signal+long_noise)
-            self._all_waveforms.append(long_waveform.with_times(t))
-        # Return envelopes of antenna waveforms
-        return self._all_waveforms
-
-    def full_waveform(self, times):
-        """
-        Signal + noise (if noisy) for the given times.
-
-        Creates the complete waveform of the antenna system including noise and
-        all received signals for the given `times` array. Includes front-end
-        processing. Adds a lead-in time period equal to the signal length so
-        the envelope circuit has time to equilibrate.
-
-        Parameters
-        ----------
-        times : array_like
-            1D array of times during which to produce the full waveform.
-
-        Returns
-        -------
-        Signal
-            Complete waveform with noise and all signals.
-
-        See Also
-        --------
-        pyrex.Antenna.full_waveform : Signal + noise for an antenna for the
-                                      given times.
-
-        """
-        # Process full antenna waveform
-        # TODO: Optimize this so it doesn't have to double the amount of time
-        # And same for the similar method above in all_waveforms
-        long_times = np.concatenate((times-times[-1]+times[0], times[1:]))
-        preprocessed = self.antenna.full_waveform(long_times)
-        long_waveform = self.front_end(preprocessed)
-        return long_waveform.with_times(times)
-
     def trigger(self, signal):
         """
         Check if the antenna triggers on a given signal.
@@ -624,11 +567,10 @@ class EnvelopeHpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
+        super().__init__(base_antenna=HpolBase,
+                         name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,
-                         directionality_data=HPOL_DIRECTIONALITY,
-                         directionality_freqs=HPOL_FREQS,
                          orientation=orientation,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
@@ -713,11 +655,10 @@ class EnvelopeVpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(name=name, position=position,
+        super().__init__(base_antenna=VpolBase,
+                         name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,
-                         directionality_data=VPOL_DIRECTIONALITY,
-                         directionality_freqs=VPOL_FREQS,
                          orientation=orientation,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,

@@ -3,6 +3,39 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.8.0
+=============
+
+.. rubric:: New Features
+
+* Added model of the ARIANNA LPDA based primarily on the implementation in `NuRadioReco <https://github.com/nu-radio/NuRadioReco>`_.
+
+* Added :attr:`Antenna.is_hit_mc` and :attr:`AntennaSystem.is_hit_mc` which test noise-only triggers to determine whether a triggered antenna as truly triggered by signal or not.
+
+* Added ``require_mc_truth`` argument to :meth:`Detector.triggered` to toggle whether a true Monte Carlo signal trigger (described above with :attr:`Antenna.is_hit_mc`) is required for a detector trigger.
+
+* Added :attr:`AntennaSystem.lead_in_time` which allows front-end systems time to equilibrate before waveforms are recorded.
+
+.. rubric:: Changes
+
+* :attr:`Antenna.waveforms` and :attr:`Antenna.all_waveforms` now include all relevant signals in the waveform during that time, similar to :meth:`Antenna.full_waveform`.
+
+* :meth:`ARAAntenna.interpolate_filter` moved to :meth:`ARAAntennaSystem.interpolate_filter`, since this better matches the logical location of the front-end electronics.
+
+.. rubric:: Bug Fixes
+
+* Fixed error in calculation of ARA Hpol polarization gain.
+
+* Corrected amplification of :class:`ARAAntennaSystem` (previously was silently ignored).
+
+* Corrected tunnel diode and other triggers to use standard deviation from mean rather than rms.
+
+* Fixed accidental duplication of antennas when :meth:`Detector.build_antennas` is called more than once.
+
+* Fixed numerical issue when checking that antenna axes are perpendicular.
+
+
+
 Version 1.7.0
 =============
 

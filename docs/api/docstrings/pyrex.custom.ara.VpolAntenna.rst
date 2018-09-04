@@ -14,8 +14,11 @@ pyrex\.custom\.ara\.VpolAntenna
          VpolAntenna.clear
          VpolAntenna.front_end
          VpolAntenna.full_waveform
+         VpolAntenna.interpolate_filter
          VpolAntenna.is_hit_during
+         VpolAntenna.make_noise
          VpolAntenna.receive
+         VpolAntenna.set_orientation
          VpolAntenna.setup_antenna
          VpolAntenna.trigger
          VpolAntenna.tunnel_diode

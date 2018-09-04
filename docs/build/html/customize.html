@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Custom Sub-Package &mdash; PyREx 1.7.0 documentation</title>
+    <title>Custom Sub-Package &mdash; PyREx 1.8.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.7.0',
+        VERSION:     '1.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.7.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.0 documentation" href="index.html" >
     <link rel="next" title="Example Code" href="examples.html" >
     <link rel="prev" title="How to Use PyREx" href="usage.html" > 
   </head>
@@ -51,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.7.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.0 documentation</a></li>
 	 
     </ul>
               
@@ -92,7 +92,7 @@
 <p>By default PyREx comes with custom modules for IREX (IceCube Radio Extension) and ARA (Askaryan Radio Array) accessible at <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.irex</span></code> and <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.ara</span></code>, respectively. More information about these modules can be found in their respective sections below.</p>
 <p>Other institutions and research groups are encouraged to create their own custom modules to integrate with PyREx. These modules have full access to PyREx as if they were a native part of the package. When PyREx is loaded it automatically scans for these custom modules in certain parts of the filesystem and includes any modules that it can find.
 The first place searched is the <code class="docutils literal"><span class="pre">custom</span></code> directory in the PyREx package itself. Next, if a <code class="docutils literal"><span class="pre">.pyrex-custom</span></code> directory exists in the user’s home directory (note the leading <code class="docutils literal"><span class="pre">.</span></code>), its subdirectories are searched for <code class="docutils literal"><span class="pre">custom</span></code> directories and any modules in these directories are included. Finally, if a <code class="docutils literal"><span class="pre">pyrex-custom</span></code> directory exists in the current working directory (this time without the leading <code class="docutils literal"><span class="pre">.</span></code>), its subdirectories are similarly scanned for modules inside <code class="docutils literal"><span class="pre">custom</span></code> directories. Note that if any name-clashing occurs, the first result found takes precedence (without warning). Additionally, none of these <code class="docutils literal"><span class="pre">custom</span></code> directories should contain an <code class="docutils literal"><span class="pre">__init__.py</span></code> file, or else the plug-in system may not work (For more information on the implementation, see PEP 420 and/or David Beazley’s 2015 PyCon talk on Modules and Packages at <a class="reference external" href="https://youtu.be/0oTh1CXRaQ0?t=1h25m45s">https://youtu.be/0oTh1CXRaQ0?t=1h25m45s</a>).</p>
-<p>As an example, in the following filesystem layout the available custom modules are <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.pyspice</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.irex</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.ara</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.arianna</span></code>, and <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.my_analysis</span></code>. Additionally note that the name clash for the ARA module will result in the module included in PyREx being loaded and the ARA module in <code class="docutils literal"><span class="pre">.pyrex-custom</span></code> will be ignored.</p>
+<p>As an example, in the following filesystem layout (which is not meant to reflect the actual current modules available to PyREx) the available custom modules are <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.pyspice</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.irex</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.ara</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.arianna</span></code>, and <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.my_analysis</span></code>. Additionally note that the name clash for the ARA module will result in the module included in PyREx being loaded and the ARA module in <code class="docutils literal"><span class="pre">.pyrex-custom</span></code> will be ignored.</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>/path/to/site-packages/pyrex/
 |-- __init__.py
 |-- signals.py
@@ -118,9 +118,10 @@ The first place searched is the <code class="docutils literal"><span class="pre"
 |   |   |   |-- ...
 |-- arianna/
 |   |-- custom/
-|   |   |-- __init__.py
-|   |   |-- antenna.py
-|   |   |-- ...
+|   |   |-- arianna/
+|   |   |   |-- __init__.py
+|   |   |   |-- antenna.py
+|   |   |   |-- ...
 
 /path/to/cwd/pyrex-custom/
 |-- my_analysis_module/
@@ -128,17 +129,22 @@ The first place searched is the <code class="docutils literal"><span class="pre"
 |   |   |-- my_analysis.py
 </pre></div>
 </div>
-<div class="section" id="irex-custom-module">
-<h2>IREX Custom Module<a class="headerlink" href="#irex-custom-module" title="Permalink to this headline">¶</a></h2>
-<p>The IREX module contains classes for antennas and detectors which use waveform envelopes rather than raw waveforms. The detectors provided allow for testing of grid and station geometries.</p>
-<p>The <code class="xref py py-class docutils literal"><span class="pre">EvelopeHpol</span></code> and <code class="xref py py-class docutils literal"><span class="pre">EvelopeVpol</span></code> classes wrap models of ARA Hpol and Vpol antennas with an additional front-end which uses a diode-bridge circuit to create waveform envelopes. The trigger condition for these antennas is a simple threshold trigger on the envelopes.</p>
-<p>The <code class="xref py py-class docutils literal"><span class="pre">IREXString</span></code> class creates a string of <code class="xref py py-class docutils literal"><span class="pre">EvelopeVpol</span></code> antennas at a given position. The <code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code> class creates a station at a given position with 4 (or another given number) strings spaced evenly around the station center. The <code class="xref py py-class docutils literal"><span class="pre">CoxeterStation</span></code> class creates a station at a given position similar to the <code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code>, but with one string at the station center and the rest spaced evenly around the center. The <code class="xref py py-class docutils literal"><span class="pre">StationGrid</span></code> class creates a rectangular grid of stations (or strings, as specified by the station type). The dimensions of the grid in stations is Nx by Ny where N is the total number of stations, Nx=floor(sqrt(N)), and Ny=floor(N/Nx).</p>
-</div>
 <div class="section" id="ara-custom-module">
 <h2>ARA Custom Module<a class="headerlink" href="#ara-custom-module" title="Permalink to this headline">¶</a></h2>
 <p>The ARA module contains classes for antennas and detectors as found or proposed for the ARA project.</p>
 <p>The <a class="reference internal" href="api/docstrings/pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">HpolAntenna</span></code></a> and <a class="reference internal" href="api/docstrings/pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">VpolAntenna</span></code></a> classes are models of ARA Hpol and Vpol antennas using data lifted from AraSim. They use the antenna directional gains in <code class="docutils literal"><span class="pre">data/ARA_dipoletest1_output_MY_fixed.txt</span></code> and <code class="docutils literal"><span class="pre">data/ARA_bicone6in_output_MY_fixed.txt</span></code> respectively, and the electronics gains in <code class="docutils literal"><span class="pre">data/ARA_Electronics_TotalGain_TwoFilters.txt</span></code>. The trigger condition of these antennas is based on a comparison of the maximum value of the tunnel-diode-convolved waveforms with the rms value of a tunnel-diode-convolved noise waveform.</p>
 <p>The <a class="reference internal" href="api/docstrings/pyrex.custom.ara.ARAString.html#pyrex.custom.ara.ARAString" title="pyrex.custom.ara.ARAString"><code class="xref py py-class docutils literal"><span class="pre">ARAString</span></code></a> class creates a string of alternating <a class="reference internal" href="api/docstrings/pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">HpolAntenna</span></code></a> and <a class="reference internal" href="api/docstrings/pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">VpolAntenna</span></code></a> ojbects, as in a typical ARA station. The <a class="reference internal" href="api/docstrings/pyrex.custom.ara.PhasedArrayString.html#pyrex.custom.ara.PhasedArrayString" title="pyrex.custom.ara.PhasedArrayString"><code class="xref py py-class docutils literal"><span class="pre">PhasedArrayString</span></code></a> class implements a more densely-packed string of antennas which trigger based on a threshold trigger on the best beam-formed combination of the antenna waveforms. The <a class="reference internal" href="api/docstrings/pyrex.custom.ara.RegularStation.html#pyrex.custom.ara.RegularStation" title="pyrex.custom.ara.RegularStation"><code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code></a> class creates a station at the given position with 4 (or another given number) strings spaced evenly around the station center. The <a class="reference internal" href="api/docstrings/pyrex.custom.ara.AlbrechtStation.html#pyrex.custom.ara.AlbrechtStation" title="pyrex.custom.ara.AlbrechtStation"><code class="xref py py-class docutils literal"><span class="pre">AlbrechtStation</span></code></a> class (proposed by Albrecht Karle) creates two phased array strings at the station center, one of <a class="reference internal" href="api/docstrings/pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">VpolAntenna</span></code></a> objects and the other of <a class="reference internal" href="api/docstrings/pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-class docutils literal"><span class="pre">HpolAntenna</span></code></a> objects, as well as 3 (or another given number) outrigger strings spaced evenly around the station center. The <a class="reference internal" href="api/docstrings/pyrex.custom.ara.HexagonalGrid.html#pyrex.custom.ara.HexagonalGrid" title="pyrex.custom.ara.HexagonalGrid"><code class="xref py py-class docutils literal"><span class="pre">HexagonalGrid</span></code></a> class creates a hexagonal grid of stations, spiralling outward from the center.</p>
+</div>
+<div class="section" id="arianna-custom-module">
+<h2>ARIANNA Custom Module<a class="headerlink" href="#arianna-custom-module" title="Permalink to this headline">¶</a></h2>
+<p>The ARIANNA module contains classes for antennas as found in the ARIANNA project.</p>
+<p>The <code class="xref py py-class docutils literal"><span class="pre">LPDA</span></code> class is the model of the ARIANNA LPDA antenna based on data from NuRadioReco. It uses directional/polarization gain from <code class="docutils literal"><span class="pre">data/createLPDA_100MHz_InfFirn.ad1</span></code> and <code class="docutils literal"><span class="pre">data/createLPDA_100MHz_InfFirn.ra1</span></code>, and amplification gain from <code class="docutils literal"><span class="pre">data/amp_300_gain.csv</span></code> and <code class="docutils literal"><span class="pre">data/amp_300_phase.csv</span></code>. The trigger condition of the antenna requires the signal to reach above and below some threshold values within a trigger window.</p>
+</div>
+<div class="section" id="irex-custom-module">
+<h2>IREX Custom Module<a class="headerlink" href="#irex-custom-module" title="Permalink to this headline">¶</a></h2>
+<p>The IREX module contains classes for antennas and detectors which use waveform envelopes rather than raw waveforms. The detectors provided allow for testing of grid and station geometries.</p>
+<p>The <code class="xref py py-class docutils literal"><span class="pre">EvelopeHpol</span></code> and <code class="xref py py-class docutils literal"><span class="pre">EvelopeVpol</span></code> classes wrap models of ARA Hpol and Vpol antennas with an additional front-end which uses a diode-bridge circuit to create waveform envelopes. The trigger condition for these antennas is a simple threshold trigger on the envelopes.</p>
+<p>The <code class="xref py py-class docutils literal"><span class="pre">IREXString</span></code> class creates a string of <code class="xref py py-class docutils literal"><span class="pre">EvelopeVpol</span></code> antennas at a given position. The <code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code> class creates a station at a given position with 4 (or another given number) strings spaced evenly around the station center. The <code class="xref py py-class docutils literal"><span class="pre">CoxeterStation</span></code> class creates a station at a given position similar to the <code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code>, but with one string at the station center and the rest spaced evenly around the center. The <code class="xref py py-class docutils literal"><span class="pre">StationGrid</span></code> class creates a rectangular grid of stations (or strings, as specified by the station type). The dimensions of the grid in stations is Nx by Ny where N is the total number of stations, Nx=floor(sqrt(N)), and Ny=floor(N/Nx).</p>
 </div>
 <div class="section" id="build-your-own-custom-module">
 <h2>Build Your Own Custom Module<a class="headerlink" href="#build-your-own-custom-module" title="Permalink to this headline">¶</a></h2>
@@ -234,7 +240,7 @@ The first place searched is the <code class="docutils literal"><span class="pre"
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.7.0</p>
+Version 1.8.0</p>
 
 
 
@@ -266,8 +272,9 @@ Version 1.7.0</p>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">How to Use PyREx</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Custom Sub-Package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#irex-custom-module">IREX Custom Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ara-custom-module">ARA Custom Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arianna-custom-module">ARIANNA Custom Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#irex-custom-module">IREX Custom Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#build-your-own-custom-module">Build Your Own Custom Module</a></li>
 </ul>
 </li>

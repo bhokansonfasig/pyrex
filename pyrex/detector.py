@@ -10,6 +10,7 @@ functions like front-end electronics chains and trigger systems.
 import collections
 import inspect
 import logging
+import numpy as np
 from pyrex.internal_functions import flatten, mirror_func
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,9 @@ class AntennaSystem:
     ----------
     antenna : Antenna
         ``Antenna`` object extended by the front end.
+    lead_in_time : float
+        Lead-in time (s) required for the front end to equilibrate.
+        Automatically added in before calculation of signals and waveforms.
     is_hit
     signals
     waveforms
@@ -43,6 +47,8 @@ class AntennaSystem:
     pyrex.Antenna : Base class for antennas.
 
     """
+    lead_in_time = 0
+
     def __init__(self, antenna):
         if inspect.isclass(antenna):
             self._antenna_class = antenna
@@ -51,7 +57,7 @@ class AntennaSystem:
             self._antenna_class = antenna.__class__
 
         self._signals = []
-        self._all_waveforms = []
+        self._all_waves = []
         self._triggers = []
 
     def __str__(self):
@@ -69,6 +75,28 @@ class AntennaSystem:
 
         """
         self.antenna = self._antenna_class(*args, **kwargs)
+
+    def set_orientation(self, z_axis=(0,0,1), x_axis=(1,0,0)):
+        """
+        Sets the orientation of the antenna system.
+
+        Sets up the z-axis and the x-axis of the antenna according to the given
+        parameters. Fails if the z-axis and x-axis aren't perpendicular.
+
+        Parameters
+        ----------
+        z_axis : array_like, optional
+            Vector direction of the z-axis of the antenna.
+        x_axis : array_like, optional
+            Vector direction of the x-axis of the antenna.
+
+        Raises
+        ------
+        ValueError
+            If the z-axis and x-axis aren't perpendicular.
+
+        """
+        self.antenna.set_orientation(z_axis=z_axis, x_axis=x_axis)
 
     def front_end(self, signal):
         """
@@ -97,10 +125,39 @@ class AntennaSystem:
                      "pyrex.detector.AntennaSystem")
         return signal
 
+    def _calculate_lead_in_times(self, times):
+        t0 = times[0]
+        t_min = t0-self.lead_in_time
+        t_max = times[-1]
+        dt = times[1]-t0
+        # Number of points in the lead-in array
+        n_pts = int((t_max-t_min)/dt)+2 - len(times)
+        # Proper starting point of lead-in array to preserve dt
+        t_min = t0-n_pts*dt
+        return np.concatenate(
+            (np.linspace(t_min, t0, n_pts, endpoint=False),
+             times)
+        )
+
     @property
     def is_hit(self):
         """Boolean of whether the antenna system has been triggered."""
         return len(self.waveforms)>0
+
+    @property
+    def is_hit_mc_truth(self):
+        """
+        Boolean of whether the antenna has been triggered by signal.
+
+        The decision is based on the Monte Carlo truth of whether noise would
+        have triggered without the signal. If a signal triggered, but the noise
+        alone in the same timeframe would have triggered as well, the trigger
+        is not counted.
+        """
+        for wave in self.waveforms:
+            if not self.trigger(self.make_noise(wave.times)):
+                return True
+        return False
 
     def is_hit_during(self, times):
         """
@@ -128,13 +185,40 @@ class AntennaSystem:
         """
         return self.trigger(self.full_waveform(times))
 
+    def clear(self, reset_noise=False):
+        """
+        Reset the antenna system to an empty state.
+
+        Clears all signals, noises, and triggers from the antenna state. Can
+        also optionally recalibrate the noise so that a new signal arriving
+        at the same times as a previous signal will not have the same noise.
+
+        Parameters
+        ----------
+        reset_noise : boolean, optional
+            Whether or not to recalibrate the noise.
+
+        See Also
+        --------
+        pyrex.Antenna.clear : Reset an antenna to an empty state.
+
+        """
+        self._signals.clear()
+        self._all_waves.clear()
+        self._triggers.clear()
+        self.antenna.clear(reset_noise=reset_noise)
+
     @property
     def signals(self):
         """The signals received by the antenna with front-end processing."""
-        # Process any unprocessed antenna signals
+        # Process any unprocessed antenna signals, including the appropriate
+        # amount of front-end lead-in time
         while len(self._signals)<len(self.antenna.signals):
             signal = self.antenna.signals[len(self._signals)]
-            self._signals.append(self.front_end(signal))
+            long_times = self._calculate_lead_in_times(signal.times)
+            preprocessed = signal.with_times(long_times)
+            processed = self.front_end(preprocessed)
+            self._signals.append(processed.with_times(signal.times))
         # Return processed antenna signals
         return self._signals
 
@@ -153,20 +237,23 @@ class AntennaSystem:
     @property
     def all_waveforms(self):
         """The antenna system signal + noise for all hits."""
-        # Process any unprocessed antenna waveforms
-        while len(self._all_waveforms)<len(self.antenna.signals):
-            wave = self.antenna.all_waveforms[len(self._all_waveforms)]
-            self._all_waveforms.append(self.front_end(wave))
-        # Return processed antenna waveforms
-        return self._all_waveforms
+        # Process any unprocessed antenna signals, including the appropriate
+        # amount of front-end lead-in time
+        while len(self._all_waves)<len(self.antenna.signals):
+            self._all_waves.append(
+                self.full_waveform(
+                    self.antenna.signals[len(self._all_waves)].times
+                )
+            )
+        return self._all_waves
 
     def full_waveform(self, times):
         """
-        Signal + noise (if ``noisy``) for the given times.
+        Signal + noise for the antenna system for the given times.
 
         Creates the complete waveform of the antenna system including noise and
         all received signals for the given `times` array. Includes front-end
-        processing.
+        processing with the required lead-in time.
 
         Parameters
         ----------
@@ -185,8 +272,62 @@ class AntennaSystem:
 
         """
         # Process full antenna waveform
-        preprocessed = self.antenna.full_waveform(times)
-        return self.front_end(preprocessed)
+        long_times = self._calculate_lead_in_times(times)
+        preprocessed = self.antenna.full_waveform(long_times)
+        processed = self.front_end(preprocessed)
+        return processed.with_times(times)
+
+    def make_noise(self, times):
+        """
+        Creates a noise signal over the given times.
+
+        Passes a noise signal of the antenna through the front-end.
+
+        Parameters
+        ----------
+        times : array_like
+            1D array of times during which to produce noise values.
+
+        Returns
+        -------
+        Signal
+            Antenna system noise values during the `times` array.
+
+        Raises
+        ------
+        ValueError
+            If not enough noise-related attributes are defined for the antenna.
+
+        """
+        long_times = self._calculate_lead_in_times(times)
+        preprocessed = self.antenna.make_noise(long_times)
+        processed = self.front_end(preprocessed)
+        return processed.with_times(times)
+
+    def trigger(self, signal):
+        """
+        Check if the antenna system triggers on a given signal.
+
+        By default just matches the antenna's trigger. It may be overridden in
+        subclasses.
+
+        Parameters
+        ----------
+        signal : Signal
+            ``Signal`` object on which to test the trigger condition.
+
+        Returns
+        -------
+        boolean
+            Whether or not the antenna triggers on `signal`.
+
+        See Also
+        --------
+        pyrex.Antenna.trigger : Check if an antenna triggers on a given signal.
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
+        return self.antenna.trigger(signal)
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=False):
@@ -226,54 +367,6 @@ class AntennaSystem:
         return self.antenna.receive(signal, direction=direction,
                                     polarization=polarization,
                                     force_real=force_real)
-
-    def clear(self, reset_noise=False):
-        """
-        Reset the antenna system to an empty state.
-
-        Clears all signals, noises, and triggers from the antenna state. Can
-        also optionally recalibrate the noise so that a new signal arriving
-        at the same times as a previous signal will not have the same noise.
-
-        Parameters
-        ----------
-        reset_noise : boolean, optional
-            Whether or not to recalibrate the noise.
-
-        See Also
-        --------
-        pyrex.Antenna.clear : Reset an antenna to an empty state.
-
-        """
-        self._signals.clear()
-        self._all_waveforms.clear()
-        self._triggers.clear()
-        self.antenna.clear(reset_noise=reset_noise)
-
-    def trigger(self, signal):
-        """
-        Check if the antenna system triggers on a given signal.
-
-        By default just matches the antenna's trigger. It may be overridden in
-        subclasses.
-
-        Parameters
-        ----------
-        signal : Signal
-            ``Signal`` object on which to test the trigger condition.
-
-        Returns
-        -------
-        boolean
-            Whether or not the antenna triggers on `signal`.
-
-        See Also
-        --------
-        pyrex.Antenna.trigger : Check if an antenna triggers on a given signal.
-        pyrex.Signal : Base class for time-domain signals.
-
-        """
-        return self.antenna.trigger(signal)
 
 
 
@@ -404,18 +497,25 @@ class Detector:
             else:
                 antenna_class = args[0]
                 args = args[1:]
+            self.subsets = []
             for p in self.antenna_positions:
                 self.subsets.append(antenna_class(position=p, *args, **kwargs))
         else:
             for sub in self.subsets:
                 sub.build_antennas(*args, **kwargs)
 
-    def triggered(self, *args, **kwargs):
+    def triggered(self, *args, require_mc_truth=False, **kwargs):
         """
         Check if the detector is triggered based on its current state.
 
         By default just checks whether any antenna in the detector is hit.
         This method may be overridden in subclasses.
+
+        Parameters
+        ----------
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
 
         Returns
         -------
@@ -430,7 +530,8 @@ class Detector:
 
         """
         for ant in self:
-            if ant.is_hit:
+            if ((require_mc_truth and ant.is_hit_mc_truth) or
+                    (not require_mc_truth and ant.is_hit)):
                 return True
         return False
 

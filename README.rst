@@ -20,7 +20,9 @@ Requirements
 ------------
 
 PyREx requires python version 3.6+ as well as numpy version 1.13+ and scipy version 0.19+.
-After installing python from https://www.python.org/downloads/, numpy and scipy can be installed with ``pip`` as follows, or by simply installing pyrex as specified in the next section. ::
+After installing python from https://www.python.org/downloads/, numpy and scipy can be installed with ``pip`` as follows, or by simply installing pyrex as specified in the next section.
+
+.. code-block:: shell
 
     pip install numpy>=1.13
     pip install scipy>=0.19
@@ -28,7 +30,9 @@ After installing python from https://www.python.org/downloads/, numpy and scipy 
 Installing
 ----------
 
-The easiest way to get the PyREx package is using ``pip`` as follows::
+The easiest way to get the PyREx package is using ``pip`` as follows
+
+.. code-block:: shell
 
     pip install git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
 
