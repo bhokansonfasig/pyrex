@@ -96,23 +96,27 @@ class HDF5Writer(BaseWriter):
 
     def open(self):
         self._file = h5py.File(self.filename, mode='w')
-        self._file.create_group("events")
-        self._file.create_group("complex_events")
         self._file.create_group("metadata")
         self._file['metadata'].create_group("events")
         self._file['metadata'].create_group("antennas")
         self._file['metadata'].create_group("waveforms")
         self._file.create_group("analysis")
-        str_data = self._file['metadata']['events'].create_dataset(
-            name="str", shape=(0, 0),
-            dtype=h5py.special_dtype(vlen=str), maxshape=(None, None)
+        self._file['metadata']['events'].create_dataset(
+            name="str", shape=(0, 0, 0),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None, None, None)
         )
-        str_data.attrs['row_names'] = []
-        float_data = self._file['metadata']['events'].create_dataset(
-            name="float", shape=(0, 0),
-            dtype=np.float_, maxshape=(None, None)
+        self._file['metadata']['events'].create_dataset(
+            name="str_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
-        float_data.attrs['row_names'] = []
+        self._file['metadata']['events'].create_dataset(
+            name="float", shape=(0, 0, 0),
+            dtype=np.float_, maxshape=(None, None, None)
+        )
+        self._file['metadata']['events'].create_dataset(
+            name="float_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
+        )
         self._counter = 0
 
     def close(self):
@@ -126,8 +130,8 @@ class HDF5Writer(BaseWriter):
         #   1 - Number of antennas
         #   2 - Number of waveforms per antenna (usually 2: direct & reflected)
         #   3 - Number of value types (2: times & values)
-        data = self._file['events'].create_dataset(
-            name="data", shape=(0, len(detector), 2, 2),
+        data = self._file.create_dataset(
+            name="events", shape=(0, len(detector), 2, 2),
             dtype=waveform_type, maxshape=(None, len(detector), 2, 2)
         )
         data.dims[0].label = "events"
@@ -135,8 +139,8 @@ class HDF5Writer(BaseWriter):
         data.dims[2].label = "waveforms"
         # Complex events may have more than two waveforms per antenna,
         # store them separately to keep files from bloating with zeros
-        complex_data = self._file['complex_events'].create_dataset(
-            name="data", shape=(0, len(detector), 2, 2),
+        complex_data = self._file.create_dataset(
+            name="complex_events", shape=(0, len(detector), 2, 2),
             dtype=waveform_type, maxshape=(None, len(detector), None, 2)
         )
         complex_data.dims[0].label = "events"
@@ -147,12 +151,18 @@ class HDF5Writer(BaseWriter):
             name="str", shape=(len(detector), 0),
             dtype=h5py.special_dtype(vlen=str), maxshape=(len(detector), None)
         )
-        str_data.attrs['row_names'] = []
+        str_keys = self._file['metadata']['antennas'].create_dataset(
+            name="str_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
+        )
         float_data = self._file['metadata']['antennas'].create_dataset(
             name="float", shape=(len(detector), 0),
             dtype=np.float_, maxshape=(len(detector), None)
         )
-        float_data.attrs['row_names'] = []
+        float_keys = self._file['metadata']['antennas'].create_dataset(
+            name="float_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
+        )
 
         # Each detector/antenna should write its own metadata, but for now
         # let's just capture a couple general-purpose attributes
@@ -170,21 +180,29 @@ class HDF5Writer(BaseWriter):
         for i, meta in enumerate(antenna_metadata):
             for key, val in meta.items():
                 if isinstance(val, str):
-                    if key not in list(str_data.attrs['row_names']):
-                        j = len(str_data.attrs['row_names'])
-                        np.append(str_data.attrs['row_names'], key)
+                    j = -1
+                    for k, match in enumerate(str_keys[:]):
+                        if match==key:
+                            j = k
+                            break
+                    if j==-1:
+                        j = str_keys.size
+                        str_keys.resize(j+1, axis=0)
+                        str_keys[j] = key
                         str_data.resize(j+1, axis=1)
-                    else:
-                        j = str_data.attrs['row_names'].index(key)
-                    str_data[i][j] = val
+                    str_data[i,j] = val
                 elif isinstance(val, (int, float)):
-                    if key not in list(float_data.attrs['row_names']):
-                        j = len(float_data.attrs['row_names'])
-                        np.append(float_data.attrs['row_names'], key)
+                    j = -1
+                    for k, match in enumerate(float_keys[:]):
+                        if match==key:
+                            j = k
+                            break
+                    if j==-1:
+                        j = float_keys.size
+                        float_keys.resize(j+1, axis=0)
+                        float_keys[j] = key
                         float_data.resize(j+1, axis=1)
-                    else:
-                        j = float_data.attrs['row_names'].index(key)
-                    float_data[i][j] = val
+                    float_data[i,j] = val
                 else:
                     raise ValueError("Must be str, int, or float")
 
@@ -204,34 +222,46 @@ class HDF5Writer(BaseWriter):
             )
 
         str_data = self._file['metadata']['events']['str']
+        str_keys = self._file['metadata']['events']['str_keys']
         float_data = self._file['metadata']['events']['float']
-        str_data.resize(len(event), axis=0)
-        float_data.resize(len(event), axis=0)
+        float_keys = self._file['metadata']['events']['float_keys']
+        str_data.resize(self._counter, axis=0)
+        float_data.resize(self._counter, axis=0)
+        str_data.resize(max(len(event), str_data.shape[1]), axis=1)
+        float_data.resize(max(len(event), str_data.shape[1]), axis=1)
 
         for i, meta in enumerate(particle_metadata):
             for key, val in meta.items():
                 if isinstance(val, str):
-                    if key not in list(str_data.attrs['row_names']):
-                        j = len(str_data.attrs['row_names'])
-                        np.append(str_data.attrs['row_names'], key)
-                        str_data.resize(j+1, axis=1)
-                    else:
-                        j = str_data.attrs['row_names'].index(key)
-                    str_data[i][j] = val
+                    j = -1
+                    for k, match in enumerate(str_keys[:]):
+                        if match==key:
+                            j = k
+                            break
+                    if j==-1:
+                        j = str_keys.size
+                        str_keys.resize(j+1, axis=0)
+                        str_keys[j] = key
+                        str_data.resize(j+1, axis=2)
+                    str_data[self._counter-1, i, j] = val
                 elif isinstance(val, (int, float)):
-                    if key not in list(float_data.attrs['row_names']):
-                        j = len(float_data.attrs['row_names'])
-                        np.append(float_data.attrs['row_names'], key)
-                        float_data.resize(j+1, axis=1)
-                    else:
-                        j = float_data.attrs['row_names'].index(key)
-                    float_data[i][j] = val
+                    j = -1
+                    for k, match in enumerate(float_keys[:]):
+                        if match==key:
+                            j = k
+                            break
+                    if j==-1:
+                        j = float_keys.size
+                        float_keys.resize(j+1, axis=0)
+                        float_keys[j] = key
+                        float_data.resize(j+1, axis=2)
+                    float_data[self._counter-1, i, j] = val
                 else:
-                    raise ValueError("Must be str, int, or float ("+key+", "+val+")")
+                    raise ValueError("Must be str, int, or float")
 
 
     def _write_waveforms(self):
-        data = self._file['events']['data']
+        data = self._file['events']
         data.resize(self._counter, axis=0)
         for i, ant in enumerate(self._detector):
             for j, wave in enumerate(ant.all_waveforms):
@@ -240,8 +270,8 @@ class HDF5Writer(BaseWriter):
 
     def add(self, event, triggered=None):
         self._counter += 1
+        self._write_particles(event)
         if self.verbosity==Verbosity.events_only:
-            self._write_particles(event)
             return
         if 'triggered_only' in self.verbosity.name:
             if triggered is None:
