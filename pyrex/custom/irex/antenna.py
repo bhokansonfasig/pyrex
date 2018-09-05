@@ -300,6 +300,19 @@ class EnvelopeSystem(ARAAntennaSystem):
 
         self.envelope_method = envelope_method
 
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `EnvelopeSystem` information."""
+        meta = super()._metadata
+        meta.update({
+            "lead_in_time": self.lead_in_time,
+            "envelope_amplification": self.envelope_amplification,
+            "envelope_method": self.envelope_method,
+            "trigger_threshold": self.trigger_threshold,
+            "time_over_threshold": self.time_over_threshold
+        })
+        return meta
+
     def make_envelope(self, signal):
         """
         Return the signal envelope based on the antenna's ``envelope_method``.

@@ -64,6 +64,11 @@ class AntennaSystem:
         return (self.__class__.__name__+"(position="+
                 repr(self.antenna.position)+")")
 
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `AntennaSystem` information."""
+        return self.antenna._metadata
+
     def setup_antenna(self, *args, **kwargs):
         """
         Setup the antenna by passing along its init arguments.
@@ -455,6 +460,11 @@ class Detector:
         # its set_positions function (since all __init__ arguments are passed
         # to set_positions anyway)
         cls.__init__ = mirror_func(cls.set_positions, Detector.__init__)
+
+    @property
+    def _metadata(self):
+        """List of metadata dictionaries of the `Antenna` objects."""
+        return [antenna._metadata for antenna in self]
 
     def set_positions(self, *args, **kwargs):
         """

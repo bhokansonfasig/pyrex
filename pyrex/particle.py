@@ -199,6 +199,17 @@ class Interaction:
         self.em_frac, self.had_frac = self.choose_shower_fractions()
 
     @property
+    def _metadata(self):
+        """Metadata dictionary for writing `Interaction` information."""
+        return {
+            "class": str(type(self)),
+            "kind": self.kind.value,
+            "inelasticity": self.inelasticity,
+            "em_frac": self.em_frac,
+            "had_frac": self.had_frac
+        }
+
+    @property
     def kind(self):
         """
         Value of the interaction type.
@@ -1063,6 +1074,26 @@ class Particle:
         self.weight = weight
 
     @property
+    def _metadata(self):
+        """Metadata dictionary for writing `Particle` information."""
+        meta = {
+            "class": str(type(self)),
+            "particle_id": self.id.value,
+            "vertex_x": self.vertex[0],
+            "vertex_y": self.vertex[1],
+            "vertex_z": self.vertex[2],
+            "direction_x": self.direction[0],
+            "direction_y": self.direction[1],
+            "direction_z": self.direction[2],
+            "energy": self.energy,
+            "weight": self.weight,
+            "interaction_class": str(type(self.interaction)),
+        }
+        for key, val in self.interaction._metadata.items():
+            meta["interaction_"+key] = val
+        return meta
+
+    @property
     def id(self):
         """
         Identification value of the particle type.
@@ -1116,6 +1147,11 @@ class Event:
                 raise ValueError("Root elements must be Particle objects")
         self._all = [particle for particle in self.roots]
         self._children = [[] for _ in range(len(self.roots))]
+
+    @property
+    def _metadata(self):
+        """List of metadata dictionaries of the `Particle` objects."""
+        return [particle._metadata for particle in self]
 
     def add_children(self, parent, children):
         """
