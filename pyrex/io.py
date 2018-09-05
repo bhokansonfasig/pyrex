@@ -194,7 +194,7 @@ class HDF5Writer(BaseWriter):
             name="float_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
-        self._counter = 0
+        self._counter = -1
 
     def close(self):
         self._file.close()
@@ -222,7 +222,7 @@ class HDF5Writer(BaseWriter):
                         str_data[i, j] = val
                     else:
                         str_data[index, i, j] = val
-                elif isinstance(val, (int, float)):
+                elif np.isscalar(val):
                     j = -1
                     for k, match in enumerate(float_keys[:]):
                         if match==key:
@@ -238,7 +238,7 @@ class HDF5Writer(BaseWriter):
                     else:
                         float_data[index, i, j] = val
                 else:
-                    raise ValueError("Must be str, int, or float")
+                    raise ValueError("Must be str or scalar")
 
     def set_detector(self, detector):
         self._detector = detector
@@ -284,9 +284,9 @@ class HDF5Writer(BaseWriter):
 
         # Each detector/antenna should write its own metadata, but for now
         # let's just capture a couple general-purpose attributes
-        antenna_metadata = []
+        detector_metadata = []
         for ant in detector:
-            antenna_metadata.append(
+            detector_metadata.append(
                 {
                     "antenna_class": str(type(ant)),
                     "x-position": ant.position[0],
@@ -295,43 +295,43 @@ class HDF5Writer(BaseWriter):
                 }
             )
 
-        self._write_metadata(antenna_metadata, 'antennas')
+        self._write_metadata(detector_metadata, 'antennas')
 
 
     def _write_particles(self, event):
         # Event/Particle class should write its own metadata, but for now
         # let's just capture a couple general-purpose attributes
-        particle_metadata = []
+        event_metadata = []
         for particle in event:
-            particle_metadata.append(
+            event_metadata.append(
                 {
                     "particle_id": str(particle.id),
-                    "x-position": float(particle.vertex[0]),
-                    "y-position": float(particle.vertex[1]),
-                    "z-position": float(particle.vertex[2]),
-                    "x-direction": float(particle.direction[0]),
-                    "y-direction": float(particle.direction[1]),
-                    "z-direction": float(particle.direction[2]),
-                    "energy": float(particle.energy)
+                    "x-position": particle.vertex[0],
+                    "y-position": particle.vertex[1],
+                    "z-position": particle.vertex[2],
+                    "x-direction": particle.direction[0],
+                    "y-direction": particle.direction[1],
+                    "z-direction": particle.direction[2],
+                    "energy": particle.energy
                 }
             )
 
         str_data = self._file['metadata']['events']['str']
         float_data = self._file['metadata']['events']['float']
-        str_data.resize(self._counter, axis=0)
-        float_data.resize(self._counter, axis=0)
+        str_data.resize(self._counter+1, axis=0)
+        float_data.resize(self._counter+1, axis=0)
         str_data.resize(max(len(event), str_data.shape[1]), axis=1)
         float_data.resize(max(len(event), str_data.shape[1]), axis=1)
 
-        self._write_metadata(particle_metadata, 'events', self._counter-1)
+        self._write_metadata(event_metadata, 'events', self._counter)
 
 
     def _write_waveforms(self):
         data = self._file['events']
-        data.resize(self._counter, axis=0)
+        data.resize(self._counter+1, axis=0)
         for i, ant in enumerate(self._detector):
             for j, wave in enumerate(ant.all_waveforms):
-                data[self._counter-1, i, j] = np.array([wave.times, wave.values])
+                data[self._counter, i, j] = np.array([wave.times, wave.values])
 
 
     def add(self, event, triggered=None):
