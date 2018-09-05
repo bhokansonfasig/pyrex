@@ -10,6 +10,9 @@ from enum import Enum
 import h5py
 import numpy as np
 from pyrex.internal_functions import get_from_enum
+from pyrex.signals import Signal
+from pyrex.antenna import Antenna
+from pyrex.particle import Particle, Event
 
 
 class Verbosity(Enum):
@@ -45,10 +48,10 @@ class BaseReader:
         self.close()
 
     def open(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def close(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class BaseWriter:
@@ -63,16 +66,90 @@ class BaseWriter:
         self.close()
 
     def open(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def close(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _set_verbosity_level(self, verbosity, accepted_verbosities):
         self.verbosity = get_from_enum(verbosity, Verbosity)
         if self.verbosity not in accepted_verbosities:
             raise ValueError("Unable to write with verbosity "+
                              self.verbosity)
+
+
+class BaseRebuilder:
+    def __init__(self, filename):
+        pass
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
+
+    def open(self):
+        self._detector = None
+        raise NotImplementedError
+
+    def close(self):
+        raise NotImplementedError
+
+    def __iter__(self):
+        self._iter_counter = -1
+        return self
+
+    def __next__(self):
+        self._iter_counter += 1
+        if self._iter_counter<len(self):
+            return self[self._iter_counter]
+        else:
+            raise StopIteration
+
+    def __len__(self):
+        raise NotImplementedError
+
+    def __getitem__(self, key):
+        event = self.rebuild_event(key)
+        self.rebuild_waveforms(key)
+        return event, self._detector
+
+    def rebuild_event(self, index):
+        raise NotImplementedError
+
+    def rebuild_detector(self):
+        raise NotImplementedError
+
+    def rebuild_waveforms(self, index):
+        raise NotImplementedError
+
+
+
+def _read_hdf5_metadata_to_dicts(file, group, index=None):
+    str_keys = file['metadata'][group]['str_keys']
+    float_keys = file['metadata'][group]['float_keys']
+    if index is None:
+        str_metadata = file['metadata'][group]['str']
+        float_metadata = file['metadata'][group]['float']
+    else:
+        str_metadata = file['metadata'][group]['str'][index]
+        float_metadata = file['metadata'][group]['float'][index]
+
+    if (str_metadata.shape[0]!=float_metadata.shape[0] or
+            str_metadata.shape[1]!=str_keys.size or
+            float_metadata.shape[1]!=float_keys.size):
+        raise ValueError("Metadata group '"+group+"' not readable")
+
+    dicts = []
+    for i in range(str_metadata.shape[0]):
+        meta_dict = {}
+        for j, key in enumerate(str_keys):
+            meta_dict[key] = str_metadata[i,j]
+        for j, key in enumerate(float_keys):
+            meta_dict[key] = float_metadata[i,j]
+        dicts.append(meta_dict)
+    return dicts
 
 
 
@@ -122,6 +199,47 @@ class HDF5Writer(BaseWriter):
     def close(self):
         self._file.close()
 
+    def _write_metadata(self, metadata, group, index=None):
+        str_data = self._file['metadata'][group]['str']
+        str_keys = self._file['metadata'][group]['str_keys']
+        float_data = self._file['metadata'][group]['float']
+        float_keys = self._file['metadata'][group]['float_keys']
+        data_axis = 1 if index is None else 2
+        for i, meta in enumerate(metadata):
+            for key, val in meta.items():
+                if isinstance(val, str):
+                    j = -1
+                    for k, match in enumerate(str_keys[:]):
+                        if match==key:
+                            j = k
+                            break
+                    if j==-1:
+                        j = str_keys.size
+                        str_keys.resize(j+1, axis=0)
+                        str_keys[j] = key
+                        str_data.resize(j+1, axis=data_axis)
+                    if index is None:
+                        str_data[i, j] = val
+                    else:
+                        str_data[index, i, j] = val
+                elif isinstance(val, (int, float)):
+                    j = -1
+                    for k, match in enumerate(float_keys[:]):
+                        if match==key:
+                            j = k
+                            break
+                    if j==-1:
+                        j = float_keys.size
+                        float_keys.resize(j+1, axis=0)
+                        float_keys[j] = key
+                        float_data.resize(j+1, axis=data_axis)
+                    if index is None:
+                        float_data[i, j] = val
+                    else:
+                        float_data[index, i, j] = val
+                else:
+                    raise ValueError("Must be str, int, or float")
+
     def set_detector(self, detector):
         self._detector = detector
         waveform_type = h5py.special_dtype(vlen=np.float_)
@@ -147,19 +265,19 @@ class HDF5Writer(BaseWriter):
         complex_data.dims[1].label = "antennas"
         complex_data.dims[2].label = "waveforms"
 
-        str_data = self._file['metadata']['antennas'].create_dataset(
+        self._file['metadata']['antennas'].create_dataset(
             name="str", shape=(len(detector), 0),
             dtype=h5py.special_dtype(vlen=str), maxshape=(len(detector), None)
         )
-        str_keys = self._file['metadata']['antennas'].create_dataset(
+        self._file['metadata']['antennas'].create_dataset(
             name="str_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
-        float_data = self._file['metadata']['antennas'].create_dataset(
+        self._file['metadata']['antennas'].create_dataset(
             name="float", shape=(len(detector), 0),
             dtype=np.float_, maxshape=(len(detector), None)
         )
-        float_keys = self._file['metadata']['antennas'].create_dataset(
+        self._file['metadata']['antennas'].create_dataset(
             name="float_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
@@ -177,34 +295,7 @@ class HDF5Writer(BaseWriter):
                 }
             )
 
-        for i, meta in enumerate(antenna_metadata):
-            for key, val in meta.items():
-                if isinstance(val, str):
-                    j = -1
-                    for k, match in enumerate(str_keys[:]):
-                        if match==key:
-                            j = k
-                            break
-                    if j==-1:
-                        j = str_keys.size
-                        str_keys.resize(j+1, axis=0)
-                        str_keys[j] = key
-                        str_data.resize(j+1, axis=1)
-                    str_data[i,j] = val
-                elif isinstance(val, (int, float)):
-                    j = -1
-                    for k, match in enumerate(float_keys[:]):
-                        if match==key:
-                            j = k
-                            break
-                    if j==-1:
-                        j = float_keys.size
-                        float_keys.resize(j+1, axis=0)
-                        float_keys[j] = key
-                        float_data.resize(j+1, axis=1)
-                    float_data[i,j] = val
-                else:
-                    raise ValueError("Must be str, int, or float")
+        self._write_metadata(antenna_metadata, 'antennas')
 
 
     def _write_particles(self, event):
@@ -218,46 +309,21 @@ class HDF5Writer(BaseWriter):
                     "x-position": float(particle.vertex[0]),
                     "y-position": float(particle.vertex[1]),
                     "z-position": float(particle.vertex[2]),
+                    "x-direction": float(particle.direction[0]),
+                    "y-direction": float(particle.direction[1]),
+                    "z-direction": float(particle.direction[2]),
+                    "energy": float(particle.energy)
                 }
             )
 
         str_data = self._file['metadata']['events']['str']
-        str_keys = self._file['metadata']['events']['str_keys']
         float_data = self._file['metadata']['events']['float']
-        float_keys = self._file['metadata']['events']['float_keys']
         str_data.resize(self._counter, axis=0)
         float_data.resize(self._counter, axis=0)
         str_data.resize(max(len(event), str_data.shape[1]), axis=1)
         float_data.resize(max(len(event), str_data.shape[1]), axis=1)
 
-        for i, meta in enumerate(particle_metadata):
-            for key, val in meta.items():
-                if isinstance(val, str):
-                    j = -1
-                    for k, match in enumerate(str_keys[:]):
-                        if match==key:
-                            j = k
-                            break
-                    if j==-1:
-                        j = str_keys.size
-                        str_keys.resize(j+1, axis=0)
-                        str_keys[j] = key
-                        str_data.resize(j+1, axis=2)
-                    str_data[self._counter-1, i, j] = val
-                elif isinstance(val, (int, float)):
-                    j = -1
-                    for k, match in enumerate(float_keys[:]):
-                        if match==key:
-                            j = k
-                            break
-                    if j==-1:
-                        j = float_keys.size
-                        float_keys.resize(j+1, axis=0)
-                        float_keys[j] = key
-                        float_data.resize(j+1, axis=2)
-                    float_data[self._counter-1, i, j] = val
-                else:
-                    raise ValueError("Must be str, int, or float")
+        self._write_metadata(particle_metadata, 'events', self._counter-1)
 
 
     def _write_waveforms(self):
@@ -285,3 +351,93 @@ class HDF5Writer(BaseWriter):
 
     # def add_metadata(self, file_metadata):
     #     self._file['metadata'].attrs = file_metadata
+
+
+
+class AntennaProxy(Antenna):
+    def __init__(self, metadata_dict):
+        position = metadata_dict['position']
+        super().__init__(position=position)
+        for key, val in metadata_dict.items():
+            self.__dict__[key] = val
+
+
+
+class HDF5Rebuilder(BaseRebuilder):
+    def __init__(self, filename, use_detector_proxy=False):
+        if filename.endswith(".hdf5") or filename.endswith(".h5"):
+            self.filename = filename
+        else:
+            raise ValueError(filename+" is not an hdf5 file")
+        self.use_proxy = use_detector_proxy
+
+    def open(self):
+        self._file = h5py.File(self.filename, mode='r')
+        if self.use_proxy:
+            self._detector = self.build_proxy_detector()
+        else:
+            self._detector = self.rebuild_detector()
+
+    def close(self):
+        self._file.close()
+
+    def __len__(self):
+        return (self._file['events'].shape[0] +
+                self._file['complex_events'].shape[0])
+
+
+    def _read_metadata(self, group, index=None):
+        return _read_hdf5_metadata_to_dicts(self._file, group, index)
+
+    def rebuild_event(self, index):
+        event_metadata = self._read_metadata('events', index)
+        event_roots = []
+        for particle_metadata in event_metadata:
+            required_keys = [
+                'particle_id', 'x-position', 'y-position', 'z-position',
+                'x-direction', 'y-direction', 'z-direction', 'energy'
+            ]
+            for key in required_keys:
+                if key not in particle_metadata:
+                    raise ValueError("Event metadata does not have a value for "+key)
+            particle_id = particle_metadata['particle_id'][5:]
+            vertex = (particle_metadata['x-position'],
+                      particle_metadata['y-position'],
+                      particle_metadata['z-position'])
+            direction = (particle_metadata['x-direction'],
+                         particle_metadata['y-direction'],
+                         particle_metadata['z-direction'])
+            energy = particle_metadata['energy']
+            p = Particle(particle_id=particle_id, vertex=vertex,
+                         direction=direction, energy=energy)
+            event_roots.append(p)
+        return Event(event_roots)
+
+    def rebuild_detector(self):
+        detector_metadata = self._read_metadata('antennas')
+
+    def build_proxy_detector(self):
+        proxy_detector = []
+        detector_metadata = self._read_metadata('antennas')
+        for antenna_metadata in detector_metadata:
+            position = (antenna_metadata.pop('x-position'),
+                        antenna_metadata.pop('y-position'),
+                        antenna_metadata.pop('z-position'))
+            antenna_metadata['position'] = position
+            proxy_detector.append(AntennaProxy(antenna_metadata))
+        return proxy_detector
+
+    def rebuild_waveforms(self, index, detector=None):
+        if detector is None:
+            detector = self._detector
+        for ant in detector:
+            ant.clear()
+        # waveform_metadata = self._read_metadata('waveforms', index)
+        data = self._file['events'][index]
+        if data.shape[0]!=len(detector):
+            raise ValueError("Invalid number of antennas in given detector")
+
+        for i, ant in enumerate(detector):
+            for waveform_data in data[i]:
+                signal = Signal(waveform_data[0], waveform_data[1])
+                ant._all_waves.append(signal)
