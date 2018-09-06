@@ -25,17 +25,21 @@ class Verbosity(Enum):
     reproducible_triggered_only = 1
     simulation_data = 2
     reproducible = 2
-    reconstruction_data_triggered_only = 3
-    waveforms_triggered_only = 3
-    reconstruction_data = 4
-    waveforms = 4
-    all_data_triggered_only = 5
-    comlete_triggered_only = 5
-    all_data = 6
-    complete = 6
-    maximum = 6
+    ray_data_triggered_only = 3
+    debugging_triggered_only = 3
+    ray_data = 4
+    debugging = 4
+    reconstruction_data_triggered_only = 5
+    waveforms_triggered_only = 5
+    reconstruction_data = 6
+    waveforms = 6
+    all_data_triggered_only = 7
+    comlete_triggered_only = 7
+    all_data = 8
+    complete = 8
+    maximum = 8
 
-    default = 1
+    default = 3
 
 
 class BaseReader:
@@ -168,6 +172,8 @@ class HDF5Writer(BaseWriter):
             Verbosity.events_only,
             # Verbosity.simulation_data_triggered_only,
             # Verbosity.simulation_data,
+            Verbosity.ray_data_triggered_only,
+            Verbosity.ray_data,
             Verbosity.reconstruction_data_triggered_only,
             Verbosity.reconstruction_data,
             # Verbosity.all_data_triggered_only,
@@ -183,8 +189,15 @@ class HDF5Writer(BaseWriter):
         self._file['metadata'].create_group("file")
         self._file['metadata'].create_group("events")
         self._file['metadata'].create_group("antennas")
+        self._file['metadata'].create_group("rays")
         self._file['metadata'].create_group("waveforms")
         self._file.create_group("data_indices")
+
+        # Set up trigger dataset
+        self._file.create_dataset(
+            name="triggers", shape=(0,),
+            dtype=np.bool_, maxshape=(None,)
+        )
 
         # Set up event index datasets
         self._file['data_indices'].create_dataset(
@@ -256,6 +269,7 @@ class HDF5Writer(BaseWriter):
 
         # Set event number counters
         self._event_counter = -1
+        self._ray_counter = -1
         self._wave_counter = -1
         self._complex_wave_counter = -1
 
@@ -408,6 +422,41 @@ class HDF5Writer(BaseWriter):
         float_data.dims.create_scale(float_keys, 'attribute_names')
         float_data.dims[1].attach_scale(float_keys)
 
+        # Write antenna metadata
+        self._write_metadata([antenna._metadata for antenna in detector],
+                             'antennas')
+
+        # Set up ray metadata datasets
+        str_data = self._file['metadata']['rays'].create_dataset(
+            name="str", shape=(0, len(detector), 0, 0),
+            dtype=h5py.special_dtype(vlen=str),
+            maxshape=(None, len(detector), None, None)
+        )
+        str_keys = self._file['metadata']['rays'].create_dataset(
+            name="str_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
+        )
+        str_data.dims[0].label = "events"
+        str_data.dims[1].label = "antennas"
+        str_data.dims[2].label = "attributes"
+        str_data.dims[3].label = "solutions"
+        str_data.dims.create_scale(str_keys, 'attribute_names')
+        str_data.dims[2].attach_scale(str_keys)
+        float_data = self._file['metadata']['rays'].create_dataset(
+            name="float", shape=(0, len(detector), 0, 0),
+            dtype=np.float_, maxshape=(None, len(detector), None, None)
+        )
+        float_keys = self._file['metadata']['rays'].create_dataset(
+            name="float_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
+        )
+        float_data.dims[0].label = "events"
+        float_data.dims[1].label = "antennas"
+        float_data.dims[2].label = "attributes"
+        float_data.dims[3].label = "solutions"
+        float_data.dims.create_scale(float_keys, 'attribute_names')
+        float_data.dims[2].attach_scale(float_keys)
+
         # Set up waveform metadata datasets
         str_data = self._file['metadata']['waveforms'].create_dataset(
             name="str", shape=(0, len(detector), 0, 0),
@@ -420,10 +469,10 @@ class HDF5Writer(BaseWriter):
         )
         str_data.dims[0].label = "events"
         str_data.dims[1].label = "antennas"
-        str_data.dims[2].label = "waveforms"
-        str_data.dims[3].label = "attributes"
+        str_data.dims[2].label = "attributes"
+        str_data.dims[3].label = "waveforms"
         str_data.dims.create_scale(str_keys, 'attribute_names')
-        str_data.dims[3].attach_scale(str_keys)
+        str_data.dims[2].attach_scale(str_keys)
         float_data = self._file['metadata']['waveforms'].create_dataset(
             name="float", shape=(0, len(detector), 0, 0),
             dtype=np.float_, maxshape=(None, len(detector), None, None)
@@ -434,16 +483,14 @@ class HDF5Writer(BaseWriter):
         )
         float_data.dims[0].label = "events"
         float_data.dims[1].label = "antennas"
-        float_data.dims[2].label = "waveforms"
-        float_data.dims[3].label = "attributes"
+        float_data.dims[2].label = "attributes"
+        float_data.dims[3].label = "waveforms"
         float_data.dims.create_scale(float_keys, 'attribute_names')
-        float_data.dims[3].attach_scale(float_keys)
-
-        self._write_metadata([antenna._metadata for antenna in detector],
-                             'antennas')
+        float_data.dims[2].attach_scale(float_keys)
 
 
-    def _write_particles(self, event, triggered=None):
+    def _write_particles(self, event):
+        self._event_counter += 1
         str_data = self._file['metadata']['events']['str']
         float_data = self._file['metadata']['events']['float']
         str_data.resize(self._event_counter+1, axis=0)
@@ -456,7 +503,46 @@ class HDF5Writer(BaseWriter):
         self._write_metadata(event._metadata, 'events', self._event_counter)
 
 
-    def _write_waveforms(self, ray_paths):
+    def _write_trigger(self, triggered):
+        trigger_data = self._file['triggers']
+        trigger_data.resize(self._event_counter+1, axis=0)
+        trigger_data[self._event_counter] = bool(triggered)
+
+
+    def _write_ray_data(self, ray_paths):
+        self._ray_counter += 1
+        if len(ray_paths)!=len(self._detector):
+            raise ValueError("Ray paths length doesn't match detector ("+
+                             str(len(ray_paths))+"!="+
+                             str(len(self._detector))+")")
+        max_waves = max(len(paths) for paths in ray_paths)
+        str_data = self._file['metadata']['rays']['str']
+        float_data = self._file['metadata']['rays']['float']
+        str_data.resize(self._ray_counter+1, axis=0)
+        float_data.resize(self._ray_counter+1, axis=0)
+        str_data.resize(max(max_waves, str_data.shape[3]), axis=3)
+        float_data.resize(max(max_waves, float_data.shape[3]), axis=3)
+
+        ray_metadata = []
+        for paths in ray_paths:
+            meta = {}
+            for j, path in enumerate(paths):
+                for key, val in path._metadata.items():
+                    if key not in meta:
+                        if isinstance(val, str):
+                            meta[key] = [""]*max_waves
+                        elif np.isscalar(val):
+                            meta[key] = [0]*max_waves
+                        else:
+                            raise ValueError(key+" value ("+str(val)+
+                                             ") must be string or scalar")
+                    meta[key][j] = val
+            ray_metadata.append(meta)
+
+        self._write_metadata(ray_metadata, 'rays', self._ray_counter)
+
+
+    def _write_waveforms(self):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
         if max_waves<=2:
             self._wave_counter += 1
@@ -475,8 +561,8 @@ class HDF5Writer(BaseWriter):
         float_data = self._file['metadata']['waveforms']['float']
         str_data.resize(self._wave_counter+self._complex_wave_counter+2, axis=0)
         float_data.resize(self._wave_counter+self._complex_wave_counter+2, axis=0)
-        str_data.resize(max_waves, axis=3)
-        float_data.resize(max_waves, axis=3)
+        str_data.resize(max(max_waves, str_data.shape[3]), axis=3)
+        float_data.resize(max(max_waves, float_data.shape[3]), axis=3)
 
         waveform_metadata = []
         for i, ant in enumerate(self._detector):
@@ -486,37 +572,37 @@ class HDF5Writer(BaseWriter):
             for j, wave in enumerate(ant.all_waveforms):
                 data[index, i, j] = np.array([wave.times, wave.values])
                 meta['triggered'][j] = int(ant.trigger(wave))
-                for key, val in ray_paths[i][j]._metadata.items():
-                    if key=="triggered":
-                        raise ValueError("Ray path should not have trigger data")
-                    if key not in meta:
-                        if np.isscalar(val):
-                            meta[key] = [0]*max_waves
-                        else:
-                            meta[key] = [""]*max_waves
-                    meta[key][j] = val
-            waveform_metadata.append(meta)
 
         self._write_metadata(waveform_metadata, 'waveforms',
                              self._wave_counter+self._complex_wave_counter+1)
 
 
-    def add(self, event, ray_paths=None, triggered=None):
-        self._event_counter += 1
-        self._write_particles(event, triggered)
+    def add(self, event, triggered=None, ray_paths=None):
         if self.verbosity==Verbosity.events_only:
-            return
-        if ray_paths is None:
-            self._event_counter -= 1
-            raise ValueError("Ray paths must be provided")
-        if 'triggered_only' in self.verbosity.name:
             if triggered is None:
-                self._event_counter -= 1
-                raise ValueError("Trigger information must be provided")
+                raise ValueError("Trigger information must be provided for "+
+                                 "verbosity level "+str(self.verbosity))
+            self._write_particles(event)
+            self._write_trigger(triggered)
+        elif 'triggered_only' in self.verbosity.name:
+            if triggered is None:
+                raise ValueError("Trigger information must be provided for "+
+                                 "verbosity level "+str(self.verbosity))
+            self._write_particles(event)
+            self._write_trigger(triggered)
             if triggered:
-                self._write_waveforms(ray_paths)
+                if self.verbosity.value>=Verbosity.ray_data_triggered_only.value:
+                    self._write_ray_data(ray_paths)
+                if self.verbosity.value>=Verbosity.reconstruction_data_triggered_only.value:
+                    self._write_waveforms()
         else:
-            self._write_waveforms(ray_paths)
+            self._write_particles(event)
+            if triggered is not None:
+                self._write_trigger(triggered)
+            if self.verbosity.value>=Verbosity.ray_data.value:
+                self._write_ray_data(ray_paths)
+            if self.verbosity.value>=Verbosity.reconstruction_data.value:
+                self._write_waveforms()
 
 
     def add_metadata(self, file_metadata):
