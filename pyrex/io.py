@@ -7,8 +7,10 @@ writer classes which can be extended to read and write other file formats.
 """
 
 from enum import Enum
+import datetime
 import h5py
 import numpy as np
+from pyrex.__about__ import __version__
 from pyrex.internal_functions import get_from_enum
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
@@ -178,10 +180,12 @@ class HDF5Writer(BaseWriter):
         self._file.create_group("analysis")
         # Set up metadata groups
         self._file.create_group("metadata")
+        self._file['metadata'].create_group("file")
         self._file['metadata'].create_group("events")
         self._file['metadata'].create_group("antennas")
         self._file['metadata'].create_group("waveforms")
         self._file.create_group("data_indices")
+
         # Set up event index datasets
         self._file['data_indices'].create_dataset(
             name="events", shape=(0,),
@@ -195,6 +199,29 @@ class HDF5Writer(BaseWriter):
             name="event_metadata", shape=(0,),
             dtype=np.int_, maxshape=(None,)
         )
+
+        # Set up file metadata datasets
+        str_data = self._file['metadata']['file'].create_dataset(
+            name="str", shape=(1, 0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(1, None,)
+        )
+        str_keys = self._file['metadata']['file'].create_dataset(
+            name="str_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
+        )
+        str_data.dims.create_scale(str_keys, 'attribute_names')
+        str_data.dims[0].attach_scale(str_keys)
+        float_data = self._file['metadata']['file'].create_dataset(
+            name="float", shape=(1, 0,),
+            dtype=np.float_, maxshape=(1, None,)
+        )
+        float_keys = self._file['metadata']['file'].create_dataset(
+            name="float_keys", shape=(0,),
+            dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
+        )
+        float_data.dims.create_scale(float_keys, 'attribute_names')
+        float_data.dims[0].attach_scale(float_keys)
+
         # Set up event metadata datasets
         str_data = self._file['metadata']['events'].create_dataset(
             name="str", shape=(0, 0, 0),
@@ -226,10 +253,36 @@ class HDF5Writer(BaseWriter):
         float_data.dims[0].attach_scale(event_meta_indices)
         float_data.dims.create_scale(float_keys, 'attribute_names')
         float_data.dims[2].attach_scale(float_keys)
+
         # Set event number counters
         self._event_counter = -1
         self._wave_counter = -1
         self._complex_wave_counter = -1
+
+        # Write some generic metadata about the file production
+        major, minor, patch = __version__.split('.')
+        now = datetime.datetime.now()
+        metadata = {
+            "file_version": "1.0",
+            "file_version_major": 1,
+            "file_version_minor": 0,
+            "pyrex_version": __version__,
+            "pyrex_version_major": int(major),
+            "pyrex_version_minor": int(minor),
+            "pyrex_version_patch": int(patch),
+            "datetime": now.strftime('%Y-%d-%m %H:%M:%S'),
+            "date": now.strftime('%Y-%d-%m'),
+            "time": now.strftime('%H:%M:%S'),
+            "year": now.year,
+            "month": now.month,
+            "day": now.day,
+            "hour": now.hour,
+            "minute": now.minute,
+            "second": now.second,
+        }
+
+        self._write_metadata([metadata], 'file')
+
 
     def close(self):
         self._file.close()
@@ -466,8 +519,8 @@ class HDF5Writer(BaseWriter):
             self._write_waveforms(ray_paths)
 
 
-    # def add_metadata(self, file_metadata):
-    #     self._file['metadata'].attrs = file_metadata
+    def add_metadata(self, file_metadata):
+        self._write_metadata([file_metadata], 'file')
 
 
 
