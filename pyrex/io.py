@@ -175,31 +175,61 @@ class HDF5Writer(BaseWriter):
 
     def open(self):
         self._file = h5py.File(self.filename, mode='w')
+        self._file.create_group("analysis")
         # Set up metadata groups
         self._file.create_group("metadata")
         self._file['metadata'].create_group("events")
         self._file['metadata'].create_group("antennas")
         self._file['metadata'].create_group("waveforms")
-        self._file.create_group("analysis")
+        self._file.create_group("data_indices")
+        # Set up event index datasets
+        self._file['data_indices'].create_dataset(
+            name="events", shape=(0,),
+            dtype=np.int_, maxshape=(None,)
+        )
+        self._file['data_indices'].create_dataset(
+            name="complex_events", shape=(0,),
+            dtype=np.int_, maxshape=(None,)
+        )
+        event_meta_indices = self._file['data_indices'].create_dataset(
+            name="event_metadata", shape=(0,),
+            dtype=np.int_, maxshape=(None,)
+        )
         # Set up event metadata datasets
-        self._file['metadata']['events'].create_dataset(
+        str_data = self._file['metadata']['events'].create_dataset(
             name="str", shape=(0, 0, 0),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None, None, None)
         )
-        self._file['metadata']['events'].create_dataset(
+        str_keys = self._file['metadata']['events'].create_dataset(
             name="str_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
-        self._file['metadata']['events'].create_dataset(
+        str_data.dims[0].label = "events"
+        str_data.dims[1].label = "particles"
+        str_data.dims[2].label = "attributes"
+        str_data.dims.create_scale(event_meta_indices, 'event_numbers')
+        str_data.dims[0].attach_scale(event_meta_indices)
+        str_data.dims.create_scale(str_keys, 'attribute_names')
+        str_data.dims[2].attach_scale(str_keys)
+        float_data = self._file['metadata']['events'].create_dataset(
             name="float", shape=(0, 0, 0),
             dtype=np.float_, maxshape=(None, None, None)
         )
-        self._file['metadata']['events'].create_dataset(
+        float_keys = self._file['metadata']['events'].create_dataset(
             name="float_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
-        self._counter = -1
-        self._complex_counter = -1
+        float_data.dims[0].label = "events"
+        float_data.dims[1].label = "particles"
+        float_data.dims[2].label = "attributes"
+        float_data.dims.create_scale(event_meta_indices, 'event_numbers')
+        float_data.dims[0].attach_scale(event_meta_indices)
+        float_data.dims.create_scale(float_keys, 'attribute_names')
+        float_data.dims[2].attach_scale(float_keys)
+        # Set event number counters
+        self._event_counter = -1
+        self._wave_counter = -1
+        self._complex_wave_counter = -1
 
     def close(self):
         self._file.close()
@@ -263,6 +293,11 @@ class HDF5Writer(BaseWriter):
                 else:
                     raise ValueError("Unrecognized val_type")
 
+    def _write_event_number(self, index_dataset_name, index):
+        index_dataset = self._file['data_indices'][index_dataset_name]
+        index_dataset.resize(index+1, axis=0)
+        index_dataset[index] = self._event_counter
+
     def set_detector(self, detector):
         self._detector = detector
         waveform_type = h5py.special_dtype(vlen=np.float_)
@@ -279,6 +314,9 @@ class HDF5Writer(BaseWriter):
         data.dims[0].label = "events"
         data.dims[1].label = "antennas"
         data.dims[2].label = "waveforms"
+        data.dims.create_scale(self._file['data_indices']['events'], 'event_numbers')
+        data.dims[0].attach_scale(self._file['data_indices']['events'])
+
         # Complex events may have more than two waveforms per antenna,
         # store them separately to keep files from bloating with zeros
         complex_data = self._file.create_dataset(
@@ -288,73 +326,102 @@ class HDF5Writer(BaseWriter):
         complex_data.dims[0].label = "events"
         complex_data.dims[1].label = "antennas"
         complex_data.dims[2].label = "waveforms"
+        data.dims.create_scale(self._file['data_indices']['complex_events'], 'event_numbers')
+        data.dims[0].attach_scale(self._file['data_indices']['complex_events'])
 
         # Set up antenna metadata datasets
-        self._file['metadata']['antennas'].create_dataset(
+        str_data = self._file['metadata']['antennas'].create_dataset(
             name="str", shape=(len(detector), 0),
             dtype=h5py.special_dtype(vlen=str), maxshape=(len(detector), None)
         )
-        self._file['metadata']['antennas'].create_dataset(
+        str_keys = self._file['metadata']['antennas'].create_dataset(
             name="str_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
-        self._file['metadata']['antennas'].create_dataset(
+        str_data.dims[0].label = "antennas"
+        str_data.dims[1].label = "attributes"
+        str_data.dims.create_scale(str_keys, 'attribute_names')
+        str_data.dims[1].attach_scale(str_keys)
+        float_data = self._file['metadata']['antennas'].create_dataset(
             name="float", shape=(len(detector), 0),
             dtype=np.float_, maxshape=(len(detector), None)
         )
-        self._file['metadata']['antennas'].create_dataset(
+        float_keys = self._file['metadata']['antennas'].create_dataset(
             name="float_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
+        float_data.dims[0].label = "antennas"
+        float_data.dims[1].label = "attributes"
+        float_data.dims.create_scale(float_keys, 'attribute_names')
+        float_data.dims[1].attach_scale(float_keys)
 
         # Set up waveform metadata datasets
-        self._file['metadata']['waveforms'].create_dataset(
+        str_data = self._file['metadata']['waveforms'].create_dataset(
             name="str", shape=(0, len(detector), 0, 0),
             dtype=h5py.special_dtype(vlen=str),
             maxshape=(None, len(detector), None, None)
         )
-        self._file['metadata']['waveforms'].create_dataset(
+        str_keys = self._file['metadata']['waveforms'].create_dataset(
             name="str_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
-        self._file['metadata']['waveforms'].create_dataset(
+        str_data.dims[0].label = "events"
+        str_data.dims[1].label = "antennas"
+        str_data.dims[2].label = "waveforms"
+        str_data.dims[3].label = "attributes"
+        str_data.dims.create_scale(str_keys, 'attribute_names')
+        str_data.dims[3].attach_scale(str_keys)
+        float_data = self._file['metadata']['waveforms'].create_dataset(
             name="float", shape=(0, len(detector), 0, 0),
             dtype=np.float_, maxshape=(None, len(detector), None, None)
         )
-        self._file['metadata']['waveforms'].create_dataset(
+        float_keys = self._file['metadata']['waveforms'].create_dataset(
             name="float_keys", shape=(0,),
             dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
         )
+        float_data.dims[0].label = "events"
+        float_data.dims[1].label = "antennas"
+        float_data.dims[2].label = "waveforms"
+        float_data.dims[3].label = "attributes"
+        float_data.dims.create_scale(float_keys, 'attribute_names')
+        float_data.dims[3].attach_scale(float_keys)
 
         self._write_metadata([antenna._metadata for antenna in detector],
                              'antennas')
 
 
-    def _write_particles(self, event):
+    def _write_particles(self, event, triggered=None):
         str_data = self._file['metadata']['events']['str']
         float_data = self._file['metadata']['events']['float']
-        str_data.resize(self._counter+1, axis=0)
-        float_data.resize(self._counter+1, axis=0)
+        str_data.resize(self._event_counter+1, axis=0)
+        float_data.resize(self._event_counter+1, axis=0)
         str_data.resize(max(len(event), str_data.shape[1]), axis=1)
         float_data.resize(max(len(event), str_data.shape[1]), axis=1)
 
-        self._write_metadata(event._metadata, 'events', self._counter)
+        self._write_event_number('event_metadata', self._event_counter)
+
+        self._write_metadata(event._metadata, 'events', self._event_counter)
 
 
     def _write_waveforms(self, ray_paths):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
         if max_waves<=2:
-            data = self._file['events']
-            data.resize(self._counter-self._complex_counter, axis=0)
+            self._wave_counter += 1
+            dataset_name = 'events'
+            index = self._wave_counter
         else:
-            self._complex_counter += 1
-            data = self._file['complex_events']
-            data.resize(self._complex_counter+1, axis=0)
+            self._complex_wave_counter += 1
+            dataset_name = 'complex_events'
+            index = self._complex_wave_counter
+
+        data = self._file[dataset_name]
+        data.resize(index+1, axis=0)
+        self._write_event_number(dataset_name, index)
 
         str_data = self._file['metadata']['waveforms']['str']
         float_data = self._file['metadata']['waveforms']['float']
-        str_data.resize(self._counter+1, axis=0)
-        float_data.resize(self._counter+1, axis=0)
+        str_data.resize(self._wave_counter+self._complex_wave_counter+2, axis=0)
+        float_data.resize(self._wave_counter+self._complex_wave_counter+2, axis=0)
         str_data.resize(max_waves, axis=3)
         float_data.resize(max_waves, axis=3)
 
@@ -364,7 +431,7 @@ class HDF5Writer(BaseWriter):
                 "triggered": [0]*max_waves
             }
             for j, wave in enumerate(ant.all_waveforms):
-                data[self._counter, i, j] = np.array([wave.times, wave.values])
+                data[index, i, j] = np.array([wave.times, wave.values])
                 meta['triggered'][j] = int(ant.trigger(wave))
                 for key, val in ray_paths[i][j]._metadata.items():
                     if key=="triggered":
@@ -377,20 +444,21 @@ class HDF5Writer(BaseWriter):
                     meta[key][j] = val
             waveform_metadata.append(meta)
 
-        self._write_metadata(waveform_metadata, 'waveforms', self._counter)
+        self._write_metadata(waveform_metadata, 'waveforms',
+                             self._wave_counter+self._complex_wave_counter+1)
 
 
     def add(self, event, ray_paths=None, triggered=None):
-        self._counter += 1
-        self._write_particles(event)
+        self._event_counter += 1
+        self._write_particles(event, triggered)
         if self.verbosity==Verbosity.events_only:
             return
         if ray_paths is None:
-            self._counter -= 1
+            self._event_counter -= 1
             raise ValueError("Ray paths must be provided")
         if 'triggered_only' in self.verbosity.name:
             if triggered is None:
-                self._counter -= 1
+                self._event_counter -= 1
                 raise ValueError("Trigger information must be provided")
             if triggered:
                 self._write_waveforms(ray_paths)
