@@ -84,6 +84,25 @@ class BasicRayTracePath(LazyMutableClass):
         super().__init__()
 
     @property
+    def _metadata(self):
+        """Metadata dictionary for writing `BasicRayTracePath` information."""
+        return {
+            "ray_class": str(type(self)),
+            "n0": self.n0,
+            "dz": self.dz,
+            "emitted_x": self.emitted_direction[0],
+            "emitted_y": self.emitted_direction[1],
+            "emitted_z": self.emitted_direction[2],
+            "received_x": self.received_direction[0],
+            "received_y": self.received_direction[1],
+            "received_z": self.received_direction[2],
+            "launch_angle": np.arccos(self.emitted_direction[2]),
+            "receiving_angle": np.pi-np.arccos(self.received_direction[2]),
+            "path_length": self.path_length,
+            "tof": self.tof
+        }
+
+    @property
     def z_turn_proximity(self):
         """
         Parameter for how closely path approaches z_turn.

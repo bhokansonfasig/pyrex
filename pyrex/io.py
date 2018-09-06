@@ -341,7 +341,7 @@ class HDF5Writer(BaseWriter):
         self._write_metadata(event._metadata, 'events', self._counter)
 
 
-    def _write_waveforms(self):
+    def _write_waveforms(self, ray_paths):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
         if max_waves<=2:
             data = self._file['events']
@@ -361,29 +361,41 @@ class HDF5Writer(BaseWriter):
         waveform_metadata = []
         for i, ant in enumerate(self._detector):
             meta = {
-                "triggered": []
+                "triggered": [0]*max_waves
             }
             for j, wave in enumerate(ant.all_waveforms):
                 data[self._counter, i, j] = np.array([wave.times, wave.values])
-                meta['triggered'].append(int(ant.trigger(wave)))
+                meta['triggered'][j] = int(ant.trigger(wave))
+                for key, val in ray_paths[i][j]._metadata.items():
+                    if key=="triggered":
+                        raise ValueError("Ray path should not have trigger data")
+                    if key not in meta:
+                        if np.isscalar(val):
+                            meta[key] = [0]*max_waves
+                        else:
+                            meta[key] = [""]*max_waves
+                    meta[key][j] = val
             waveform_metadata.append(meta)
 
         self._write_metadata(waveform_metadata, 'waveforms', self._counter)
 
 
-    def add(self, event, triggered=None):
+    def add(self, event, ray_paths=None, triggered=None):
         self._counter += 1
         self._write_particles(event)
         if self.verbosity==Verbosity.events_only:
             return
+        if ray_paths is None:
+            self._counter -= 1
+            raise ValueError("Ray paths must be provided")
         if 'triggered_only' in self.verbosity.name:
             if triggered is None:
                 self._counter -= 1
                 raise ValueError("Trigger information must be provided")
             if triggered:
-                self._write_waveforms()
+                self._write_waveforms(ray_paths)
         else:
-            self._write_waveforms()
+            self._write_waveforms(ray_paths)
 
 
     # def add_metadata(self, file_metadata):
