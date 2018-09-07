@@ -113,13 +113,31 @@ class EventKernel:
     """
     def __init__(self, generator, antennas, ice_model=IceModel,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
-                 signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False)):
+                 signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False),
+                 event_writer=None, global_trigger=None):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
         self.ray_tracer = ray_tracer
         self.signal_model = signal_model
         self.signal_times = signal_times
+        self.writer = event_writer
+        self.trigger = global_trigger
+        if self.writer is not None:
+            if not self.writer.is_open:
+                logger.warning("Event writer was not open. Opening now.")
+                self.writer.open()
+            if not self.writer.has_detector:
+                self.writer.set_detector(antennas)
+            # Add metadata about the classes used
+            kernel_metadata = {
+                "detector_class": str(type(self.antennas)),
+                "generator_class": str(type(self.gen)),
+                "ice_model_class": str(self.ice),
+                "ray_tracer_class": str(self.ray_tracer),
+                "signal_model_class": str(self.signal_model),
+            }
+            self.writer.add_metadata(kernel_metadata)
 
     def event(self):
         """
@@ -144,9 +162,12 @@ class EventKernel:
 
         """
         event = self.gen.create_event()
+        ray_paths = []
+        for i in range(len(self.antennas)):
+            ray_paths.append([])
         for particle in event:
             logger.info("Processing event for %s", particle)
-            for ant in self.antennas:
+            for i, ant in enumerate(self.antennas):
                 rt = self.ray_tracer(particle.vertex, ant.position,
                                      ice_model=self.ice)
 
@@ -155,6 +176,7 @@ class EventKernel:
                     logger.debug("Ray paths to %s do not exist", ant)
                     continue
 
+                ray_paths[i].extend(rt.solutions)
                 for path in rt.solutions:
                     # epol is (negative) vector rejection of
                     # path.received_direction onto particle.direction,
@@ -188,4 +210,16 @@ class EventKernel:
                     ant.receive(pulse, direction=path.received_direction,
                                 polarization=epol)
 
-        return event
+        if self.trigger is None:
+            triggered = None
+        else:
+            triggered = self.trigger(self.antennas)
+
+        if self.writer is not None:
+            self.writer.add(event=event, triggered=triggered,
+                            ray_paths=ray_paths)
+
+        if triggered is None:
+            return event
+        else:
+            return event, triggered

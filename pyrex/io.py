@@ -8,6 +8,7 @@ writer classes which can be extended to read and write other file formats.
 
 from enum import Enum
 import datetime
+import inspect
 import h5py
 import numpy as np
 from pyrex.__about__ import __version__
@@ -61,10 +62,22 @@ class BaseReader:
     def close(self):
         raise NotImplementedError
 
+    @property
+    def is_open(self):
+        raise NotImplementedError
+
 
 class BaseWriter:
     def __init__(self, filename, verbosity=Verbosity.default):
         pass
+
+    def _set_verbosity_level(self, verbosity, accepted_verbosities):
+        if verbosity==-1:
+            verbosity = "maximum"
+        self.verbosity = get_from_enum(verbosity, Verbosity)
+        if self.verbosity not in accepted_verbosities:
+            raise ValueError("Unable to write file with verbosity level '"+
+                             str(verbosity)+"'")
 
     def __enter__(self):
         self.open()
@@ -79,13 +92,16 @@ class BaseWriter:
     def close(self):
         raise NotImplementedError
 
-    def _set_verbosity_level(self, verbosity, accepted_verbosities):
-        if verbosity==-1:
-            verbosity = "maximum"
-        self.verbosity = get_from_enum(verbosity, Verbosity)
-        if self.verbosity not in accepted_verbosities:
-            raise ValueError("Unable to write file with verbosity level '"+
-                             str(verbosity)+"'")
+    @property
+    def is_open(self):
+        raise NotImplementedError
+
+    def set_detector(self):
+        raise NotImplementedError
+
+    @property
+    def has_detector(self):
+        raise NotImplementedError
 
 
 class BaseRebuilder:
@@ -104,6 +120,10 @@ class BaseRebuilder:
         raise NotImplementedError
 
     def close(self):
+        raise NotImplementedError
+
+    @property
+    def is_open(self):
         raise NotImplementedError
 
     def __iter__(self):
@@ -182,6 +202,7 @@ class HDF5Writer(BaseWriter):
             Verbosity.all_data_triggered_only,
             Verbosity.all_data
         ]
+        self._is_open = False
         self._set_verbosity_level(verbosity, accepted_verbosities)
         # Set classifications of verbosity levels
         self._trig_only_verbosities = accepted_verbosities[::2]
@@ -193,6 +214,7 @@ class HDF5Writer(BaseWriter):
 
     def open(self):
         self._file = h5py.File(self.filename, mode='w')
+        self._is_open = True
         # Create basic groups
         self._file.create_group("analysis")
         self._file.create_group("metadata")
@@ -210,14 +232,29 @@ class HDF5Writer(BaseWriter):
         self._create_metadataset("file")
         major, minor, patch = __version__.split('.')
         now = datetime.datetime.now()
+        stack = inspect.stack()
+        for i, frame in enumerate(stack):
+            if frame.function=="open":
+                break
+        if i<len(stack) and stack[i+1].function=="__enter__":
+            if i+1<len(stack):
+                opening_script = stack[i+2].filename
+            else:
+                opening_script = stack[i+1].filename
+        else:
+            opening_script = stack[i+1].filename
         metadata = {
             "file_version": "1.0",
             "file_version_major": 1,
             "file_version_minor": 0,
+            "verbosity_name": self.verbosity.name,
+            "verbosity_level": self.verbosity.value,
             "pyrex_version": __version__,
             "pyrex_version_major": int(major),
             "pyrex_version_minor": int(minor),
             "pyrex_version_patch": int(patch),
+            "opening_script": opening_script,
+            "top_level_script": stack[-1].filename,
             "datetime": now.strftime('%Y-%d-%m %H:%M:%S'),
             "date": now.strftime('%Y-%d-%m'),
             "time": now.strftime('%H:%M:%S'),
@@ -232,6 +269,11 @@ class HDF5Writer(BaseWriter):
 
     def close(self):
         self._file.close()
+        self._is_open = False
+
+    @property
+    def is_open(self):
+        return self._is_open
 
 
     def _create_dataset(self, name):
@@ -472,6 +514,10 @@ class HDF5Writer(BaseWriter):
         self._create_metadataset("antennas")
         self._write_metadata([antenna._metadata for antenna in detector],
                              'antennas')
+
+    @property
+    def has_detector(self):
+        return hasattr(self, "_detector")
 
 
     def _write_particles(self, event):
