@@ -18,28 +18,30 @@ from pyrex.particle import Particle, Event
 
 
 class Verbosity(Enum):
-    events_only = 0
+    event_data_triggered_only = 0
+    basic_triggered_only = 0
     minimum = 0
-    basic = 0
-    simulation_data_triggered_only = 1
-    reproducible_triggered_only = 1
-    simulation_data = 2
-    reproducible = 2
-    ray_data_triggered_only = 3
-    debugging_triggered_only = 3
-    ray_data = 4
-    debugging = 4
-    reconstruction_data_triggered_only = 5
-    waveforms_triggered_only = 5
-    reconstruction_data = 6
-    waveforms = 6
-    all_data_triggered_only = 7
-    comlete_triggered_only = 7
-    all_data = 8
-    complete = 8
-    maximum = 8
+    event_data = 1
+    basic = 1
+    ray_data_triggered_only = 2
+    debugging_triggered_only = 2
+    ray_data = 3
+    debugging = 3
+    simulation_data_triggered_only = 4
+    reproducible_triggered_only = 4
+    simulation_data = 5
+    reproducible = 5
+    reconstruction_data_triggered_only = 6
+    waveforms_triggered_only = 6
+    reconstruction_data = 7
+    waveforms = 7
+    all_data_triggered_only = 8
+    comlete_triggered_only = 8
+    all_data = 9
+    complete = 9
+    maximum = 9
 
-    default = 3
+    default = 2
 
 
 class BaseReader:
@@ -169,17 +171,25 @@ class HDF5Writer(BaseWriter):
         else:
             self.filename = filename+".h5"
         accepted_verbosities = [
-            Verbosity.events_only,
-            # Verbosity.simulation_data_triggered_only,
-            # Verbosity.simulation_data,
+            Verbosity.event_data_triggered_only,
+            Verbosity.event_data,
             Verbosity.ray_data_triggered_only,
             Verbosity.ray_data,
+            Verbosity.simulation_data_triggered_only,
+            Verbosity.simulation_data,
             Verbosity.reconstruction_data_triggered_only,
             Verbosity.reconstruction_data,
-            # Verbosity.all_data_triggered_only,
-            # Verbosity.all_data
+            Verbosity.all_data_triggered_only,
+            Verbosity.all_data
         ]
         self._set_verbosity_level(verbosity, accepted_verbosities)
+        # Set classifications of verbosity levels
+        self._trig_only_verbosities = accepted_verbosities[::2]
+        self._event_verbosities = accepted_verbosities
+        self._ray_verbosities = accepted_verbosities[2:]
+        self._noise_verbosities = (accepted_verbosities[4:6]+
+                                   accepted_verbosities[8:])
+        self._wave_verbosities = accepted_verbosities[6:]
 
     def open(self):
         self._file = h5py.File(self.filename, mode='w')
@@ -206,6 +216,10 @@ class HDF5Writer(BaseWriter):
         )
         self._file['data_indices'].create_dataset(
             name="complex_events", shape=(0,),
+            dtype=np.int_, maxshape=(None,)
+        )
+        self._file['data_indices'].create_dataset(
+            name="noise_bases", shape=(0,),
             dtype=np.int_, maxshape=(None,)
         )
         event_meta_indices = self._file['data_indices'].create_dataset(
@@ -270,6 +284,7 @@ class HDF5Writer(BaseWriter):
         # Set event number counters
         self._event_counter = -1
         self._ray_counter = -1
+        self._noise_counter = -1
         self._wave_counter = -1
         self._complex_wave_counter = -1
 
@@ -367,7 +382,7 @@ class HDF5Writer(BaseWriter):
 
     def set_detector(self, detector):
         self._detector = detector
-        waveform_type = h5py.special_dtype(vlen=np.float_)
+        array_type = h5py.special_dtype(vlen=np.float_)
         # Set up event and complex_event datasets
         # Dimensions:
         #   0 - Number of events
@@ -376,7 +391,7 @@ class HDF5Writer(BaseWriter):
         #   3 - Number of value types (2: times & values)
         data = self._file.create_dataset(
             name="events", shape=(0, len(detector), 2, 2),
-            dtype=waveform_type, maxshape=(None, len(detector), 2, 2)
+            dtype=array_type, maxshape=(None, len(detector), 2, 2)
         )
         data.dims[0].label = "events"
         data.dims[1].label = "antennas"
@@ -388,7 +403,7 @@ class HDF5Writer(BaseWriter):
         # store them separately to keep files from bloating with zeros
         complex_data = self._file.create_dataset(
             name="complex_events", shape=(0, len(detector), 0, 2),
-            dtype=waveform_type, maxshape=(None, len(detector), None, 2)
+            dtype=array_type, maxshape=(None, len(detector), None, 2)
         )
         complex_data.dims[0].label = "events"
         complex_data.dims[1].label = "antennas"
@@ -456,6 +471,16 @@ class HDF5Writer(BaseWriter):
         float_data.dims[3].label = "solutions"
         float_data.dims.create_scale(float_keys, 'attribute_names')
         float_data.dims[2].attach_scale(float_keys)
+
+        # Set up noise datasets
+        noise = self._file.create_dataset(
+            name="noise_bases", shape=(0, len(detector), 3),
+            dtype=array_type, maxshape=(None, len(detector), 3)
+        )
+        noise.dims[0].label = "events"
+        noise.dims[1].label = "antennas"
+        noise.dims.create_scale(self._file['data_indices']['noise_bases'], 'event_numbers')
+        noise.dims[0].attach_scale(self._file['data_indices']['noise_bases'])
 
         # Set up waveform metadata datasets
         str_data = self._file['metadata']['waveforms'].create_dataset(
@@ -542,6 +567,26 @@ class HDF5Writer(BaseWriter):
         self._write_metadata(ray_metadata, 'rays', self._ray_counter)
 
 
+    def _get_noise_bases(self, antenna):
+        while hasattr(antenna, "antenna"):
+            antenna = antenna.antenna
+        noise = antenna._noise_master
+        if noise is None:
+            return [], [], []
+        else:
+            return noise.freqs, noise.amps, noise.phases
+
+
+    def _write_noise_data(self):
+        self._noise_counter += 1
+        data = self._file['noise_bases']
+        data.resize(self._noise_counter+1, axis=0)
+        self._write_event_number('noise_bases', self._noise_counter)
+
+        for i, ant in enumerate(self._detector):
+            data[self._noise_counter, i] = np.array(self._get_noise_bases(ant))
+
+
     def _write_waveforms(self):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
         if max_waves<=2:
@@ -578,30 +623,37 @@ class HDF5Writer(BaseWriter):
 
 
     def add(self, event, triggered=None, ray_paths=None):
-        if self.verbosity==Verbosity.events_only:
+        if self.verbosity in self._ray_verbosities and ray_paths is None:
+            raise ValueError("Ray path information must be provided for "+
+                             "verbosity level "+str(self.verbosity))
+        if self.verbosity in self._trig_only_verbosities:
             if triggered is None:
                 raise ValueError("Trigger information must be provided for "+
                                  "verbosity level "+str(self.verbosity))
-            self._write_particles(event)
-            self._write_trigger(triggered)
-        elif 'triggered_only' in self.verbosity.name:
-            if triggered is None:
-                raise ValueError("Trigger information must be provided for "+
-                                 "verbosity level "+str(self.verbosity))
-            self._write_particles(event)
-            self._write_trigger(triggered)
+            if self.verbosity in self._event_verbosities:
+                if self.verbosity!=Verbosity.event_data_triggered_only or triggered:
+                    self._write_particles(event)
+                    self._write_trigger(triggered)
             if triggered:
-                if self.verbosity.value>=Verbosity.ray_data_triggered_only.value:
+                if self.verbosity in self._ray_verbosities:
                     self._write_ray_data(ray_paths)
-                if self.verbosity.value>=Verbosity.reconstruction_data_triggered_only.value:
+                if self.verbosity in self._noise_verbosities:
+                    self._write_noise_data()
+                if self.verbosity in self._wave_verbosities:
                     self._write_waveforms()
         else:
-            self._write_particles(event)
-            if triggered is not None:
-                self._write_trigger(triggered)
-            if self.verbosity.value>=Verbosity.ray_data.value:
+            if self.verbosity==Verbosity.event_data and triggered is None:
+                raise ValueError("Trigger information must be provided for "+
+                                 "verbosity level "+str(self.verbosity))
+            if self.verbosity in self._event_verbosities:
+                self._write_particles(event)
+                if triggered:
+                    self._write_trigger(event)
+            if self.verbosity in self._ray_verbosities:
                 self._write_ray_data(ray_paths)
-            if self.verbosity.value>=Verbosity.reconstruction_data.value:
+            if self.verbosity in self._noise_verbosities:
+                self._write_noise_data()
+            if self.verbosity in self._wave_verbosities:
                 self._write_waveforms()
 
 
