@@ -202,7 +202,7 @@ class Interaction:
     def _metadata(self):
         """Metadata dictionary for writing `Interaction` information."""
         return {
-            "class": str(type(self)),
+            "name": self.kind.name,
             "kind": self.kind.value,
             "inelasticity": self.inelasticity,
             "em_frac": self.em_frac,
@@ -1077,7 +1077,7 @@ class Particle:
     def _metadata(self):
         """Metadata dictionary for writing `Particle` information."""
         meta = {
-            "class": str(type(self)),
+            "particle_name": self.id.name,
             "particle_id": self.id.value,
             "vertex_x": self.vertex[0],
             "vertex_y": self.vertex[1],

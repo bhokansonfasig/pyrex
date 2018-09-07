@@ -458,13 +458,15 @@ class HDF5Writer(BaseWriter):
                     except TypeError:
                         val_length = -1
                         val = [val]
+                    if val_length==0:
+                        continue
                     if isinstance(val[0], str):
                         val_type = "string"
                     elif np.isscalar(val[0]):
                         val_type = "float"
                     else:
-                        raise ValueError(key+" value ("+str(val[0])+") must be"+
-                                         " string or scalar")
+                        raise ValueError("'"+key+"' value ("+str(val[0])+
+                                         ") must be string or scalar")
                     if val_length==-1:
                         val = val[0]
 
@@ -639,11 +641,12 @@ class HDF5Writer(BaseWriter):
         waveform_metadata = []
         for i, ant in enumerate(self._detector):
             meta = {
-                "triggered": [0]*max_waves
+                "triggered": [-1]*max_waves
             }
             for j, wave in enumerate(ant.all_waveforms):
                 data[index, i, j] = np.array([wave.times, wave.values])
                 meta['triggered'][j] = int(ant.trigger(wave))
+            waveform_metadata.append(meta)
 
         self._write_event_number("metadata_waveforms", self._wave_counter
                                  +self._complex_wave_counter+1)
@@ -676,7 +679,7 @@ class HDF5Writer(BaseWriter):
                                  "verbosity level "+str(self.verbosity))
             if self.verbosity in self._event_verbosities:
                 self._write_particles(event)
-                if triggered:
+                if triggered is not None:
                     self._write_trigger(event)
             if self.verbosity in self._ray_verbosities:
                 self._write_ray_data(ray_paths)

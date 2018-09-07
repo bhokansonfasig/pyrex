@@ -87,7 +87,6 @@ class BasicRayTracePath(LazyMutableClass):
     def _metadata(self):
         """Metadata dictionary for writing `BasicRayTracePath` information."""
         return {
-            "ray_class": str(type(self)),
             "n0": self.n0,
             "dz": self.dz,
             "emitted_x": self.emitted_direction[0],
