@@ -182,7 +182,69 @@ def _read_hdf5_metadata_to_dicts(file, group, index=None):
     return dicts
 
 
+class HDF5Reader(BaseReader):
+    def __init__(self, filename):
+        if filename.endswith(".hdf5") or filename.endswith(".h5"):
+            self.filename = filename
+            self._file = h5py.File(self.filename, mode='r')
+        else:
+            raise RuntimeError('Invalid File Format')
+    
+    def __getitem__(self,given):
+        if isinstance(given, slice):
+            # do your handling for a slice object:
+            #print("slice", given.start, given.stop, given.step)
+            return self._file['events'][given]
+        elif isinstance(given, tuple):
+            return self._file['events'][given]
+        elif given == "metadata":
+            # Do your handling for a plain index
+            print("plain", given)
 
+    def open(self):
+        self._file = h5py.File(self.filename, mode='r')
+
+    def close(self):
+        self._file.close()
+
+    def get_wf(self,event_id = -1,antenna_id = -1):
+        if event_id < 0 or antenna_id < 0:
+            raise RuntimeError(
+                "Usage: <HDF5Reader>.get_wf(event_id, antenna_id)")
+        return np.asarray(self._file['events'][event_id,antenna_id,:,:])
+    
+    def get_all_wf(self):
+        return np.asarray(self._file['events'])
+    
+    def get_all_wf_from_ant(self,antenna_id = -1, waveform_type=None):
+        if antenna_id < 0:
+            raise RuntimeError(
+                "Usage: <HDF5Reader>.get_all_wf_from_ant(antennaId)")
+        return np.asarray(self._file['events'][:,antenna_id,:,:])
+
+#Comibine these two and ask for an index from the user
+
+    def get_all_wf_type(self,wf_type=""):
+        print(wf_type.lower())
+        if wf_type == "":
+            raise RuntimeError(
+                "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
+
+        elif wf_type.lower() == "direct":
+            return self._file[:,:,0,:]
+        elif wf_type.lower() == "reflected":
+            return self._file[:,:,1,:]
+        else:
+            raise RuntimeError(
+                "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
+
+    
+
+
+
+
+    
+    
 
 class HDF5Writer(BaseWriter):
     def __init__(self, filename, verbosity=Verbosity.default):
