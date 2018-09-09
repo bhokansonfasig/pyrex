@@ -62,6 +62,15 @@ class BaseReader:
     def close(self):
         raise NotImplementedError
 
+    def __iter__(self):
+        self._iter_counter = -1
+    
+    #Be sure to implement this 
+    def __next__(self):
+        pass
+
+
+
     @property
     def is_open(self):
         raise NotImplementedError
@@ -201,6 +210,71 @@ class HDF5Reader(BaseReader):
             # Do your handling for a plain index
             print("plain", given)
 
+    class EventIterator:
+        def __init__(self, hdf5_object,event_index,max_antenna):
+            self._object = hdf5_object
+            self._event_index = event_index
+            self._max_antenna = max_antenna
+        
+        def get_wf(self):
+            return self._object['events'][self._event_index]
+        
+        def get_wf_from_ant(self,antenna_id = -1):
+            if antenna_id < 0 or antenna_id > self._max_antenna:
+                raise ValueError(
+                    "Usage: <iter_object>.get_wf_from_ant(antennaId). Total Number of Antennas is %d",self._max_antenna)
+            return self._object['events'][self._event_index,antenna_id]
+
+        def get_wf_type(self,wf_type=""):
+            if wf_type == "":
+                raise ValueError(
+                    "Usage: <iter_object>.get_wf_type('direct'/'reflected')")
+
+            elif wf_type.lower() == "direct":
+                return self._object['events'][self._event_index,:,0,:]
+            elif wf_type.lower() == "reflected":
+                return self._object['events'][self._event_index,:,1,:]
+            else:
+                raise ValueError(
+                    "Usage: <iter_object>.get_wf_type('direct'/'reflected')")
+        
+        def get_wf_ant_type(self,antenna_id = -1,wf_type = ""):
+            if antenna_id < 0 or wf_type == "" or antenna_id > self._max_antenna:
+                raise ValueError(
+                    "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is %d", self._max_antenna)
+            elif wf_type.lower() == "direct":
+                return self._object['events'][self._event_index, antenna_id, 0, :]
+            elif wf_type.lower() == "reflected":
+                return self._object['events'][self._event_index, antenna_id, 1, :]
+            else:
+                raise ValueError(
+                    "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is %d", self._max_antenna)
+
+        def get_particle_info(self):
+            return _read_hdf5_metadata_to_dicts(self._object,"events",self._event_index)
+
+        def is_triggered_event(self):
+            return self._object['triggers'][self._event_index]
+        
+        def get_noise_bases(self):
+            raise NotImplementedError
+        
+        def get_rays_info(self):
+            return _read_hdf5_metadata_to_dicts(self._object,"rays",self._event_index)
+        
+        def get_wf_trigger_info(self):
+            return _read_hdf5_metadata_to_dicts(self._object,"waveforms",self._event_index)
+
+        
+
+
+    def __iter__(self):
+        raise NotImplementedError
+
+    def __next__(self):
+        raise NotImplementedError
+
+
     def open(self):
         self._file = h5py.File(self.filename, mode='r')
 
@@ -222,10 +296,8 @@ class HDF5Reader(BaseReader):
                 "Usage: <HDF5Reader>.get_all_wf_from_ant(antennaId)")
         return np.asarray(self._file['events'][:,antenna_id,:,:])
 
-#Comibine these two and ask for an index from the user
-
     def get_all_wf_type(self,wf_type=""):
-        print(wf_type.lower())
+        #print(wf_type.lower())
         if wf_type == "":
             raise RuntimeError(
                 "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
@@ -238,13 +310,9 @@ class HDF5Reader(BaseReader):
             raise RuntimeError(
                 "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
 
-    
-
-
-
-
-    
-    
+    def get_antenna_info(self):
+        ant_dict = _read_hdf5_metadata_to_dicts(self._file,"antenna")
+        return ant_dict
 
 class HDF5Writer(BaseWriter):
     def __init__(self, filename, verbosity=Verbosity.default):
