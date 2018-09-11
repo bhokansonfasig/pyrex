@@ -64,12 +64,10 @@ class BaseReader:
 
     def __iter__(self):
         self._iter_counter = -1
-    
-    #Be sure to implement this 
+
+    #Be sure to implement this
     def __next__(self):
         pass
-
-
 
     @property
     def is_open(self):
@@ -81,11 +79,11 @@ class BaseWriter:
         pass
 
     def _set_verbosity_level(self, verbosity, accepted_verbosities):
-        if verbosity==-1:
+        if verbosity == -1:
             verbosity = "maximum"
         self.verbosity = get_from_enum(verbosity, Verbosity)
         if self.verbosity not in accepted_verbosities:
-            raise ValueError("Unable to write file with verbosity level '"+
+            raise ValueError("Unable to write file with verbosity level '" +
                              str(verbosity)+"'")
 
     def __enter__(self):
@@ -141,7 +139,7 @@ class BaseRebuilder:
 
     def __next__(self):
         self._iter_counter += 1
-        if self._iter_counter<len(self):
+        if self._iter_counter < len(self):
             return self[self._iter_counter]
         else:
             raise StopIteration
@@ -164,7 +162,6 @@ class BaseRebuilder:
         raise NotImplementedError
 
 
-
 def _read_hdf5_metadata_to_dicts(file, group, index=None):
     str_keys = file['metadata'][group]['str_keys']
     float_keys = file['metadata'][group]['float_keys']
@@ -175,30 +172,31 @@ def _read_hdf5_metadata_to_dicts(file, group, index=None):
         str_metadata = file['metadata'][group]['str'][index]
         float_metadata = file['metadata'][group]['float'][index]
 
-    if (str_metadata.shape[0]!=float_metadata.shape[0] or
-            str_metadata.shape[1]!=str_keys.size or
-            float_metadata.shape[1]!=float_keys.size):
+    if (str_metadata.shape[0] != float_metadata.shape[0] or
+            str_metadata.shape[1] != str_keys.size or
+            float_metadata.shape[1] != float_keys.size):
         raise ValueError("Metadata group '"+group+"' not readable")
 
     dicts = []
     for i in range(str_metadata.shape[0]):
         meta_dict = {}
         for j, key in enumerate(str_keys):
-            meta_dict[key] = str_metadata[i,j]
+            meta_dict[key] = str_metadata[i, j]
         for j, key in enumerate(float_keys):
-            meta_dict[key] = float_metadata[i,j]
+            meta_dict[key] = float_metadata[i, j]
         dicts.append(meta_dict)
     return dicts
 
+
 class EventIterator:
-    def __init__(self, hdf5_object, max_antenna, num_events,slice_range=1000):
+    def __init__(self, hdf5_object, max_antenna, num_events, slice_range=1000):
         self._object = hdf5_object
         self._max_antenna = max_antenna
         self._iter_counter = -1
         self._max_events = num_events
         self._slice_range = slice_range
         self._slice_start = 0
-        self._slice_end = min(num_events,slice_range)
+        self._slice_end = min(num_events, slice_range)
         self._event_data = self._object[self._slice_start:self._slice_end]
 
     def __next__(self):
@@ -207,10 +205,10 @@ class EventIterator:
             raise StopIteration
         if self._iter_counter >= self._slice_end:
             self._slice_start = self._slice_end
-            self._slice_end = min(self._slice_start + self._slice_range,self._max_events)
+            self._slice_end = min(self._slice_start +
+                                  self._slice_range, self._max_events)
             self._event_data = self._object[self._slice_start:self._slice_end]
         return self
-
 
     def get_event_index(self):
         return self._iter_counter
@@ -225,7 +223,7 @@ class EventIterator:
         if antenna_id < 0 or antenna_id > self._max_antenna:
             raise ValueError(
                 "Usage: <iter_object>.get_wf_from_ant(antennaId). Total Number of Antennas is ",
-                 self._max_antenna)
+                self._max_antenna)
         return self._event_data[self._iter_counter, antenna_id]
 
     def get_wf_type(self, wf_type=""):
@@ -295,19 +293,19 @@ class EventIterator:
     def get_nu_position(self):
         """Returns the position of the neutrino"""
         raise NotImplementedError
-        
+
     def get_nu_direction(self):
         """Returns the direction of the neutrino"""
         raise NotImplementedError
-    
+
     def get_nu_energy(self):
         """Returns the energy of neutrino"""
         raise NotImplementedError
-    
+
     def get_weight(self):
         """Returns the weight of the event"""
         raise NotImplementedError
-    
+
     def get_particle_interaction_info(self):
         """Returns a dictionary containing the interaction information"""
         raise NotImplementedError
@@ -315,11 +313,11 @@ class EventIterator:
     def get_launch_angle(self):
         """Returns the launch angle of the radio waves"""
         raise NotImplementedError
-    
+
     def get_receive_angle(self):
         """Returns the receive angle of the radio waves"""
         raise NotImplementedError
-    
+
     def get_path_length(self):
         """Returns the path length of the waves"""
         raise NotImplementedError
@@ -336,6 +334,7 @@ class EventIterator:
         """Returns whether the event triggered on direct ray or reflected ray"""
         raise NotImplementedError
 
+
 class HDF5Reader(BaseReader):
     def __init__(self, filename):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
@@ -347,8 +346,8 @@ class HDF5Reader(BaseReader):
             self._num_events = len(self._file['data_indices']['events'])
         else:
             raise RuntimeError('Invalid File Format')
-    
-    def __getitem__(self,given):
+
+    def __getitem__(self, given):
         if isinstance(given, slice):
             # handling the slice object
             return self._file['events'][given]
@@ -366,11 +365,12 @@ class HDF5Reader(BaseReader):
     #     return self
 
     def __iter__(self):
-        return EventIterator(self._file,self._num_ant, self._num_events)
+        return EventIterator(self._file, self._num_ant, self._num_events)
 
     def __next__(self):
         if self._iter_counter is None:
-            raise ValueError("Iterator should be initialized before accessing this")
+            raise ValueError(
+                "Iterator should be initialized before accessing this")
         self._iter_counter += 1
         if self._iter_counter >= len(self):
             raise StopIteration
@@ -384,7 +384,8 @@ class HDF5Reader(BaseReader):
     def get_event_index(self):
         if self._iter_counter is not None and self._iter_counter >= 0:
             return self._iter_counter
-        raise ValueError("This function should onlyu be callsed on the iterator object")
+        raise ValueError(
+            "This function should onlyu be callsed on the iterator object")
 
     def open(self):
         self._file = h5py.File(self.filename, mode='r')
@@ -392,44 +393,44 @@ class HDF5Reader(BaseReader):
     def close(self):
         self._file.close()
 
-    def get_wf(self,event_id = -1,antenna_id = -1):
+    def get_wf(self, event_id=-1, antenna_id=-1):
         if self._iter_counter is not None and self._iter_counter >= 0:
             return self._file['events'][self._iter_counter]
         else:
             if event_id < 0 or antenna_id < 0:
                 raise RuntimeError(
                     "Usage: <HDF5Reader>.get_wf(event_id, antenna_id)")
-            return np.asarray(self._file['events'][event_id,antenna_id,:,:])
-    
+            return np.asarray(self._file['events'][event_id, antenna_id, :, :])
+
     def get_all_wf(self):
         return np.asarray(self._file['events'])
-    
-    def get_all_wf_from_ant(self,antenna_id = -1, waveform_type=None):
+
+    def get_all_wf_from_ant(self, antenna_id=-1, waveform_type=None):
         if antenna_id < 0:
             raise RuntimeError(
                 "Usage: <HDF5Reader>.get_all_wf_from_ant(antennaId)")
-        return np.asarray(self._file['events'][:,antenna_id,:,:])
+        return np.asarray(self._file['events'][:, antenna_id, :, :])
 
-    def get_all_wf_type(self,wf_type=""):
+    def get_all_wf_type(self, wf_type=""):
         #print(wf_type.lower())
         if wf_type == "":
             raise RuntimeError(
                 "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
 
         elif wf_type.lower() == "direct":
-            return self._file[:,:,0,:]
+            return self._file[:, :, 0, :]
         elif wf_type.lower() == "reflected":
-            return self._file[:,:,1,:]
+            return self._file[:, :, 1, :]
         else:
             raise RuntimeError(
                 "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
 
     def get_antenna_info(self):
-        ant_dict = _read_hdf5_metadata_to_dicts(self._file,"antennas")
+        ant_dict = _read_hdf5_metadata_to_dicts(self._file, "antennas")
         return ant_dict
 
     def get_file_info(self):
-        return _read_hdf5_metadata_to_dicts(self._file,"file")
+        return _read_hdf5_metadata_to_dicts(self._file, "file")
 
     # def get_wf(self):
     #     return self._file['events'][self._iter_counter]
@@ -474,7 +475,6 @@ class HDF5Reader(BaseReader):
         raise ValueError(
             "This function is should be called after initializing the iterator object")
 
-    
 
 class HDF5Writer(BaseWriter):
     def __init__(self, filename, verbosity=Verbosity.default):
@@ -500,7 +500,7 @@ class HDF5Writer(BaseWriter):
         self._trig_only_verbosities = accepted_verbosities[::2]
         self._event_verbosities = accepted_verbosities
         self._ray_verbosities = accepted_verbosities[2:]
-        self._noise_verbosities = (accepted_verbosities[4:6]+
+        self._noise_verbosities = (accepted_verbosities[4:6] +
                                    accepted_verbosities[8:])
         self._wave_verbosities = accepted_verbosities[6:]
 
@@ -526,10 +526,10 @@ class HDF5Writer(BaseWriter):
         now = datetime.datetime.now()
         stack = inspect.stack()
         for i, frame in enumerate(stack):
-            if frame.function=="open":
+            if frame.function == "open":
                 break
-        if i<len(stack) and stack[i+1].function=="__enter__":
-            if i+1<len(stack):
+        if i < len(stack) and stack[i+1].function == "__enter__":
+            if i+1 < len(stack):
                 opening_script = stack[i+2].filename
             else:
                 opening_script = stack[i+1].filename
@@ -567,9 +567,8 @@ class HDF5Writer(BaseWriter):
     def is_open(self):
         return self._is_open
 
-
     def _create_dataset(self, name):
-        if name=="events":
+        if name == "events":
             # Dimensions:
             #   0 - Number of events
             #   1 - Number of antennas
@@ -590,7 +589,7 @@ class HDF5Writer(BaseWriter):
             data.dims.create_scale(indices, 'event_numbers')
             data.dims[0].attach_scale(indices)
 
-        elif name=="complex_events":
+        elif name == "complex_events":
             # Complex events may have more than two waveforms per antenna,
             # store them separately to keep files from bloating with zeros
             data = self._file.create_dataset(
@@ -608,7 +607,7 @@ class HDF5Writer(BaseWriter):
             data.dims.create_scale(indices, 'event_numbers')
             data.dims[0].attach_scale(indices)
 
-        elif name=="triggers":
+        elif name == "triggers":
             data = self._file.create_dataset(
                 name="triggers", shape=(0,),
                 dtype=np.bool_, maxshape=(None,)
@@ -620,7 +619,7 @@ class HDF5Writer(BaseWriter):
             data.dims.create_scale(indices, 'event_numbers')
             data.dims[0].attach_scale(indices)
 
-        elif name=="noise_bases":
+        elif name == "noise_bases":
             data = self._file.create_dataset(
                 name="noise_bases", shape=(0, len(self._detector), 3),
                 dtype=h5py.special_dtype(vlen=np.float_),
@@ -647,46 +646,50 @@ class HDF5Writer(BaseWriter):
 
         return data
 
-
     def _create_metadataset(self, name):
         # Don't recreate if it already exists
         if name in self._file['metadata']:
             return
 
-        if name=="file":
+        if name == "file":
             shape = (1, 0)
             maxshape = (1, None)
             key_dim = 1
+
             def apply_labels(data):
                 data.dims[1].label = "attributes"
-        elif name=="events":
+        elif name == "events":
             shape = (0, 0, 0)
             maxshape = (None, None, None)
             key_dim = 2
+
             def apply_labels(data):
                 data.dims[0].label = "events"
                 data.dims[1].label = "particles"
                 data.dims[2].label = "attributes"
-        elif name=="antennas":
+        elif name == "antennas":
             shape = (len(self._detector), 0)
             maxshape = (len(self._detector), None)
             key_dim = 1
+
             def apply_labels(data):
                 data.dims[0].label = "antennas"
                 data.dims[1].label = "attributes"
-        elif name=="rays":
+        elif name == "rays":
             shape = (0, len(self._detector), 0, 0)
             maxshape = (None, len(self._detector), None, None)
             key_dim = 2
+
             def apply_labels(data):
                 data.dims[0].label = "events"
                 data.dims[1].label = "antennas"
                 data.dims[2].label = "attributes"
                 data.dims[3].label = "solutions"
-        elif name=="waveforms":
+        elif name == "waveforms":
             shape = (0, len(self._detector), 0, 0)
             maxshape = (None, len(self._detector), None, None)
             key_dim = 2
+
             def apply_labels(data):
                 data.dims[0].label = "events"
                 data.dims[1].label = "antennas"
@@ -733,7 +736,6 @@ class HDF5Writer(BaseWriter):
             float_data.dims.create_scale(indices, 'event_numbers')
             float_data.dims[0].attach_scale(indices)
 
-
     def _write_metadata(self, metadata, group, index=None):
         str_data = self._file['metadata'][group]['str']
         str_keys = self._file['metadata'][group]['str_keys']
@@ -750,25 +752,25 @@ class HDF5Writer(BaseWriter):
                     except TypeError:
                         val_length = -1
                         val = [val]
-                    if val_length==0:
+                    if val_length == 0:
                         continue
                     if isinstance(val[0], str):
                         val_type = "string"
                     elif np.isscalar(val[0]):
                         val_type = "float"
                     else:
-                        raise ValueError("'"+key+"' value ("+str(val[0])+
+                        raise ValueError("'"+key+"' value ("+str(val[0]) +
                                          ") must be string or scalar")
-                    if val_length==-1:
+                    if val_length == -1:
                         val = val[0]
 
-                if val_type=="string":
+                if val_type == "string":
                     j = -1
                     for k, match in enumerate(str_keys[:]):
-                        if match==key:
+                        if match == key:
                             j = k
                             break
-                    if j==-1:
+                    if j == -1:
                         j = str_keys.size
                         str_keys.resize(j+1, axis=0)
                         str_keys[j] = key
@@ -777,13 +779,13 @@ class HDF5Writer(BaseWriter):
                         str_data[i, j] = val
                     else:
                         str_data[index, i, j] = val
-                elif val_type=="float":
+                elif val_type == "float":
                     j = -1
                     for k, match in enumerate(float_keys[:]):
-                        if match==key:
+                        if match == key:
                             j = k
                             break
-                    if j==-1:
+                    if j == -1:
                         j = float_keys.size
                         float_keys.resize(j+1, axis=0)
                         float_keys[j] = key
@@ -795,12 +797,10 @@ class HDF5Writer(BaseWriter):
                 else:
                     raise ValueError("Unrecognized val_type")
 
-
     def _write_event_number(self, index_dataset_name, index):
         index_dataset = self._file['data_indices'][index_dataset_name]
         index_dataset.resize(index+1, axis=0)
         index_dataset[index] = self._event_counter
-
 
     def set_detector(self, detector):
         self._detector = detector
@@ -812,7 +812,6 @@ class HDF5Writer(BaseWriter):
     @property
     def has_detector(self):
         return hasattr(self, "_detector")
-
 
     def _write_particles(self, event):
         self._event_counter += 1
@@ -829,7 +828,6 @@ class HDF5Writer(BaseWriter):
         self._write_event_number('metadata_events', self._event_counter)
         self._write_metadata(event._metadata, 'events', self._event_counter)
 
-
     def _write_trigger(self, triggered):
         self._trigger_counter += 1
         if "triggers" in self._file:
@@ -841,12 +839,11 @@ class HDF5Writer(BaseWriter):
         self._write_event_number('triggers', self._trigger_counter)
         trigger_data[self._trigger_counter] = bool(triggered)
 
-
     def _write_ray_data(self, ray_paths):
         self._ray_counter += 1
-        if len(ray_paths)!=len(self._detector):
-            raise ValueError("Ray paths length doesn't match detector size ("+
-                             str(len(ray_paths))+"!="+
+        if len(ray_paths) != len(self._detector):
+            raise ValueError("Ray paths length doesn't match detector size (" +
+                             str(len(ray_paths))+"!=" +
                              str(len(self._detector))+")")
         if "rays" not in self._file['metadata']:
             self._create_metadataset("rays")
@@ -870,14 +867,13 @@ class HDF5Writer(BaseWriter):
                         elif np.isscalar(val):
                             meta[key] = [0]*max_waves
                         else:
-                            raise ValueError(key+" value ("+str(val)+
+                            raise ValueError(key+" value ("+str(val) +
                                              ") must be string or scalar")
                     meta[key][j] = val
             ray_metadata.append(meta)
 
         self._write_event_number('metadata_rays', self._ray_counter)
         self._write_metadata(ray_metadata, 'rays', self._ray_counter)
-
 
     def _get_noise_bases(self, antenna):
         while hasattr(antenna, "antenna"):
@@ -887,7 +883,6 @@ class HDF5Writer(BaseWriter):
             return [], [], []
         else:
             return noise.freqs, noise.amps, noise.phases
-
 
     def _write_noise_data(self):
         self._noise_counter += 1
@@ -901,10 +896,9 @@ class HDF5Writer(BaseWriter):
         for i, ant in enumerate(self._detector):
             data[self._noise_counter, i] = np.array(self._get_noise_bases(ant))
 
-
     def _write_waveforms(self):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
-        if max_waves<=2:
+        if max_waves <= 2:
             self._wave_counter += 1
             dataset_name = 'events'
             index = self._wave_counter
@@ -923,8 +917,10 @@ class HDF5Writer(BaseWriter):
         # Reshape metadata datasets to accomodate the metadata of each waveform
         str_data = self._file['metadata']['waveforms']['str']
         float_data = self._file['metadata']['waveforms']['float']
-        str_data.resize(self._wave_counter+self._complex_wave_counter+2, axis=0)
-        float_data.resize(self._wave_counter+self._complex_wave_counter+2, axis=0)
+        str_data.resize(self._wave_counter +
+                        self._complex_wave_counter+2, axis=0)
+        float_data.resize(self._wave_counter +
+                          self._complex_wave_counter+2, axis=0)
         str_data.resize(max(max_waves, str_data.shape[3]), axis=3)
         float_data.resize(max(max_waves, float_data.shape[3]), axis=3)
 
@@ -941,21 +937,20 @@ class HDF5Writer(BaseWriter):
             waveform_metadata.append(meta)
 
         self._write_event_number("metadata_waveforms", self._wave_counter
-                                 +self._complex_wave_counter+1)
+                                 + self._complex_wave_counter+1)
         self._write_metadata(waveform_metadata, 'waveforms', self._wave_counter
-                             +self._complex_wave_counter+1)
-
+                             + self._complex_wave_counter+1)
 
     def add(self, event, triggered=None, ray_paths=None):
         if self.verbosity in self._ray_verbosities and ray_paths is None:
-            raise ValueError("Ray path information must be provided for "+
+            raise ValueError("Ray path information must be provided for " +
                              "verbosity level "+str(self.verbosity))
         if self.verbosity in self._trig_only_verbosities:
             if triggered is None:
-                raise ValueError("Trigger information must be provided for "+
+                raise ValueError("Trigger information must be provided for " +
                                  "verbosity level "+str(self.verbosity))
             if self.verbosity in self._event_verbosities:
-                if self.verbosity!=Verbosity.event_data_triggered_only or triggered:
+                if self.verbosity != Verbosity.event_data_triggered_only or triggered:
                     self._write_particles(event)
                     self._write_trigger(triggered)
             if triggered:
@@ -966,8 +961,8 @@ class HDF5Writer(BaseWriter):
                 if self.verbosity in self._wave_verbosities:
                     self._write_waveforms()
         else:
-            if self.verbosity==Verbosity.event_data and triggered is None:
-                raise ValueError("Trigger information must be provided for "+
+            if self.verbosity == Verbosity.event_data and triggered is None:
+                raise ValueError("Trigger information must be provided for " +
                                  "verbosity level "+str(self.verbosity))
             if self.verbosity in self._event_verbosities:
                 self._write_particles(event)
@@ -980,10 +975,8 @@ class HDF5Writer(BaseWriter):
             if self.verbosity in self._wave_verbosities:
                 self._write_waveforms()
 
-
     def add_metadata(self, file_metadata):
         self._write_metadata([file_metadata], 'file')
-
 
 
 class AntennaProxy(Antenna):
@@ -992,7 +985,6 @@ class AntennaProxy(Antenna):
         super().__init__(position=position)
         for key, val in metadata_dict.items():
             self.__dict__[key] = val
-
 
 
 class HDF5Rebuilder(BaseRebuilder):
@@ -1017,7 +1009,6 @@ class HDF5Rebuilder(BaseRebuilder):
         return (self._file['events'].shape[0] +
                 self._file['complex_events'].shape[0])
 
-
     def _read_metadata(self, group, index=None):
         return _read_hdf5_metadata_to_dicts(self._file, group, index)
 
@@ -1031,7 +1022,8 @@ class HDF5Rebuilder(BaseRebuilder):
             ]
             for key in required_keys:
                 if key not in particle_metadata:
-                    raise ValueError("Event metadata does not have a value for "+key)
+                    raise ValueError(
+                        "Event metadata does not have a value for "+key)
             particle_id = particle_metadata['particle_id']
             vertex = (particle_metadata['vertex_x'],
                       particle_metadata['vertex_y'],
@@ -1066,7 +1058,7 @@ class HDF5Rebuilder(BaseRebuilder):
             ant.clear()
         # waveform_metadata = self._read_metadata('waveforms', index)
         data = self._file['events'][index]
-        if data.shape[0]!=len(detector):
+        if data.shape[0] != len(detector):
             raise ValueError("Invalid number of antennas in given detector")
 
         for i, ant in enumerate(detector):
