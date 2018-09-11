@@ -191,19 +191,42 @@ def _read_hdf5_metadata_to_dicts(file, group, index=None):
     return dicts
 
 class EventIterator:
-    def __init__(self, hdf5_object, event_index, max_antenna):
+    def __init__(self, hdf5_object, max_antenna, num_events,slice_range=1000):
         self._object = hdf5_object
-        self._event_index = event_index
         self._max_antenna = max_antenna
+        self._iter_counter = -1
+        self._max_events = num_events
+        self._slice_range = slice_range
+        self._slice_start = 0
+        self._slice_end = min(num_events,slice_range)
+        self._event_data = self._object[self._slice_start:self._slice_end]
+
+    def __next__(self):
+        self._iter_counter += 1
+        if self._iter_counter >= self._max_events:
+            raise StopIteration
+        if self._iter_counter >= self._slice_end:
+            self._slice_start = self._slice_end
+            self._slice_end = min(self._slice_start + self._slice_range,self._max_events)
+            self._event_data = self._object[self._slice_start:self._slice_end]
+        return self
+
+
+    def get_event_index(self):
+        return self._iter_counter
+
+    def get_event_data_shape(self):
+        return self._event_data.shape
 
     def get_wf(self):
-        return self._object['events'][self._event_index]
+        return self._event_data[self._iter_counter]
 
     def get_wf_from_ant(self, antenna_id=-1):
         if antenna_id < 0 or antenna_id > self._max_antenna:
             raise ValueError(
-                "Usage: <iter_object>.get_wf_from_ant(antennaId). Total Number of Antennas is %d", self._max_antenna)
-        return self._object['events'][self._event_index, antenna_id]
+                "Usage: <iter_object>.get_wf_from_ant(antennaId). Total Number of Antennas is ",
+                 self._max_antenna)
+        return self._event_data[self._iter_counter, antenna_id]
 
     def get_wf_type(self, wf_type=""):
         if wf_type == "":
@@ -211,9 +234,9 @@ class EventIterator:
                 "Usage: <iter_object>.get_wf_type('direct'/'reflected')")
 
         elif wf_type.lower() == "direct":
-            return self._object['events'][self._event_index, :, 0, :]
+            return self._event_data[self._iter_counter, :, 0, :]
         elif wf_type.lower() == "reflected":
-            return self._object['events'][self._event_index, :, 1, :]
+            return self._event_data[self._iter_counter, :, 1, :]
         else:
             raise ValueError(
                 "Usage: <iter_object>.get_wf_type('direct'/'reflected')")
@@ -221,33 +244,97 @@ class EventIterator:
     def get_wf_ant_type(self, antenna_id=-1, wf_type=""):
         if antenna_id < 0 or wf_type == "" or antenna_id > self._max_antenna:
             raise ValueError(
-                "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is %d", self._max_antenna)
+                "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is ", self._max_antenna)
         elif wf_type.lower() == "direct":
-            return self._object['events'][self._event_index, antenna_id, 0, :]
+            return self._event_data[self._iter_counter, antenna_id, 0, :]
         elif wf_type.lower() == "reflected":
-            return self._object['events'][self._event_index, antenna_id, 1, :]
+            return self._event_data[self._iter_counter, antenna_id, 1, :]
         else:
             raise ValueError(
-                "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is %d", self._max_antenna)
+                "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is ", self._max_antenna)
 
     def get_particle_info(self):
-        return _read_hdf5_metadata_to_dicts(self._object, "events", self._event_index)
+        if self._iter_counter is not None and self._iter_counter >= 0:
+            return _read_hdf5_metadata_to_dicts(self._object, "events", self._iter_counter)
+        raise ValueError(
+            "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
     def is_triggered_event(self):
-        return self._object['triggers'][self._event_index]
+        if self._iter_counter is not None and self._iter_counter >= 0:
+            return self._object['triggers'][self._iter_counter]
+        raise ValueError(
+            "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
     def get_noise_bases(self):
         raise NotImplementedError
 
     def get_rays_info(self):
-        return _read_hdf5_metadata_to_dicts(self._object, "rays", self._event_index)
+        if self._iter_counter is not None and self._iter_counter >= 0:
+            return _read_hdf5_metadata_to_dicts(self._object, "rays", self._iter_counter)
+        raise ValueError(
+            "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
     def get_wf_trigger_info(self):
-        return _read_hdf5_metadata_to_dicts(self._object, "waveforms", self._event_index)
+        if self._iter_counter is not None and self._iter_counter >= 0:
+            return _read_hdf5_metadata_to_dicts(self._object, "waveforms", self._iter_counter)
+        raise ValueError(
+            "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
+    def get_nu_info(self):
+        """Returns a dictionary with nutrino information"""
+        raise NotImplementedError
 
+    def get_nu_distance(self):
+        """Returns the distance of the vertex from the center of the station"""
+        raise NotImplementedError
 
+    def get_nu_radius(self):
+        """Returns the radius of the vertex from the center of the station"""
+        raise NotImplementedError
 
+    def get_nu_position(self):
+        """Returns the position of the neutrino"""
+        raise NotImplementedError
+        
+    def get_nu_direction(self):
+        """Returns the direction of the neutrino"""
+        raise NotImplementedError
+    
+    def get_nu_energy(self):
+        """Returns the energy of neutrino"""
+        raise NotImplementedError
+    
+    def get_weight(self):
+        """Returns the weight of the event"""
+        raise NotImplementedError
+    
+    def get_particle_interaction_info(self):
+        """Returns a dictionary containing the interaction information"""
+        raise NotImplementedError
+
+    def get_launch_angle(self):
+        """Returns the launch angle of the radio waves"""
+        raise NotImplementedError
+    
+    def get_receive_angle(self):
+        """Returns the receive angle of the radio waves"""
+        raise NotImplementedError
+    
+    def get_path_length(self):
+        """Returns the path length of the waves"""
+        raise NotImplementedError
+
+    def get_tof(self):
+        """Returns the time of flight for the waves. The two values correspond to the time of flight for the first ray and the second ray"""
+        raise NotImplementedError
+
+    def get_triggered_antennas(self):
+        """Returns the list of antennas which were triggered in the event"""
+        raise NotImplementedError
+
+    def get_primary_trigger_type(self):
+        """Returns whether the event triggered on direct ray or reflected ray"""
+        raise NotImplementedError
 
 class HDF5Reader(BaseReader):
     def __init__(self, filename):
@@ -274,9 +361,12 @@ class HDF5Reader(BaseReader):
     def __len__(self):
         return self._num_events
 
+    # def __iter__(self):
+    #     self._iter_counter = -1
+    #     return self
+
     def __iter__(self):
-        self._iter_counter = -1
-        return self
+        return EventIterator(self._file,self._num_ant, self._num_events)
 
     def __next__(self):
         if self._iter_counter is None:
@@ -292,7 +382,7 @@ class HDF5Reader(BaseReader):
         return True
 
     def get_event_index(self):
-        if self.is_iterator_initialized:
+        if self._iter_counter is not None and self._iter_counter >= 0:
             return self._iter_counter
         raise ValueError("This function should onlyu be callsed on the iterator object")
 
@@ -303,7 +393,7 @@ class HDF5Reader(BaseReader):
         self._file.close()
 
     def get_wf(self,event_id = -1,antenna_id = -1):
-        if self.is_iterator_initialized:
+        if self._iter_counter is not None and self._iter_counter >= 0:
             return self._file['events'][self._iter_counter]
         else:
             if event_id < 0 or antenna_id < 0:
@@ -335,7 +425,7 @@ class HDF5Reader(BaseReader):
                 "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
 
     def get_antenna_info(self):
-        ant_dict = _read_hdf5_metadata_to_dicts(self._file,"antenna")
+        ant_dict = _read_hdf5_metadata_to_dicts(self._file,"antennas")
         return ant_dict
 
     def get_file_info(self):
@@ -345,7 +435,7 @@ class HDF5Reader(BaseReader):
     #     return self._file['events'][self._iter_counter]
 
     def get_wf_from_ant(self, antenna_id=-1):
-        if self.is_iterator_initialized:
+        if self._iter_counter is not None and self._iter_counter >= 0:
             if antenna_id < 0 or antenna_id > self._num_ant:
                 raise ValueError(
                     "Usage: <iter_file>.get_wf_from_ant(antennaId). Total Number of Antennas is %d", self._num_ant)
@@ -354,7 +444,7 @@ class HDF5Reader(BaseReader):
             "This function is should be called after initializing the iterator object")
 
     def get_wf_type(self, wf_type=""):
-        if self.is_iterator_initialized:
+        if self._iter_counter is not None and self._iter_counter >= 0:
             if wf_type == "":
                 raise ValueError(
                     "Usage: <iter_file>.get_wf_type('direct'/'reflected')")
@@ -370,7 +460,7 @@ class HDF5Reader(BaseReader):
             "This function is should be called after initializing the iterator object")
 
     def get_wf_ant_type(self, antenna_id=-1, wf_type=""):
-        if self.is_iterator_initialized:
+        if self._iter_counter is not None and self._iter_counter >= 0:
             if antenna_id < 0 or wf_type == "" or antenna_id > self._num_ant:
                 raise ValueError(
                     "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is %d", self._num_ant)
@@ -384,32 +474,7 @@ class HDF5Reader(BaseReader):
         raise ValueError(
             "This function is should be called after initializing the iterator object")
 
-    def get_particle_info(self):
-        if self.is_iterator_initialized:
-            return _read_hdf5_metadata_to_dicts(self._file, "events", self._iter_counter)
-        raise ValueError(
-            "This function is should be called after initializing the iterator object")
-
-    def is_triggered_event(self):
-        if self.is_iterator_initialized:
-            return self._file['triggers'][self._iter_counter]
-        raise ValueError(
-            "This function is should be called after initializing the iterator object")
-
-    def get_noise_bases(self):
-        raise NotImplementedError
-
-    def get_rays_info(self):
-        if self.is_iterator_initialized:
-            return _read_hdf5_metadata_to_dicts(self._file, "rays", self._iter_counter)
-        raise ValueError(
-            "This function is should be called after initializing the iterator object")
-
-    def get_wf_trigger_info(self):
-        if self.is_iterator_initialized:
-            return _read_hdf5_metadata_to_dicts(self._file, "waveforms", self._iter_counter)
-        raise ValueError(
-            "This function is should be called after initializing the iterator object")
+    
 
 class HDF5Writer(BaseWriter):
     def __init__(self, filename, verbosity=Verbosity.default):
