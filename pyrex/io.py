@@ -197,7 +197,7 @@ class EventIterator:
         self._slice_range = slice_range
         self._slice_start = 0
         self._slice_end = min(num_events, slice_range)
-        self._event_data = self._object[self._slice_start:self._slice_end]
+        self._event_data = self._object["events"][self._slice_start:self._slice_end]
 
     def __next__(self):
         self._iter_counter += 1
@@ -279,8 +279,12 @@ class EventIterator:
             "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
     def get_nu_info(self):
-        """Returns a dictionary with nutrino information"""
-        raise NotImplementedError
+        """Returns a dictionary with particle name and PID"""
+        event_metadata = self._object["metadata"]["events"]
+        dic = {}
+        dic[event_metadata["float_keys"][0]] = event_metadata["float"][self._iter_counter,0,0]
+        dic[event_metadata["str_keys"][0]] = event_metadata["str"][self._iter_counter,0,0] 
+        return dic
 
     def get_nu_distance(self):
         """Returns the distance of the vertex from the center of the station"""
@@ -292,7 +296,15 @@ class EventIterator:
 
     def get_nu_position(self):
         """Returns the position of the neutrino"""
-        raise NotImplementedError
+        event_metadata = self._object["metadata"]["events"]
+        x = event_metadata["float"][self._iter_counter, 0, 1]
+        y = event_metadata["float"][self._iter_counter, 0, 2]
+        z = event_metadata["float"][self._iter_counter, 0, 3]
+        pos = []
+        pos.append(x)
+        pos.append(y)
+        pos.append(z)
+        return np.asarray(pos)
 
     def get_nu_direction(self):
         """Returns the direction of the neutrino"""
@@ -353,7 +365,7 @@ class HDF5Reader(BaseReader):
             return self._file['events'][given]
         elif isinstance(given, tuple):
             return self._file['events'][given]
-        elif given == "metadata":
+        elif given == "":
             # Do your handling for a plain index
             print("plain", given)
 
