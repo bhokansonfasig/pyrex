@@ -328,7 +328,7 @@ class EventIterator:
 
     def get_launch_angle(self):
         """Returns the launch angle of the radio waves"""
-        
+
         raise NotImplementedError
 
     def get_receive_angle(self):
@@ -387,26 +387,6 @@ class HDF5Reader(BaseReader):
     def __iter__(self):
         return EventIterator(self._file, self._num_ant, self._num_events)
 
-    def __next__(self):
-        if self._iter_counter is None:
-            raise ValueError(
-                "Iterator should be initialized before accessing this")
-        self._iter_counter += 1
-        if self._iter_counter >= len(self):
-            raise StopIteration
-        return self
-
-    def is_iterator_initialized(self):
-        if self._iter_counter is None:
-            return False
-        return True
-
-    def get_event_index(self):
-        if self._iter_counter is not None and self._iter_counter >= 0:
-            return self._iter_counter
-        raise ValueError(
-            "This function should onlyu be callsed on the iterator object")
-
     def open(self):
         self._file = h5py.File(self.filename, mode='r')
 
@@ -414,13 +394,10 @@ class HDF5Reader(BaseReader):
         self._file.close()
 
     def get_wf(self, event_id=-1, antenna_id=-1):
-        if self._iter_counter is not None and self._iter_counter >= 0:
-            return self._file['events'][self._iter_counter]
-        else:
-            if event_id < 0 or antenna_id < 0:
-                raise RuntimeError(
-                    "Usage: <HDF5Reader>.get_wf(event_id, antenna_id)")
-            return np.asarray(self._file['events'][event_id, antenna_id, :, :])
+        if event_id < 0 or antenna_id < 0:
+            raise RuntimeError(
+                "Usage: <HDF5Reader>.get_wf(event_id, antenna_id)")
+        return np.asarray(self._file['events'][event_id, antenna_id, :, :])
 
     def get_all_wf(self):
         return np.asarray(self._file['events'])
@@ -432,7 +409,6 @@ class HDF5Reader(BaseReader):
         return np.asarray(self._file['events'][:, antenna_id, :, :])
 
     def get_all_wf_type(self, wf_type=""):
-        #print(wf_type.lower())
         if wf_type == "":
             raise RuntimeError(
                 "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
@@ -451,49 +427,6 @@ class HDF5Reader(BaseReader):
 
     def get_file_info(self):
         return _read_hdf5_metadata_to_dicts(self._file, "file")
-
-    # def get_wf(self):
-    #     return self._file['events'][self._iter_counter]
-
-    def get_wf_from_ant(self, antenna_id=-1):
-        if self._iter_counter is not None and self._iter_counter >= 0:
-            if antenna_id < 0 or antenna_id > self._num_ant:
-                raise ValueError(
-                    "Usage: <iter_file>.get_wf_from_ant(antennaId). Total Number of Antennas is %d", self._num_ant)
-            return self._file['events'][self._iter_counter, antenna_id]
-        raise ValueError(
-            "This function is should be called after initializing the iterator object")
-
-    def get_wf_type(self, wf_type=""):
-        if self._iter_counter is not None and self._iter_counter >= 0:
-            if wf_type == "":
-                raise ValueError(
-                    "Usage: <iter_file>.get_wf_type('direct'/'reflected')")
-
-            elif wf_type.lower() == "direct":
-                return self._file['events'][self._iter_counter, :, 0, :]
-            elif wf_type.lower() == "reflected":
-                return self._file['events'][self._iter_counter, :, 1, :]
-            else:
-                raise ValueError(
-                    "Usage: <iter_object>.get_wf_type('direct'/'reflected')")
-        raise ValueError(
-            "This function is should be called after initializing the iterator object")
-
-    def get_wf_ant_type(self, antenna_id=-1, wf_type=""):
-        if self._iter_counter is not None and self._iter_counter >= 0:
-            if antenna_id < 0 or wf_type == "" or antenna_id > self._num_ant:
-                raise ValueError(
-                    "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is %d", self._num_ant)
-            elif wf_type.lower() == "direct":
-                return self._file['events'][self._iter_counter, antenna_id, 0, :]
-            elif wf_type.lower() == "reflected":
-                return self._file['events'][self._iter_counter, antenna_id, 1, :]
-            else:
-                raise ValueError(
-                    "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is %d", self._num_ant)
-        raise ValueError(
-            "This function is should be called after initializing the iterator object")
 
 
 class HDF5Writer(BaseWriter):
