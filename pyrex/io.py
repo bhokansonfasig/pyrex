@@ -189,8 +189,8 @@ def _read_hdf5_metadata_to_dicts(file, group, index=None):
 
 
 class EventIterator:
-    def __init__(self, hdf5_object, max_antenna, num_events, slice_range=1000):
-        self._object = hdf5_object
+    def __init__(self, hdf5_file, max_antenna, num_events, slice_range=1000):
+        self._object = hdf5_file
         self._max_antenna = max_antenna
         self._iter_counter = -1
         self._max_events = num_events
@@ -297,33 +297,38 @@ class EventIterator:
     def get_nu_position(self):
         """Returns the position of the neutrino"""
         event_metadata = self._object["metadata"]["events"]
-        x = event_metadata["float"][self._iter_counter, 0, 1]
-        y = event_metadata["float"][self._iter_counter, 0, 2]
-        z = event_metadata["float"][self._iter_counter, 0, 3]
-        pos = []
-        pos.append(x)
-        pos.append(y)
-        pos.append(z)
+        pos = event_metadata["float"][self._iter_counter, 0, 1:4]
         return np.asarray(pos)
 
     def get_nu_direction(self):
         """Returns the direction of the neutrino"""
-        raise NotImplementedError
+        direction = self._object["metadata"]["events"]["float"][self._iter_counter, 0, 4:7]
+        return np.asarray(direction)
 
     def get_nu_energy(self):
         """Returns the energy of neutrino"""
-        raise NotImplementedError
+        return self._object["metadata"]["events"]["float"][self._iter_counter, 0, 7]
 
     def get_weight(self):
         """Returns the weight of the event"""
-        raise NotImplementedError
+        return self._object["metadata"]["events"]["float"][self._iter_counter, 0, 8]
 
     def get_particle_interaction_info(self):
         """Returns a dictionary containing the interaction information"""
-        raise NotImplementedError
+        event_metadata = self._object["metadata"]["events"]
+        int_info = {}
+        for i in range(9,13):
+            int_info[event_metadata["events"]["float_keys"][self._iter_counter,
+                                                        0, i]] = event_metadata["events"]["float"][self._iter_counter, 0, i]
+        int_info[event_metadata["events"]["str_keys"][self._iter_counter,
+                                                        0, 1]] = event_metadata["events"]["str"][self._iter_counter, 0, 1]
+        int_info[event_metadata["events"]["str_keys"][self._iter_counter,
+                                                        0, 2]] = event_metadata["events"]["str"][self._iter_counter, 0, 2]
+        return int_info
 
     def get_launch_angle(self):
         """Returns the launch angle of the radio waves"""
+        
         raise NotImplementedError
 
     def get_receive_angle(self):
@@ -358,6 +363,9 @@ class HDF5Reader(BaseReader):
             self._num_events = len(self._file['data_indices']['events'])
         else:
             raise RuntimeError('Invalid File Format')
+
+    def get_filename(self):
+        return self.filename
 
     def __getitem__(self, given):
         if isinstance(given, slice):
