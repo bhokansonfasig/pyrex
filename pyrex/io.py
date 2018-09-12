@@ -428,6 +428,8 @@ class HDF5Reader(BaseReader):
     def get_file_info(self):
         return _read_hdf5_metadata_to_dicts(self._file, "file")
 
+    
+    
 
 class HDF5Writer(BaseWriter):
     def __init__(self, filename, verbosity=Verbosity.default):
