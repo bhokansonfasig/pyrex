@@ -339,17 +339,33 @@ class EventIterator:
         """Returns the path length of the waves"""
         raise NotImplementedError
 
-    def get_tof(self):
+    def get_time_of_flight(self):
         """Returns the time of flight for the waves. The two values correspond to the time of flight for the first ray and the second ray"""
         raise NotImplementedError
 
     def get_triggered_antennas(self):
-        """Returns the list of antennas which were triggered in the event"""
+        """Returns the list of antennas which were triggered in the event in the order in which they triggered"""
         raise NotImplementedError
 
     def get_primary_trigger_type(self):
         """Returns whether the event triggered on direct ray or reflected ray"""
         raise NotImplementedError
+
+    def get_flavor(self):
+        """Returns the flavor of the initial particle. If not a neutrino, then returns a null string"""
+        raise NotImplementedError
+
+    def is_nubar(self):
+        """Returns true if the initial particle was anti-neutrino, returns false if the initial particle was neutrino, else returns a Null string"""
+        raise NotImplementedError
+
+    def get_polarization_vector(self):
+        """Returns the polarization vector of the event (or returns a list of vectors with polarization vector for each antenna)"""
+        raise NotImplementedError
+
+    def get_shower_details(self):
+        """Returns a dictionary/list with shower details (width and length (?))"""
+        raise NotImplementedError 
 
 
 class HDF5Reader(BaseReader):
