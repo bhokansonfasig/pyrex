@@ -424,11 +424,11 @@ class HDF5Writer(BaseWriter):
             return
 
         if name=="file":
-            shape = (1, 0)
-            maxshape = (1, None)
-            key_dim = 1
+            shape = (0,)
+            maxshape = (None,)
+            key_dim = 0
             def apply_labels(data):
-                data.dims[1].label = "attributes"
+                data.dims[0].label = "attributes"
         elif name=="events":
             shape = (0, 0, 0)
             maxshape = (None, None, None)
@@ -462,6 +462,13 @@ class HDF5Writer(BaseWriter):
                 data.dims[1].label = "antennas"
                 data.dims[2].label = "attributes"
                 data.dims[3].label = "waveforms"
+        elif name=="triggers":
+            shape = (0, 0)
+            maxshape = (None, None)
+            key_dim = 1
+            def apply_labels(data):
+                data.dims[0].label = "events"
+                data.dims[1].label = "attributes"
         else:
             raise ValueError("Unrecognized metadata name '"+name+"'")
 
@@ -492,7 +499,7 @@ class HDF5Writer(BaseWriter):
         apply_labels(float_data)
 
         # Link event numbers for the relevant datasets
-        if name in ["events", "rays", "waveforms"]:
+        if name in ["events", "rays", "waveforms", "triggers"]:
             meta_name = "metadata_"+name
             if meta_name in self._file['data_indices']:
                 indices = self._file['data_indices'][meta_name]
@@ -509,7 +516,29 @@ class HDF5Writer(BaseWriter):
         str_keys = self._file['metadata'][group]['str_keys']
         float_data = self._file['metadata'][group]['float']
         float_keys = self._file['metadata'][group]['float_keys']
-        data_axis = 1 if index is None else 2
+
+        if group=="file":
+            data_axis = 0
+            def write_value(value, dataset, *indices):
+                dataset[indices[0]] = value
+        elif group in ["events", "rays", "waveforms"]:
+            data_axis = 2
+            def write_value(value, dataset, *indices):
+                dataset[indices[2], indices[1], indices[0]] = value
+        elif group=="antennas":
+            data_axis = 1
+            def write_value(value, dataset, *indices):
+                dataset[indices[1], indices[0]] = value
+        elif group=="triggers":
+            data_axis = 1
+            def write_value(value, dataset, *indices):
+                dataset[indices[2], indices[0]] = value
+        else:
+            raise ValueError("Unrecognized metadata group '"+group+"'")
+
+        if isinstance(metadata, dict):
+            metadata = [metadata]
+        # Write metadata values to the appropriate datasets
         for i, meta in enumerate(metadata):
             for key, val in meta.items():
                 if isinstance(val, str):
@@ -543,10 +572,7 @@ class HDF5Writer(BaseWriter):
                         str_keys.resize(j+1, axis=0)
                         str_keys[j] = key
                         str_data.resize(j+1, axis=data_axis)
-                    if index is None:
-                        str_data[i, j] = val
-                    else:
-                        str_data[index, i, j] = val
+                    write_value(val, str_data, j, i, index)
                 elif val_type=="float":
                     j = -1
                     for k, match in enumerate(float_keys[:]):
@@ -558,10 +584,7 @@ class HDF5Writer(BaseWriter):
                         float_keys.resize(j+1, axis=0)
                         float_keys[j] = key
                         float_data.resize(j+1, axis=data_axis)
-                    if index is None:
-                        float_data[i, j] = val
-                    else:
-                        float_data[index, i, j] = val
+                    write_value(val, float_data, j, i, index)
                 else:
                     raise ValueError("Unrecognized val_type")
 
@@ -594,13 +617,13 @@ class HDF5Writer(BaseWriter):
         str_data.resize(self._event_counter+1, axis=0)
         float_data.resize(self._event_counter+1, axis=0)
         str_data.resize(max(len(event), str_data.shape[1]), axis=1)
-        float_data.resize(max(len(event), str_data.shape[1]), axis=1)
+        float_data.resize(max(len(event), float_data.shape[1]), axis=1)
 
         self._write_event_number('metadata_events', self._event_counter)
         self._write_metadata(event._metadata, 'events', self._event_counter)
 
 
-    def _write_trigger(self, triggered):
+    def _write_trigger(self, triggered, trigger_metadata=None):
         self._trigger_counter += 1
         if "triggers" in self._file:
             trigger_data = self._file['triggers']
@@ -610,6 +633,21 @@ class HDF5Writer(BaseWriter):
 
         self._write_event_number('triggers', self._trigger_counter)
         trigger_data[self._trigger_counter] = bool(triggered)
+
+        if trigger_metadata is not None:
+            if not isinstance(trigger_metadata, dict):
+                raise ValueError("Trigger metadata must be a dictionary")
+            if "triggers" not in self._file['metadata']:
+                self._create_metadataset("triggers")
+            # Reshape metadata datasets to accomodate the triggers
+            str_data = self._file['metadata']['triggers']['str']
+            float_data = self._file['metadata']['triggers']['float']
+            str_data.resize(self._trigger_counter+1, axis=0)
+            float_data.resize(self._trigger_counter+1, axis=0)
+            print(float_data.shape)
+            self._write_event_number('metadata_triggers', self._trigger_counter)
+            self._write_metadata(trigger_metadata, 'triggers',
+                                 self._trigger_counter)
 
 
     def _write_ray_data(self, ray_paths):
@@ -716,7 +754,8 @@ class HDF5Writer(BaseWriter):
                              +self._complex_wave_counter+1)
 
 
-    def add(self, event, triggered=None, ray_paths=None):
+    def add(self, event, triggered=None, ray_paths=None,
+            trigger_metadata=None):
         if self.verbosity in self._ray_verbosities and ray_paths is None:
             raise ValueError("Ray path information must be provided for "+
                              "verbosity level "+str(self.verbosity))
@@ -727,7 +766,7 @@ class HDF5Writer(BaseWriter):
             if self.verbosity in self._event_verbosities:
                 if self.verbosity!=Verbosity.event_data_triggered_only or triggered:
                     self._write_particles(event)
-                    self._write_trigger(triggered)
+                    self._write_trigger(triggered, trigger_metadata)
             if triggered:
                 if self.verbosity in self._ray_verbosities:
                     self._write_ray_data(ray_paths)
@@ -742,7 +781,7 @@ class HDF5Writer(BaseWriter):
             if self.verbosity in self._event_verbosities:
                 self._write_particles(event)
                 if triggered is not None:
-                    self._write_trigger(event)
+                    self._write_trigger(event, trigger_metadata)
             if self.verbosity in self._ray_verbosities:
                 self._write_ray_data(ray_paths)
             if self.verbosity in self._noise_verbosities:
