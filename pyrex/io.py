@@ -189,14 +189,16 @@ def _read_hdf5_metadata_to_dicts(file, group, index=None):
 
 
 class EventIterator:
-    def __init__(self, hdf5_file, max_antenna, num_events, slice_range=1000):
+    def __init__(self, hdf5_file, slice_range):
         self._object = hdf5_file
-        self._max_antenna = max_antenna
+        #you can get this from the file
+        self._max_antenna = hdf5_file["events"].shape[1]
         self._iter_counter = -1
-        self._max_events = num_events
+        #this one too
+        self._max_events = hdf5_file["event_indices"].shape[0]
         self._slice_range = slice_range
         self._slice_start = 0
-        self._slice_end = min(num_events, slice_range)
+        self._slice_end = min(self._max_events, slice_range)
         self._event_data = self._object["events"][self._slice_start:self._slice_end]
 
     def __next__(self):
@@ -216,8 +218,38 @@ class EventIterator:
     def get_event_data_shape(self):
         return self._event_data.shape
 
-    def get_wf(self):
-        return self._event_data[self._iter_counter]
+    def get_wf(self, antenna_id=None, wf_type=None):
+        if antenna_id is None:
+            antenna_id = slice(None) # essentially, antenna_id is ':'
+        elif isinstance(antenna_id, (int, float)):
+            antenna_id = int(antenna_id)
+            if antenna_id > self._max_antenna:
+                raise ValueError(
+                    "Antenna Id provided is greater than the number of antennas in detector")
+            if antenna_id < 0:
+                antenna_id = self._max_antenna + antenna_id
+        else:
+            raise ValueError(
+                "Unsupported type for antenna_id"
+            )
+
+        if wf_type is None:
+                return self._event_data[self._iter_counter,antenna_id]
+        elif isinstance(wf_type,str):
+            if wf_type.lower() == "direct":
+                return self._event_data[self._iter_counter, antenna_id, 0, :]
+            elif wf_type.lower() == "reflected":
+                return self._event_data[self._iter_counter, antenna_id, 1, :]
+            else:
+                raise ValueError(
+                    "Unsupported string value for wf_type")
+        elif isinstance(wf_type,(int, float)):
+            wf_type = int(wf_type)
+            return self._event_data[self._iter_counter, antenna_id, wf_type, :]
+        else:
+            raise ValueError(
+                "The parameter 'wf_type' should either be an integer or a string"
+            )
 
     def get_wf_from_ant(self, antenna_id=-1):
         if antenna_id < 0 or antenna_id > self._max_antenna:
@@ -326,6 +358,7 @@ class EventIterator:
                                                         0, 2]] = event_metadata["events"]["str"][self._iter_counter, 0, 2]
         return int_info
 
+    #Return a list of 16 numbers
     def get_launch_angle(self):
         """Returns the launch angle of the radio waves"""
 
@@ -348,7 +381,7 @@ class EventIterator:
         raise NotImplementedError
 
     def get_primary_trigger_type(self):
-        """Returns whether the event triggered on direct ray or reflected ray"""
+        """Returns whether the event triggered on direct ray or reflected ray or both"""
         raise NotImplementedError
 
     def get_flavor(self):
@@ -376,7 +409,7 @@ class HDF5Reader(BaseReader):
             self._num_ant = self._file["events"].shape[1]
             self._iter_counter = None
             #assumming that the data indices will have all the list of all events
-            self._num_events = len(self._file['data_indices']['events'])
+            self._num_events = self._file["event_indices"].shape[0]
         else:
             raise RuntimeError('Invalid File Format')
 
@@ -400,8 +433,8 @@ class HDF5Reader(BaseReader):
     #     self._iter_counter = -1
     #     return self
 
-    def __iter__(self):
-        return EventIterator(self._file, self._num_ant, self._num_events)
+    def __iter__(self,slice_range=1000):
+        return EventIterator(self._file, slice_range)
 
     def open(self):
         self._file = h5py.File(self.filename, mode='r')
@@ -409,33 +442,57 @@ class HDF5Reader(BaseReader):
     def close(self):
         self._file.close()
 
-    def get_wf(self, event_id=-1, antenna_id=-1):
-        if event_id < 0 or antenna_id < 0:
-            raise RuntimeError(
-                "Usage: <HDF5Reader>.get_wf(event_id, antenna_id)")
-        return np.asarray(self._file['events'][event_id, antenna_id, :, :])
-
-    def get_all_wf(self):
-        return np.asarray(self._file['events'])
-
-    def get_all_wf_from_ant(self, antenna_id=-1, waveform_type=None):
-        if antenna_id < 0:
-            raise RuntimeError(
-                "Usage: <HDF5Reader>.get_all_wf_from_ant(antennaId)")
-        return np.asarray(self._file['events'][:, antenna_id, :, :])
-
-    def get_all_wf_type(self, wf_type=""):
-        if wf_type == "":
-            raise RuntimeError(
-                "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
-
-        elif wf_type.lower() == "direct":
-            return self._file[:, :, 0, :]
-        elif wf_type.lower() == "reflected":
-            return self._file[:, :, 1, :]
+    def get_wf(self, event_id=None, antenna_id=None, wf_type=None):
+        if event_id is None:
+            event_id = slice(None)
+        if antenna_id is None:
+            antenna_id = slice(None)
+        elif antenna_id > self._num_ant:
+                raise ValueError(
+                    "Antenna Id provided is greater than the number of antennas in detector")
+        elif antenna_id < 0:
+            antenna_id = self._num_ant + antenna_id
+        
+        if wf_type is None:
+            wf_type = slice(None)
+            return self._file['events'][event_id,antenna_id,wf_type,:]
+        elif isinstance(wf_type, str):
+            if wf_type.lower() == "direct":
+                return self._file['events'][event_id, antenna_id, 0, :]
+            elif wf_type.lower() == "reflected":
+                return self._file['events'][event_id, antenna_id, 1, :]
+            else:
+                raise ValueError(
+                    "Unsupported string value for wf_type")
+        elif isinstance(wf_type, (int, float)):
+            wf_type = int(wf_type)
+            return self._file['events'][event_id, antenna_id, wf_type, :]
         else:
-            raise RuntimeError(
-                "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
+            raise ValueError(
+                "The parameter 'wf_type' should either be an integer or a string"
+            )
+
+    # def get_all_wf(self):
+    #     return np.asarray(self._file['events'])
+
+    # def get_all_wf_from_ant(self, antenna_id=-1, waveform_type=None):
+    #     if antenna_id < 0:
+    #         raise RuntimeError(
+    #             "Usage: <HDF5Reader>.get_all_wf_from_ant(antennaId)")
+    #     return np.asarray(self._file['events'][:, antenna_id, :, :])
+
+    # def get_all_wf_type(self, wf_type=""):
+    #     if wf_type == "":
+    #         raise RuntimeError(
+    #             "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
+
+    #     elif wf_type.lower() == "direct":
+    #         return self._file[:, :, 0, :]
+    #     elif wf_type.lower() == "reflected":
+    #         return self._file[:, :, 1, :]
+    #     else:
+    #         raise RuntimeError(
+    #             "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
 
     def get_antenna_info(self):
         ant_dict = _read_hdf5_metadata_to_dicts(self._file, "antennas")
