@@ -220,7 +220,7 @@ class EventIterator:
 
     def get_wf(self, antenna_id=None, wf_type=None):
         if antenna_id is None:
-            antenna_id = slice(None) # essentially, antenna_id is ':'
+            antenna_id = slice(None)  # essentially, antenna_id is ':'
         elif isinstance(antenna_id, (int, float)):
             antenna_id = int(antenna_id)
             if antenna_id > self._max_antenna:
@@ -234,8 +234,8 @@ class EventIterator:
             )
 
         if wf_type is None:
-                return self._event_data[self._iter_counter,antenna_id]
-        elif isinstance(wf_type,str):
+                return self._event_data[self._iter_counter, antenna_id]
+        elif isinstance(wf_type, str):
             if wf_type.lower() == "direct":
                 return self._event_data[self._iter_counter, antenna_id, 0, :]
             elif wf_type.lower() == "reflected":
@@ -243,7 +243,7 @@ class EventIterator:
             else:
                 raise ValueError(
                     "Unsupported string value for wf_type")
-        elif isinstance(wf_type,(int, float)):
+        elif isinstance(wf_type, (int, float)):
             wf_type = int(wf_type)
             return self._event_data[self._iter_counter, antenna_id, wf_type, :]
         else:
@@ -314,8 +314,10 @@ class EventIterator:
         """Returns a dictionary with particle name and PID"""
         event_metadata = self._object["metadata"]["events"]
         dic = {}
-        dic[event_metadata["float_keys"][0]] = event_metadata["float"][self._iter_counter,0,0]
-        dic[event_metadata["str_keys"][0]] = event_metadata["str"][self._iter_counter,0,0] 
+        dic[event_metadata["float_keys"][0]
+            ] = event_metadata["float"][self._iter_counter, 0, 0]
+        dic[event_metadata["str_keys"][0]
+            ] = event_metadata["str"][self._iter_counter, 0, 0]
         return dic
 
     def get_nu_distance(self):
@@ -349,13 +351,13 @@ class EventIterator:
         """Returns a dictionary containing the interaction information"""
         event_metadata = self._object["metadata"]["events"]
         int_info = {}
-        for i in range(9,13):
+        for i in range(9, 13):
             int_info[event_metadata["events"]["float_keys"][self._iter_counter,
-                                                        0, i]] = event_metadata["events"]["float"][self._iter_counter, 0, i]
+                                                            0, i]] = event_metadata["events"]["float"][self._iter_counter, 0, i]
         int_info[event_metadata["events"]["str_keys"][self._iter_counter,
-                                                        0, 1]] = event_metadata["events"]["str"][self._iter_counter, 0, 1]
+                                                      0, 1]] = event_metadata["events"]["str"][self._iter_counter, 0, 1]
         int_info[event_metadata["events"]["str_keys"][self._iter_counter,
-                                                        0, 2]] = event_metadata["events"]["str"][self._iter_counter, 0, 2]
+                                                      0, 2]] = event_metadata["events"]["str"][self._iter_counter, 0, 2]
         return int_info
 
     #Return a list of 16 numbers
@@ -398,7 +400,7 @@ class EventIterator:
 
     def get_shower_details(self):
         """Returns a dictionary/list with shower details (width and length (?))"""
-        raise NotImplementedError 
+        raise NotImplementedError
 
 
 class HDF5Reader(BaseReader):
@@ -433,7 +435,7 @@ class HDF5Reader(BaseReader):
     #     self._iter_counter = -1
     #     return self
 
-    def __iter__(self,slice_range=1000):
+    def __iter__(self, slice_range=1000):
         return EventIterator(self._file, slice_range)
 
     def open(self):
@@ -452,10 +454,10 @@ class HDF5Reader(BaseReader):
                     "Antenna Id provided is greater than the number of antennas in detector")
         elif antenna_id < 0:
             antenna_id = self._num_ant + antenna_id
-        
+
         if wf_type is None:
             wf_type = slice(None)
-            return self._file['events'][event_id,antenna_id,wf_type,:]
+            return self._file['events'][event_id, antenna_id, wf_type, :]
         elif isinstance(wf_type, str):
             if wf_type.lower() == "direct":
                 return self._file['events'][event_id, antenna_id, 0, :]
@@ -501,8 +503,6 @@ class HDF5Reader(BaseReader):
     def get_file_info(self):
         return _read_hdf5_metadata_to_dicts(self._file, "file")
 
-    
-    
 
 class HDF5Writer(BaseWriter):
     def __init__(self, filename, verbosity=Verbosity.default):
