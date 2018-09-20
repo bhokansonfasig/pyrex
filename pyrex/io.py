@@ -357,7 +357,7 @@ class HDF5Writer(BaseWriter):
                 data = base.create_dataset(
                     name=name, shape=(0, 0, 2),
                     dtype=np.int_, maxshape=(None, None, 2),
-                    fillvalue=-1
+                    fillvalue=np.nan
                 )
                 data.dims[0].label = "events"
                 data.dims[1].label = "tables"
@@ -445,11 +445,6 @@ class HDF5Writer(BaseWriter):
         else:
             raise ValueError("Unrecognized group name '"+group+"'")
 
-        # Add matching column to event_indices
-        indices = self._file['event_indices']
-        indices.attrs['keys'] = np.append(indices.attrs['keys'], str.encode(full_name))
-        indices.resize(indices.shape[1]+1, axis=1)
-
         return data
 
 
@@ -479,7 +474,8 @@ class HDF5Writer(BaseWriter):
                     data.dims[0].label = "attributes"
 
             else:
-                raise ValueError("Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
 
         elif group=="monte_carlo_data":
             if name=="particles":
@@ -508,7 +504,8 @@ class HDF5Writer(BaseWriter):
                     data.dims[2].label = "attributes"
 
             else:
-                raise ValueError("Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
 
         else:
             raise ValueError("Unrecognized group name '"+group+"'")
@@ -546,11 +543,6 @@ class HDF5Writer(BaseWriter):
         # float_data.dims[key_dim].attach_scale(float_data.attrs['keys'])
         apply_labels(float_data)
 
-        # Add matching column to event_indices
-        indices = self._file['event_indices']
-        indices.attrs['keys'] = np.append(indices.attrs['keys'], str.encode(full_name))
-        indices.resize(indices.shape[1]+1, axis=1)
-
         return named_group
 
 
@@ -579,7 +571,8 @@ class HDF5Writer(BaseWriter):
                     dataset[indices[0]] = value
 
             else:
-                raise ValueError("Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
 
         elif group=="monte_carlo_data":
             if name=="particles":
@@ -598,7 +591,8 @@ class HDF5Writer(BaseWriter):
                     dataset[indices[2], indices[1], indices[0]] = value
 
             else:
-                raise ValueError("Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
 
         else:
             raise ValueError("Unrecognized group name '"+group+"'")
@@ -632,23 +626,27 @@ class HDF5Writer(BaseWriter):
                 if val_type=="string":
                     j = -1
                     for k, match in enumerate(str_data.attrs['keys']):
-                        if match==key:
+                        if bytes.decode(match)==key:
                             j = k
                             break
                     if j==-1:
                         j = len(str_data.attrs['keys'])
-                        str_data.attrs['keys'] = np.append(str_data.attrs['keys'], str.encode(key))
+                        str_data.attrs['keys'] = np.append(
+                            str_data.attrs['keys'], str.encode(key)
+                        )
                         str_data.resize(j+1, axis=data_axis)
                     write_value(val, str_data, j, i, index)
                 elif val_type=="float":
                     j = -1
                     for k, match in enumerate(float_data.attrs['keys']):
-                        if match==key:
+                        if bytes.decode(match)==key:
                             j = k
                             break
                     if j==-1:
                         j = len(float_data.attrs['keys'])
-                        float_data.attrs['keys'] = np.append(float_data.attrs['keys'], str.encode(key))
+                        float_data.attrs['keys'] = np.append(
+                            float_data.attrs['keys'], str.encode(key)
+                        )
                         float_data.resize(j+1, axis=data_axis)
                     write_value(val, float_data, j, i, index)
                 else:
@@ -657,8 +655,15 @@ class HDF5Writer(BaseWriter):
 
     def _write_indices(self, full_name, start_index, length=1):
         indices = self._file['event_indices']
+        encoded_name = str.encode(full_name)
+        # Add column for full_name if it doesn't exist
+        if (len(indices.attrs['keys'])==0 or
+                encoded_name not in indices.attrs['keys']):
+            indices.attrs['keys'] = np.append(indices.attrs['keys'],
+                                              str.encode(full_name))
+            indices.resize(indices.shape[1]+1, axis=1)
         for i, key in enumerate(indices.attrs['keys']):
-            if bytes.decode(key)==full_name:
+            if key==encoded_name:
                 if indices.shape[0]<=self._counters['events']:
                     indices.resize(self._counters['events']+1, axis=0)
                 indices[self._counters['events'], i] = (start_index, length)
@@ -710,9 +715,11 @@ class HDF5Writer(BaseWriter):
         extra_data = self._create_dataset("monte_carlo_data/triggers")
         trigger_data.resize(self._counters['triggers']+1, axis=0)
         extra_data.resize(self._counters['waveform_triggers']+1, axis=0)
+        # Add keys that don't exist yet
         for key in trigger_extras:
-            if key not in extra_data.attrs['keys']:
-                extra_data.attrs['keys'] = np.append(extra_data.attrs['keys'], str.encode(key))
+            if str.encode(key) not in extra_data.attrs['keys']:
+                extra_data.attrs['keys'] = np.append(extra_data.attrs['keys'],
+                                                     str.encode(key))
                 extra_data.resize(extra_data.shape[1]+1, axis=1)
 
         trigger_data[self._counters['triggers']] = triggered
@@ -724,7 +731,7 @@ class HDF5Writer(BaseWriter):
             # Store extra triggers
             for key, val in trigger_extras.items():
                 for k, match in enumerate(extra_data.attrs['keys']):
-                    if key==match:
+                    if key==bytes.decode(match):
                         if isinstance(val, bool):
                             for jj in range(max_waves):
                                 extra_data[start_index+jj, k] = val
@@ -780,7 +787,7 @@ class HDF5Writer(BaseWriter):
 
         self._write_indices("monte_carlo_data/noise", self._counters['noise'])
         for i, ant in enumerate(self._detector):
-            data[self._counters['noise'], i] = np.array(self._get_noise_bases(ant))
+            data[self._counters['noise'], i] = self._get_noise_bases(ant)
 
 
     def _write_waveforms(self):
@@ -808,7 +815,8 @@ class HDF5Writer(BaseWriter):
                 raise ValueError("Trigger information must be provided for "+
                                  "verbosity level "+str(self.verbosity))
             if self.verbosity in self._event_verbosities:
-                if self.verbosity!=Verbosity.event_data_triggered_only or triggered:
+                if (self.verbosity!=Verbosity.event_data_triggered_only
+                        or triggered):
                     self._write_particles(event)
                     self._write_trigger(triggered, trigger_extras)
             if triggered:
