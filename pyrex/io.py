@@ -156,30 +156,53 @@ class BaseRebuilder:
 
 
 
-def _read_hdf5_metadata_to_dicts(file, group, index=None):
-    str_keys = file['metadata'][group]['str_keys']
-    float_keys = file['metadata'][group]['float_keys']
+def _read_hdf5_metadata_to_dicts(file, full_name, index=None):
+    parts = full_name.split("/")
+    group = file
+    # name = parts[-1]
+    for subgroup in parts:
+        group = group[subgroup]
+
+    str_metadata = group['str']
+    float_metadata = group['float']
+
     if index is None:
-        str_metadata = file['metadata'][group]['str']
-        float_metadata = file['metadata'][group]['float']
+        str_table = str_metadata
+        float_table = float_metadata
     else:
-        str_metadata = file['metadata'][group]['str'][index]
-        float_metadata = file['metadata'][group]['float'][index]
+        str_table = str_metadata[index]
+        float_table = float_metadata[index]
 
-    if (str_metadata.shape[0]!=float_metadata.shape[0] or
-            str_metadata.shape[1]!=str_keys.size or
-            float_metadata.shape[1]!=float_keys.size):
-        raise ValueError("Metadata group '"+group+"' not readable")
+    if str_table.ndim!=float_table.ndim:
+        raise ValueError("Metadata group '"+full_name+"' not readable")
 
-    dicts = []
-    for i in range(str_metadata.shape[0]):
-        meta_dict = {}
-        for j, key in enumerate(str_keys):
-            meta_dict[key] = str_metadata[i,j]
-        for j, key in enumerate(float_keys):
-            meta_dict[key] = float_metadata[i,j]
-        dicts.append(meta_dict)
-    return dicts
+    ndim = str_table.ndim
+    key_dim = -1
+    if ndim==0:
+        return {}
+
+    if (str_table.shape[key_dim]!=len(str_metadata.attrs['keys']) or
+            float_table.shape[key_dim]!=len(float_metadata.attrs['keys'])):
+        raise ValueError("Metadata group '"+full_name+"' not readable")
+
+    # Recursively pull out list (of lists ...) of dictionaries
+    def get_dicts_recursive(dimension, str_data, float_data):
+        if dimension==key_dim%ndim:
+            meta_dict = {}
+            for j, key in enumerate(str_metadata.attrs['keys']):
+                meta_dict[bytes.decode(key)] = str_data[j]
+            for j, key in enumerate(float_metadata.attrs['keys']):
+                meta_dict[bytes.decode(key)] = float_data[j]
+            return meta_dict
+        else:
+            if str_data.shape[0]!=float_data.shape[0]:
+                raise ValueError("Metadata group '"+full_name+"' not readable")
+            return [
+                get_dicts_recursive(dimension+1, str_data[i], float_data[i])
+                for i in range(str_data.shape[0])
+            ]
+
+    return get_dicts_recursive(0, str_table, float_table)
 
 
 class HDF5Reader(BaseReader):
