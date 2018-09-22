@@ -161,31 +161,53 @@ class BaseRebuilder:
     def rebuild_waveforms(self, index):
         raise NotImplementedError
 
+def _read_hdf5_metadata_to_dicts(file, full_name, index=None):
+    parts = full_name.split("/")
+    group = file
+    # name = parts[-1]
+    for subgroup in parts:
+        group = group[subgroup]
 
-def _read_hdf5_metadata_to_dicts(file, group, index=None):
-    str_keys = file['metadata'][group]['str_keys']
-    float_keys = file['metadata'][group]['float_keys']
+    str_metadata = group['str']
+    float_metadata = group['float']
+
     if index is None:
-        str_metadata = file['metadata'][group]['str']
-        float_metadata = file['metadata'][group]['float']
+        str_table = str_metadata
+        float_table = float_metadata
     else:
-        str_metadata = file['metadata'][group]['str'][index]
-        float_metadata = file['metadata'][group]['float'][index]
+        str_table = str_metadata[index]
+        float_table = float_metadata[index]
 
-    if (str_metadata.shape[0] != float_metadata.shape[0] or
-            str_metadata.shape[1] != str_keys.size or
-            float_metadata.shape[1] != float_keys.size):
-        raise ValueError("Metadata group '"+group+"' not readable")
+    if str_table.ndim!=float_table.ndim:
+        raise ValueError("Metadata group '"+full_name+"' not readable")
 
-    dicts = []
-    for i in range(str_metadata.shape[0]):
-        meta_dict = {}
-        for j, key in enumerate(str_keys):
-            meta_dict[key] = str_metadata[i, j]
-        for j, key in enumerate(float_keys):
-            meta_dict[key] = float_metadata[i, j]
-        dicts.append(meta_dict)
-    return dicts
+    ndim = str_table.ndim
+    key_dim = -1
+    if ndim==0:
+        return {}
+
+    if (str_table.shape[key_dim]!=len(str_metadata.attrs['keys']) or
+            float_table.shape[key_dim]!=len(float_metadata.attrs['keys'])):
+        raise ValueError("Metadata group '"+full_name+"' not readable")
+
+    # Recursively pull out list (of lists ...) of dictionaries
+    def get_dicts_recursive(dimension, str_data, float_data):
+        if dimension==key_dim%ndim:
+            meta_dict = {}
+            for j, key in enumerate(str_metadata.attrs['keys']):
+                meta_dict[bytes.decode(key)] = str_data[j]
+            for j, key in enumerate(float_metadata.attrs['keys']):
+                meta_dict[bytes.decode(key)] = float_data[j]
+            return meta_dict
+        else:
+            if str_data.shape[0]!=float_data.shape[0]:
+                raise ValueError("Metadata group '"+full_name+"' not readable")
+            return [
+                get_dicts_recursive(dimension+1, str_data[i], float_data[i])
+                for i in range(str_data.shape[0])
+            ]
+
+    return get_dicts_recursive(0, str_table, float_table)
 
 
 class EventIterator:
@@ -708,15 +730,10 @@ class HDF5Writer(BaseWriter):
         else:
             raise ValueError("Unrecognized group name '"+group+"'")
 
-        # Add matching column to event_indices
-        indices = self._file['event_indices']
-        indices.attrs['keys'] = np.append(
-            indices.attrs['keys'], str.encode(full_name))
-        indices.resize(indices.shape[1]+1, axis=1)
-
         return data
 
-    def _create_metadataset(self, full_name):
+
+    def _create_metadataset(self, full_name, shape=None, maxshape=None):
         parts = full_name.split("/")
         if len(parts) == 1:
             group = "/"
@@ -726,6 +743,12 @@ class HDF5Writer(BaseWriter):
             group = parts[0]
             name = parts[1]
             base = self._file[group]
+        elif parts[1]=="analysis":
+            group = "analysis"
+            name = parts[-1]
+            base = self._file
+            for subgroup in parts[:-1]:
+                base = base[subgroup]
         else:
             raise ValueError("Deeply nested datasets not supported")
 
@@ -737,21 +760,17 @@ class HDF5Writer(BaseWriter):
             if name == "file_metadata":
                 shape = (0,)
                 maxshape = (None,)
-                key_dim = 0
-
                 def apply_labels(data):
                     data.dims[0].label = "attributes"
 
             else:
-                raise ValueError(
-                    "Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
 
         elif group == "monte_carlo_data":
             if name == "particles":
                 shape = (0, 0)
                 maxshape = (None, None)
-                key_dim = 1
-
                 def apply_labels(data):
                     data.dims[0].label = "particles"
                     data.dims[1].label = "attributes"
@@ -759,8 +778,6 @@ class HDF5Writer(BaseWriter):
             elif name == "antennas":
                 shape = (len(self._detector), 0)
                 maxshape = (len(self._detector), None)
-                key_dim = 1
-
                 def apply_labels(data):
                     data.dims[0].label = "antennas"
                     data.dims[1].label = "attributes"
@@ -768,16 +785,27 @@ class HDF5Writer(BaseWriter):
             elif name == "rays":
                 shape = (0, len(self._detector), 0)
                 maxshape = (None, len(self._detector), None)
-                key_dim = 2
-
                 def apply_labels(data):
                     data.dims[0].label = "events"
                     data.dims[1].label = "antennas"
                     data.dims[2].label = "attributes"
 
             else:
-                raise ValueError(
-                    "Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
+
+        elif group=="analysis":
+            if shape is None:
+                shape = (0,)
+            else:
+                shape = tuple(list(shape)+[0])
+            if maxshape is None:
+                maxshape = tuple(None for dimension in shape)
+            else:
+                maxshape = tuple(list(maxshape)+[None])
+                if len(maxshape)!=len(shape):
+                    raise ValueError("Length of 'maxshape' must match 'shape'")
+            apply_labels = lambda data: None
 
         else:
             raise ValueError("Unrecognized group name '"+group+"'")
@@ -789,37 +817,15 @@ class HDF5Writer(BaseWriter):
             name="str", shape=shape,
             dtype=h5py.special_dtype(vlen=str), maxshape=maxshape
         )
-        # str_keys = named_group.create_dataset(
-        #     name="str_keys", shape=(0,),
-        #     dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
-        # )
-        # str_data.dims.create_scale(str_keys, 'attribute_names')
-        # str_data.dims[key_dim].attach_scale(str_keys)
         str_data.attrs['keys'] = []
-        # str_data.dims.create_scale(str_data.attrs['keys'], 'keys')
-        # str_data.dims[key_dim].attach_scale(str_data.attrs['keys'])
         apply_labels(str_data)
 
         float_data = named_group.create_dataset(
             name="float", shape=shape,
             dtype=np.float_, maxshape=maxshape
         )
-        # float_keys = named_group.create_dataset(
-        #     name="float_keys", shape=(0,),
-        #     dtype=h5py.special_dtype(vlen=str), maxshape=(None,)
-        # )
-        # float_data.dims.create_scale(float_keys, 'attribute_names')
-        # float_data.dims[key_dim].attach_scale(float_keys)
         float_data.attrs['keys'] = []
-        # float_data.dims.create_scale(float_data.attrs['keys'], 'keys')
-        # float_data.dims[key_dim].attach_scale(float_data.attrs['keys'])
         apply_labels(float_data)
-
-        # Add matching column to event_indices
-        indices = self._file['event_indices']
-        indices.attrs['keys'] = np.append(
-            indices.attrs['keys'], str.encode(full_name))
-        indices.resize(indices.shape[1]+1, axis=1)
 
         return named_group
 
@@ -833,6 +839,12 @@ class HDF5Writer(BaseWriter):
             group = parts[0]
             name = parts[1]
             base = self._file[group]
+        elif parts[1]=="analysis":
+            group = "analysis"
+            name = parts[-1]
+            base = self._file
+            for subgroup in parts[:-1]:
+                base = base[subgroup]
         else:
             raise ValueError("Deeply nested datasets not supported")
 
@@ -849,8 +861,8 @@ class HDF5Writer(BaseWriter):
                     dataset[indices[0]] = value
 
             else:
-                raise ValueError(
-                    "Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
 
         elif group == "monte_carlo_data":
             if name == "particles":
@@ -872,8 +884,18 @@ class HDF5Writer(BaseWriter):
                     dataset[indices[2], indices[1], indices[0]] = value
 
             else:
-                raise ValueError(
-                    "Unrecognized metadataset name '"+full_name+"'")
+                raise ValueError("Unrecognized metadataset name '"+full_name+
+                                 "'")
+
+        elif group=="analysis":
+            data_axis = str_data.ndim-1
+            def write_value(value, dataset, *indices):
+                if dataset.ndim==1:
+                    dataset[indices[0]] = value
+                elif dataset.ndim==2:
+                    dataset[indices[1], indices[0]] = value
+                else:
+                    dataset[indices[2], indices[1], indices[0]] = value
 
         else:
             raise ValueError("Unrecognized group name '"+group+"'")
@@ -903,41 +925,51 @@ class HDF5Writer(BaseWriter):
                     if val_length == -1:
                         val = val[0]
 
-                # TODO: else k += 1 and swap k for j
-                if val_type == "string":
-                    j = -1
-                    for k, match in enumerate(str_data.attrs['keys']):
-                        if match == key:
-                            j = k
+                if val_type=="string":
+                    for j, match in enumerate(str_data.attrs['keys']):
+                        if bytes.decode(match)==key:
                             break
-                    if j == -1:
+                    else:
+                        # If no key matched, add key and resize dataset
                         j = len(str_data.attrs['keys'])
                         str_data.attrs['keys'] = np.append(
-                            str_data.attrs['keys'], str.encode(key))
+                            str_data.attrs['keys'], str.encode(key)
+                        )
                         str_data.resize(j+1, axis=data_axis)
                     write_value(val, str_data, j, i, index)
-                elif val_type == "float":
-                    j = -1
-                    for k, match in enumerate(float_data.attrs['keys']):
-                        if match == key:
-                            j = k
+                elif val_type=="float":
+                    for j, match in enumerate(float_data.attrs['keys']):
+                        if bytes.decode(match)==key:
                             break
-                    if j == -1:
+                    else:
+                        # If no key matched, add key and resize dataset
                         j = len(float_data.attrs['keys'])
                         float_data.attrs['keys'] = np.append(
-                            float_data.attrs['keys'], str.encode(key))
+                            float_data.attrs['keys'], str.encode(key)
+                        )
                         float_data.resize(j+1, axis=data_axis)
                     write_value(val, float_data, j, i, index)
                 else:
                     raise ValueError("Unrecognized val_type")
 
-    def _write_indices(self, full_name, start_index, length=1):
+
+    def _write_indices(self, full_name, start_index, length=1,
+                       global_index_value=None):
+        if global_index_value is None:
+            global_index_value = self._counters['events']
         indices = self._file['event_indices']
+        encoded_name = str.encode(full_name)
+        # Add column for full_name if it doesn't exist
+        if (len(indices.attrs['keys'])==0 or
+                encoded_name not in indices.attrs['keys']):
+            indices.attrs['keys'] = np.append(indices.attrs['keys'],
+                                              str.encode(full_name))
+            indices.resize(indices.shape[1]+1, axis=1)
         for i, key in enumerate(indices.attrs['keys']):
-            if bytes.decode(key) == full_name:
-                if indices.shape[0] <= self._counters['events']:
-                    indices.resize(self._counters['events']+1, axis=0)
-                indices[self._counters['events'], i] = (start_index, length)
+            if key==encoded_name:
+                if indices.shape[0]<=global_index_value:
+                    indices.resize(global_index_value+1, axis=0)
+                indices[global_index_value, i] = (start_index, length)
                 return
         raise ValueError("Unrecognized table name '"+full_name+"'")
 
@@ -983,10 +1015,11 @@ class HDF5Writer(BaseWriter):
         extra_data = self._create_dataset("monte_carlo_data/triggers")
         trigger_data.resize(self._counters['triggers']+1, axis=0)
         extra_data.resize(self._counters['waveform_triggers']+1, axis=0)
+        # Add keys that don't exist yet
         for key in trigger_extras:
-            if key not in extra_data.attrs['keys']:
-                extra_data.attrs['keys'] = np.append(
-                    extra_data.attrs['keys'], str.encode(key))
+            if str.encode(key) not in extra_data.attrs['keys']:
+                extra_data.attrs['keys'] = np.append(extra_data.attrs['keys'],
+                                                     str.encode(key))
                 extra_data.resize(extra_data.shape[1]+1, axis=1)
 
         trigger_data[self._counters['triggers']] = triggered
@@ -998,7 +1031,7 @@ class HDF5Writer(BaseWriter):
             # Store extra triggers
             for key, val in trigger_extras.items():
                 for k, match in enumerate(extra_data.attrs['keys']):
-                    if key == match:
+                    if key==bytes.decode(match):
                         if isinstance(val, bool):
                             for jj in range(max_waves):
                                 extra_data[start_index+jj, k] = val
@@ -1053,8 +1086,8 @@ class HDF5Writer(BaseWriter):
 
         self._write_indices("monte_carlo_data/noise", self._counters['noise'])
         for i, ant in enumerate(self._detector):
-            data[self._counters['noise'], i] = np.array(
-                self._get_noise_bases(ant))
+            data[self._counters['noise'], i] = self._get_noise_bases(ant)
+
 
     def _write_waveforms(self):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
@@ -1080,7 +1113,8 @@ class HDF5Writer(BaseWriter):
                 raise ValueError("Trigger information must be provided for " +
                                  "verbosity level "+str(self.verbosity))
             if self.verbosity in self._event_verbosities:
-                if self.verbosity != Verbosity.event_data_triggered_only or triggered:
+                if (self.verbosity!=Verbosity.event_data_triggered_only
+                        or triggered):
                     self._write_particles(event)
                     self._write_trigger(triggered, trigger_extras)
             if triggered:
@@ -1105,8 +1139,60 @@ class HDF5Writer(BaseWriter):
             if self.verbosity in self._wave_verbosities:
                 self._write_waveforms()
 
-    def add_metadata(self, file_metadata):
-        self._write_metadata("file_metadata", file_metadata)
+
+    def _get_analysis_group(self, path_parts, return_parts=False):
+        if path_parts[0] not in ["monte_carlo_data", "data"]:
+            path_parts = ["monte_carlo_data"]+path_parts
+        if path_parts[1]!="analysis":
+            path_parts = [path_parts[0]]+["analysis"]+path_parts[1:]
+        group = self._file
+        for subgroup in path_parts[:-1]:
+            if subgroup in group:
+                group = group[subgroup]
+            else:
+                group = group.create_group(subgroup)
+        if return_parts:
+            return path_parts
+        else:
+            return group
+
+    def create_analysis_group(self, full_name, *args, **kwargs):
+        parts = full_name.split("/")
+        name = parts[-1]
+        group = self._get_analysis_group(parts)
+        if name in group:
+            return group[name]
+        else:
+            return group.create_group(name, *args, **kwargs)
+
+    def create_analysis_dataset(self, full_name, *args, **kwargs):
+        parts = full_name.split("/")
+        name = parts[-1]
+        group = self._get_analysis_group(parts)
+        if name in group:
+            return group[name]
+        else:
+            return group.create_dataset(name, *args, **kwargs)
+
+    def create_analysis_metadataset(self, full_name, *args, **kwargs):
+        parts = self._get_analysis_group(full_name.split("/"),
+                                         return_parts=True)
+        return self._create_metadataset("/".join(parts), *args, **kwargs)
+
+    def add_analysis_metadata(self, full_name, metadata, index=None):
+        parts = self._get_analysis_group(full_name.split("/"),
+                                         return_parts=True)
+        return self._write_metadata("/".join(parts), metadata, index=index)
+
+    def add_analysis_indices(self, full_name, global_index,
+                             start_index, length=1):
+        parts = self._get_analysis_group(full_name.split("/"),
+                                         return_parts=True)
+        return self._write_indices("/".join(parts), start_index, length=length,
+                                   global_index_value=global_index)
+
+    def add_file_metadata(self, metadata):
+        self._write_metadata("file_metadata", metadata)
 
 
 class AntennaProxy(Antenna):
