@@ -228,7 +228,7 @@ class EventIterator:
                 key = groups[-1]+"_"+dataset
             else:
                 key = dataset
-            if len(self._object[group][dataset]) > 0:
+            if (self._object[group][dataset]).size > 0:
                 self._bool_dict[key] = True
             else:
                 self._bool_dict[key] = False
@@ -340,20 +340,21 @@ class EventIterator:
             raise ValueError(
                 "Unsupported type for antenna_id"
             )
-
+        iter_counter = self.get_index_from_event_indices(
+            "monte_carlo_data/particles")
         if wf_type is None:
-                return self._event_data[self._iter_counter, antenna_id]
+                return self._event_data[iter_counter, antenna_id]
         elif isinstance(wf_type, str):
             if wf_type.lower() == "direct":
-                return self._event_data[self._iter_counter, antenna_id, 0, :]
+                return self._event_data[iter_counter, antenna_id, 0, :]
             elif wf_type.lower() == "reflected":
-                return self._event_data[self._iter_counter, antenna_id, 1, :]
+                return self._event_data[iter_counter, antenna_id, 1, :]
             else:
                 raise ValueError(
                     "Unsupported string value for wf_type")
         elif isinstance(wf_type, (int, float)):
             wf_type = int(wf_type)
-            return self._event_data[self._iter_counter, antenna_id, wf_type, :]
+            return self._event_data[iter_counter, antenna_id, wf_type, :]
         else:
             raise ValueError(
                 "The parameter 'wf_type' should either be an integer or a string"
@@ -365,6 +366,7 @@ class EventIterator:
 
 
     def get_particle_info(self, variable=None):
+        #TO DO: Implement checks before asking for an array element
         default_values = ["particle_id",  "energy", "weight", "particle_name"]
         custom_values = ["position", "direction", "interaction_info"] #Possibly add distance and radius here
         if self._iter_counter < 0:
@@ -419,17 +421,44 @@ class EventIterator:
         else:
             raise ValueError("Only string values supported as argument")
 
+    def get_rays_info(self,variable=None):
+        default_values = ["launch_angle",  "receiving_angle", "path_length", "time_of_flight"]
+        custom_values = [""] # No custom values supported yet
+        if self._iter_counter < 0:
+            raise ValueError(
+                "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
+        iter_counter = self.get_index_from_event_indices(
+            "monte_carlo_data/rays")
+        print(self._iter_counter)
+        print(iter_counter)
 
+        if variable is None:
+            #Make sure that _read_hdf5_metadata function account for multiple ryas
+            return _read_hdf5_metadata_to_dicts(self._object, "monte_carlo_data/rays", iter_counter)
 
+        elif isinstance(variable,str):
+            if variable in default_values:
+                is_float = False
+                if variable in self._rays_float_key:
+                    index = self._rays_float_key[variable]
+                    is_float = True
+                else:
+                    index = self._rays_str_key[variable]
+                if is_float:
+                    print(index)
+                    return self._MC_rays_float[iter_counter, index]
+                else:
+                    #return str(self._MC_rays_str[self._iter_counter,index],"utf-8")
+                    return self._MC_rays_str[iter_counter, index]
+            
+            elif variable in custom_values:
+                pass
+            else:
+                raise ValueError("This property is not supported yet")
+        else:
+            raise ValueError("Only string values supported as argument")
 
-
-
-    # def get_particle_info(self):
-    #     if self._iter_counter is not None and self._iter_counter >= 0:
-    #         return _read_hdf5_metadata_to_dicts(self._object, "events", self._iter_counter)
-    #     raise ValueError(
-    #         "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
     def is_triggered_event(self):
         if self._iter_counter is not None and self._iter_counter >= 0:
@@ -440,11 +469,11 @@ class EventIterator:
     def get_noise_bases(self):
         raise NotImplementedError
 
-    def get_rays_info(self):
-        if self._iter_counter is not None and self._iter_counter >= 0:
-            return _read_hdf5_metadata_to_dicts(self._object, "rays", self._iter_counter)
-        raise ValueError(
-            "This function is should be called after initializing the iterator object and calling next(<iterator>)")
+    # def get_rays_info(self):
+    #     if self._iter_counter is not None and self._iter_counter >= 0:
+    #         return _read_hdf5_metadata_to_dicts(self._object, "rays", self._iter_counter)
+    #     raise ValueError(
+    #         "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
     def get_wf_trigger_info(self):
         if self._iter_counter is not None and self._iter_counter >= 0:
@@ -503,22 +532,22 @@ class EventIterator:
     #     return int_info
 
     #Return a list of 16 numbers
-    def get_launch_angle(self):
-        """Returns the launch angle of the radio waves"""
+    # def get_launch_angle(self):
+    #     """Returns the launch angle of the radio waves"""
 
-        raise NotImplementedError
+    #     raise NotImplementedError
 
-    def get_receive_angle(self):
-        """Returns the receive angle of the radio waves"""
-        raise NotImplementedError
+    # def get_receive_angle(self):
+    #     """Returns the receive angle of the radio waves"""
+    #     raise NotImplementedError
 
-    def get_path_length(self):
-        """Returns the path length of the waves"""
-        raise NotImplementedError
+    # def get_path_length(self):
+    #     """Returns the path length of the waves"""
+    #     raise NotImplementedError
 
-    def get_time_of_flight(self):
-        """Returns the time of flight for the waves. The two values correspond to the time of flight for the first ray and the second ray"""
-        raise NotImplementedError
+    # def get_time_of_flight(self):
+    #     """Returns the time of flight for the waves. The two values correspond to the time of flight for the first ray and the second ray"""
+    #     raise NotImplementedError
 
     def get_triggered_antennas(self):
         """Returns the list of antennas which were triggered in the event in the order in which they triggered"""
