@@ -319,6 +319,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
         self._file = h5py.File(self.filename, mode='w')
         self._is_open = True
         self._create_dataset(self._data_locs['indices'])
+        self._file.attrs['version_major'] = self._file_version_major
+        self._file.attrs['version_minor'] = self._file_version_minor
 
         # Set event number counters
         self._counters = {
@@ -764,11 +766,21 @@ class HDF5Writer(BaseWriter, HDF5Base):
                                 start_index, max_waves)
 
 
-    def _write_ray_data(self, ray_paths):
+    def _write_ray_data(self, ray_paths, polarizations):
         if len(ray_paths)!=len(self._detector):
-            raise ValueError("Ray paths length doesn't match detector size ("+
-                             str(len(ray_paths))+"!="+
+            raise ValueError("Ray paths length doesn't match detector size"+
+                             " ("+str(len(ray_paths))+"!="+
                              str(len(self._detector))+")")
+        if len(polarizations)!=len(self._detector):
+            raise ValueError("Polarizations length doesn't match detector size"+
+                             " ("+str(len(polarizations))+"!="+
+                             str(len(self._detector))+")")
+        for i, paths in enumerate(ray_paths):
+            if len(paths)!=len(polarizations[i]):
+                raise ValueError("Polarizations length doesn't match "+
+                                 "number of ray paths ("+
+                                 str(len(polarizations[i]))+"!="+
+                                 str(len(paths))+")")
         max_waves = max(len(paths) for paths in ray_paths)
         start_index = self._counters['rays'] + 1
         self._counters['rays'] += max_waves
@@ -781,9 +793,15 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
         for i in range(max_waves):
             ray_metadata = []
-            for paths in ray_paths:
+            for paths, pols in zip(ray_paths, polarizations):
                 if i<len(paths):
-                    ray_metadata.append(paths[i]._metadata)
+                    metadata = paths[i]._metadata
+                    metadata.update({
+                        "polarization_x": pols[i][0],
+                        "polarization_y": pols[i][1],
+                        "polarization_z": pols[i][2],
+                    })
+                    ray_metadata.append(metadata)
                 else:
                     ray_metadata.append({})
             self._write_metadata(self._data_locs['rays_meta'], ray_metadata,
@@ -828,10 +846,11 @@ class HDF5Writer(BaseWriter, HDF5Base):
                             start_index, max_waves)
 
 
-    def add(self, event, triggered=None, ray_paths=None):
-        if self._write_data['rays'] and ray_paths is None:
-            raise ValueError("Ray path information must be provided if "+
-                             "writing ray data")
+    def add(self, event, triggered=None, ray_paths=None, polarizations=None):
+        if self._write_data['rays'] and (ray_paths is None or
+                                         polarizations is None):
+            raise ValueError("Ray path and polarization information must be "+
+                             "provided if writing ray data")
         if np.any(self._trig_only.items()) and triggered is None:
             if triggered is None:
                 raise ValueError("Trigger information must be provided if "
@@ -853,7 +872,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         if (self._write_data['rays'] and
                 (not self._trig_only['rays']
                  or self._check_trigger(triggered))):
-            self._write_ray_data(ray_paths)
+            self._write_ray_data(ray_paths, polarizations)
 
         if (self._write_data['noise'] and
                 (not self._trig_only['noise']

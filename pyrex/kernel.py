@@ -164,8 +164,10 @@ class EventKernel:
         """
         event = self.gen.create_event()
         ray_paths = []
+        polarizations = []
         for i in range(len(self.antennas)):
             ray_paths.append([])
+            polarizations.append([])
         for particle in event:
             logger.info("Processing event for %s", particle)
             for i, ant in enumerate(self.antennas):
@@ -189,6 +191,7 @@ class EventKernel:
                                      - particle.direction)
                     # In case path.received_direction and particle.direction
                     # are equal, just let epol be all zeros
+                    polarizations[i].append(epol)
 
                     psi = np.arccos(np.vdot(particle.direction,
                                             path.emitted_direction))
