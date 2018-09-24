@@ -212,26 +212,112 @@ def _read_hdf5_metadata_to_dicts(file, full_name, index=None):
 
 class EventIterator:
     def __init__(self, hdf5_file, slice_range):
+        #print("Starting iterator")
         self._object = hdf5_file
-        #you can get this from the file
-        self._max_antenna = hdf5_file["events"].shape[1]
+        self._max_antenna = len(hdf5_file["monte_carlo_data"]["antennas"]["float"])
         self._iter_counter = -1
-        #this one too
-        self._max_events = hdf5_file["event_indices"].shape[0]
+        self._max_events = len(hdf5_file["event_indices"]) - 1
         self._slice_range = slice_range
-        self._slice_start = 0
-        self._slice_end = min(self._max_events, slice_range)
-        self._event_data = self._object["events"][self._slice_start:self._slice_end]
+        self._slice_start_event = 0
+        self._slice_start_wf = 0
+        self._bool_dict = {}
+
+        def fill_bool_dict(self, group, dataset):
+            groups = group.split("/")
+            if len(groups) > 1:
+                key = groups[-1]+"_"+dataset
+            else:
+                key = dataset
+            if len(self._object[group][dataset]) > 0:
+                self._bool_dict[key] = True
+            else:
+                self._bool_dict[key] = False
+        
+        fill_bool_dict(self,"data","waveforms")
+        fill_bool_dict(self,"monte_carlo_data/particles","float")
+        fill_bool_dict(self,"monte_carlo_data/particles","str")
+        fill_bool_dict(self,"monte_carlo_data/rays","float")
+        fill_bool_dict(self,"monte_carlo_data/rays","str")
+        #Calculate the index of the waveform for the final event and slice on that
+        self._slice_end_event = min(self._max_events, slice_range)
+        #print(self._max_events, self._slice_end_event)
+        keys = [str(key, "utf-8")
+                for key in self._object["event_indices"].attrs["keys"]]
+
+        def _get_index_from_list(self, string_to_comp, keys):
+            count = 0
+            for key in keys:
+                if string_to_comp in key:
+                    return count
+                count += 1
+        
+        #Not hardcoding the index of data/waveforms because it can change depending on writer implementation
+        string_to_comp = "data/waveforms"
+        self._waveform_index = _get_index_from_list(self, string_to_comp, keys)
+        self._slice_end_wf = self._object["event_indices"][self._slice_end_event, self._waveform_index, 0] + self._object[
+            "event_indices"][self._slice_end_event ,self._waveform_index,1]
+
+        def _get_keys_dict(self, group_addr, dataset):
+            dic = {}
+            count = 0
+            for key in self._object[group_addr][dataset].attrs["keys"]:
+                key = str(key, "utf-8")
+                dic[key] = count
+                count += 1
+            return dic
+
+        self._particle_float_key = _get_keys_dict(self, "monte_carlo_data/particles", "float")
+        self._particle_str_key = _get_keys_dict(self, "monte_carlo_data/particles", "str")
+        self._rays_float_key = _get_keys_dict(self, "monte_carlo_data/rays", "float")
+        self._rays_str_key = _get_keys_dict(self, "monte_carlo_data/rays", "str")
+        self._event_indices_key = _get_keys_dict(self,'/',"event_indices")
+
+        #Storing all MC data and event data as well so that it can be in memory and can be accessed quickly
+        if self._bool_dict["waveforms"]:
+            self._event_data = self._object["data"]["waveforms"][self._slice_start_wf:self._slice_end_wf]
+        if self._bool_dict["particles_float"]:
+            self._MC_particle_float = self._object["monte_carlo_data"]["particles"]["float"][self._slice_start_event:self._slice_end_event]
+        
+        if self._bool_dict["particles_str"]:
+            self._MC_particle_str = self._object["monte_carlo_data"]["particles"]["str"][self._slice_start_event:self._slice_end_event]
+ 
+        if self._bool_dict["rays_float"]:
+            self._MC_rays_float = self._object["monte_carlo_data"]["rays"]["float"][self._slice_start_wf:self._slice_end_wf]
+        if self._bool_dict["rays_str"]:
+            self._MC_rays_str = self._object["monte_carlo_data"]["rays"]["str"][self._slice_start_wf:self._slice_end_wf]
+
+
+
+
+
 
     def __next__(self):
         self._iter_counter += 1
         if self._iter_counter >= self._max_events:
             raise StopIteration
-        if self._iter_counter >= self._slice_end:
-            self._slice_start = self._slice_end
-            self._slice_end = min(self._slice_start +
+        if self._iter_counter >= self._slice_end_event:
+            self._slice_start_event = self._slice_end_event
+            self._slice_end_event = min(self._slice_start_event +
                                   self._slice_range, self._max_events)
-            self._event_data = self._object[self._slice_start:self._slice_end]
+            self._slice_start_wf = self._slice_end_wf
+            self._slice_end_wf = self._object["event_indices"][self._slice_end_event, self._waveform_index, 0] + self._object[
+                                            "event_indices"][self._slice_end_event, self._waveform_index, 1]
+            if self._bool_dict["waveforms"]:
+                self._event_data = self._object["data"]["waveforms"][self._slice_start_wf:self._slice_end_wf]
+            if self._bool_dict["particles_float"]:
+                self._MC_particle_float = self._object["monte_carlo_data"][
+                    "particles"]["float"][self._slice_start_event:self._slice_end_event]
+
+            if self._bool_dict["particles_str"]:
+                self._MC_particle_str = self._object["monte_carlo_data"][
+                    "particles"]["str"][self._slice_start_event:self._slice_end_event]
+
+            if self._bool_dict["rays_float"]:
+                self._MC_rays_float = self._object["monte_carlo_data"][
+                    "rays"]["float"][self._slice_start_wf:self._slice_end_wf]
+            if self._bool_dict["rays_str"]:
+                self._MC_rays_str = self._object["monte_carlo_data"]["rays"]["str"][self._slice_start_wf:self._slice_end_wf]
+
         return self
 
     def get_event_index(self):
@@ -248,8 +334,8 @@ class EventIterator:
             if antenna_id > self._max_antenna:
                 raise ValueError(
                     "Antenna Id provided is greater than the number of antennas in detector")
-            if antenna_id < 0:
-                antenna_id = self._max_antenna + antenna_id
+            # if antenna_id < 0:
+            #     antenna_id = self._max_antenna + antenna_id
         else:
             raise ValueError(
                 "Unsupported type for antenna_id"
@@ -273,47 +359,81 @@ class EventIterator:
                 "The parameter 'wf_type' should either be an integer or a string"
             )
 
-    def get_wf_from_ant(self, antenna_id=-1):
-        if antenna_id < 0 or antenna_id > self._max_antenna:
-            raise ValueError(
-                "Usage: <iter_object>.get_wf_from_ant(antennaId). Total Number of Antennas is ",
-                self._max_antenna)
-        return self._event_data[self._iter_counter, antenna_id]
+    def get_index_from_event_indices(self,group):
+        start = self._object["event_indices"][self._iter_counter,self._event_indices_key[group], 0]
+        return slice(start,start + self._object["event_indices"][self._iter_counter, self._event_indices_key[group], 1])
 
-    def get_wf_type(self, wf_type=""):
-        if wf_type == "":
-            raise ValueError(
-                "Usage: <iter_object>.get_wf_type('direct'/'reflected')")
 
-        elif wf_type.lower() == "direct":
-            return self._event_data[self._iter_counter, :, 0, :]
-        elif wf_type.lower() == "reflected":
-            return self._event_data[self._iter_counter, :, 1, :]
+    def get_particle_info(self, variable=None):
+        default_values = ["particle_id",  "energy", "weight", "particle_name"]
+        custom_values = ["position", "direction", "interaction_info"] #Possibly add distance and radius here
+        if self._iter_counter < 0:
+            raise ValueError(
+                "This function is should be called after initializing the iterator object and calling next(<iterator>)")
+
+        #To account for multiple particles, all you have to do is look into event_indices, and change the iterator to a slice with the appropriate increment
+        
+        iter_counter = self.get_index_from_event_indices("monte_carlo_data/particles")
+        #print(iter_counter)
+        if variable is None:
+            return _read_hdf5_metadata_to_dicts(self._object, "monte_carlo_data/particles", iter_counter)
+        elif isinstance(variable,str):
+            if variable in default_values:
+                is_float = False
+                if variable in self._particle_float_key:
+                    index = self._particle_float_key[variable]
+                    is_float = True
+                else:
+                    index = self._particle_str_key[variable]
+                if is_float:
+                    return self._MC_particle_float[iter_counter,index]
+                else:
+                    #return str(self._MC_particle_str[self._iter_counter,index],"utf-8")
+                    return self._MC_particle_str[iter_counter,index]
+                
+            elif variable in custom_values:
+                #Think about making these more general and remove the hardcoded numbers
+                if variable == "position":
+                    index = self._particle_float_key["vertex_x"]
+                    return self._MC_particle_float[iter_counter,index:index+3]
+                elif variable == "direction":
+                    index = self._particle_float_key["direction_x"]
+                    return self._MC_particle_float[iter_counter,index:index+3]
+                elif variable == "interaction_info":
+                    count = 0
+                    dic = {}
+                    for key in self._object["monte_carlo_data/particles"]["float"].attrs["keys"]:
+                        if "interaction" in str(key,"utf-8"):
+                            dic[str(key,"utf-8")] = self._MC_particle_float[iter_counter,count]
+                        count += 1
+                    count = 0
+                    for key in self._object["monte_carlo_data/particles"]["str"].attrs["keys"]:
+                        if "interaction" in str(key, "utf-8"):
+                            dic[str(key, "utf-8")] = self._MC_particle_str[iter_counter, count]
+                        count += 1
+                    return dic
+                else:
+                    raise ValueError("Not supported yet")
+            else:
+                raise ValueError("This property is not supported yet")
         else:
-            raise ValueError(
-                "Usage: <iter_object>.get_wf_type('direct'/'reflected')")
+            raise ValueError("Only string values supported as argument")
 
-    def get_wf_ant_type(self, antenna_id=-1, wf_type=""):
-        if antenna_id < 0 or wf_type == "" or antenna_id > self._max_antenna:
-            raise ValueError(
-                "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is ", self._max_antenna)
-        elif wf_type.lower() == "direct":
-            return self._event_data[self._iter_counter, antenna_id, 0, :]
-        elif wf_type.lower() == "reflected":
-            return self._event_data[self._iter_counter, antenna_id, 1, :]
-        else:
-            raise ValueError(
-                "Usage: <iter_object>.get_wf_ant_type(antennaId(integer),wf_type(direct or reflected)). Total Number of Antennas is ", self._max_antenna)
 
-    def get_particle_info(self):
-        if self._iter_counter is not None and self._iter_counter >= 0:
-            return _read_hdf5_metadata_to_dicts(self._object, "events", self._iter_counter)
-        raise ValueError(
-            "This function is should be called after initializing the iterator object and calling next(<iterator>)")
+
+
+
+
+
+    # def get_particle_info(self):
+    #     if self._iter_counter is not None and self._iter_counter >= 0:
+    #         return _read_hdf5_metadata_to_dicts(self._object, "events", self._iter_counter)
+    #     raise ValueError(
+    #         "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
     def is_triggered_event(self):
         if self._iter_counter is not None and self._iter_counter >= 0:
-            return self._object['triggers'][self._iter_counter]
+            return self._object['data']['triggers'][self._iter_counter]
         raise ValueError(
             "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
@@ -332,55 +452,55 @@ class EventIterator:
         raise ValueError(
             "This function is should be called after initializing the iterator object and calling next(<iterator>)")
 
-    def get_nu_info(self):
-        """Returns a dictionary with particle name and PID"""
-        event_metadata = self._object["metadata"]["events"]
-        dic = {}
-        dic[event_metadata["float_keys"][0]
-            ] = event_metadata["float"][self._iter_counter, 0, 0]
-        dic[event_metadata["str_keys"][0]
-            ] = event_metadata["str"][self._iter_counter, 0, 0]
-        return dic
+    # def get_nu_info(self):
+    #     """Returns a dictionary with particle name and PID"""
+    #     event_metadata = self._object["metadata"]["events"]
+    #     dic = {}
+    #     dic[event_metadata["float_keys"][0]
+    #         ] = event_metadata["float"][self._iter_counter, 0, 0]
+    #     dic[event_metadata["str_keys"][0]
+    #         ] = event_metadata["str"][self._iter_counter, 0, 0]
+    #     return dic
 
-    def get_nu_distance(self):
-        """Returns the distance of the vertex from the center of the station"""
-        raise NotImplementedError
+    # def get_nu_distance(self):
+    #     """Returns the distance of the vertex from the center of the station"""
+    #     raise NotImplementedError
 
-    def get_nu_radius(self):
-        """Returns the radius of the vertex from the center of the station"""
-        raise NotImplementedError
+    # def get_nu_radius(self):
+    #     """Returns the radius of the vertex from the center of the station"""
+    #     raise NotImplementedError
 
-    def get_nu_position(self):
-        """Returns the position of the neutrino"""
-        event_metadata = self._object["metadata"]["events"]
-        pos = event_metadata["float"][self._iter_counter, 0, 1:4]
-        return np.asarray(pos)
+    # def get_nu_position(self):
+    #     """Returns the position of the neutrino"""
+    #     event_metadata = self._object["metadata"]["events"]
+    #     pos = event_metadata["float"][self._iter_counter, 0, 1:4]
+    #     return np.asarray(pos)
 
-    def get_nu_direction(self):
-        """Returns the direction of the neutrino"""
-        direction = self._object["metadata"]["events"]["float"][self._iter_counter, 0, 4:7]
-        return np.asarray(direction)
+    # def get_nu_direction(self):
+    #     """Returns the direction of the neutrino"""
+    #     direction = self._object["metadata"]["events"]["float"][self._iter_counter, 0, 4:7]
+    #     return np.asarray(direction)
 
-    def get_nu_energy(self):
-        """Returns the energy of neutrino"""
-        return self._object["metadata"]["events"]["float"][self._iter_counter, 0, 7]
+    # def get_nu_energy(self):
+    #     """Returns the energy of neutrino"""
+    #     return self._object["metadata"]["events"]["float"][self._iter_counter, 0, 7]
 
-    def get_weight(self):
-        """Returns the weight of the event"""
-        return self._object["metadata"]["events"]["float"][self._iter_counter, 0, 8]
+    # def get_weight(self):
+    #     """Returns the weight of the event"""
+    #     return self._object["metadata"]["events"]["float"][self._iter_counter, 0, 8]
 
-    def get_particle_interaction_info(self):
-        """Returns a dictionary containing the interaction information"""
-        event_metadata = self._object["metadata"]["events"]
-        int_info = {}
-        for i in range(9, 13):
-            int_info[event_metadata["events"]["float_keys"][self._iter_counter,
-                                                            0, i]] = event_metadata["events"]["float"][self._iter_counter, 0, i]
-        int_info[event_metadata["events"]["str_keys"][self._iter_counter,
-                                                      0, 1]] = event_metadata["events"]["str"][self._iter_counter, 0, 1]
-        int_info[event_metadata["events"]["str_keys"][self._iter_counter,
-                                                      0, 2]] = event_metadata["events"]["str"][self._iter_counter, 0, 2]
-        return int_info
+    # def get_particle_interaction_info(self):
+    #     """Returns a dictionary containing the interaction information"""
+    #     event_metadata = self._object["metadata"]["events"]
+    #     int_info = {}
+    #     for i in range(9, 13):
+    #         int_info[event_metadata["events"]["float_keys"][self._iter_counter,
+    #                                                         0, i]] = event_metadata["events"]["float"][self._iter_counter, 0, i]
+    #     int_info[event_metadata["events"]["str_keys"][self._iter_counter,
+    #                                                   0, 1]] = event_metadata["events"]["str"][self._iter_counter, 0, 1]
+    #     int_info[event_metadata["events"]["str_keys"][self._iter_counter,
+    #                                                   0, 2]] = event_metadata["events"]["str"][self._iter_counter, 0, 2]
+    #     return int_info
 
     #Return a list of 16 numbers
     def get_launch_angle(self):
@@ -430,12 +550,15 @@ class HDF5Reader(BaseReader):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
             self.filename = filename
             self._file = h5py.File(self.filename, mode='r')
-            self._num_ant = self._file["events"].shape[1]
+            self._num_ant = len(
+                self._file["monte_carlo_data"]["antennas"]["float"])
             self._iter_counter = None
             #assumming that the data indices will have all the list of all events
-            self._num_events = self._file["event_indices"].shape[0]
+            self._num_events = len(self._file["event_indices"])
+            print("Done iwth all thse")
         else:
             raise RuntimeError('Invalid File Format')
+
 
     def get_filename(self):
         return self.filename
