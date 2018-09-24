@@ -18,33 +18,6 @@ from pyrex.antenna import Antenna
 from pyrex.particle import Particle, Event
 
 
-class Verbosity(Enum):
-    event_data_triggered_only = 0
-    basic_triggered_only = 0
-    minimum = 0
-    event_data = 1
-    basic = 1
-    ray_data_triggered_only = 2
-    debugging_triggered_only = 2
-    ray_data = 3
-    debugging = 3
-    simulation_data_triggered_only = 4
-    reproducible_triggered_only = 4
-    simulation_data = 5
-    reproducible = 5
-    reconstruction_data_triggered_only = 6
-    waveforms_triggered_only = 6
-    reconstruction_data = 7
-    waveforms = 7
-    all_data_triggered_only = 8
-    comlete_triggered_only = 8
-    all_data = 9
-    complete = 9
-    maximum = 9
-
-    default = 2
-
-
 class BaseReader:
     def __init__(self, filename):
         pass
@@ -68,16 +41,8 @@ class BaseReader:
 
 
 class BaseWriter:
-    def __init__(self, filename, verbosity=Verbosity.default):
+    def __init__(self, filename, **kwargs):
         pass
-
-    def _set_verbosity_level(self, verbosity, accepted_verbosities):
-        if verbosity==-1:
-            verbosity = "maximum"
-        self.verbosity = get_from_enum(verbosity, Verbosity)
-        if self.verbosity not in accepted_verbosities:
-            raise ValueError("Unable to write file with verbosity level '"+
-                             str(verbosity)+"'")
 
     def __enter__(self):
         self.open()
@@ -264,32 +229,52 @@ class HDF5Reader(BaseReader):
 
 
 class HDF5Writer(BaseWriter):
-    def __init__(self, filename, verbosity=Verbosity.default):
+    def __init__(self, filename, write_particles=True, write_waveforms=False,
+                 write_triggers=True, write_antenna_triggers=False,
+                 write_rays=True, write_noise=False, require_trigger=True):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
             self.filename = filename
         else:
             self.filename = filename+".h5"
-        accepted_verbosities = [
-            Verbosity.event_data_triggered_only,
-            Verbosity.event_data,
-            Verbosity.ray_data_triggered_only,
-            Verbosity.ray_data,
-            Verbosity.simulation_data_triggered_only,
-            Verbosity.simulation_data,
-            Verbosity.reconstruction_data_triggered_only,
-            Verbosity.reconstruction_data,
-            Verbosity.all_data_triggered_only,
-            Verbosity.all_data
-        ]
         self._is_open = False
-        self._set_verbosity_level(verbosity, accepted_verbosities)
-        # Set classifications of verbosity levels
-        self._trig_only_verbosities = accepted_verbosities[::2]
-        self._event_verbosities = accepted_verbosities
-        self._ray_verbosities = accepted_verbosities[2:]
-        self._noise_verbosities = (accepted_verbosities[4:6]+
-                                   accepted_verbosities[8:])
-        self._wave_verbosities = accepted_verbosities[6:]
+
+        if write_antenna_triggers and not write_triggers:
+            raise ValueError("A true value for 'write_antenna_triggers' "+
+                             "requires a true value for 'write_triggers'")
+
+        self._write_data = {
+            "particles": write_particles,
+            "triggers": write_triggers,
+            "antenna_triggers": write_antenna_triggers,
+            "waveforms": write_waveforms,
+            "rays": write_rays,
+            "noise": write_noise
+        }
+
+        if isinstance(require_trigger, bool):
+            self._trig_only = {key: require_trigger for key in self._write_data}
+            if require_trigger:
+                always_write = ["particles", "triggers", "antenna_triggers"]
+                self._update_bool_dict(self._trig_only, always_write, False)
+        else:
+            self._trig_only = {key: False for key in self._write_data}
+            self._update_bool_dict(self._trig_only, require_trigger, True)
+
+
+    @staticmethod
+    def _update_bool_dict(dictionary, keys, value):
+        if isinstance(keys, str):
+            keys = [keys]
+        if isinstance(keys, (list, tuple)):
+            for key in keys:
+                if key=="":
+                    continue
+                if key not in dictionary:
+                    raise ValueError("Key '"+key+"' not recognized")
+                else:
+                    dictionary[key] = value
+        else:
+            raise TypeError("Unrecognized type for keys")
 
     def open(self):
         self._file = h5py.File(self.filename, mode='w')
@@ -329,8 +314,6 @@ class HDF5Writer(BaseWriter):
             "file_version": "1.0",
             "file_version_major": 1,
             "file_version_minor": 0,
-            "verbosity_name": self.verbosity.name,
-            "verbosity_level": self.verbosity.value,
             "pyrex_version": __version__,
             "pyrex_version_major": int(major),
             "pyrex_version_minor": int(minor),
@@ -386,8 +369,6 @@ class HDF5Writer(BaseWriter):
                 data.dims[1].label = "tables"
                 data.dims[2].label = "indices"
                 data.attrs['keys'] = []
-                # data.dims.create_scale(data.attrs['keys'], 'keys')
-                # data.dims[1].attach_scale(data.attrs['keys'])
                 return
 
             else:
@@ -428,8 +409,6 @@ class HDF5Writer(BaseWriter):
                     b"x_axis_x", b"x_axis_y", b"x_axis_z"
                 ]
                 data.resize(len(data.attrs['keys']), axis=1)
-                # data.dims.create_scale(data.attrs['keys'], 'keys')
-                # data.dims[1].attach_scale(data.attrs['keys'])
 
             else:
                 raise ValueError("Unrecognized dataset name '"+full_name+"'")
@@ -446,21 +425,18 @@ class HDF5Writer(BaseWriter):
                 data.dims[2].label = "attributes"
                 data.attrs['keys'] = [b"frequency", b"amplitude", b"phase"]
                 data.resize(len(data.attrs['keys']), axis=2)
-                # data.dims.create_scale(data.attrs['keys'], 'keys')
-                # data.dims[2].attach_scale(data.attrs['keys'])
 
             elif name=="triggers":
                 data = base.create_dataset(
-                    name=name, shape=(0, len(self._detector)),
+                    name=name, shape=(0, 0),
                     dtype=np.bool_, maxshape=(None, None)
                 )
                 data.dims[0].label = "events"
                 data.dims[1].label = "types"
-                data.attrs['keys'] = [str.encode("antenna_"+str(i)) for i in
-                                      range(len(self._detector))]
-                data.resize(len(data.attrs['keys']), axis=1)
-                # data.dims.create_scale(data.attrs['keys'], 'keys')
-                # data.dims[1].attach_scale(data.attrs['keys'])
+                data.attrs['keys'] = []
+                # data.attrs['keys'] = [str.encode("antenna_"+str(i)) for i in
+                #                       range(len(self._detector))]
+                # data.resize(len(data.attrs['keys']), axis=1)
 
             else:
                 raise ValueError("Unrecognized dataset name '"+full_name+"'")
@@ -743,42 +719,80 @@ class HDF5Writer(BaseWriter):
                              start_index)
 
 
-    def _write_trigger(self, triggered, trigger_extras={}):
+    @staticmethod
+    def _check_trigger(triggered):
+        if isinstance(triggered, bool):
+            return triggered
+        elif isinstance(triggered, dict):
+            if "global" not in triggered:
+                raise ValueError("Dictionary of triggers must include 'global'")
+            return triggered["global"]
+        else:
+            raise TypeError("Unsupported type for 'triggered' ("+
+                            str(type(triggered))+")")
+
+    def _write_trigger(self, triggered, include_antennas=False):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
         self._counters['triggers'] += 1
         start_index = self._counters['waveform_triggers'] + 1
         self._counters['waveform_triggers'] += max_waves
 
+        global_trigger = self._check_trigger(triggered)
+        if isinstance(triggered, bool):
+            extra_triggers = False
+        else:
+            other_triggered = {key: val for key, val in triggered.items()
+                               if key!="global"}
+            extra_triggers = len(other_triggered)>0
+
+        # Write global trigger
         trigger_data = self._create_dataset("data/triggers")
-        extra_data = self._create_dataset("monte_carlo_data/triggers")
         trigger_data.resize(self._counters['triggers']+1, axis=0)
-        extra_data.resize(self._counters['waveform_triggers']+1, axis=0)
-        # Add keys that don't exist yet
-        for key in trigger_extras:
-            if str.encode(key) not in extra_data.attrs['keys']:
-                extra_data.attrs['keys'] = np.append(extra_data.attrs['keys'],
-                                                     str.encode(key))
-                extra_data.resize(extra_data.shape[1]+1, axis=1)
 
-        trigger_data[self._counters['triggers']] = triggered
-
-        for i, ant in enumerate(self._detector):
-            # Store individual antenna triggers
-            for j, wave in enumerate(ant.all_waveforms):
-                extra_data[start_index+j, i] = triggered
-            # Store extra triggers
-            for key, val in trigger_extras.items():
-                for k, match in enumerate(extra_data.attrs['keys']):
-                    if key==bytes.decode(match):
-                        if isinstance(val, bool):
-                            for jj in range(max_waves):
-                                extra_data[start_index+jj, k] = val
-                        else:
-                            for jj in range(max_waves):
-                                extra_data[start_index+jj, k] = val[jj]
-
+        trigger_data[self._counters['triggers']] = global_trigger
         self._write_indices("data/triggers", self._counters['triggers'])
-        self._write_indices("monte_carlo_data/triggers", start_index, max_waves)
+
+        # Write extra triggers
+        if include_antennas or extra_triggers:
+            extra_data = self._create_dataset("monte_carlo_data/triggers")
+            extra_data.resize(self._counters['waveform_triggers']+1, axis=0)
+
+            # Add keys that don't exist yet
+            extra_keys = []
+            if include_antennas:
+                extra_keys.extend(["antenna_"+str(i) for i in
+                                   range(len(self._detector))])
+            if extra_triggers:
+                extra_keys.extend(other_triggered.keys())
+            for key in extra_keys:
+                if str.encode(key) not in list(extra_data.attrs['keys']):
+                    extra_data.attrs['keys'] = np.append(
+                        extra_data.attrs['keys'], str.encode(key)
+                    )
+                    extra_data.resize(extra_data.shape[1]+1, axis=1)
+
+            # Store individual antenna triggers
+            if include_antennas:
+                for i, ant in enumerate(self._detector):
+                    for k, match in enumerate(extra_data.attrs['keys']):
+                        if "antenna_"+str(i)==bytes.decode(match):
+                            for j, wave in enumerate(ant.all_waveforms):
+                                extra_data[start_index+j, i] = ant.trigger(wave)
+
+            # Store extra triggers
+            if extra_triggers:
+                for key, val in other_triggered.items():
+                    for k, match in enumerate(extra_data.attrs['keys']):
+                        if key==bytes.decode(match):
+                            if isinstance(val, bool):
+                                for j in range(max_waves):
+                                    extra_data[start_index+j, k] = val
+                            else:
+                                for j in range(max_waves):
+                                    extra_data[start_index+j, k] = val[j]
+
+            self._write_indices("monte_carlo_data/triggers", start_index,
+                                max_waves)
 
 
     def _write_ray_data(self, ray_paths):
@@ -843,41 +857,42 @@ class HDF5Writer(BaseWriter):
         self._write_indices("data/waveforms", start_index, max_waves)
 
 
-    def add(self, event, triggered=None, ray_paths=None,
-            trigger_extras={}):
-        if self.verbosity in self._ray_verbosities and ray_paths is None:
-            raise ValueError("Ray path information must be provided for "+
-                             "verbosity level "+str(self.verbosity))
-        if self.verbosity in self._trig_only_verbosities:
+    def add(self, event, triggered=None, ray_paths=None):
+        if self._write_data['rays'] and ray_paths is None:
+            raise ValueError("Ray path information must be provided if "+
+                             "writing ray data")
+        if np.any(self._trig_only.items()) and triggered is None:
             if triggered is None:
-                raise ValueError("Trigger information must be provided for "+
-                                 "verbosity level "+str(self.verbosity))
-            if self.verbosity in self._event_verbosities:
-                if (self.verbosity!=Verbosity.event_data_triggered_only
-                        or triggered):
-                    self._write_particles(event)
-                    self._write_trigger(triggered, trigger_extras)
-            if triggered:
-                if self.verbosity in self._ray_verbosities:
-                    self._write_ray_data(ray_paths)
-                if self.verbosity in self._noise_verbosities:
-                    self._write_noise_data()
-                if self.verbosity in self._wave_verbosities:
-                    self._write_waveforms()
-        else:
-            if self.verbosity==Verbosity.event_data and triggered is None:
-                raise ValueError("Trigger information must be provided for "+
-                                 "verbosity level "+str(self.verbosity))
-            if self.verbosity in self._event_verbosities:
-                self._write_particles(event)
-                if triggered is not None:
-                    self._write_trigger(triggered, trigger_extras)
-            if self.verbosity in self._ray_verbosities:
-                self._write_ray_data(ray_paths)
-            if self.verbosity in self._noise_verbosities:
-                self._write_noise_data()
-            if self.verbosity in self._wave_verbosities:
-                self._write_waveforms()
+                raise ValueError("Trigger information must be provided if "
+                                 "writing only when triggered")
+
+        if (self._write_data['particles'] and
+                (not self._trig_only['particles']
+                 or self._check_trigger(triggered))):
+            self._write_particles(event)
+
+        if (self._write_data['triggers'] and
+                (not self._trig_only['triggers']
+                 or self._check_trigger(triggered))):
+            include_antennas = (self._write_data['antenna_triggers'] and
+                                (not self._trig_only['antenna_triggers']
+                                 or self._check_trigger(triggered)))
+            self._write_trigger(triggered, include_antennas)
+
+        if (self._write_data['rays'] and
+                (not self._trig_only['rays']
+                 or self._check_trigger(triggered))):
+            self._write_ray_data(ray_paths)
+
+        if (self._write_data['noise'] and
+                (not self._trig_only['noise']
+                 or self._check_trigger(triggered))):
+            self._write_noise_data()
+
+        if (self._write_data['waveforms'] and
+                (not self._trig_only['waveforms']
+                 or self._check_trigger(triggered))):
+            self._write_waveforms()
 
 
     def _get_analysis_group(self, path_parts, return_parts=False):
