@@ -224,9 +224,11 @@ class EventKernel:
 
         if self.writer is not None:
             self.writer.add(event=event, triggered=triggered,
-                            ray_paths=ray_paths)
+                            ray_paths=ray_paths, polarizations=polarizations)
 
         if triggered is None:
             return event
+        elif isinstance(self.triggers, dict):
+            return event, triggered['global']
         else:
             return event, triggered
