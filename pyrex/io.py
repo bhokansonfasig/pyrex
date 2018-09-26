@@ -346,19 +346,21 @@ class EventIterator:
                 return self._event_data[iter_counter, antenna_id]
         elif isinstance(wf_type, str):
             if wf_type.lower() == "direct":
-                return self._event_data[iter_counter, antenna_id, 0, :]
+                wf_index = 0
+                #return self._event_data[iter_counter, antenna_id, 0, :]
             elif wf_type.lower() == "reflected":
-                return self._event_data[iter_counter, antenna_id, 1, :]
+                wf_index = 1
+                #return self._event_data[iter_counter, antenna_id, 1, :]
             else:
                 raise ValueError(
                     "Unsupported string value for wf_type")
         elif isinstance(wf_type, (int, float)):
-            wf_type = int(wf_type)
-            return self._event_data[iter_counter, antenna_id, wf_type, :]
+            wf_index = int(wf_type)
         else:
             raise ValueError(
                 "The parameter 'wf_type' should either be an integer or a string"
             )
+        return self._event_data[iter_counter, antenna_id, wf_index, :]
 
     def get_index_from_event_indices(self,group):
         start = self._object["event_indices"][self._iter_counter,self._event_indices_key[group], 0]
@@ -367,7 +369,7 @@ class EventIterator:
 
     def get_particle_info(self, variable=None):
         #TO DO: Implement checks before asking for an array element
-        default_values = ["particle_id",  "energy", "weight", "particle_name"]
+        #default_values = ["particle_id",  "energy", "weight", "particle_name"]
         custom_values = ["position", "direction", "interaction_info"] #Possibly add distance and radius here
         if self._iter_counter < 0:
             raise ValueError(
@@ -380,20 +382,7 @@ class EventIterator:
         if variable is None:
             return _read_hdf5_metadata_to_dicts(self._object, "monte_carlo_data/particles", iter_counter)
         elif isinstance(variable,str):
-            if variable in default_values:
-                is_float = False
-                if variable in self._particle_float_key:
-                    index = self._particle_float_key[variable]
-                    is_float = True
-                else:
-                    index = self._particle_str_key[variable]
-                if is_float:
-                    return self._MC_particle_float[iter_counter,index]
-                else:
-                    #return str(self._MC_particle_str[self._iter_counter,index],"utf-8")
-                    return self._MC_particle_str[iter_counter,index]
-                
-            elif variable in custom_values:
+            if variable in custom_values:
                 #Think about making these more general and remove the hardcoded numbers
                 if variable == "position":
                     index = self._particle_float_key["vertex_x"]
@@ -417,7 +406,17 @@ class EventIterator:
                 else:
                     raise ValueError("Not supported yet")
             else:
-                raise ValueError("This property is not supported yet")
+                is_float = False
+                if variable in self._particle_float_key:
+                    index = self._particle_float_key[variable]
+                    is_float = True
+                else:
+                    index = self._particle_str_key[variable]
+                if is_float:
+                    return self._MC_particle_float[iter_counter,index]
+                else:
+                    return self._MC_particle_str[iter_counter,index]
+                
         else:
             raise ValueError("Only string values supported as argument")
 
@@ -630,6 +629,7 @@ class HDF5Reader(BaseReader):
             antenna_id = self._num_ant + antenna_id
 
         if wf_type is None:
+            #remove the wf_type condition. This will remove the hardcoded indices
             wf_type = slice(None)
             return self._file['events'][event_id, antenna_id, wf_type, :]
         elif isinstance(wf_type, str):
