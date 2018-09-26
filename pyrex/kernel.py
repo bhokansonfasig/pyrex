@@ -114,7 +114,7 @@ class EventKernel:
     def __init__(self, generator, antennas, ice_model=IceModel,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
                  signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False),
-                 event_writer=None, global_trigger=None):
+                 event_writer=None, triggers=None):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
@@ -122,7 +122,7 @@ class EventKernel:
         self.signal_model = signal_model
         self.signal_times = signal_times
         self.writer = event_writer
-        self.trigger = global_trigger
+        self.triggers = triggers
         if self.writer is not None:
             if not self.writer.is_open:
                 logger.warning("Event writer was not open. Opening now.")
@@ -137,7 +137,8 @@ class EventKernel:
                 "ray_tracer_class": str(self.ray_tracer),
                 "signal_model_class": str(self.signal_model),
             }
-            self.writer.add_metadata(kernel_metadata)
+            self.writer.create_analysis_metadataset("sim_parameters")
+            self.writer.add_analysis_metadata("sim_parameters", kernel_metadata)
 
     def event(self):
         """
@@ -163,8 +164,10 @@ class EventKernel:
         """
         event = self.gen.create_event()
         ray_paths = []
+        polarizations = []
         for i in range(len(self.antennas)):
             ray_paths.append([])
+            polarizations.append([])
         for particle in event:
             logger.info("Processing event for %s", particle)
             for i, ant in enumerate(self.antennas):
@@ -188,6 +191,7 @@ class EventKernel:
                                      - particle.direction)
                     # In case path.received_direction and particle.direction
                     # are equal, just let epol be all zeros
+                    polarizations[i].append(epol)
 
                     psi = np.arccos(np.vdot(particle.direction,
                                             path.emitted_direction))
@@ -210,16 +214,21 @@ class EventKernel:
                     ant.receive(pulse, direction=path.received_direction,
                                 polarization=epol)
 
-        if self.trigger is None:
+        if self.triggers is None:
             triggered = None
+        elif isinstance(self.triggers, dict):
+            triggered = {key: trigger_func(self.antennas)
+                         for key, trigger_func in self.triggers.items()}
         else:
-            triggered = self.trigger(self.antennas)
+            triggered = self.triggers(self.antennas)
 
         if self.writer is not None:
             self.writer.add(event=event, triggered=triggered,
-                            ray_paths=ray_paths)
+                            ray_paths=ray_paths, polarizations=polarizations)
 
         if triggered is None:
             return event
+        elif isinstance(self.triggers, dict):
+            return event, triggered['global']
         else:
             return event, triggered
