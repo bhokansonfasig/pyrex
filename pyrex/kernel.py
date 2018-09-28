@@ -215,6 +215,7 @@ class EventKernel:
                     ant_pulse, ant_pol = path.propagate(signal=pulse,
                                                         polarization=nu_pol)
 
+                    polarizations[i].append(ant_pol)
                     ant.receive(ant_pulse,
                                 direction=path.received_direction,
                                 polarization=ant_pol)
