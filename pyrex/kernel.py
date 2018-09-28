@@ -11,7 +11,7 @@ and handle antenna processing of the signals.
 import logging
 import numpy as np
 from pyrex.internal_functions import normalize
-from pyrex.signals import AskaryanSignal
+from pyrex.signals import AskaryanSignal, EmptySignal
 from pyrex.ray_tracing import RayTracer
 from pyrex.ice_model import IceModel
 
@@ -204,6 +204,8 @@ class EventKernel:
                     # (low priority since these angles are far from the
                     # cherenkov cone)
                     if psi>np.pi/2:
+                        ant_pol = path.propagate(polarization=nu_pol)
+                        polarizations[i].append(ant_pol)
                         continue
 
                     pulse = self.signal_model(times=self.signal_times,
