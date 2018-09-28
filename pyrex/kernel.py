@@ -181,17 +181,20 @@ class EventKernel:
 
                 ray_paths[i].extend(rt.solutions)
                 for path in rt.solutions:
-                    # epol is (negative) vector rejection of
-                    # path.received_direction onto particle.direction,
-                    # making epol orthogonal to path.recieved_direction in the
-                    # same plane as p.direction and path.received_direction
-                    epol = normalize(np.vdot(path.received_direction,
-                                             particle.direction)
-                                     * path.received_direction
-                                     - particle.direction)
-                    # In case path.received_direction and particle.direction
-                    # are equal, just let epol be all zeros
-                    polarizations[i].append(epol)
+                    # nu_pol is the signal polarization at the neutrino vertex
+                    # It's calculated as the (negative) vector rejection of
+                    # path.emitted_direction onto particle.direction, making
+                    # epol orthogonal to path.emitted_direction in the same
+                    # plane as particle.direction and path.emitted_direction
+                    # This is equivalent to the vector triple product
+                    # (particle.direction x path.emitted_direction) x
+                    # path.emitted_direction
+                    nu_pol = normalize(np.vdot(path.emitted_direction,
+                                               particle.direction)
+                                       * path.emitted_direction
+                                       - particle.direction)
+                    # In the case when path.emitted_direction and
+                    # particle.direction are equal, just let epol be all zeros
 
                     psi = np.arccos(np.vdot(particle.direction,
                                             path.emitted_direction))
@@ -209,10 +212,12 @@ class EventKernel:
                                               viewing_distance=path.path_length,
                                               ice_model=self.ice)
 
-                    path.propagate(pulse)
+                    ant_pulse, ant_pol = path.propagate(signal=pulse,
+                                                        polarization=nu_pol)
 
-                    ant.receive(pulse, direction=path.received_direction,
-                                polarization=epol)
+                    ant.receive(ant_pulse,
+                                direction=path.received_direction,
+                                polarization=ant_pol)
 
         if self.triggers is None:
             triggered = None
