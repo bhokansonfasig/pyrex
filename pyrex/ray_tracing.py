@@ -377,10 +377,6 @@ class BasicRayTracePath(LazyMutableClass):
             pol_p = np.dot(polarization, u_p0)
             # Fresnel reflectances of s and p components
             r_s, r_p = self.fresnel
-            def attenuation_with_fresnel(freqs):
-                return (self.attenuation(freqs) *
-                        np.abs(np.sqrt(((r_s*pol_s)**2 + (r_p*pol_p)**2))))
-            copy.filter_frequencies(attenuation_with_fresnel)
 
             # Polarization vector at the receiving point
             receiving_polarization = normalize(pol_s*np.abs(r_s) * u_s0 +
@@ -396,7 +392,7 @@ class BasicRayTracePath(LazyMutableClass):
                 # capable of handling elliptically polarized signals)
                 def attenuation_with_fresnel(freqs):
                     return (self.attenuation(freqs) *
-                            np.sqrt(((r_s*pol_s)**2 + (r_p*pol_p)**2)))
+                            np.abs(np.sqrt(((r_s*pol_s)**2 + (r_p*pol_p)**2))))
                 copy.filter_frequencies(attenuation_with_fresnel)
 
                 return copy, receiving_polarization
