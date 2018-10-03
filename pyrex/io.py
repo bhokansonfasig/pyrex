@@ -210,6 +210,34 @@ class HDF5Base:
 
         return get_dicts_recursive(0, str_table, float_table)
 
+    @staticmethod
+    def _read_metadata_to_dicts_for_datasets(file,name,index=None):
+        table_metadata = file[name]
+        if index is None:
+            table = table_metadata
+        else:
+            table = table_metadata[index]
+        ndim = table.ndim
+        key_dim = -1
+
+        # Recursively pull out list (of lists ...) of dictionaries
+        def get_dicts_recursive(dimension, data):
+            if dimension == key_dim % ndim:
+                meta_dict = {}
+                for j, key in enumerate(table_metadata.attrs['keys']):
+                    meta_dict[bytes.decode(key)] = data[j]
+                # for j, key in enumerate(float_metadata.attrs['keys']):
+                #     meta_dict[bytes.decode(key)] = float_data[j]
+                return meta_dict
+            else:
+                # if str_data.shape[0] != float_data.shape[0]:
+                #     raise ValueError("Metadata group '"+name+"' not readable")
+                return [
+                    get_dicts_recursive(
+                        dimension+1, table[i])
+                    for i in range(table.shape[0])
+                ]
+        return get_dicts_recursive(0,table)
 
 class EventIterator(HDF5Base):
     def __init__(self, hdf5_file, slice_range):
@@ -398,6 +426,9 @@ class EventIterator(HDF5Base):
             self._print_message("The data was not stored for this event")
             return
 
+        elif isinstance(iter_counter,slice):
+            iter_start = iter_counter.start
+
         if antenna_id is None:
             antenna_id = slice(None)  # essentially, antenna_id is ':'
         elif isinstance(antenna_id, (int, float)):
@@ -429,7 +460,7 @@ class EventIterator(HDF5Base):
             raise ValueError(
                 "The parameter 'wf_type' should either be an integer or a string"
             )
-        return self._event_data[iter_counter, antenna_id, wf_index]
+        return self._event_data[iter_start + wf_index, antenna_id]
 
     def get_index_from_event_indices(self,group):
         start = self._object["event_indices"][self._iter_counter,self._event_indices_key[group], 0]
@@ -638,6 +669,45 @@ class HDF5Reader(BaseReader,HDF5Base):
             self._num_events = len(self._file["event_indices"])
             self._slice_range = slice_range
             print("Done iwth all thse")
+            self._bool_dict = {}
+
+            def fill_bool_dict(self, group, dataset):
+                groups = group.split("/")
+                if len(groups) > 1:
+                    key = groups[-1]+"_"+dataset
+                else:
+                    key = dataset
+                try:
+                    if (self._file[group][dataset]).size > 0:
+                        self._bool_dict[key] = True
+                    else:
+                        self._bool_dict[key] = False
+                except KeyError:
+                    self._bool_dict[key] = False
+
+            fill_bool_dict(self, "data", "waveforms")
+            fill_bool_dict(self, "/monte_carlo_data/particles", "float")
+            fill_bool_dict(self, "/monte_carlo_data/particles", "str")
+            fill_bool_dict(self, "/monte_carlo_data/rays", "float")
+            fill_bool_dict(self, "/monte_carlo_data/rays", "str")
+            fill_bool_dict(self, "/monte_carlo_data", "noise")
+            fill_bool_dict(self, "/monte_carlo_data", "triggers")
+
+            def _get_keys_dict(self, group_addr, dataset):
+                dic = {}
+                count = 0
+                for key in self._file[group_addr][dataset].attrs["keys"]:
+                    key = str(key, "utf-8")
+                    dic[key] = count
+                    count += 1
+                return dic
+
+            self._event_indices_key = _get_keys_dict(self,'/',"event_indices")
+
+            self._event_data = None
+            if self._bool_dict["waveforms"]:
+                self._event_data = self._file["/data/waveforms"]
+
         else:
             raise RuntimeError('Invalid File Format')
 
@@ -648,9 +718,9 @@ class HDF5Reader(BaseReader,HDF5Base):
     def __getitem__(self, given):
         if isinstance(given, slice):
             # handling the slice object
-            return self._file['events'][given]
+            return self._file['/data/waveforms'][given]
         elif isinstance(given, tuple):
-            return self._file['events'][given]
+            return self._file['/data/waveforms'][given]
         elif given == "":
             # Do your handling for a plain index
             print("plain", given)
@@ -671,9 +741,24 @@ class HDF5Reader(BaseReader,HDF5Base):
     def close(self):
         self._file.close()
 
+    def get_index_from_event_indices(self,group,event_indices):
+        start = self._file["event_indices"][event_indices,self._event_indices_key[group], 0]
+        if start < 0: # if the start index is negative than that means that the data was no stored for that particular event 
+            return start
+        if start + self._file["event_indices"][event_indices, self._event_indices_key[group], 1] - start == 1:
+            return start
+        return slice(start,start + self._file["event_indices"][event_indices, self._event_indices_key[group], 1])
+
+
     def get_wf(self, event_id=None, antenna_id=None, wf_type=None):
+        if self._event_data is None:
+            raise ValueError("The waveforms were not saved for this run. Please check the run configuration")
         if event_id is None:
             event_id = slice(None)
+        else:
+            event_id = self.get_index_from_event_indices("/data/waveforms",event_id)
+            if isinstance(event_id,slice):
+                event_id_start = event_id.start
         if antenna_id is None:
             antenna_id = slice(None)
         elif antenna_id > self._num_ant:
@@ -684,23 +769,24 @@ class HDF5Reader(BaseReader,HDF5Base):
 
         if wf_type is None:
             #remove the wf_type condition. This will remove the hardcoded indices
-            wf_type = slice(None)
-            return self._file['events'][event_id, antenna_id, wf_type, :]
+            return self._event_data[event_id,antenna_id]
         elif isinstance(wf_type, str):
             if wf_type.lower() == "direct":
-                return self._file['events'][event_id, antenna_id, 0, :]
+                wf_index = 0
+                #return self._event_data[iter_counter, antenna_id, 0, :]
             elif wf_type.lower() == "reflected":
-                return self._file['events'][event_id, antenna_id, 1, :]
+                wf_index = 1
+                #return self._event_data[iter_counter, antenna_id, 1, :]
             else:
                 raise ValueError(
                     "Unsupported string value for wf_type")
         elif isinstance(wf_type, (int, float)):
-            wf_type = int(wf_type)
-            return self._file['events'][event_id, antenna_id, wf_type, :]
+            wf_index = int(wf_type)
         else:
             raise ValueError(
                 "The parameter 'wf_type' should either be an integer or a string"
             )
+        return self._event_data[event_id_start + wf_index, antenna_id]
 
     # def get_all_wf(self):
     #     return np.asarray(self._file['events'])
@@ -725,11 +811,13 @@ class HDF5Reader(BaseReader,HDF5Base):
     #             "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
 
     def get_antenna_info(self):
-        ant_dict = self._read_metadata_to_dicts(self._file, "antennas")
-        return ant_dict
+        ant_dict_data = self._read_metadata_to_dicts_for_datasets(self._file, "/data/antennas")
+        ant_dict_MC = self._read_metadata_to_dicts(self._file, "/monte_carlo_data/antennas")
+        #return {**ant_dict_MC, **ant_dict_data}
+        return ant_dict_data, ant_dict_MC
 
     def get_file_info(self):
-        return self._read_metadata_to_dicts(self._file, "file")
+        return self._read_metadata_to_dicts(self._file, "file_metadata")
 
 
 class HDF5Writer(BaseWriter, HDF5Base):
