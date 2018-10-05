@@ -899,15 +899,9 @@ class HDF5Writer(BaseWriter, HDF5Base):
         self._file.attrs['version_minor'] = self._file_version_minor
 
         # Set event number counters
-        self._counters = {
-            "events": -1,
-            "waveforms": -1,
-            "triggers": -1,
-            "waveform_triggers": -1,
-            "particles": -1,
-            "rays": -1,
-            "noise": -1,
-        }
+        self._counters = {key: 0 for key in self._data_locs
+                          if key not in ["file_meta", "antennas",
+                                         "antennas_meta"]}
 
         # Write some generic metadata about the file production
         self._create_metadataset(self._data_locs['file_meta'])
@@ -967,8 +961,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         if name==self._data_locs['indices']:
             data = self._file.create_dataset(
                 name=name, shape=(0, 0, 2),
-                dtype=np.int_, maxshape=(None, None, 2),
-                fillvalue=-1
+                dtype=np.int_, maxshape=(None, None, 2)
             )
             data.dims[0].label = "events"
             data.dims[1].label = "tables"
@@ -1212,8 +1205,11 @@ class HDF5Writer(BaseWriter, HDF5Base):
     def _write_indices(self, full_name, start_index, length=1,
                        global_index_value=None):
         if global_index_value is None:
-            global_index_value = self._counters['events']
+            global_index_value = self._counters['indices']
         indices = self._file[self._data_locs['indices']]
+        # Don't write indices if the matching dataset doesn't exist
+        if full_name not in self._file:
+            return
         encoded_name = str.encode(full_name)
         # Add column for full_name if it doesn't exist
         if (len(indices.attrs['keys'])==0 or
@@ -1228,6 +1224,14 @@ class HDF5Writer(BaseWriter, HDF5Base):
                 indices[global_index_value, i] = (start_index, length)
                 return
         raise ValueError("Unrecognized table name '"+full_name+"'")
+
+
+    def _preset_all_indices(self):
+        for key, count in self._counters.items():
+            if key=="indices":
+                continue
+            self._write_indices(self._data_locs[key], count, 0)
+
 
     def set_detector(self, detector):
         self._detector = detector
@@ -1247,15 +1251,14 @@ class HDF5Writer(BaseWriter, HDF5Base):
         return hasattr(self, "_detector")
 
     def _write_particles(self, event):
-        self._counters['events'] += 1
-        start_index = self._counters['particles'] + 1
-        self._counters['particles'] += len(event)
+        start_index = self._counters['particles_meta']
+        self._counters['particles_meta'] += len(event)
         metadata = self._create_metadataset(self._data_locs['particles_meta'])
         # Reshape metadata datasets to accomodate the event
         str_data = metadata['str']
         float_data = metadata['float']
-        str_data.resize(self._counters['particles']+1, axis=0)
-        float_data.resize(self._counters['particles']+1, axis=0)
+        str_data.resize(self._counters['particles_meta']+1, axis=0)
+        float_data.resize(self._counters['particles_meta']+1, axis=0)
 
         self._write_indices(self._data_locs['particles_meta'],
                             start_index, len(event))
@@ -1276,10 +1279,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
                             str(type(triggered))+")")
 
     def _write_trigger(self, triggered, include_antennas=False):
-        max_waves = max(len(ant.all_waveforms) for ant in self._detector)
         self._counters['triggers'] += 1
-        start_index = self._counters['waveform_triggers'] + 1
-        self._counters['waveform_triggers'] += max_waves
 
         global_trigger = self._check_trigger(triggered)
         if isinstance(triggered, bool):
@@ -1295,12 +1295,16 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
         trigger_data[self._counters['triggers']] = global_trigger
         self._write_indices(self._data_locs['triggers'],
-                            self._counters['triggers'])
+                            self._counters['triggers']-1)
 
         # Write extra triggers
         if include_antennas or extra_triggers:
+            max_waves = max(len(ant.all_waveforms) for ant in self._detector)
+            start_index = self._counters['mc_triggers']
+            self._counters['mc_triggers'] += max_waves
+
             extra_data = self._create_dataset(self._data_locs['mc_triggers'])
-            extra_data.resize(self._counters['waveform_triggers']+1, axis=0)
+            extra_data.resize(self._counters['mc_triggers']+1, axis=0)
 
             # Add keys that don't exist yet
             extra_keys = []
@@ -1356,14 +1360,14 @@ class HDF5Writer(BaseWriter, HDF5Base):
                                  str(len(polarizations[i]))+"!="+
                                  str(len(paths))+")")
         max_waves = max(len(paths) for paths in ray_paths)
-        start_index = self._counters['rays'] + 1
-        self._counters['rays'] += max_waves
+        start_index = self._counters['rays_meta']
+        self._counters['rays_meta'] += max_waves
         metadata = self._create_metadataset(self._data_locs['rays_meta'])
         # Reshape metadata datasets to accomodate the ray data of each solution
         str_data = metadata['str']
         float_data = metadata['float']
-        str_data.resize(self._counters['rays']+1, axis=0)
-        float_data.resize(self._counters['rays']+1, axis=0)
+        str_data.resize(self._counters['rays_meta']+1, axis=0)
+        float_data.resize(self._counters['rays_meta']+1, axis=0)
 
         for i in range(max_waves):
             ray_metadata = []
@@ -1398,14 +1402,14 @@ class HDF5Writer(BaseWriter, HDF5Base):
         data = self._create_dataset(self._data_locs['noise'])
         data.resize(self._counters['noise']+1, axis=0)
 
-        self._write_indices(self._data_locs['noise'], self._counters['noise'])
+        self._write_indices(self._data_locs['noise'], self._counters['noise']-1)
         for i, ant in enumerate(self._detector):
             data[self._counters['noise'], i] = self._get_noise_bases(ant)
 
 
     def _write_waveforms(self):
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
-        start_index = self._counters['waveforms'] + 1
+        start_index = self._counters['waveforms']
         self._counters['waveforms'] += max_waves
 
         data = self._create_dataset(self._data_locs['waveforms'])
@@ -1429,6 +1433,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
                 raise ValueError("Trigger information must be provided if "
                                  "writing only when triggered")
 
+        self._preset_all_indices()
+
         if (self._write_data['particles'] and
                 (not self._trig_only['particles']
                  or self._check_trigger(triggered))):
@@ -1439,7 +1445,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
                  or self._check_trigger(triggered))):
             include_antennas = (self._write_data['antenna_triggers'] and
                                 (not self._trig_only['antenna_triggers']
-                                 or self._check_trigger(triggered)))
+                                or self._check_trigger(triggered)))
             self._write_trigger(triggered, include_antennas)
 
         if (self._write_data['rays'] and
@@ -1456,6 +1462,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
                 (not self._trig_only['waveforms']
                  or self._check_trigger(triggered))):
             self._write_waveforms()
+
+        self._counters['indices'] += 1
 
 
     def create_analysis_group(self, name, *args, **kwargs):
