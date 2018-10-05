@@ -286,8 +286,9 @@ class EventIterator(HDF5Base):
         #print(self._bool_dict)
         #Calculate the index of the waveform for the final event and slice on that
         self._slice_end_event = min(self._max_events, slice_range)
+        self._slice_end_event = 0
         #print(self._max_events, self._slice_end_event)
-        self._keys = [str(key, "utf-8")
+        self._index_keys = [str(key, "utf-8")
                 for key in self._object[self._locations["indices"]].attrs["keys"]]
 
         
@@ -296,24 +297,24 @@ class EventIterator(HDF5Base):
         self._end_event = {}
         self._data = {}
 
-        for key, value in self._locations.items():
-            for key_org, value_org in self._locations_original.items():
-                if key == key_org or key == key_org+"_float" or key == key_org+"_str": 
-                    self._start_event[key] = 0
-                    if self._bool_dict[key]:
-                        index = self._get_index_from_list(value_org,self._keys)
-                        print(key,index)
-                        if index >= 0:
-                            print(key,value)
-                            print(key_org, value_org)
-                            #print(self._object[value][self._slice_end_event - 1, index, 0], self._object[value][self._slice_end_event - 1, index, 1])
-                            #self._start_event[key] = self._object[self._locations["indices"]
-                            #                                      ][self._slice_start_event, index, 0]
-                            self._end_event[key] = self._object[self._locations["indices"]][self._slice_end_event - 1, index, 0] + self._object[self._locations["indices"]][self._slice_end_event - 1, index , 1]
-                            print(self._start_event[key],
-                                  self._end_event[key])
-                            print(value)
-                            self._data[key] = self._object[value][self._start_event[key]:self._end_event[key]]
+        # for key, value in self._locations.items():
+        #     for key_org, value_org in self._locations_original.items():
+        #         if key == key_org or key == key_org+"_float" or key == key_org+"_str": 
+        #             #self._start_event[key] = 0
+        #             if self._bool_dict[key]:
+        #                 index = self._get_index_from_list(value_org,self._keys)
+        #                 print(key,index)
+        #                 if index >= 0:
+        #                     print(key,value)
+        #                     print(key_org, value_org)
+        #                     #print(self._object[value][self._slice_end_event - 1, index, 0], self._object[value][self._slice_end_event - 1, index, 1])
+        #                     self._start_event[key] = self._object[self._locations["indices"]
+        #                                                           ][self._slice_start_event, index, 0]
+        #                     self._end_event[key] = self._object[self._locations["indices"]][self._slice_end_event - 1, index, 0] + self._object[self._locations["indices"]][self._slice_end_event - 1, index , 1]
+        #                     print(self._start_event[key],
+        #                           self._end_event[key])
+        #                     print(value)
+        #                     self._data[key] = self._object[value][self._start_event[key]:self._end_event[key]]
 
         def get_keys_dict(self, group_addr):
             dic = {}
@@ -352,15 +353,17 @@ class EventIterator(HDF5Base):
         #print(self._iter_counter, self._slice_end_event, self._max_events)
         if self._stop_counter >= self._slice_end_event and self._slice_end_event == self._max_events:
             raise StopIteration
-        
-        if self._iter_counter >= self._slice_end_event:
+        print(self._iter_counter, self._slice_end_event, self._slice_start_event)
+        if self._iter_counter + self._slice_start_event >= self._slice_end_event:
             self._iter_counter = 0
+            print("Here!")
             #self.attr_list()
             #print(self._slice_start_wf, self._slice_end_wf)
             #print("grabbing the next values")
             self._slice_start_event = self._slice_end_event
             self._slice_end_event = min(self._slice_start_event +
                                   self._slice_range, self._max_events)
+            print(self._slice_end_event)
             # self._slice_start_wf = self._slice_end_wf
             # self._slice_end_wf = self._object[self._locations["indices"]][self._slice_end_event - 1, self._waveform_index, 0] + self._object[
             #                                 self._locations["indices"]][self._slice_end_event - 1, self._waveform_index, 1]
@@ -395,7 +398,7 @@ class EventIterator(HDF5Base):
                     if key == key_org or key == key_org+"_float" or key == key_org+"_str":
                         # self._start_event[key] = self._end_event[key]
                         if self._bool_dict[key]:
-                            index = self._get_index_from_list(value_org, self._keys)
+                            index = self._get_index_from_list(value_org, self._index_keys)
                             print(key, index)
                             if index >= 0:
                                 print(key, value)
@@ -475,11 +478,13 @@ class EventIterator(HDF5Base):
 
     def get_index_from_event_indices(self,group):
         start = self._object[self._locations["indices"]][self._iter_counter,self._keys["indices"][group], 0]
-        if start < 0: # if the start index is negative than that means that the data was no stored for that particular event 
+        length = self._object[self._locations["indices"]][self._iter_counter,self._keys["indices"][group], 1]
+        
+        if length ==  0: # if the start index is negative than that means that the data was no stored for that particular event 
+            return -1
+        if length == 1:
             return start
-        if self._object[self._locations["indices"]][self._iter_counter, self._keys["indices"][group], 1] == 1:
-            return start
-        return slice(start, start + self._object[self._locations["indices"]][self._iter_counter, self._keys["indices"][group], 1])
+        return slice(start, start + length)
 
     # TO DO : Change Variable to property/attribute
     def get_particle_info(self, variable=None):
@@ -548,6 +553,7 @@ class EventIterator(HDF5Base):
 
         iter_counter = self.get_index_from_event_indices(
             self._locations_original["rays_meta"])
+        print(iter_counter)
         if not isinstance(iter_counter,slice) and iter_counter < 0:
             self._print_message("The data was not stored for this event")
             return 
