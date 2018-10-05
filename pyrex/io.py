@@ -140,7 +140,7 @@ class HDF5Base:
         locations['particles_meta'] = "/monte_carlo_data/particles"
         locations['antennas_meta'] = "/monte_carlo_data/antennas"
         locations['rays_meta'] = "/monte_carlo_data/rays"
-        locations['wf_triggers'] = "/monte_carlo_data/triggers"
+        locations['mc_triggers'] = "/monte_carlo_data/triggers"
         locations['noise'] = "/monte_carlo_data/noise"
         return locations
 
@@ -435,7 +435,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
             ]
             data.resize(len(data.attrs['keys']), axis=1)
 
-        elif name==self._data_locs['wf_triggers']:
+        elif name==self._data_locs['mc_triggers']:
             data = self._file.create_dataset(
                 name=name, shape=(0, 0),
                 dtype=np.bool_, maxshape=(None, None)
@@ -725,7 +725,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
         # Write extra triggers
         if include_antennas or extra_triggers:
-            extra_data = self._create_dataset(self._data_locs['wf_triggers'])
+            extra_data = self._create_dataset(self._data_locs['mc_triggers'])
             extra_data.resize(self._counters['waveform_triggers']+1, axis=0)
 
             # Add keys that don't exist yet
@@ -762,7 +762,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
                                 for j in range(max_waves):
                                     extra_data[start_index+j, k] = val[j]
 
-            self._write_indices(self._data_locs['wf_triggers'],
+            self._write_indices(self._data_locs['mc_triggers'],
                                 start_index, max_waves)
 
 
