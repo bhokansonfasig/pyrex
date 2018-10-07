@@ -243,7 +243,6 @@ class HDF5Base:
 
 class EventIterator(HDF5Base):
     def __init__(self, hdf5_file, slice_range):
-        #print("Starting iterator")
         self._object = hdf5_file
         self._iter_counter = -1
         self._stop_counter = -1
@@ -252,9 +251,7 @@ class EventIterator(HDF5Base):
         self._locations_original = self._dataset_locations()
         self._locations = {}
         for key, value in self._locations_original.items():
-            #print(key,value)
             if key.endswith("meta"):
-            #    print("In the if conditin")
                 self._locations[key+"_str"] = value+"/str"
                 self._locations[key+"_float"] = value+"/float"
             else:
@@ -267,8 +264,6 @@ class EventIterator(HDF5Base):
         self._slice_start_event = 0
         self._slice_start_wf = 0
         self._bool_dict = {}
-
-        #Generalize these
         def fill_bool_dict(self, group):
             address = self._locations[group]
             try:
@@ -278,16 +273,11 @@ class EventIterator(HDF5Base):
                     self._bool_dict[group] = False
             except KeyError:
                 self._bool_dict[group] = False
-        #Generalize the data locations
-
         for key in self._locations.keys():
             fill_bool_dict(self,key)
         
-        #print(self._bool_dict)
-        #Calculate the index of the waveform for the final event and slice on that
         self._slice_end_event = min(self._max_events, slice_range)
         self._slice_end_event = 0
-        #print(self._max_events, self._slice_end_event)
         self._index_keys = [str(key, "utf-8")
                 for key in self._object[self._locations["indices"]].attrs["keys"]]
 
@@ -296,25 +286,6 @@ class EventIterator(HDF5Base):
         self._start_event = {}
         self._end_event = {}
         self._data = {}
-
-        # for key, value in self._locations.items():
-        #     for key_org, value_org in self._locations_original.items():
-        #         if key == key_org or key == key_org+"_float" or key == key_org+"_str": 
-        #             #self._start_event[key] = 0
-        #             if self._bool_dict[key]:
-        #                 index = self._get_index_from_list(value_org,self._keys)
-        #                 print(key,index)
-        #                 if index >= 0:
-        #                     print(key,value)
-        #                     print(key_org, value_org)
-        #                     #print(self._object[value][self._slice_end_event - 1, index, 0], self._object[value][self._slice_end_event - 1, index, 1])
-        #                     self._start_event[key] = self._object[self._locations["indices"]
-        #                                                           ][self._slice_start_event, index, 0]
-        #                     self._end_event[key] = self._object[self._locations["indices"]][self._slice_end_event - 1, index, 0] + self._object[self._locations["indices"]][self._slice_end_event - 1, index , 1]
-        #                     print(self._start_event[key],
-        #                           self._end_event[key])
-        #                     print(value)
-        #                     self._data[key] = self._object[value][self._start_event[key]:self._end_event[key]]
 
         def get_keys_dict(self, group_addr):
             dic = {}
@@ -340,6 +311,8 @@ class EventIterator(HDF5Base):
 
     def _get_index_from_list(self, string_to_comp, keys):
             count = 0
+            if string_to_comp == self._locations["indices"]:
+                return "This is index dataset"
             for key in keys:
                 if string_to_comp in key:
                     return count
@@ -350,68 +323,28 @@ class EventIterator(HDF5Base):
         self._iter_counter += 1
         self._stop_counter += 1
         #self.attr_list()
-        #print(self._iter_counter, self._slice_end_event, self._max_events)
         if self._stop_counter >= self._slice_end_event and self._slice_end_event == self._max_events:
             raise StopIteration
         print(self._iter_counter, self._slice_end_event, self._slice_start_event)
         if self._iter_counter + self._slice_start_event >= self._slice_end_event:
             self._iter_counter = 0
-            print("Here!")
-            #self.attr_list()
-            #print(self._slice_start_wf, self._slice_end_wf)
-            #print("grabbing the next values")
             self._slice_start_event = self._slice_end_event
             self._slice_end_event = min(self._slice_start_event +
                                   self._slice_range, self._max_events)
-            print(self._slice_end_event)
-            # self._slice_start_wf = self._slice_end_wf
-            # self._slice_end_wf = self._object[self._locations["indices"]][self._slice_end_event - 1, self._waveform_index, 0] + self._object[
-            #                                 self._locations["indices"]][self._slice_end_event - 1, self._waveform_index, 1]
-            
-            
-            # #self.attr_list()
-            # #print(self._slice_start_wf, self._slice_end_wf)
-            # #TO DO - See if you use these lines just once
-            # if self._bool_dict["waveforms"]:
-            #     self._event_data = self._object["data"]["waveforms"][self._slice_start_wf:self._slice_end_wf]
-            # if self._bool_dict["particles_float"]:
-            #     self._MC_particle_float = self._object["monte_carlo_data"][
-            #         "particles"]["float"][self._slice_start_event:self._slice_end_event]
-
-            # if self._bool_dict["particles_str"]:
-            #     self._MC_particle_str = self._object["monte_carlo_data"][
-            #         "particles"]["str"][self._slice_start_event:self._slice_end_event]
-
-            # if self._bool_dict["rays_float"]:
-            #     self._MC_rays_float = self._object["monte_carlo_data"][
-            #         "rays"]["float"][self._slice_start_wf:self._slice_end_wf]
-            # if self._bool_dict["rays_str"]:
-            #     self._MC_rays_str = self._object["monte_carlo_data"]["rays"]["str"][self._slice_start_wf:self._slice_end_wf]
-
-            # if self._bool_dict["monte_carlo_data_noise"]:
-            #     self._MC_noise = self._object["monte_carlo_data"]["noise"][self._slice_start_event:self._slice_end_event]
-            
-            # if self._bool_dict["monte_carlo_data_triggers"]:
-            #     self._MC_triggers = self._object["monte_carlo_data"]["triggers"][self._slice_start_wf:self._slice_end_wf]
             for key, value in self._locations.items():
                 for key_org, value_org in self._locations_original.items():
-                    if key == key_org or key == key_org+"_float" or key == key_org+"_str":
-                        # self._start_event[key] = self._end_event[key]
-                        if self._bool_dict[key]:
-                            index = self._get_index_from_list(value_org, self._index_keys)
-                            print(key, index)
-                            if index >= 0:
-                                print(key, value)
-                                print(key_org, value_org)
-                                #print(self._object[value][self._slice_end_event - 1, index, 0], self._object[value][self._slice_end_event - 1, index, 1])
-                                self._start_event[key] = self._object[self._locations["indices"]
-                                                                    ][self._slice_start_event, index, 0]
-                                self._end_event[key] = self._object[self._locations["indices"]][self._slice_end_event - 1,
-                                                                                                index, 0] + self._object[self._locations["indices"]][self._slice_end_event - 1, index, 1]
-                                print(self._start_event[key],
-                                    self._end_event[key])
-                                print(value)
-                                self._data[key] = self._object[value][self._start_event[key]:self._end_event[key]]
+                    if key == key_org or key == key_org+"_float" or key == key_org+"_str" or key == "indices":
+                        if self._bool_dict[key]: #Storing the event indices 
+                            if key == "indices":
+                                self._data[key] = self._object[value][self._slice_start_event:self._slice_end_event]
+                            else:
+                                index = self._get_index_from_list(value_org, self._index_keys)
+                                if index >= 0:
+                                    self._start_event[key] = self._object[self._locations["indices"]
+                                                                        ][self._slice_start_event, index, 0]
+                                    self._end_event[key] = self._object[self._locations["indices"]][self._slice_end_event - 1,
+                                                                                                    index, 0] + self._object[self._locations["indices"]][self._slice_end_event - 1, index, 1]
+                                    self._data[key] = self._object[value][self._start_event[key]:self._end_event[key]]
 
             #self.attr_list()
 
@@ -423,7 +356,7 @@ class EventIterator(HDF5Base):
     # def get_event_data_shape(self):
     #     return self._event_data.shape
 
-    def get_waveforms(self, antenna_id=None, wf_type=None):
+    def get_waveforms(self, antenna_id=None, waveform_type=None):
 
         if self._iter_counter < 0:
             raise ValueError(
@@ -454,40 +387,37 @@ class EventIterator(HDF5Base):
         else:
             raise ValueError(
                 "Unsupported type for antenna_id"
-            )
-        # TO DO: rename this    
-        if wf_type is None:
+            )   
+        if waveform_type is None:
                 return self._data["waveforms"][iter_counter, antenna_id]
-        elif isinstance(wf_type, str):
-            if wf_type.lower() == "direct":
+        elif isinstance(waveform_type, str):
+            if waveform_type.lower() == "direct":
                 wf_index = 0
-                #return self._data["waveforms"][iter_counter, antenna_id, 0, :]
-            elif wf_type.lower() == "reflected":
+            elif waveform_type.lower() == "reflected":
                 wf_index = 1
-                #return self._data["waveforms"][iter_counter, antenna_id, 1, :]
             else:
                 raise ValueError(
-                    "Unsupported string value for wf_type")
-        elif isinstance(wf_type, (int, float)):
-            wf_index = int(wf_type)
+                    "Unsupported string value for waveform_type")
+        elif isinstance(waveform_type, (int, float)):
+            wf_index = int(waveform_type)
         else:
             raise ValueError(
-                "The parameter 'wf_type' should either be an integer or a string"
+                "The parameter 'waveform_type' should either be an integer or a string"
             )
         return self._data["waveforms"][iter_start + wf_index, antenna_id]
 
     def get_index_from_event_indices(self,group):
-        start = self._object[self._locations["indices"]][self._iter_counter,self._keys["indices"][group], 0]
-        length = self._object[self._locations["indices"]][self._iter_counter,self._keys["indices"][group], 1]
-        
+        start = self._data["indices"][self._iter_counter,self._keys["indices"][group], 0]
+        length = self._data["indices"][self._iter_counter,self._keys["indices"][group], 1]
+
         if length ==  0: # if the start index is negative than that means that the data was no stored for that particular event 
             return -1
         if length == 1:
-            return start
-        return slice(start, start + length)
+            return start % self._slice_range
+        return slice(start % self._slice_range , (start + length)%self._slice_range)
 
-    # TO DO : Change Variable to property/attribute
-    def get_particle_info(self, variable=None):
+
+    def get_particle_info(self, attribute=None):
         #TO DO: Implement checks before asking for an array element
         #default_values = ["particle_id",  "energy", "weight", "particle_name"]
         custom_values = ["position", "direction", "interaction_info"] #Possibly add distance and radius here
@@ -498,43 +428,39 @@ class EventIterator(HDF5Base):
         #To account for multiple particles, all you have to do is look into event_indices, and change the iterator to a slice with the appropriate increment
         
         iter_counter = self.get_index_from_event_indices(self._locations_original["particles_meta"])
+        print("iter_counter ",iter_counter)
         if not isinstance(iter_counter, slice) and iter_counter < 0:
             self._print_message("The data was not stored for this event")
             return
-        #print(iter_counter)
-        if variable is None:
+
+        if attribute is None:
+            # SPEED CONCERN : This directly accesses the file, try to avoid it as much as you can
             return self._read_metadata_to_dicts(self._object, self._locations_original["particles_meta"], iter_counter)
-        elif isinstance(variable,str):
-            if variable in custom_values:
-                #Think about making these more general and remove the hardcoded numbers
-                if variable == "position":
+        elif isinstance(attribute,str):
+            if attribute in custom_values:
+                vector_len = 3
+                if attribute == "position":
                     index = self._keys["particles_meta_float"]["vertex_x"]
-                    return self._data["particles_meta_float"][iter_counter,index:index+3]
-                elif variable == "direction":
+                    return self._data["particles_meta_float"][iter_counter,index:index+vector_len]
+                elif attribute == "direction":
                     index = self._keys["particles_meta_float"]["direction_x"]
-                    return self._data["particles_meta_float"][iter_counter,index:index+3]
-                elif variable == "interaction_info":
-                    count = 0
-                    # TO DO: use enumerate
+                    return self._data["particles_meta_float"][iter_counter,index:index+vector_len]
+                elif attribute == "interaction_info":
+                    group = ["particles_meta_float", "particles_meta_str"]
                     dic = {}
-                    for key in self._object[self._locations["particles_meta_float"]].attrs["keys"]:
-                        if "interaction" in str(key,"utf-8"):
-                            dic[str(key,"utf-8")] = self._data["particles_meta_float"][iter_counter,count]
-                        count += 1
-                    count = 0
-                    for key in self._object[self._locations["particles_meta_str"]].attrs["keys"]:
-                        if "interaction" in str(key, "utf-8"):
-                            dic[str(key, "utf-8")] = self._data["particles_meta_str"][iter_counter, count]
-                        count += 1
+                    for grp in group:
+                        for key, value in self._keys[grp].items():
+                            if "interaction" in key:
+                                dic[key] = self._data[grp][iter_counter,value]
                     return dic
                 else:
                     raise ValueError("This value is not supported yet")
             else:
-                if variable in self._keys["particles_meta_float"]:
-                    index = self._keys["particles_meta_float"][variable]
+                if attribute in self._keys["particles_meta_float"]:
+                    index = self._keys["particles_meta_float"][attribute]
                     return self._data["particles_meta_float"][iter_counter, index]
                 else:
-                    index = self._keys["particles_meta_str"][variable]
+                    index = self._keys["particles_meta_str"][attribute]
                     return self._data["particles_meta_str"][iter_counter, index]
                 
         else:
@@ -544,7 +470,7 @@ class EventIterator(HDF5Base):
         print(message)
 
 
-    def get_rays_info(self,variable=None):
+    def get_rays_info(self,attribute=None):
         #default_values = ["launch_angle",  "receiving_angle", "path_length", "time_of_flight"]
         custom_values = ["polarization", "emitted_direction","received_direction"] # No custom values supported yet
         if self._iter_counter < 0:
@@ -558,20 +484,19 @@ class EventIterator(HDF5Base):
             self._print_message("The data was not stored for this event")
             return 
         #self.attr_list()
-        #print(self._iter_counter)
-        #print(iter_counter)
 
-        if variable is None:
+        if attribute is None:
             #Make sure that _read_hdf5_metadata function account for multiple ryas
+            # SPEED WARNING: Try to avoid this function, this accesses the file directly. Can consider writing another function to return the dictionaries using the stored data
             return self._read_metadata_to_dicts(self._object, self._locations_original["rays_meta"], iter_counter)
 
-        elif isinstance(variable,str):
-            if variable in custom_values:
-                if variable == "polarization":
+        elif isinstance(attribute,str):
+            if attribute in custom_values:
+                if attribute == "polarization":
                     index = self._keys["rays_meta_float"]["polarization_x"]
-                elif variable == "emitted_direction":
+                elif attribute == "emitted_direction":
                     index = self._keys["rays_meta_float"]["emitted_x"]
-                elif variable == "received_direction":
+                elif attribute == "received_direction":
                     index = self._keys["rays_meta_float"]["received_x"]
                 else:
                     raise ValueError("The attribute is not supported yet")
@@ -579,11 +504,11 @@ class EventIterator(HDF5Base):
                 return self._data["rays_meta_float"][iter_counter,:,index:index+3]
             
             else:
-                if variable in self._keys["rays_meta_float"]:
-                    index = self._keys["rays_meta_float"][variable]
+                if attribute in self._keys["rays_meta_float"]:
+                    index = self._keys["rays_meta_float"][attribute]
                     return self._data["rays_meta_float"][iter_counter, :, index]
                 else:
-                    index = self._keys["rays_meta_str"][variable]
+                    index = self._keys["rays_meta_str"][attribute]
                     return self._data["rays_meta_str"][iter_counter, :, index]
         else:
             raise ValueError("Only string values supported as argument")
@@ -625,7 +550,7 @@ class EventIterator(HDF5Base):
             self._print_message("The data was not stored for this event")
             return
 
-        # TO DO: np.any can solve this?
+        # TO DO: np.any can solve this? : For now, leaving it as it is, can think about changing this later
         if isinstance(iter_counter,slice):
             start = iter_counter.start
             stop = iter_counter.stop
@@ -770,7 +695,7 @@ class HDF5Reader(BaseReader,HDF5Base):
         return slice(start,start + self._file[self._locations["indices"]][event_indices, self._event_indices_key[group], 1])
 
 
-    def get_waveforms(self, event_id=None, antenna_id=None, wf_type=None):
+    def get_waveforms(self, event_id=None, antenna_id=None, waveform_type=None):
         if self._event_data is None:
             raise ValueError("The waveforms were not saved for this run. Please check the run configuration")
         
@@ -790,24 +715,24 @@ class HDF5Reader(BaseReader,HDF5Base):
         # elif antenna_id < 0:
         #     antenna_id = self._num_ant + antenna_id
 
-        if wf_type is None:
-            #remove the wf_type condition. This will remove the hardcoded indices
+        if waveform_type is None:
+            #remove the waveform_type condition. This will remove the hardcoded indices
             return self._event_data[event_id,antenna_id]
-        elif isinstance(wf_type, str):
-            if wf_type.lower() == "direct":
+        elif isinstance(waveform_type, str):
+            if waveform_type.lower() == "direct":
                 wf_index = 0
                 #return self._event_data[iter_counter, antenna_id, 0, :]
-            elif wf_type.lower() == "reflected":
+            elif waveform_type.lower() == "reflected":
                 wf_index = 1
                 #return self._event_data[iter_counter, antenna_id, 1, :]
             else:
                 raise ValueError(
-                    "Unsupported string value for wf_type")
-        elif isinstance(wf_type, (int, float)):
-            wf_index = int(wf_type)
+                    "Unsupported string value for waveform_type")
+        elif isinstance(waveform_type, (int, float)):
+            wf_index = int(waveform_type)
         else:
             raise ValueError(
-                "The parameter 'wf_type' should either be an integer or a string"
+                "The parameter 'waveform_type' should either be an integer or a string"
             )
         #TO DO: make sure that event_id_start is initialized
         return self._event_data[event_id_start + wf_index, antenna_id]
@@ -821,18 +746,18 @@ class HDF5Reader(BaseReader,HDF5Base):
     #             "Usage: <HDF5Reader>.get_all_wf_from_ant(antennaId)")
     #     return np.asarray(self._file['events'][:, antenna_id, :, :])
 
-    # def get_all_wf_type(self, wf_type=""):
-    #     if wf_type == "":
+    # def get_all_waveform_type(self, waveform_type=""):
+    #     if waveform_type == "":
     #         raise RuntimeError(
-    #             "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
+    #             "Usage: <HDF5Reader>.get_all_waveform_type('direct'/'reflected')")
 
-    #     elif wf_type.lower() == "direct":
+    #     elif waveform_type.lower() == "direct":
     #         return self._file[:, :, 0, :]
-    #     elif wf_type.lower() == "reflected":
+    #     elif waveform_type.lower() == "reflected":
     #         return self._file[:, :, 1, :]
     #     else:
     #         raise RuntimeError(
-    #             "Usage: <HDF5Reader>.get_all_wf_type('direct'/'reflected')")
+    #             "Usage: <HDF5Reader>.get_all_waveform_type('direct'/'reflected')")
     @property
     def antenna_info(self):
         ant_dict_data = self._read_datasets_to_dicts(self._file, "/data/antennas")
