@@ -325,7 +325,7 @@ class EventIterator(HDF5Base):
         #self.attr_list()
         if self._stop_counter >= self._slice_end_event and self._slice_end_event == self._max_events:
             raise StopIteration
-        print(self._iter_counter, self._slice_end_event, self._slice_start_event)
+        #print(self._iter_counter, self._slice_end_event, self._slice_start_event)
         if self._iter_counter + self._slice_start_event >= self._slice_end_event:
             self._iter_counter = 0
             self._slice_start_event = self._slice_end_event
@@ -429,7 +429,7 @@ class EventIterator(HDF5Base):
         #To account for multiple particles, all you have to do is look into event_indices, and change the iterator to a slice with the appropriate increment
         
         iter_counter = self.get_index_from_event_indices(self._locations_original["particles_meta"])
-        print("iter_counter ",iter_counter)
+        #print("iter_counter ",iter_counter)
         if not isinstance(iter_counter, slice) and iter_counter <= 0:
             self._print_message("The data was not stored for this event")
             return
@@ -480,7 +480,7 @@ class EventIterator(HDF5Base):
 
         iter_counter = self.get_index_from_event_indices(
             self._locations_original["rays_meta"])
-        print(iter_counter)
+        #print(iter_counter)
         if not isinstance(iter_counter,slice) and iter_counter < 0:
             self._print_message("The data was not stored for this event")
             return 
@@ -558,7 +558,7 @@ class EventIterator(HDF5Base):
             if ray_number is not None:
                 index = start + int(ray_number) - 1
                 for counter,value in enumerate(self._data[key][index]):
-                    print(value)
+                    #print(value)
                     if value:
                         list_to_return.append(self._ant_keys[counter])
             else:
@@ -581,7 +581,7 @@ class EventIterator(HDF5Base):
     @property
     def flavor(self):
         """Returns the flavor of the initial particle. If not a neutrino, then returns a null string"""
-        # TO DO: electron nutrino and anti nutrino have the same flavor
+        # TO DO: electron nutrino and anti nutrino have the same flavor - Done
         name = self.get_particle_info("particle_name")
         if "neutrino" in name:
             return name.split("_")[0] # Grabbing the first part of the name, that is the flavor of the particle
@@ -612,12 +612,12 @@ class HDF5Reader(BaseReader,HDF5Base):
             self._locations = {}
             for key, value in self._locations_original.items():
                 if key.endswith("meta"):
-                    print("Here")
+                    #print("Here")
                     self._locations[key+"_str"] = value+"/str"
                     self._locations[key+"_float"] = value+"/float"
                 else:
                     self._locations[key] = value
-            # TO DO: Move all of this open function
+            # TO DO: Move all of this open function - Done
             # self._num_ant = len(
             #     self._file["monte_carlo_data"]["antennas"]["float"])
             # self._iter_counter = None
@@ -706,7 +706,7 @@ class HDF5Reader(BaseReader,HDF5Base):
         #assumming that the data indices will have all the list of all events
         self._num_events = len(self._file[self._locations["indices"]])
         
-        print("Done iwth all thse")
+        #print("Done iwth all thse")
         self._bool_dict = {}
 
         def fill_bool_dict(self, group):
@@ -749,12 +749,23 @@ class HDF5Reader(BaseReader,HDF5Base):
         return slice(start,start + length)
 
 
+    def _get_waveform_of_one_kind(self, wf_type):
+        print("Please consider using the iterator as this function will go over all the data")
+        waveforms = []
+        for i in self:
+            waveforms.append(i.get_waveforms(waveform_type=wf_type))
+        return np.asarray(waveforms)
+
+        
+
     def get_waveforms(self, event_id=None, antenna_id=None, waveform_type=None):
         if self._event_data is None:
             raise ValueError("The waveforms were not saved for this run. Please check the run configuration")
         
 
-        #ERROR CASE: If event_id is None and wf_type if not none, then this would fail
+        #WARNING: If you want to get one particualr type of waveform for all events, please consider using an iterator
+        if event_id is None and waveform_type is not None:
+            return self._get_waveform_of_one_kind(waveform_type)
         if event_id is None:
             event_id = slice(None)
             event_id_start = 0
