@@ -597,6 +597,7 @@ class HDF5Reader(BaseReader,HDF5Base):
     def __init__(self, filename,slice_range = 10):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
             self.filename = filename
+            self._slice_range = slice_range
             self._file = h5py.File(self.filename, mode='r')
             self._base = HDF5Base(self._file.attrs["version_major"], self._file.attrs["version_minor"] )
             self._locations = self._dataset_locations()
@@ -682,6 +683,43 @@ class HDF5Reader(BaseReader,HDF5Base):
 
     def open(self):
         self._file = h5py.File(self.filename, mode='r')
+        self._base = HDF5Base(self._file.attrs["version_major"], self._file.attrs["version_minor"] )
+        self._locations = self._dataset_locations()
+        self._num_ant = len(
+            self._file[self._locations["antennas_meta_float"]])
+        self._iter_counter = None
+        #assumming that the data indices will have all the list of all events
+        self._num_events = len(self._file[self._locations["indices"]])
+        
+        print("Done iwth all thse")
+        self._bool_dict = {}
+
+        def fill_bool_dict(self, group):
+            address = self._locations[group]
+            try:
+                if (self._file[address]).size > 0:
+                    self._bool_dict[group] = True
+                else:
+                    self._bool_dict[group] = False
+            except KeyError:
+                self._bool_dict[group] = False
+        for key in self._locations.keys():
+            fill_bool_dict(self, key)
+
+        def get_keys_dict(self, group_addr, dataset):
+            dic = {}
+            count = 0
+            for key in self._file[group_addr][dataset].attrs["keys"]:
+                key = str(key, "utf-8")
+                dic[key] = count
+                count += 1
+            return dic
+
+        self._event_indices_key = get_keys_dict(self,'/',self._locations["indices"])
+
+        self._event_data = None
+        if self._bool_dict["waveforms"]:
+            self._event_data = self._file["/data/waveforms"]
 
     def close(self):
         self._file.close()
@@ -702,9 +740,11 @@ class HDF5Reader(BaseReader,HDF5Base):
         if event_id is None:
             event_id = slice(None)
         else:
-            event_id = self.get_index_from_event_indices("/data/waveforms",event_id)
+            event_id = self.get_index_from_event_indices(self._locations["waveforms"],event_id)
             if isinstance(event_id,slice):
                 event_id_start = event_id.start
+            elif isinstance(event_id,int):
+                event_id_start = event_id
 
         #TO DO: Check if the event id has corresponding event waveform or not
         if antenna_id is None:
