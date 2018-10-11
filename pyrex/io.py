@@ -354,90 +354,64 @@ class EventIterator(HDF5Base):
         return self
 
 
-    def get_waveforms(self, antenna_id=None, waveform_type=None):
+    def _confirm_iterating(self):
         if self._iter_counter < 0:
             raise ValueError("This function is should be called after "+
                              "initializing the iterator object and calling "+
                              "next(<iterator>)")
 
-        # To account for multiple particles, all you have to do is look into
-        # event_indices, and change the iterator to a slice with the
-        # appropriate increment
 
-        iter_counter = self.get_index_from_event_indices(
+    def get_waveforms(self, antenna_id=None, waveform_type=None):
+        self._confirm_iterating()
+
+        iter_counter = self._get_table_slice(
             self._locations["waveforms"]
         )
-        if not isinstance(iter_counter, slice) and iter_counter < 0:
-            logger.debug("No waveform data was stored for event %s",
-                         self._slice_start_event + self._iter_counter)
-            return
-
-        elif isinstance(iter_counter,slice):
-            iter_start = iter_counter.start
-        elif isinstance(iter_counter,int):
-            iter_start = iter_counter
 
         if antenna_id is None:
-            antenna_id = slice(None)  # essentially, antenna_id is ':'
-        elif isinstance(antenna_id, (int, float)):
-            antenna_id = int(antenna_id)
-            if antenna_id > self._max_antenna:
-                raise ValueError("Antenna Id provided is greater than the "+
-                                 "number of antennas in detector")
-        else:
-            raise ValueError("Unsupported type for antenna_id")
-        if waveform_type is None:
+            antenna_id = slice(None)
+        elif isinstance(antenna_id, int) and antenna_id > self._max_antenna:
+            raise ValueError("Antenna Id provided is greater than the number "+
+                             "of antennas in detector")
+
+        wf_index = self._convert_ray_value(waveform_type)
+        if wf_index is None:
             return self._data["waveforms"][iter_counter, antenna_id]
-        elif isinstance(waveform_type, str):
-            if waveform_type.lower() == "direct":
-                wf_index = 0
-            elif waveform_type.lower() == "reflected":
-                wf_index = 1
-            else:
-                raise ValueError("Unsupported string value for waveform_type")
-        elif isinstance(waveform_type, (int, float)):
-            wf_index = int(waveform_type)
+        elif isinstance(wf_index, int):
+            start = iter_counter.start
+            stop = iter_counter.stop
+            if start is None:
+                start = 0
+            if stop is None:
+                stop = self._data["waveforms"].shape[0]
+            if wf_index>=stop-start:
+                raise ValueError("Invalid waveform index ("+str(wf_index)+")")
+            return self._data["waveforms"][start+wf_index, antenna_id]
         else:
             raise ValueError("The parameter 'waveform_type' should either be "+
                              "an integer or a string")
-        return self._data["waveforms"][iter_start + wf_index, antenna_id]
 
 
-    def get_index_from_event_indices(self, group):
+    def _get_table_slice(self, group):
         start = self._data["indices"][self._iter_counter,
                                       self._keys["indices"][group], 0]
         start = start % self._slice_range
         length = self._data["indices"][self._iter_counter,
                                        self._keys["indices"][group], 1]
-
-        if length == 0:
-            # If the start index is negative than that means that the data was
-            # not stored for that particular event
-            return -1
-        elif length == 1:
-            return start
         return slice(start, start+length)
 
 
     def get_particle_info(self, attribute=None):
         custom_values = ["position", "vertex", "direction", "interaction_info"]
         # Possibly add distance and radius to custom_values
-        if self._iter_counter < 0:
-            raise ValueError("This function is should be called after "+
-                             "initializing the iterator object and calling "+
-                             "next(<iterator>)")
+        self._confirm_iterating()
 
-        # To account for multiple particles, all you have to do is look into
-        # event_indices, and change the iterator to a slice with the
-        # appropriate increment
-
-        iter_counter = self.get_index_from_event_indices(
+        iter_counter = self._get_table_slice(
             self._locations_original["particles_meta"]
         )
-        if not isinstance(iter_counter, slice) and iter_counter < 0:
+        if iter_counter.start==iter_counter.stop:
             logger.debug("No particle data was stored for event %s",
                          self._slice_start_event + self._iter_counter)
-            return
 
         if attribute is None:
             # SPEED CONCERN : This directly accesses the file, try to avoid it
@@ -483,18 +457,14 @@ class EventIterator(HDF5Base):
     def get_rays_info(self, attribute=None):
         custom_values = ["polarization", "emitted_direction",
                          "received_direction"]
-        if self._iter_counter < 0:
-            raise ValueError("This function is should be called after "+
-                             "initializing the iterator object and calling "+
-                             "next(<iterator>)")
+        self._confirm_iterating()
 
-        iter_counter = self.get_index_from_event_indices(
+        iter_counter = self._get_table_slice(
             self._locations_original["rays_meta"]
         )
-        if not isinstance(iter_counter, slice) and iter_counter < 0:
+        if iter_counter.start==iter_counter.stop:
             logger.debug("No ray data was stored for event %s",
                          self._slice_start_event + self._iter_counter)
-            return
 
         if attribute is None:
             # Make sure that _read_hdf5_metadata function account for
@@ -533,59 +503,46 @@ class EventIterator(HDF5Base):
 
     @property
     def triggered(self):
-        if self._iter_counter < 0:
-            raise ValueError("This function is should be called after "+
-                             "initializing the iterator object and calling "+
-                             "next(<iterator>)")
-        iter_counter = self.get_index_from_event_indices(
+        self._confirm_iterating()
+        iter_counter = self._get_table_slice(
             self._locations_original["triggers"]
         )
-        if iter_counter < 0:
+        triggered = self._data['triggers'][iter_counter]
+        if len(triggered)==0:
             return None
         else:
-            return self._data['triggers'][iter_counter]
+            return triggered[0]
 
     @property
     def noise_bases(self):
-        if self._iter_counter < 0:
-            raise ValueError("This function is should be called after "+
-                             "initializing the iterator object and calling "+
-                             "next(<iterator>)")
+        self._confirm_iterating()
 
-        # To account for multiple particles, all you have to do is look into
-        # event_indices, and change the iterator to a slice with the
-        # appropriate increment
-
-        iter_counter = self.get_index_from_event_indices(
+        iter_counter = self._get_table_slice(
             self._locations_original["noise"]
         )
-        if not isinstance(iter_counter, slice) and iter_counter < 0:
+        if iter_counter.start==iter_counter.stop:
             logger.debug("No noise data was stored for event %s",
                          self._slice_start_event + self._iter_counter)
-            return
-        return self._data["noise"][iter_counter]
+
+        bases = self._data["noise"][iter_counter]
+        if len(bases)==0:
+            return bases
+        else:
+            return bases[0]
 
     def get_triggered_components(self, ray=None):
         """Returns the list of trigger components which were triggered in the
         event """
-        if self._iter_counter < 0:
-            raise ValueError("This function is should be called after "+
-                             "initializing the iterator object and calling "+
-                             "next(<iterator>)")
+        self._confirm_iterating()
 
-        # To account for multiple particles, all you have to do is look into
-        # event_indices, and change the iterator to a slice with the
-        # appropriate increment
-        key = "mc_triggers"
-        iter_counter = self.get_index_from_event_indices(
-            self._locations_original[key]
+        iter_counter = self._get_table_slice(
+            self._locations_original["mc_triggers"]
         )
-        if not isinstance(iter_counter, slice) and iter_counter < 0:
+        if iter_counter.start==iter_counter.stop:
             logger.debug("No monte carlo trigger data was stored for event %s",
                          self._slice_start_event + self._iter_counter)
-            return
 
-        triggers = self._data[key][iter_counter]
+        triggers = self._data["mc_triggers"][iter_counter]
         ray_number = self._convert_ray_value(ray)
         if ray_number is not None:
             if triggers.ndim==1:
@@ -606,7 +563,7 @@ class EventIterator(HDF5Base):
     def flavor(self):
         """Returns the flavor of the initial particle. If not a neutrino, then
         returns a null string"""
-        name = self.get_particle_info("particle_name")
+        name = self.get_particle_info("particle_name")[0]
         if "neutrino" in name:
             # Grabbing the first part of the name, that is the flavor of the
             # particle
@@ -618,13 +575,13 @@ class EventIterator(HDF5Base):
     @property
     def is_nubar(self):
         """Returns true if the initial particle was anti-neutrino, returns
-        false if the initial particle was neutrino, else returns a Null
-        string"""
-        return self.get_particle_info("particle_id") < 0
+        false if the initial particle was neutrino, else returns None"""
+        if self.is_neutrino:
+            return self.get_particle_info("particle_id")[0] < 0
 
     @property
     def is_neutrino(self):
-        return "neutrino" in self.get_particle_info("particle_name")
+        return "neutrino" in self.get_particle_info("particle_name")[0]
 
 
 
@@ -695,30 +652,23 @@ class HDF5Reader(BaseReader,HDF5Base):
     def close(self):
         self._file.close()
 
-    def get_index_from_event_indices(self, group, event_indices):
+    def _get_table_slice(self, group, event_indices):
         start = self._file[self._locations["indices"]][event_indices,
                                                        self._event_indices_key[group],
                                                        0]
         length = self._file[self._locations["indices"]][event_indices,
                                                         self._event_indices_key[group],
                                                         1]
-        if length == 0:
-            # If the start index is negative than that means that the data was
-            # not stored for that particular event
-            return -1
-        elif length == 1:
-            return start
-        return slice(start,start + length)
+        return slice(start, start+length)
 
 
     def _get_waveform_of_one_kind(self, wf_type):
         logger.warn("Getting all waveforms of a single type requires "+
                     "iteration over the entire dataset. Consider iterating "+
                     "the file manually instead.")
-        waveforms = []
-        for i in self:
-            waveforms.append(i.get_waveforms(waveform_type=wf_type))
-        return np.asarray(waveforms)
+        return np.asarray(
+            [event.get_waveforms(waveform_type=wf_type) for event in self]
+        )
 
     def get_waveforms(self, event_id=None, antenna_id=None, waveform_type=None):
         if self._event_data is None:
@@ -730,23 +680,14 @@ class HDF5Reader(BaseReader,HDF5Base):
 
         if event_id is None:
             event_id = slice(None)
-            event_id_start = 0
         else:
-            event_id = self.get_index_from_event_indices(
+            event_id = self._get_table_slice(
                 self._locations["waveforms"], event_id
             )
-            if isinstance(event_id, slice):
-                event_id_start = event_id.start
-            elif isinstance(event_id, int):
-                event_id_start = event_id
-                if event_id < 0:
-                    logger.debug("No waveform data was stored for event %s",
-                                 event_id)
-                    return
 
         if antenna_id is None:
             antenna_id = slice(None)
-        elif antenna_id > self._num_ant:
+        elif isinstance(antenna_id, int) and antenna_id > self._num_ant:
             raise ValueError("Antenna Id provided is greater than the number "+
                              "of antennas in detector")
 
@@ -754,7 +695,15 @@ class HDF5Reader(BaseReader,HDF5Base):
         if wf_index is None:
             return self._event_data[event_id, antenna_id]
         elif isinstance(wf_index, int):
-            return self._event_data[event_id_start + wf_index, antenna_id]
+            start = event_id.start
+            stop = event_id.stop
+            if start is None:
+                start = 0
+            if stop is None:
+                stop = self._event_data.shape[0]
+            if wf_index>=stop-start:
+                raise ValueError("Invalid waveform index ("+str(wf_index)+")")
+            return self._event_data[start+wf_index, antenna_id]
         else:
             raise ValueError("The parameter 'waveform_type' should either be "+
                              "an integer or a string")
