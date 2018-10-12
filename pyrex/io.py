@@ -270,10 +270,9 @@ class HDF5Base:
 
 
 class EventIterator(HDF5Base):
-    def __init__(self, hdf5_file, slice_range=10):
+    def __init__(self, hdf5_file, slice_range=10,
+                 start_event=None, stop_event=None, step=None):
         self._object = hdf5_file
-        self._iter_counter = -1
-        self._stop_counter = -1
         HDF5Base.__init__(self, self._object.attrs["version_major"],
                           self._object.attrs["version_minor"])
 
@@ -291,22 +290,37 @@ class EventIterator(HDF5Base):
             len(self._object[self._locations["antennas_meta_str"]])
         )
         self._max_events = hdf5_file[self._locations["indices"]].shape[0]
+
+        start_event = 0 if start_event is None else start_event
+        step = 1 if step is None else step
+        stop_event = self._max_events if stop_event is None else stop_event
+
+        if start_event<0:
+            start_event += self._max_events
+        if stop_event<0:
+            stop_event += self._max_events
+
+        if (start_event<0 or start_event>=self._max_events or
+                stop_event<=0 or stop_event>self._max_events):
+            raise IndexError("Event index out of range")
+
         self._slice_range = slice_range
-        self._slice_start_event = 0
-        self._slice_start_wf = 0
-
-        self._bool_dict = self._get_bool_dict(self._object, self._locations)
-
-        self._slice_end_event = min(self._max_events, slice_range)
-        self._slice_end_event = 0
-        self._index_keys = [
-            str(key, "utf-8")
-            for key in self._object[self._locations["indices"]].attrs["keys"]
-        ]
+        self._slice_start_event = start_event
+        self._slice_end_event = self._slice_start_event
+        self._slice_step = step
+        self._iter_counter = -self._slice_step
+        self._iter_stop_event = stop_event
 
         self._start_event = {}
         self._end_event = {}
         self._data = {}
+
+        self._bool_dict = self._get_bool_dict(self._object, self._locations)
+
+        self._index_keys = [
+            str(key, "utf-8")
+            for key in self._object[self._locations["indices"]].attrs["keys"]
+        ]
 
         self._keys = {}
         for key, value in self._locations.items():
@@ -320,14 +334,19 @@ class EventIterator(HDF5Base):
                 return i
         return -1
 
+    def __iter__(self):
+        return self
+
     def __next__(self):
-        self._iter_counter += 1
-        self._stop_counter += 1
-        if (self._stop_counter >= self._slice_end_event and
-                self._slice_end_event == self._max_events):
+        # Could probably optimize this to only read in the data needed based
+        # on the slice step, and then iterate through one at a time instead
+        # of loading the full slice and skipping the unneeded data
+        self._iter_counter += self._slice_step
+        event_number = self._iter_counter + self._slice_start_event
+        if event_number >= self._iter_stop_event:
             raise StopIteration
 
-        if self._iter_counter+self._slice_start_event >= self._slice_end_event:
+        if event_number >= self._slice_end_event:
             self._iter_counter = 0
             self._slice_start_event = self._slice_end_event
             self._slice_end_event = min(self._slice_start_event +
@@ -336,7 +355,8 @@ class EventIterator(HDF5Base):
                 for key_org, value_org in self._locations_original.items():
                     if (key == key_org or key == key_org+"_float"
                             or key == key_org+"_str" or key == "indices"):
-                        if self._bool_dict[key]: # Storing the event indices
+                        if self._bool_dict[key]:
+                            # Storing the event indices
                             if key == "indices":
                                 self._data[key] = self._object[value][self._slice_start_event:self._slice_end_event]
                             else:
@@ -395,7 +415,7 @@ class EventIterator(HDF5Base):
     def _get_table_slice(self, group):
         start = self._data["indices"][self._iter_counter,
                                       self._keys["indices"][group], 0]
-        start = start % self._slice_range
+        start = start - self._slice_start_event
         length = self._data["indices"][self._iter_counter,
                                        self._keys["indices"][group], 1]
         return slice(start, start+length)
@@ -592,25 +612,41 @@ class HDF5Reader(BaseReader,HDF5Base):
             self._slice_range = slice_range
         else:
             raise ValueError(filename+" is not in the HDF5 format")
+        self._is_open = False
 
-    def __getitem__(self, given):
-        if isinstance(given, slice):
-            # handling the slice object
-            return self._file['/data/waveforms'][given]
-        elif isinstance(given, tuple):
-            return self._file['/data/waveforms'][given]
-        elif given == "":
-            # Do your handling for a plain index
-            logger.debug("given plain item")
+    def __getitem__(self, key):
+        if not self.is_open:
+            raise IOError("File is not open")
+        if isinstance(key, int):
+            stop = self._num_events if key==-1 else key+1
+            it = EventIterator(hdf5_file=self._file,
+                               slice_range=1,
+                               start_event=key,
+                               stop_event=stop,
+                               step=1)
+            return next(it)
+        if isinstance(key, slice):
+            start = 0 if key.start is None else key.start
+            stop = self._num_events if key.stop is None else key.stop
+            slice_range = min(self._slice_range, stop-start)
+            return EventIterator(hdf5_file=self._file,
+                                 slice_range=slice_range,
+                                 start_event=key.start,
+                                 stop_event=key.stop,
+                                 step=key.step)
+        else:
+            raise ValueError("Invalid key '"+str(key)+"'")
 
     def __len__(self):
         return self._num_events
 
     def __iter__(self):
-        return EventIterator(self._file, self._slice_range)
+        return EventIterator(hdf5_file=self._file,
+                             slice_range=self._slice_range)
 
     def open(self):
         self._file = h5py.File(self.filename, mode='r')
+        self._is_open = True
         HDF5Base.__init__(self, self._file.attrs["version_major"],
                           self._file.attrs["version_minor"] )
         self._locations_original = self._dataset_locations()
@@ -651,6 +687,10 @@ class HDF5Reader(BaseReader,HDF5Base):
 
     def close(self):
         self._file.close()
+
+    @property
+    def is_open(self):
+        return self._is_open
 
     def _get_table_slice(self, group, event_indices):
         start = self._file[self._locations["indices"]][event_indices,
