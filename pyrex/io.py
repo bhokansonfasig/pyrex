@@ -245,7 +245,7 @@ class HDF5Base:
 
     @staticmethod
     def _get_keys_dict(file, group):
-        if "keys" in file[group].attrs.keys():
+        if group in file and "keys" in file[group].attrs.keys():
             return {str(key, "utf-8"): i for i, key in
                     enumerate(file[group].attrs["keys"])}
         else:
@@ -658,13 +658,16 @@ class HDF5Reader(BaseReader,HDF5Base):
             else:
                 self._locations[key] = value
 
-        self._num_ant = max(
-            len(self._file[self._locations["antennas_meta_float"]]),
-            len(self._file[self._locations["antennas_meta_str"]])
-        )
+        self._num_ant = 0
+        for key in ["antennas_meta_float", "antennas_meta_str"]:
+            loc = self._locations[key]
+            if loc in self._file:
+                self._num_ant = max(self._num_ant, len(self._file[loc]))
         self._iter_counter = None
         # assumming that the data indices will have all the list of all events
-        self._num_events = len(self._file[self._locations["indices"]])
+        self._num_events = 0
+        if self._locations["indices"] in self._file:
+            self._num_events = len(self._file[self._locations["indices"]])
 
         self._bool_dict = self._get_bool_dict(self._file, self._locations)
 
@@ -777,13 +780,17 @@ class HDF5Reader(BaseReader,HDF5Base):
 
 
 class HDF5Writer(BaseWriter, HDF5Base):
-    def __init__(self, filename, write_particles=True, write_waveforms=False,
+    def __init__(self, filename, mode='x', write_particles=True,
                  write_triggers=True, write_antenna_triggers=False,
-                 write_rays=True, write_noise=False, require_trigger=True):
+                 write_rays=True, write_noise=False, write_waveforms=False,
+                 require_trigger=True):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
             self.filename = filename
         else:
             self.filename = filename+".h5"
+        if mode not in ['w', 'x', 'a', 'r+']:
+            raise ValueError("Uncrecognized file mode '"+str(mode)+"'")
+        self._mode = mode
         self._is_open = False
 
         # Set file version
@@ -830,8 +837,35 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
     def open(self):
         # Create empty file
-        self._file = h5py.File(self.filename, mode='w')
+        self._file = h5py.File(self.filename, mode=self._mode)
         self._is_open = True
+
+        # Special append-mode opening method
+        if ((self._mode=='a' or self._mode=='r+') and
+                self._data_locs['file_meta'] in self._file):
+            # Set file version
+            HDF5Base.__init__(self, self._file.attrs['version_major'],
+                              self._file.attrs['version_minor'])
+            self._data_locs = self._dataset_locations()
+            # Set event number counters
+            self._counters = {}
+            for key, val in self._data_locs.items():
+                if key in ["file_meta", "antennas", "antennas_meta"]:
+                    continue
+                if val not in self._file:
+                    self._counters[key] = 0
+                else:
+                    if key.endswith("meta"):
+                        count = 0
+                        for table in ["float", "str"]:
+                            loc = val+"/"+table
+                            if loc in self._file:
+                                count = max(count, self._file[loc].shape[0])
+                    else:
+                        count = self._file[val].shape[0]
+                    self._counters[key] = count
+            return
+
         self._create_dataset(self._data_locs['indices'])
         self._file.attrs['version_major'] = self._file_version_major
         self._file.attrs['version_minor'] = self._file_version_minor
