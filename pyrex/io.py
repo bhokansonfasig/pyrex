@@ -304,15 +304,16 @@ class EventIterator(HDF5Base):
                 stop_event<=0 or stop_event>self._max_events):
             raise IndexError("Event index out of range")
 
+        if step<=0:
+            raise ValueError("Invalid step size ("+str(step)+")")
+
         self._slice_range = slice_range
         self._slice_start_event = start_event
         self._slice_end_event = self._slice_start_event
         self._slice_step = step
-        self._iter_counter = -self._slice_step
+        self._iter_counter = -1
         self._iter_stop_event = stop_event
 
-        self._start_event = {}
-        self._end_event = {}
         self._data = {}
 
         self._bool_dict = self._get_bool_dict(self._object, self._locations)
@@ -338,44 +339,46 @@ class EventIterator(HDF5Base):
         return self
 
     def __next__(self):
-        # Could probably optimize this to only read in the data needed based
-        # on the slice step, and then iterate through one at a time instead
-        # of loading the full slice and skipping the unneeded data
-        self._iter_counter += self._slice_step
-        event_number = self._iter_counter + self._slice_start_event
+        self._iter_counter += 1
+        event_number = (self._iter_counter * self._slice_step
+                        + self._slice_start_event)
         if event_number >= self._iter_stop_event:
             raise StopIteration
 
         if event_number >= self._slice_end_event:
             self._iter_counter = 0
-            self._slice_start_event = self._slice_end_event
+            self._slice_start_event = event_number
             self._slice_end_event = min(self._slice_start_event +
                                         self._slice_range, self._max_events)
-            for key, value in self._locations.items():
-                for key_org, value_org in self._locations_original.items():
-                    if (key == key_org or key == key_org+"_float"
-                            or key == key_org+"_str" or key == "indices"):
-                        if self._bool_dict[key]:
-                            # Storing the event indices
-                            if key == "indices":
-                                self._data[key] = self._object[value][self._slice_start_event:self._slice_end_event]
-                            else:
-                                index = self._get_index_from_list(
-                                    value_org, self._index_keys
-                                )
-                                if index >= 0:
-                                    self._start_event[key] = self._object[self._locations["indices"]][self._slice_start_event, index, 0]
-                                    self._end_event[key] = (
-                                        self._object[self._locations["indices"]][self._slice_end_event - 1, index, 0] +
-                                        self._object[self._locations["indices"]][self._slice_end_event - 1, index, 1]
-                                    )
-                                    self._data[key] = self._object[value][self._start_event[key]:self._end_event[key]]
+            self._load_data()
 
         return self
 
+    def _load_data(self):
+        # Store event indices first
+        slc = slice(self._slice_start_event,
+                    self._slice_end_event,
+                    self._slice_step)
+        self._data['indices'] = self._object[self._locations['indices']]
+        for key, val in self._locations.items():
+            if key=="indices" or not self._bool_dict[key]:
+                continue
+            parts = key.split("_")
+            if parts[-1]=="float" or parts[-1]=="str":
+                parts.pop(-1)
+            key_org = "_".join(parts)
+            val_org = self._locations_original[key_org]
+            index = self._get_index_from_list(val_org, self._index_keys)
+            if index>=0:
+                self._data[key] = []
+                # Could probably optimize this to only read once from each
+                # dataset rather than N times
+                for start, length in self._data['indices'][slc, index]:
+                    self._data[key].append(self._object[val][start:start+length])
+
 
     def _confirm_iterating(self):
-        if self._iter_counter < 0:
+        if self._slice_start_event == self._slice_end_event:
             raise ValueError("This function is should be called after "+
                              "initializing the iterator object and calling "+
                              "next(<iterator>)")
@@ -384,9 +387,7 @@ class EventIterator(HDF5Base):
     def get_waveforms(self, antenna_id=None, waveform_type=None):
         self._confirm_iterating()
 
-        iter_counter = self._get_table_slice(
-            self._locations["waveforms"]
-        )
+        data = self._get_event_data("waveforms")
 
         if antenna_id is None:
             antenna_id = slice(None)
@@ -396,29 +397,26 @@ class EventIterator(HDF5Base):
 
         wf_index = self._convert_ray_value(waveform_type)
         if wf_index is None:
-            return self._data["waveforms"][iter_counter, antenna_id]
+            return data[:, antenna_id]
         elif isinstance(wf_index, int):
-            start = iter_counter.start
-            stop = iter_counter.stop
-            if start is None:
-                start = 0
-            if stop is None:
-                stop = self._data["waveforms"].shape[0]
-            if wf_index>=stop-start:
-                raise ValueError("Invalid waveform index ("+str(wf_index)+")")
-            return self._data["waveforms"][start+wf_index, antenna_id]
+            if wf_index>=data.shape[0]:
+                return []
+            return data[wf_index, antenna_id]
         else:
             raise ValueError("The parameter 'waveform_type' should either be "+
                              "an integer or a string")
 
 
-    def _get_table_slice(self, group):
-        start = self._data["indices"][self._iter_counter,
-                                      self._keys["indices"][group], 0]
-        start = start - self._slice_start_event
-        length = self._data["indices"][self._iter_counter,
-                                       self._keys["indices"][group], 1]
-        return slice(start, start+length)
+    def _get_event_data(self, group):
+        if group.endswith("meta"):
+            float_data = ([] if not self._bool_dict[group+"_float"] else
+                          self._data[group+"_float"][self._iter_counter])
+            str_data = ([] if not self._bool_dict[group+"_str"] else
+                        self._data[group+"_str"][self._iter_counter])
+            return float_data, str_data
+        else:
+            return ([] if not self._bool_dict[group] else
+                    self._data[group][self._iter_counter])
 
 
     def get_particle_info(self, attribute=None):
@@ -426,16 +424,17 @@ class EventIterator(HDF5Base):
         # Possibly add distance and radius to custom_values
         self._confirm_iterating()
 
-        iter_counter = self._get_table_slice(
-            self._locations_original["particles_meta"]
-        )
-        if iter_counter.start==iter_counter.stop:
+        float_data, str_data = self._get_event_data("particles_meta")
+
+        if len(float_data)==0 and len(str_data)==0:
             logger.debug("No particle data was stored for event %s",
-                         self._slice_start_event + self._iter_counter)
+                         self._iter_counter * self._slice_step
+                         + self._slice_start_event)
 
         if attribute is None:
             # SPEED CONCERN : This directly accesses the file, try to avoid it
             # as much as you can
+            raise NotImplementedError
             return self._read_metadata_to_dicts(
                 self._object,
                 self._locations_original["particles_meta"],
@@ -446,29 +445,31 @@ class EventIterator(HDF5Base):
                 vector_len = 3
                 if attribute == "position" or attribute == "vertex":
                     index = self._keys["particles_meta_float"]["vertex_x"]
-                    return self._data["particles_meta_float"][iter_counter,
-                                                              index:index+vector_len]
+                    return float_data[:, index:index+vector_len]
                 elif attribute == "direction":
                     index = self._keys["particles_meta_float"]["direction_x"]
-                    return self._data["particles_meta_float"][iter_counter,
-                                                              index:index+vector_len]
+                    return float_data[:, index:index+vector_len]
                 elif attribute == "interaction_info":
-                    group = ["particles_meta_float", "particles_meta_str"]
+                    groups = ["particles_meta_float", "particles_meta_str"]
+                    datasets = [float_data, str_data]
                     dic = {}
-                    for grp in group:
+                    for grp, data in zip(groups, datasets):
                         for key, value in self._keys[grp].items():
                             if "interaction" in key:
-                                dic[key] = self._data[grp][iter_counter,value]
+                                dic[key] = data[:, value]
                     return dic
                 else:
                     raise ValueError("This value is not supported yet")
             else:
                 if attribute in self._keys["particles_meta_float"]:
                     index = self._keys["particles_meta_float"][attribute]
-                    return self._data["particles_meta_float"][iter_counter, index]
-                else:
+                    return float_data[:, index]
+                elif attribute in self._keys["particles_meta_str"]:
                     index = self._keys["particles_meta_str"][attribute]
-                    return self._data["particles_meta_str"][iter_counter, index]
+                    return str_data[:, index]
+                else:
+                    raise ValueError("Unrecognized particle attribute '"+
+                                     attribute+"'")
 
         else:
             raise ValueError("Only string values supported as argument")
@@ -479,12 +480,12 @@ class EventIterator(HDF5Base):
                          "received_direction"]
         self._confirm_iterating()
 
-        iter_counter = self._get_table_slice(
-            self._locations_original["rays_meta"]
-        )
-        if iter_counter.start==iter_counter.stop:
+        float_data, str_data = self._get_event_data("rays_meta")
+
+        if len(float_data)==0 and len(str_data)==0:
             logger.debug("No ray data was stored for event %s",
-                         self._slice_start_event + self._iter_counter)
+                         self._iter_counter * self._slice_step
+                         + self._slice_start_event)
 
         if attribute is None:
             # Make sure that _read_hdf5_metadata function account for
@@ -492,6 +493,7 @@ class EventIterator(HDF5Base):
             # SPEED WARNING: Try to avoid this function, this accesses the file
             # directly. Can consider writing another function to return the
             # dictionaries using the stored data
+            raise NotImplementedError
             return self._read_metadata_to_dicts(
                 self._object,
                 self._locations_original["rays_meta"],
@@ -508,26 +510,25 @@ class EventIterator(HDF5Base):
                     index = self._keys["rays_meta_float"]["received_x"]
                 else:
                     raise ValueError("The attribute is not supported yet")
-                return self._data["rays_meta_float"][iter_counter, :,
-                                                     index:index+3]
+                return float_data[:, :, index:index+3]
 
             else:
                 if attribute in self._keys["rays_meta_float"]:
                     index = self._keys["rays_meta_float"][attribute]
-                    return self._data["rays_meta_float"][iter_counter, :, index]
-                else:
+                    return float_data[:, :, index]
+                elif attribute in self._keys["rays_meta_str"]:
                     index = self._keys["rays_meta_str"][attribute]
-                    return self._data["rays_meta_str"][iter_counter, :, index]
+                    return str_data[:, :, index]
+                else:
+                    raise ValueError("Unrecognized particle attribute '"+
+                                     attribute+"'")
         else:
             raise ValueError("Only string values supported as argument")
 
     @property
     def triggered(self):
         self._confirm_iterating()
-        iter_counter = self._get_table_slice(
-            self._locations_original["triggers"]
-        )
-        triggered = self._data['triggers'][iter_counter]
+        triggered = self._get_event_data("triggers")
         if len(triggered)==0:
             return None
         else:
@@ -536,16 +537,11 @@ class EventIterator(HDF5Base):
     @property
     def noise_bases(self):
         self._confirm_iterating()
-
-        iter_counter = self._get_table_slice(
-            self._locations_original["noise"]
-        )
-        if iter_counter.start==iter_counter.stop:
-            logger.debug("No noise data was stored for event %s",
-                         self._slice_start_event + self._iter_counter)
-
-        bases = self._data["noise"][iter_counter]
+        bases = self._get_event_data("noise")
         if len(bases)==0:
+            logger.debug("No noise data was stored for event %s",
+                         self._iter_counter * self._slice_step
+                         + self._slice_start_event)
             return bases
         else:
             return bases[0]
@@ -554,21 +550,18 @@ class EventIterator(HDF5Base):
         """Returns the list of trigger components which were triggered in the
         event """
         self._confirm_iterating()
-
-        iter_counter = self._get_table_slice(
-            self._locations_original["mc_triggers"]
-        )
-        if iter_counter.start==iter_counter.stop:
+        triggers = self._get_event_data("mc_triggers")
+        if len(triggers)==0:
             logger.debug("No monte carlo trigger data was stored for event %s",
-                         self._slice_start_event + self._iter_counter)
+                         self._iter_counter * self._slice_step
+                         + self._slice_start_event)
 
-        triggers = self._data["mc_triggers"][iter_counter]
         ray_number = self._convert_ray_value(ray)
         if ray_number is not None:
             if triggers.ndim==1:
                 triggers = np.array([triggers])
             if ray_number>=triggers.shape[0]:
-                raise ValueError("Invalid ray index ("+str(ray_number)+")")
+                return []
             else:
                 triggers = triggers[ray_number]
 
