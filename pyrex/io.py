@@ -618,7 +618,7 @@ class HDF5Reader(BaseReader,HDF5Base):
                                stop_event=stop,
                                step=1)
             return next(it)
-        if isinstance(key, slice):
+        elif isinstance(key, slice):
             start = 0 if key.start is None else key.start
             stop = self._num_events if key.stop is None else key.stop
             slice_range = min(self._slice_range, stop-start)
@@ -627,6 +627,13 @@ class HDF5Reader(BaseReader,HDF5Base):
                                  start_event=key.start,
                                  stop_event=key.stop,
                                  step=key.step)
+        elif isinstance(key, str):
+            if key in self._locations_original:
+                return self._file[self._locations_original[key]]
+            elif key in self._locations:
+                return self._file[self._locations[key]]
+            else:
+                return self._file[key]
         else:
             raise ValueError("Invalid key '"+str(key)+"'")
 
