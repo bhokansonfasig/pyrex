@@ -965,7 +965,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         elif name==self._data_locs['antennas']:
             data = self._file.create_dataset(
                 name=name, shape=(len(self._detector), 0),
-                dtype=np.int_, maxshape=(len(self._detector), None)
+                dtype=np.float_, maxshape=(len(self._detector), None)
             )
             data.dims[0].label = "antennas"
             data.dims[1].label = "attributes"
