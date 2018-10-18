@@ -409,14 +409,14 @@ class EventIterator(HDF5Base):
 
     def _get_event_data(self, group):
         if group.endswith("meta"):
-            float_data = ([] if not self._bool_dict[group+"_float"] else
-                          self._data[group+"_float"][self._iter_counter])
-            str_data = ([] if not self._bool_dict[group+"_str"] else
-                        self._data[group+"_str"][self._iter_counter])
+            float_data = (np.array([]) if not self._bool_dict[group+"_float"]
+                          else self._data[group+"_float"][self._iter_counter])
+            str_data = (np.array([]) if not self._bool_dict[group+"_str"]
+                        else self._data[group+"_str"][self._iter_counter])
             return float_data, str_data
         else:
-            return ([] if not self._bool_dict[group] else
-                    self._data[group][self._iter_counter])
+            return (np.array([]) if not self._bool_dict[group]
+                    else self._data[group][self._iter_counter])
 
 
     def get_particle_info(self, attribute=None):
