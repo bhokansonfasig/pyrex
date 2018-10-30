@@ -739,6 +739,20 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         self._filter_data = AMPLIFIER_GAIN
 
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `ARIANNAAntennaSystem` information."""
+        meta = super()._metadata
+        meta.update({
+            "name": self.name,
+            "lead_in_time": self.lead_in_time,
+            "amplification": self.amplification,
+            "amplifier_clipping": self.amplifier_clipping,
+            "threshold": self.threshold,
+            "trigger_window": self.trigger_window
+        })
+        return meta
+
     def setup_antenna(self, center_frequency=350e6, bandwidth=600e6,
                       resistance=8.5, z_axis=(0,0,1), x_axis=(1,0,0),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,

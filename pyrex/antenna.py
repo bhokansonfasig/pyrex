@@ -118,6 +118,31 @@ class Antenna:
     def __str__(self):
         return self.__class__.__name__+"(position="+repr(self.position)+")"
 
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `Antenna` information."""
+        return {
+            "class": str(type(self)),
+            "position_x": self.position[0],
+            "position_y": self.position[1],
+            "position_z": self.position[2],
+            "z_axis_x": self.z_axis[0],
+            "z_axis_y": self.z_axis[1],
+            "z_axis_z": self.z_axis[2],
+            "x_axis_x": self.x_axis[0],
+            "x_axis_y": self.x_axis[1],
+            "x_axis_z": self.x_axis[2],
+            "antenna_factor": self.antenna_factor,
+            "efficiency": self.efficiency,
+            "noisy": int(self.noisy),
+            "unique_noises": self.unique_noises,
+            "freq_range_min": self.freq_range[0],
+            "freq_range_max": self.freq_range[1],
+            "noise_rms": np.nan if self.noise_rms is None else self.noise_rms,
+            "temperature": np.nan if self.temperature is None else self.temperature,
+            "resistance": np.nan if self.resistance is None else self.resistance
+        }
+
     def set_orientation(self, z_axis=(0,0,1), x_axis=(1,0,0)):
         """
         Sets the orientation of the antenna.
@@ -645,6 +670,17 @@ class DipoleAntenna(Antenna):
         b, a  = scipy.signal.butter(1, 2*np.pi*np.array(self.freq_range),
                                     btype='bandpass', analog=True)
         self.filter_coeffs = (b, a)
+
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `DipoleAntenna` information."""
+        meta = super()._metadata
+        meta.update({
+            "name": self.name,
+            "threshold": self.threshold,
+            "effective_height": self.effective_height
+        })
+        return meta
 
 
     def trigger(self, signal):

@@ -85,6 +85,24 @@ class BasicRayTracePath(LazyMutableClass):
         super().__init__()
 
     @property
+    def _metadata(self):
+        """Metadata dictionary for writing `BasicRayTracePath` information."""
+        return {
+            "n0": self.n0,
+            "dz": self.dz,
+            "emitted_x": self.emitted_direction[0],
+            "emitted_y": self.emitted_direction[1],
+            "emitted_z": self.emitted_direction[2],
+            "received_x": self.received_direction[0],
+            "received_y": self.received_direction[1],
+            "received_z": self.received_direction[2],
+            "launch_angle": np.arccos(self.emitted_direction[2]),
+            "receiving_angle": np.pi-np.arccos(self.received_direction[2]),
+            "path_length": self.path_length,
+            "tof": self.tof
+        }
+
+    @property
     def z_turn_proximity(self):
         """
         Parameter for how closely path approaches z_turn.
@@ -306,7 +324,7 @@ class BasicRayTracePath(LazyMutableClass):
 
         return np.exp(-np.abs(self.z_integral(integrand)))
 
-    def propagate(self, signal, polarization=None):
+    def propagate(self, signal=None, polarization=None):
         """
         Propagate the signal with optional polarization along the ray path.
 
@@ -316,7 +334,7 @@ class BasicRayTracePath(LazyMutableClass):
 
         Parameters
         ----------
-        signal : Signal
+        signal : Signal, optional
             ``Signal`` object to propagate.
         polarization : array_like, optional
             Vector representing the linear polarization of the `signal`.
@@ -325,17 +343,22 @@ class BasicRayTracePath(LazyMutableClass):
         -------
         Signal
             ``Signal`` object representing the original `signal` attenuated
-            along the ray path.
+            along the ray path. Only returned if `signal` was not ``None``.
         array_like
-            Polarization of the `signal` at the end of the ray path.
+            Polarization of the `signal` at the end of the ray path. Only
+            returned if `polarization` was not ``None``.
 
         See Also
         --------
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        copy = Signal(signal.times+self.tof, signal.values,
-                      value_type=signal.value_type)
+        if signal is None and polarization is None:
+            return
+
+        if signal is not None:
+            copy = Signal(signal.times+self.tof, signal.values,
+                          value_type=signal.value_type)
 
         if polarization is None:
             copy.filter_frequencies(self.attenuation)
@@ -352,22 +375,27 @@ class BasicRayTracePath(LazyMutableClass):
             # Amplitudes of s and p components
             pol_s = np.dot(polarization, u_s0)
             pol_p = np.dot(polarization, u_p0)
-
-            # Apply fresnel s and p coefficients in addition to attenuation
-            # (In order to treat the phase delays of total internal reflection
-            # properly, likely need a more robust framework capable of handling
-            # elliptically polarized signals)
+            # Fresnel reflectances of s and p components
             r_s, r_p = self.fresnel
-            def attenuation_with_fresnel(freqs):
-                return (self.attenuation(freqs) *
-                        np.abs(np.sqrt(((r_s*pol_s)**2 + (r_p*pol_p)**2))))
-            copy.filter_frequencies(attenuation_with_fresnel)
 
             # Polarization vector at the receiving point
             receiving_polarization = normalize(pol_s*np.abs(r_s) * u_s0 +
                                                pol_p*np.abs(r_p) * u_p1)
 
-            return copy, receiving_polarization
+            if signal is None:
+                return receiving_polarization
+
+            else:
+                # Apply fresnel s and p coefficients in addition to attenuation
+                # (In order to treat the phase delays of total internal
+                # reflection properly, likely need a more robust framework
+                # capable of handling elliptically polarized signals)
+                def attenuation_with_fresnel(freqs):
+                    return (self.attenuation(freqs) *
+                            np.abs(np.sqrt(((r_s*pol_s)**2 + (r_p*pol_p)**2))))
+                copy.filter_frequencies(attenuation_with_fresnel)
+
+                return copy, receiving_polarization
 
     @lazy_property
     def coordinates(self):

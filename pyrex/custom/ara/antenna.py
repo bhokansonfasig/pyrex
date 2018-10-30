@@ -799,6 +799,19 @@ class ARAAntennaSystem(AntennaSystem):
 
         self._filter_data = ALL_FILTERS
 
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `ARAAntennaSystem` information."""
+        meta = super()._metadata
+        meta.update({
+            "name": self.name,
+            "lead_in_time": self.lead_in_time,
+            "amplification": self.amplification,
+            "amplifier_clipping": self.amplifier_clipping,
+            "power_threshold": self.power_threshold,
+        })
+        return meta
+
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
                       resistance=8.5, orientation=(0,0,1),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
