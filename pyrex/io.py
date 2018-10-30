@@ -298,7 +298,8 @@ class HDF5Base:
         return new_name
 
     @staticmethod
-    def _read_metadata_to_dicts(file, name, index=None):
+    def _read_metadata_to_dicts(data, name, index=None,
+                                str_keys=None, float_keys=None):
         """
         Read data from a metadata group into a dictionary for convenience.
 
@@ -308,14 +309,20 @@ class HDF5Base:
 
         Parameters
         ----------
-        file
-            hdf5 file object to be read.
+        data
+            hdf5 file object or data dict containing the data.
         name : str
             Location and name of the metadata group. Must contain the full path
-            to the location and name of the metadata group.
+            to the location and name of the metadata group if reading from a
+            file. Must be the key prefix (without '_float' or '_str') if
+            reading from a dictionary.
         index : int or slice, optional
             Index or slice to be applied on the first dimension of the 'str'
             and 'float' datasets. No slicing of the datasets by default.
+        str_keys : list of str, optional
+            List of keys corresponding to columns in the 'str' dataset.
+        float_keys : list of str, optional
+            List of keys corresponding to columns in the 'float' dataset.
 
         Returns
         -------
@@ -324,9 +331,12 @@ class HDF5Base:
             with column names as keys.
 
         """
-        # TODO: Make this function work with data or file objects
-        str_metadata = file[name]['str']
-        float_metadata = file[name]['float']
+        if isinstance(data, dict):
+            str_metadata = data[name+'_str']
+            float_metadata = data[name+'_float']
+        else:
+            str_metadata = data[name]['str']
+            float_metadata = data[name]['float']
 
         if index is None:
             str_table = str_metadata
@@ -334,6 +344,13 @@ class HDF5Base:
         else:
             str_table = str_metadata[index]
             float_table = float_metadata[index]
+
+        if str_keys is None:
+            str_keys = [bytes.decode(key) for key
+                        in str_metadata.attrs['keys']]
+        if float_keys is None:
+            float_keys = [bytes.decode(key) for key
+                          in float_metadata.attrs['keys']]
 
         if str_table.ndim!=float_table.ndim:
             raise ValueError("Metadata group '"+name+"' not readable")
@@ -343,18 +360,18 @@ class HDF5Base:
         if ndim==0:
             return {}
 
-        if (str_table.shape[key_dim]!=len(str_metadata.attrs['keys']) or
-                float_table.shape[key_dim]!=len(float_metadata.attrs['keys'])):
+        if (str_table.shape[key_dim]!=len(str_keys) or
+                float_table.shape[key_dim]!=len(float_keys)):
             raise ValueError("Metadata group '"+name+"' not readable")
 
         # Recursively pull out list (of lists ...) of dictionaries
         def get_dicts_recursive(dimension, str_data, float_data):
             if dimension==key_dim%ndim:
                 meta_dict = {}
-                for j, key in enumerate(str_metadata.attrs['keys']):
-                    meta_dict[bytes.decode(key)] = str_data[j]
-                for j, key in enumerate(float_metadata.attrs['keys']):
-                    meta_dict[bytes.decode(key)] = float_data[j]
+                for j, key in enumerate(str_keys):
+                    meta_dict[key] = str_data[j]
+                for j, key in enumerate(float_keys):
+                    meta_dict[key] = float_data[j]
                 return meta_dict
             else:
                 if str_data.shape[0]!=float_data.shape[0]:
@@ -367,7 +384,7 @@ class HDF5Base:
         return get_dicts_recursive(0, str_table, float_table)
 
     @staticmethod
-    def _read_datasets_to_dicts(file, name, index=None):
+    def _read_dataset_to_dicts(data, name, index=None, keys=None):
         """
         Read data from a dataset into a dictionary for convenience.
 
@@ -376,13 +393,17 @@ class HDF5Base:
 
         Parameters
         ----------
-        file
-            hdf5 file object to be read.
+        data
+            hdf5 file object or data dict containing the data.
         name : str
-            Location and name of the dataset. Must contain the full path.
+            Location and name of the dataset. Must contain the full path to the
+            location and name of the dataset if reading from a file. Must be
+            the key if reading from a dictionary.
         index : int or slice, optional
             Index or slice to be applied on the first dimension of the dataset.
             No slicing of the dataset by default.
+        keys : list of str, optional
+            List of keys corresponding to columns in the dataset.
 
         Returns
         -------
@@ -391,20 +412,28 @@ class HDF5Base:
             names as keys.
 
         """
-        table_metadata = file[name]
-        if index is None:
-            table = table_metadata
+        if isinstance(data, dict):
+            dataset = data[name]
         else:
-            table = table_metadata[index]
+            dataset = data[name]
+
+        if index is None:
+            table = dataset
+        else:
+            table = dataset[index]
+
+        if keys is None:
+            keys = [bytes.decode(key) for key in dataset.attrs['keys']]
+
         ndim = table.ndim
         key_dim = -1
 
         # Recursively pull out list (of lists ...) of dictionaries
-        def get_dicts_recursive(dimension, data):
+        def get_dicts_recursive(dimension, table_data):
             if dimension == key_dim % ndim:
                 meta_dict = {}
-                for j, key in enumerate(table_metadata.attrs['keys']):
-                    meta_dict[bytes.decode(key)] = data[j]
+                for j, key in enumerate(keys):
+                    meta_dict[key] = table_data[j]
                 return meta_dict
             else:
                 return [
@@ -412,7 +441,8 @@ class HDF5Base:
                         dimension+1, table[i])
                     for i in range(table.shape[0])
                 ]
-        return get_dicts_recursive(0,table)
+
+        return get_dicts_recursive(0, table)
 
     @staticmethod
     def _get_bool_dict(file, locations):
@@ -652,7 +682,7 @@ class EventIterator(HDF5Base):
                     self._slice_step)
         self._data['indices'] = self._object[self._locations['indices']]
         for key, val in self._locations.items():
-            if key=="indices" or not self._bool_dict[key]:
+            if key=="indices":
                 continue
             parts = key.split("_")
             if parts[-1]=="float" or parts[-1]=="str":
@@ -782,14 +812,18 @@ class EventIterator(HDF5Base):
                          + self._slice_start_event)
 
         if attribute is None:
-            # SPEED CONCERN : This directly accesses the file, try to avoid it
-            # as much as you can
-            raise NotImplementedError
             return self._read_metadata_to_dicts(
-                self._object,
-                self._locations_original["particles_meta"],
-                iter_counter
+                data=self._data,
+                name="particles_meta",
+                index=self._iter_counter,
+                str_keys=[item[0] for item in
+                          sorted(self._keys['particles_meta_str'].items(),
+                                 key=lambda x: x[1])],
+                float_keys=[item[0] for item in
+                            sorted(self._keys['particles_meta_float'].items(),
+                                   key=lambda x: x[1])]
             )
+
         elif isinstance(attribute,str):
             if attribute in custom_values:
                 vector_len = 3
@@ -855,16 +889,16 @@ class EventIterator(HDF5Base):
                          + self._slice_start_event)
 
         if attribute is None:
-            # Make sure that _read_hdf5_metadata function account for
-            # multiple rays
-            # SPEED WARNING: Try to avoid this function, this accesses the file
-            # directly. Can consider writing another function to return the
-            # dictionaries using the stored data
-            raise NotImplementedError
             return self._read_metadata_to_dicts(
-                self._object,
-                self._locations_original["rays_meta"],
-                iter_counter
+                data=self._data,
+                name="rays_meta",
+                index=self._iter_counter,
+                str_keys=[item[0] for item in
+                          sorted(self._keys['rays_meta_str'].items(),
+                                 key=lambda x: x[1])],
+                float_keys=[item[0] for item in
+                            sorted(self._keys['rays_meta_float'].items(),
+                                   key=lambda x: x[1])]
             )
 
         elif isinstance(attribute,str):
@@ -889,6 +923,7 @@ class EventIterator(HDF5Base):
                 else:
                     raise ValueError("Unrecognized particle attribute '"+
                                      attribute+"'")
+
         else:
             raise ValueError("Only string values supported as argument")
 
