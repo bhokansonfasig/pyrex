@@ -1110,8 +1110,14 @@ class HDF5Reader(BaseReader, HDF5Base):
                 return self._file[self._locations_original[key]]
             elif key in self._locations:
                 return self._file[self._locations[key]]
-            else:
+            elif key in self._file:
                 return self._file[key]
+            elif self._analysis_location(key) in self._file:
+                return self._file[self._analysis_location(key)]
+            else:
+                raise ValueError("'"+key+"' does not exist in "
+                                 +str(self.filename))
+
         else:
             raise ValueError("Invalid key '"+str(key)+"'")
 
