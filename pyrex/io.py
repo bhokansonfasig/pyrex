@@ -152,55 +152,55 @@ class BaseWriter:
         raise NotImplementedError
 
 
-class BaseRebuilder:
-    def __init__(self, filename):
-        pass
+# class BaseRebuilder:
+#     def __init__(self, filename):
+#         pass
 
-    def __enter__(self):
-        self.open()
-        return self
+#     def __enter__(self):
+#         self.open()
+#         return self
 
-    def __exit__(self, type, value, traceback):
-        self.close()
+#     def __exit__(self, type, value, traceback):
+#         self.close()
 
-    def open(self):
-        self._detector = None
-        raise NotImplementedError
+#     def open(self):
+#         self._detector = None
+#         raise NotImplementedError
 
-    def close(self):
-        raise NotImplementedError
+#     def close(self):
+#         raise NotImplementedError
 
-    @property
-    def is_open(self):
-        raise NotImplementedError
+#     @property
+#     def is_open(self):
+#         raise NotImplementedError
 
-    def __iter__(self):
-        self._iter_counter = -1
-        return self
+#     def __iter__(self):
+#         self._iter_counter = -1
+#         return self
 
-    def __next__(self):
-        self._iter_counter += 1
-        if self._iter_counter < len(self):
-            return self[self._iter_counter]
-        else:
-            raise StopIteration
+#     def __next__(self):
+#         self._iter_counter += 1
+#         if self._iter_counter < len(self):
+#             return self[self._iter_counter]
+#         else:
+#             raise StopIteration
 
-    def __len__(self):
-        raise NotImplementedError
+#     def __len__(self):
+#         raise NotImplementedError
 
-    def __getitem__(self, key):
-        event = self.rebuild_event(key)
-        self.rebuild_waveforms(key)
-        return event, self._detector
+#     def __getitem__(self, key):
+#         event = self.rebuild_event(key)
+#         self.rebuild_waveforms(key)
+#         return event, self._detector
 
-    def rebuild_event(self, index):
-        raise NotImplementedError
+#     def rebuild_event(self, index):
+#         raise NotImplementedError
 
-    def rebuild_detector(self):
-        raise NotImplementedError
+#     def rebuild_detector(self):
+#         raise NotImplementedError
 
-    def rebuild_waveforms(self, index):
-        raise NotImplementedError
+#     def rebuild_waveforms(self, index):
+#         raise NotImplementedError
 
 
 
@@ -2511,91 +2511,3 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
         """
         self._write_metadata(self._data_locs['file_meta'], metadata)
-
-
-class AntennaProxy(Antenna):
-    def __init__(self, metadata_dict):
-        position = metadata_dict['position']
-        super().__init__(position=position)
-        for key, val in metadata_dict.items():
-            self.__dict__[key] = val
-
-
-class HDF5Rebuilder(BaseRebuilder):
-    def __init__(self, filename, use_detector_proxy=False):
-        if filename.endswith(".hdf5") or filename.endswith(".h5"):
-            self.filename = filename
-        else:
-            raise ValueError(filename+" is not an hdf5 file")
-        self.use_proxy = use_detector_proxy
-
-    def open(self):
-        self._file = h5py.File(self.filename, mode='r')
-        if self.use_proxy:
-            self._detector = self.build_proxy_detector()
-        else:
-            self._detector = self.rebuild_detector()
-
-    def close(self):
-        self._file.close()
-
-    def __len__(self):
-        return (self._file['events'].shape[0] +
-                self._file['complex_events'].shape[0])
-
-    def _read_metadata(self, group, index=None):
-        return _read_hdf5_metadata_to_dicts(self._file, group, index)
-
-    def rebuild_event(self, index):
-        event_metadata = self._read_metadata('events', index)
-        event_roots = []
-        for particle_metadata in event_metadata:
-            required_keys = [
-                'particle_id', 'vertex_x', 'vertex_y', 'vertex_z',
-                'direction_x', 'direction_y', 'direction_z', 'energy'
-            ]
-            for key in required_keys:
-                if key not in particle_metadata:
-                    raise ValueError(
-                        "Event metadata does not have a value for "+key)
-            particle_id = particle_metadata['particle_id']
-            vertex = (particle_metadata['vertex_x'],
-                      particle_metadata['vertex_y'],
-                      particle_metadata['vertex_z'])
-            direction = (particle_metadata['direction_x'],
-                         particle_metadata['direction_y'],
-                         particle_metadata['direction_z'])
-            energy = particle_metadata['energy']
-            p = Particle(particle_id=particle_id, vertex=vertex,
-                         direction=direction, energy=energy)
-            event_roots.append(p)
-        return Event(event_roots)
-
-    def rebuild_detector(self):
-        detector_metadata = self._read_metadata('antennas')
-
-    def build_proxy_detector(self):
-        proxy_detector = []
-        detector_metadata = self._read_metadata('antennas')
-        for antenna_metadata in detector_metadata:
-            position = (antenna_metadata.pop('position_x'),
-                        antenna_metadata.pop('position_y'),
-                        antenna_metadata.pop('position_z'))
-            antenna_metadata['position'] = position
-            proxy_detector.append(AntennaProxy(antenna_metadata))
-        return proxy_detector
-
-    def rebuild_waveforms(self, index, detector=None):
-        if detector is None:
-            detector = self._detector
-        for ant in detector:
-            ant.clear()
-        # waveform_metadata = self._read_metadata('waveforms', index)
-        data = self._file['events'][index]
-        if data.shape[0] != len(detector):
-            raise ValueError("Invalid number of antennas in given detector")
-
-        for i, ant in enumerate(detector):
-            for waveform_data in data[i]:
-                signal = Signal(waveform_data[0], waveform_data[1])
-                ant._all_waves.append(signal)
