@@ -1351,7 +1351,7 @@ class HDF5Reader(BaseReader, HDF5Base):
         and monte-carlo based.
 
         """
-        ant_dict_data = self._read_datasets_to_dicts(
+        ant_dict_data = self._read_dataset_to_dicts(
             self._file, "/data/antennas"
         )
         ant_dict_MC = self._read_metadata_to_dicts(
