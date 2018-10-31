@@ -1085,6 +1085,12 @@ class HDF5Reader(BaseReader, HDF5Base):
             If `int`, gets a single event. If `slice`, gets a slice of events.
             If `str`, accesses the corresponding hdf5 group or dataset.
 
+        Returns
+        -------
+        EventIterator or Group or Dataset
+            `EventIterator` if a `key` is an integer or slice. `Group` or
+            `Dataset` object of the hdf5 file if `key` is a string.
+
         """
         if not self.is_open:
             raise IOError("File is not open")
@@ -1106,20 +1112,37 @@ class HDF5Reader(BaseReader, HDF5Base):
                                  stop_event=key.stop,
                                  step=key.step)
         elif isinstance(key, str):
-            if key in self._locations_original:
-                return self._file[self._locations_original[key]]
-            elif key in self._locations:
-                return self._file[self._locations[key]]
-            elif key in self._file:
-                return self._file[key]
-            elif self._analysis_location(key) in self._file:
-                return self._file[self._analysis_location(key)]
+            loc = self._get_key_location(key)
+            if loc in self._file:
+                return self._file[loc]
             else:
                 raise ValueError("'"+key+"' does not exist in "
                                  +str(self.filename))
 
         else:
             raise ValueError("Invalid key '"+str(key)+"'")
+
+    def __contains__(self, item):
+        """
+        Check whether the given `item` is in the reader.
+
+        Only supports checks for groups or datasets in the wrapped hdf5 file
+        object.
+
+        Parameters
+        ----------
+        item : str
+            The hdf5 group or dataset to be checked for existence.
+
+        Returns
+        -------
+        bool
+            Existence of the `item` in the reader file.
+
+        """
+        if not self.is_open:
+            raise IOError("File is not open")
+        return self._get_key_location(item) in self._file
 
     def __len__(self):
         """
@@ -1135,6 +1158,34 @@ class HDF5Reader(BaseReader, HDF5Base):
         """
         return EventIterator(hdf5_file=self._file,
                              slice_range=self._slice_range)
+
+    def _get_key_location(self, key):
+        """
+        Get the location of a key representing a group or dataset in the file.
+
+        Parameters
+        ----------
+        key : str
+            Key representing the name or full path of a group or dataset to be
+            found in the file.
+
+        Returns
+        -------
+        str
+            Full path of the group or dataset in the file. Null string if the
+            group or dataset doesn't exist in the file.
+
+        """
+        if key in self._file:
+            return key
+        elif key in self._locations_original:
+            return self._locations_original[key]
+        elif key in self._locations:
+            return self._locations[key]
+        elif self._analysis_location(key) in self._file:
+            return self._analysis_location(key)
+        else:
+            return ""
 
     def open(self):
         """
@@ -1486,6 +1537,85 @@ class HDF5Writer(BaseWriter, HDF5Base):
                     dictionary[key] = value
         else:
             raise TypeError("Unrecognized type for keys")
+
+    def __getitem__(self, key):
+        """
+        Get a specified group or dataset from the file.
+
+        Provides direct access to the hdf5 groups and datasets.
+
+        Parameters
+        ----------
+        key : str
+            The hdf5 group or dataset to be given.
+
+        Returns
+        -------
+        Group or Dataset
+            Group or dataset object of the hdf5 file.
+
+        """
+        if isinstance(key, str):
+            loc = self._get_key_location(key)
+            if loc in self._file:
+                return self._file[loc]
+            else:
+                raise ValueError("'"+key+"' does not exist in "
+                                 +str(self.filename))
+        else:
+            raise ValueError("Invalid key '"+str(key)+"'")
+
+    def __contains__(self, item):
+        """
+        Check whether the given `item` is in the writer.
+
+        Only supports checks for groups or datasets in the wrapped hdf5 file
+        object.
+
+        Parameters
+        ----------
+        item : str
+            The hdf5 group or dataset to be checked for existence.
+
+        Returns
+        -------
+        bool
+            Existence of the `item` in the writer file.
+
+        """
+        if not self.is_open:
+            raise IOError("File is not open")
+        return self._get_key_location(item) in self._file
+
+    def _get_key_location(self, key):
+        """
+        Get the location of a key representing a group or dataset in the file.
+
+        Parameters
+        ----------
+        key : str
+            Key representing the name or full path of a group or dataset to be
+            found in the file.
+
+        Returns
+        -------
+        str
+            Full path of the group or dataset in the file. Null string if the
+            group or dataset doesn't exist in the file.
+
+        """
+        if key in self._file:
+            return key
+        elif key in self._data_locs:
+            return self._data_locs[key]
+        elif key.endswith('_str') and key[:-4] in self._data_locs:
+            return self._data_locs[key[:-4]]+'/str'
+        elif key.endswith('_float') and key[:-6] in self._data_locs:
+            return self._data_locs[key[:-6]]+'/float'
+        elif self._analysis_location(key) in self._file:
+            return self._analysis_location(key)
+        else:
+            return ""
 
     def open(self):
         """
