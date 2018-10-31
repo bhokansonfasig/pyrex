@@ -1587,6 +1587,24 @@ class HDF5Writer(BaseWriter, HDF5Base):
             raise IOError("File is not open")
         return self._get_key_location(item) in self._file
 
+    def __delitem__(self, key):
+        """
+        Delete a specified group or dataset from the file.
+
+        Provides direct access to delete the hdf5 groups and datasets.
+
+        Parameters
+        ----------
+        key : str
+            The hdf5 group or dataset to be removed.
+
+        """
+        if isinstance(key, str):
+            loc = self._get_key_location(key)
+            del self._file[loc]
+        else:
+            raise ValueError("Invalid key '"+str(key)+"'")
+
     def _get_key_location(self, key):
         """
         Get the location of a key representing a group or dataset in the file.
