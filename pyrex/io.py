@@ -2517,3 +2517,64 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
         """
         self._write_metadata(self._data_locs['file_meta'], metadata)
+
+
+
+class File:
+    """
+    Class for reading or writing data files.
+
+    Works as a context manager and allows for reading or writing
+    simulation/real data or analysis-level data to the given file. Chooses
+    the appropriate class for handling the given file type.
+
+    Parameters
+    ----------
+    filename : str
+        File name to open in the given write mode.
+    mode : str, optional
+        Mode with which to open the file.
+    **kwargs
+        Keyword arguments passed on to the appropriate file handler.
+
+    Attributes
+    ----------
+    readers : dict
+        Dictionary with file extensions as keys and values with the
+        corresponding classes used to handle reading of those file types.
+    writers : dict
+        Dictionary with file extensions as keys and values with the
+        corresponding classes used to handle writing of those file types.
+
+    See Also
+    --------
+    HDF5Reader : Class for reading data from an hdf5 file.
+    HDF5Writer : Class for writing data to an hdf5 file.
+
+    """
+    readers = {
+        "h5": HDF5Reader,
+        "hdf5": HDF5Reader,
+    }
+
+    writers = {
+        "h5": HDF5Writer,
+        "hdf5": HDF5Writer,
+    }
+
+    def __new__(cls, filename, mode='r', **kwargs):
+        if '.' not in filename:
+            raise ValueError("Unable to handle filenames without extensions")
+        _, suffix = filename.rsplit(".", 1)
+
+        if mode=='r':
+            if suffix not in cls.readers:
+                raise ValueError("Unable to read filenames with extension '."
+                                 +suffix+"'")
+            return cls.readers[suffix](filename, **kwargs)
+
+        else:
+            if suffix not in cls.writers:
+                raise ValueError("Unable to write filenames with extension '."
+                                 +suffix+"'")
+            return cls.writers[suffix](filename, mode=mode, **kwargs)

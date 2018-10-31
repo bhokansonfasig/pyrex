@@ -19,6 +19,7 @@ from .particle import Event, Particle, NeutrinoInteraction
 from .generation import ShadowGenerator, ListGenerator, FileGenerator
 from .ray_tracing import RayTracer, RayTracePath
 from .kernel import EventKernel
+from .io import File
 
 
 # Allow users to create their own (or borrow from others) modules that add to
