@@ -709,6 +709,34 @@ class EventIterator(HDF5Base):
                              "next(<iterator>)")
 
 
+    def _get_event_data(self, group):
+        """
+        Get data from the given dataset or metadata group.
+
+        Parameters
+        ----------
+        group : str
+            Short name of the dataset of metadata group (not the full path).
+
+        Returns
+        -------
+        ndarray
+            If the `group` is a dataset, returns a single array of data.
+            If the `group` is a metadata group, returns a tuple of two
+            arrays representing the float data and string data, respectively.
+
+        """
+        if group.endswith("meta"):
+            float_data = (np.array([]) if not self._bool_dict[group+"_float"]
+                          else self._data[group+"_float"][self._iter_counter])
+            str_data = (np.array([]) if not self._bool_dict[group+"_str"]
+                        else self._data[group+"_str"][self._iter_counter])
+            return float_data, str_data
+        else:
+            return (np.array([]) if not self._bool_dict[group]
+                    else self._data[group][self._iter_counter])
+
+
     def get_waveforms(self, antenna_id=None, waveform_type=None):
         """
         Get waveform data for the event.
@@ -726,13 +754,21 @@ class EventIterator(HDF5Base):
 
         Returns
         -------
-        array_like
+        ndarray
             Specified waveform data from the event.
 
         """
         self._confirm_iterating()
 
+        if not self._bool_dict["waveforms"]:
+            raise ValueError("Waveform data was not saved in this file")
+
         data = self._get_event_data("waveforms")
+        if len(data)==0:
+            logger.debug("No waveform data was stored for event %s",
+                         self._iter_counter * self._slice_step
+                         + self._slice_start_event)
+            return data
 
         if antenna_id is None:
             antenna_id = slice(None)
@@ -745,40 +781,11 @@ class EventIterator(HDF5Base):
             return data[:, antenna_id]
         elif isinstance(wf_index, int):
             if wf_index>=data.shape[0]:
-                return []
+                return np.array([])
             return data[wf_index, antenna_id]
         else:
             raise ValueError("The parameter 'waveform_type' should either be "+
                              "an integer or a string")
-
-
-    def _get_event_data(self, group):
-        """
-        Get data from the given dataset or metadata group.
-
-        Parameters
-        ----------
-        group : str
-            Short name of the dataset of metadata group (not the full path).
-
-        Returns
-        -------
-        array_like
-            If the `group` is a dataset, returns a single `array_like` object.
-            If the `group` is a metadata group, returns a tuple of two
-            `array_like` objects representing the float data and string data,
-            respectively.
-
-        """
-        if group.endswith("meta"):
-            float_data = (np.array([]) if not self._bool_dict[group+"_float"]
-                          else self._data[group+"_float"][self._iter_counter])
-            str_data = (np.array([]) if not self._bool_dict[group+"_str"]
-                        else self._data[group+"_str"][self._iter_counter])
-            return float_data, str_data
-        else:
-            return (np.array([]) if not self._bool_dict[group]
-                    else self._data[group][self._iter_counter])
 
 
     def get_particle_info(self, attribute=None):
@@ -795,8 +802,8 @@ class EventIterator(HDF5Base):
 
         Returns
         -------
-        list
-            List of dictionaries with all particle data or list of the desired
+        list or ndarray
+            List of dictionaries with all particle data or array of the desired
             attributes for each particle of the event.
 
         """
@@ -804,12 +811,17 @@ class EventIterator(HDF5Base):
         # Possibly add distance and radius to custom_values
         self._confirm_iterating()
 
+        if (not self._bool_dict["particles_meta_float"] and
+                not self._bool_dict["particles_meta_str"]):
+            raise ValueError("Particle data was not saved in this file")
+
         float_data, str_data = self._get_event_data("particles_meta")
 
         if len(float_data)==0 and len(str_data)==0:
             logger.debug("No particle data was stored for event %s",
                          self._iter_counter * self._slice_step
                          + self._slice_start_event)
+            return float_data
 
         if attribute is None:
             return self._read_metadata_to_dicts(
@@ -872,8 +884,8 @@ class EventIterator(HDF5Base):
 
         Returns
         -------
-        list
-            List of dictionaries with all ray path data or list of the desired
+        list or ndarray
+            List of dictionaries with all ray path data or array of the desired
             attributes for each ray of the event.
 
         """
@@ -881,12 +893,17 @@ class EventIterator(HDF5Base):
                          "received_direction"]
         self._confirm_iterating()
 
+        if (not self._bool_dict["rays_meta_float"] and
+                not self._bool_dict["rays_meta_str"]):
+            raise ValueError("Ray data was not saved in this file")
+
         float_data, str_data = self._get_event_data("rays_meta")
 
         if len(float_data)==0 and len(str_data)==0:
             logger.debug("No ray data was stored for event %s",
                          self._iter_counter * self._slice_step
                          + self._slice_start_event)
+            return float_data
 
         if attribute is None:
             return self._read_metadata_to_dicts(
@@ -936,6 +953,8 @@ class EventIterator(HDF5Base):
 
         """
         self._confirm_iterating()
+        if not self._bool_dict["triggers"]:
+            raise ValueError("Trigger data was not saved in this file")
         triggered = self._get_event_data("triggers")
         if len(triggered)==0:
             return None
@@ -949,6 +968,8 @@ class EventIterator(HDF5Base):
 
         """
         self._confirm_iterating()
+        if not self._bool_dict["noise"]:
+            raise ValueError("Noise data was not saved in this file")
         bases = self._get_event_data("noise")
         if len(bases)==0:
             logger.debug("No noise data was stored for event %s",
@@ -978,6 +999,9 @@ class EventIterator(HDF5Base):
 
         """
         self._confirm_iterating()
+        if not self._bool_dict["mc_triggers"]:
+            raise ValueError("Monte Carlo trigger data was not saved in this "+
+                             "file")
         triggers = self._get_event_data("mc_triggers")
         if len(triggers)==0:
             logger.debug("No monte carlo trigger data was stored for event %s",
@@ -1224,7 +1248,6 @@ class HDF5Reader(BaseReader, HDF5Base):
         self._event_indices_key = self._get_keys_dict(self._file,
                                                       self._locations["indices"])
 
-        self._event_data = None
         if self._bool_dict["waveforms"]:
             self._event_data = self._file[self._locations["waveforms"]]
 
@@ -1289,7 +1312,7 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         Returns
         -------
-        array_like
+        ndarray
             Array of all waveforms of the given type in the file.
 
         """
@@ -1319,13 +1342,12 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         Returns
         -------
-        array_like
+        ndarray
             Waveform data from the specified portions of the file.
 
         """
-        if self._event_data is None:
-            raise ValueError("The waveforms were not saved for this run. "+
-                             "Please check the run configuration")
+        if not self._bool_dict["waveforms"]:
+            raise ValueError("Waveform data was not saved in this file")
 
         if event_id is None and waveform_type is not None:
             return self._get_waveform_of_one_kind(waveform_type)
@@ -1402,11 +1424,15 @@ class HDF5Reader(BaseReader, HDF5Base):
         and monte-carlo based.
 
         """
+        if (not self._bool_dict["antennas"] and
+                not self._bool_dict["antennas_meta_float"] and
+                not self._bool_dict["antennas_meta_str"]):
+            raise ValueError("Antenna data was not saved in this file")
         ant_dict_data = self._read_dataset_to_dicts(
-            self._file, "/data/antennas"
+            self._file, self._locations_original["antennas"]
         )
         ant_dict_MC = self._read_metadata_to_dicts(
-            self._file, "/monte_carlo_data/antennas"
+            self._file, self._locations_original["antennas_meta"]
         )
         return self._recursive_combine_dicts(ant_dict_data, ant_dict_MC)
 
@@ -1416,7 +1442,12 @@ class HDF5Reader(BaseReader, HDF5Base):
         Metadata from the file's metadata datasets.
 
         """
-        return self._read_metadata_to_dicts(self._file, "file_metadata")
+        if (not self._bool_dict["file_meta_float"] and
+                not self._bool_dict["file_meta_str"]):
+            raise ValueError("File metadata was not saved in this file")
+        return self._read_metadata_to_dicts(
+            self._file, self._locations_original["file_meta"]
+        )
 
 
 
