@@ -379,14 +379,12 @@ class ARAAntenna(Antenna):
         """
         # From AraSim GaintoHeight function, removing gain to receive function.
         # gain=4*pi*A_eff/lambda^2 and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
+        # Then 0.5 to calculate power with heff (cancels 2 above)
         heff = np.zeros(len(frequencies))
         n = IceModel.index(self.position[2])
-        heff[frequencies!=0] = 2*np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
-                                         * n*50/377 /(4*np.pi))
-        # From AraSim ApplyAntFactors function, removing polarization.
-        # sqrt(2) for 3dB splitter for TURF, SURF,
-        # 0.5 to calculate power with heff
-        return heff * 0.5 / np.sqrt(2)
+        heff[frequencies!=0] = np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
+                                       * n*50/377 /(4*np.pi))
+        return heff
 
 
     def receive(self, signal, direction=None, polarization=None,
@@ -813,7 +811,7 @@ class ARAAntennaSystem(AntennaSystem):
         return meta
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
-                      resistance=8.5, orientation=(0,0,1),
+                      resistance=4.2, orientation=(0,0,1),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
                       **kwargs):
         """
@@ -852,7 +850,7 @@ class ARAAntennaSystem(AntennaSystem):
         """
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
         # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~8.5 Ohm
+        # resistance of ~4.2 Ohm
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
@@ -984,7 +982,8 @@ class ARAAntennaSystem(AntennaSystem):
         copy = Signal(signal.times, signal.values)
         copy.filter_frequencies(self.interpolate_filter,
                                 force_real=True)
-        clipped_values = np.clip(copy.values * self.amplification,
+        # sqrt(2) for 3dB splitter for TURF, SURF
+        clipped_values = np.clip(copy.values * np.sqrt(2) * self.amplification,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
         return Signal(signal.times, clipped_values,
