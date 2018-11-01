@@ -523,8 +523,10 @@ class ARIANNAAntenna(Antenna):
         # Based on NuRadioMC the effective height should be calculated this way.
         # Apparently this formula is used since the "gains" from the WIPLD files
         # are not really gains.
+        # The WIPLD "gains" are also a factor of 2 too large, so the leading 2
+        # in the effective height calculation was removed
         Z_rx = Z_rx_func(np.abs(frequencies[frequencies!=0]))
-        heff[frequencies!=0] = 2 * 3e8/frequencies[frequencies!=0] * Z_rx/377j
+        heff[frequencies!=0] = 3e8/frequencies[frequencies!=0] * Z_rx/377j
         return heff
 
 
