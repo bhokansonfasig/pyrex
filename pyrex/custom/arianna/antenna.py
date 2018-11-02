@@ -456,8 +456,13 @@ class ARIANNAAntenna(Antenna):
         if self._resp_data is None:
             return np.array([1]), np.array([1]), np.array([0])
 
-        theta = np.degrees(theta) % 180
-        phi = np.degrees(phi) % 360
+        theta = np.degrees(theta)
+        phi = np.degrees(phi)
+
+        # Special case: if given exactly theta=180, don't take the modulus
+        if theta!=180:
+            theta %= 180
+        phi %= 360
         theta_under = 2*int(theta/2)
         theta_over = 2*(int(theta/2)+1)
         phi_under = 5*int(phi/5)
@@ -465,7 +470,7 @@ class ARIANNAAntenna(Antenna):
         t = (theta - theta_under) / (theta_over - theta_under)
         u = (phi - phi_under) / (phi_over - phi_under)
 
-        theta_over %= 180
+        theta_over = min(theta_over, 180)
         phi_over %= 360
 
         # WIPLD file defines thetas from -90 to 90 rather than 0 to 180
