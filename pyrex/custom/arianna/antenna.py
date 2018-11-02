@@ -690,7 +690,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
     def __init__(self, name, position, threshold, trigger_window=5e-9,
                  z_axis=(0,0,1), x_axis=(1,0,0), amplification=1,
                  amplifier_clipping=1, noisy=True, unique_noise_waveforms=10,
-                 response_data=None, response_freqs=None):
+                 response_data=None, response_freqs=None, **kwargs):
         super().__init__(ARIANNAAntenna)
 
         self.name = str(name)
@@ -702,7 +702,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
         self.setup_antenna(z_axis=z_axis, x_axis=x_axis, noisy=noisy,
                            unique_noise_waveforms=unique_noise_waveforms,
                            response_data=response_data,
-                           response_freqs=response_freqs)
+                           response_freqs=response_freqs, **kwargs)
 
         self.threshold = threshold
         self.trigger_window = trigger_window
@@ -727,9 +727,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
         return meta
 
     def setup_antenna(self, center_frequency=350e6, bandwidth=600e6,
-                      resistance=8.5, z_axis=(0,0,1), x_axis=(1,0,0),
+                      resistance=16.5, z_axis=(0,0,1), x_axis=(1,0,0),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
-                      response_data=None, response_freqs=None):
+                      response_data=None, response_freqs=None, **kwargs):
         """
         Setup the antenna by passing along its init arguments.
 
@@ -764,7 +764,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
         """
         # ARIANNA expects a noise rms of about 11 microvolts (before amps).
         # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~8.5 Ohm
+        # resistance of ~16.5 Ohm
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
@@ -778,7 +778,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
                               noisy=noisy,
                               unique_noise_waveforms=unique_noise_waveforms,
                               response_data=response_data,
-                              response_freqs=response_freqs)
+                              response_freqs=response_freqs,
+                              **kwargs)
 
     def interpolate_filter(self, frequencies):
         """
