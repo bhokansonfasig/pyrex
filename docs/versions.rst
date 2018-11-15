@@ -3,6 +3,35 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.8.1
+=============
+
+.. rubric:: New Features
+
+* Added ability to write (and subsequently read) simulation data files using :class:`File` objects.
+
+* File I/O supports HDF5 files, but should be considered to be in a public-beta state until the release of version 1.9.0.
+
+.. rubric:: Changes
+
+* :class:`ThermalNoise` now uses Rayleigh-distributed amplitudes in frequency space by default.
+
+* Handling of signal polarizations has been more closely integrated with the ray tracer; :meth:`RayTracer.propagate` now propagating the polarization vector as well as the signal.
+
+* 3 dB splitter effect moved from :meth:`ARAAntenna.response` to :meth:`ARAAntennaSystem.front_end` for a more logical separation of antenna and front-end.
+
+* Adjusted default noise rms of :class:`ARIANNAAntennaSystem` to the expected value in ARIANNA.
+
+.. rubric:: Bug Fixes
+
+* Corrected signal polarization calculation.
+
+* Fixed bug in antenna gains of asymmetric antennas for theta angles near 180 degrees.
+
+* Corrected effective height of antennas modeled by WIPL-D (i.e. :class:`LPDA`).
+
+
+
 Version 1.8.0
 =============
 
