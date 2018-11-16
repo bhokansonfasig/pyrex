@@ -7,7 +7,7 @@ __modulename__ = "pyrex"
 
 __fullname__ = "PyREx"
 
-__version__ = "1.8.0"
+__version__ = "1.8.1"
 
 __long_description__ = """
 A Python package for simulation of neutrinos and radio antennas in ice.

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>How to Use PyREx &mdash; PyREx 1.8.0 documentation</title>
+    <title>How to Use PyREx &mdash; PyREx 1.8.1 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.0',
+        VERSION:     '1.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.1 documentation" href="index.html" >
     <link rel="next" title="Custom Sub-Package" href="customize.html" >
     <link rel="prev" title="About PyREx" href="about.html" > 
   </head>
@@ -51,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.1 documentation</a></li>
 	 
     </ul>
               
@@ -571,16 +571,20 @@
 </pre></div>
 </div>
 <img alt="_images/ray_tracing_1.png" src="_images/ray_tracing_1.png" />
-<p>Finally, <a class="reference internal" href="docstrings/pyrex.RayTracePath.propagate.html#pyrex.RayTracePath.propagate" title="pyrex.RayTracePath.propagate"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.propagate()</span></code></a> propagates a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from <a class="reference internal" href="docstrings/pyrex.RayTracePath.attenuation.html#pyrex.RayTracePath.attenuation" title="pyrex.RayTracePath.attenuation"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.attenuation()</span></code></a>, and shifting the signal times by <code class="xref py py-attr docutils literal"><span class="pre">RayTracePath.tof</span></code>. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually.</p>
+<p>Finally, <a class="reference internal" href="docstrings/pyrex.RayTracePath.propagate.html#pyrex.RayTracePath.propagate" title="pyrex.RayTracePath.propagate"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.propagate()</span></code></a> propagates a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from <a class="reference internal" href="docstrings/pyrex.RayTracePath.attenuation.html#pyrex.RayTracePath.attenuation" title="pyrex.RayTracePath.attenuation"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.attenuation()</span></code></a>, and shifting the signal times by <code class="xref py py-attr docutils literal"><span class="pre">RayTracePath.tof</span></code>. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. <a class="reference internal" href="docstrings/pyrex.RayTracePath.propagate.html#pyrex.RayTracePath.propagate" title="pyrex.RayTracePath.propagate"><code class="xref py py-meth docutils literal"><span class="pre">RayTracePath.propagate()</span></code></a> can also propagate the polarization vector of the signal, either independently or in the same function call.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">time_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">5e-9</span><span class="p">,</span> <span class="mi">1001</span><span class="p">)</span>
-<span class="n">my_signal</span> <span class="o">=</span> <span class="p">(</span><span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e9</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
-            <span class="o">+</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e10</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">launch_signal</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e9</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
+    <span class="o">+</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">FunctionSignal</span><span class="p">(</span><span class="n">time_array</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">1e10</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">launch_signal</span><span class="o">.</span><span class="n">times</span><span class="o">*</span><span class="mf">1e9</span><span class="p">,</span> <span class="n">launch_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">launch_pol</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
 
-<span class="n">my_path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">my_signal</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">my_signal</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">my_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">rec_signal</span><span class="p">,</span> <span class="n">rec_pol</span> <span class="o">=</span> <span class="n">my_path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">launch_signal</span><span class="p">,</span> <span class="n">polarization</span><span class="o">=</span><span class="n">launch_pol</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rec_signal</span><span class="o">.</span><span class="n">times</span><span class="o">*</span><span class="mf">1e9</span><span class="p">,</span> <span class="n">rec_signal</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">rec_pol</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="_images/ray_tracing_2.png" src="_images/ray_tracing_2.png" />
@@ -675,6 +679,139 @@
 <img alt="_images/full_sim_1.png" src="_images/full_sim_1.png" />
 <img alt="_images/full_sim_2.png" src="_images/full_sim_2.png" />
 </div>
+<div class="section" id="data-file-i-o">
+<h2>Data File I/O<a class="headerlink" href="#data-file-i-o" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> class controls the reading and writing of data files for simulation. At the most basic it takes a filename and mode in which to open the file, and if the file type is supported the object will be the appropriate file handler. Like python’s <code class="xref py py-func docutils literal"><span class="pre">open()</span></code> function, the <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> class works as a context manager and should preferrably be used in <code class="xref py py-const docutils literal"><span class="pre">with</span></code> statements. Currently the only data file type supported by PyREx is HDF5. Depending on whether an HDF5 file is being read or written there are additional keyword arguments that may be provided to <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a>. HDF5 files support the following modes: ‘r’ for read-only, ‘w’ for write (overwrites existing file), ‘a’/’r+’ for append (doesn’t overwrite existing file), and ‘x’ for write (fails if file exists already).</p>
+<p>If writing an HDF5 file, the optional arguments specify which event data to write. The available write options are <code class="docutils literal"><span class="pre">write_particles</span></code>, <code class="docutils literal"><span class="pre">write_triggers</span></code>, <code class="docutils literal"><span class="pre">write_antenna_triggers</span></code>, <code class="docutils literal"><span class="pre">write_rays</span></code>, <code class="docutils literal"><span class="pre">write_noise</span></code>, and <code class="docutils literal"><span class="pre">write_waveforms</span></code>. Most of these are self-explanatory, but <code class="docutils literal"><span class="pre">write_antenna_triggers</span></code> will write triggering information for each antenna in the detector and <code class="docutils literal"><span class="pre">write_noise</span></code> will write the frequency data required to replicate noise waveforms. The last optional argument is <code class="docutils literal"><span class="pre">require_trigger</span></code> which specifies which data should only be written when the detector is triggered. If a boolean value, requires trigger or not for all data with the exception of particle and trigger data, which is always written. If a list of strings, the listed data will require triggers and any other data will always be written.</p>
+<p>The most straightforward way to write data files is to pass a <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> object to the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> object handling the simulation. In such a case, a global trigger condition should be passed to the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> as well, either as a function which acts on a detector object, or as the “global” key in a dictionary of functions representing various trigger conditions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                                           <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">150</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">250</span><span class="p">]):</span>
+    <span class="n">detector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">pyrex</span><span class="o">.</span><span class="n">DipoleAntenna</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;antenna_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span>
+                            <span class="n">center_frequency</span><span class="o">=</span><span class="mf">250e6</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mf">300e6</span><span class="p">,</span>
+                            <span class="n">resistance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">effective_height</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+                            <span class="n">trigger_threshold</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">global_trigger_condition</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ant</span><span class="o">.</span><span class="n">is_hit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">def</span> <span class="nf">even_antenna_trigger</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ant</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">ant</span><span class="o">.</span><span class="n">is_hit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+<span class="n">trigger_conditions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;global&quot;</span><span class="p">:</span> <span class="n">global_trigger_condition</span><span class="p">,</span>
+    <span class="s2">&quot;evens&quot;</span><span class="p">:</span> <span class="n">even_antenna_trigger</span><span class="p">,</span>
+    <span class="s2">&quot;ant1&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">det</span><span class="p">:</span> <span class="n">det</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">is_hit</span>
+<span class="p">}</span>
+
+<span class="k">with</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;my_data_file.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">particle_generator</span><span class="p">,</span>
+                               <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+                               <span class="n">event_writer</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+                               <span class="n">triggers</span><span class="o">=</span><span class="n">trigger_conditions</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">event</span><span class="p">,</span> <span class="n">triggered</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you want to manually write the data file, then the <code class="xref py py-meth docutils literal"><span class="pre">File.set_detector()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">File.add()</span></code> methods are necessary. <code class="xref py py-meth docutils literal"><span class="pre">File.set_detector()</span></code> associates the given antennas with the file object (and writes their data) and <code class="xref py py-meth docutils literal"><span class="pre">File.add()</span></code> adds the data from the given event to the file. Here we also manually open and close the file object with <code class="xref py py-meth docutils literal"><span class="pre">File.open()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">File.close()</span></code>, and add some metadata to the file with <code class="xref py py-meth docutils literal"><span class="pre">File.add_file_metadata()</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;my_data_file_2.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">add_file_metadata</span><span class="p">({</span><span class="s2">&quot;write_style&quot;</span><span class="p">:</span> <span class="s2">&quot;manual&quot;</span><span class="p">,</span> <span class="s2">&quot;number_of_events&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">set_detector</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span>
+
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">particle_generator</span><span class="p">,</span>
+                           <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
+    <span class="n">triggered</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">antenna</span> <span class="ow">in</span> <span class="n">detector</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">antenna</span><span class="o">.</span><span class="n">is_hit</span><span class="p">:</span>
+            <span class="n">triggered</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">break</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="n">triggered</span><span class="p">)</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> objects also support writing miscellaneous analysis data to the file. <code class="xref py py-meth docutils literal"><span class="pre">File.create_analysis_dataset()</span></code> creates and returns a basic HDF5 dataset. <code class="xref py py-meth docutils literal"><span class="pre">File.create_analysis_metadataset()</span></code> creates a joined set of tables for string and float data, which can be written to with <code class="xref py py-meth docutils literal"><span class="pre">File.add_analysis_metadata()</span></code>. And finally, <code class="xref py py-meth docutils literal"><span class="pre">File.add_analysis_indices()</span></code> allows for linking event indices to specific rows of analysis data.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;my_data_file.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">create_analysis_metadataset</span><span class="p">(</span><span class="s2">&quot;effective_volume&quot;</span><span class="p">)</span>
+    <span class="n">gen_vol</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">500</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;generation_volume&quot;</span><span class="p">:</span> <span class="n">gen_vol</span><span class="p">,</span>
+        <span class="s2">&quot;veff&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="o">/</span><span class="mi">10</span><span class="o">*</span><span class="n">gen_vol</span><span class="p">,</span>
+        <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="o">*</span><span class="n">gen_vol</span><span class="p">,</span>
+        <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;m^3&quot;</span>
+    <span class="p">}</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">add_analysis_metadata</span><span class="p">(</span><span class="s2">&quot;effective_volume&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="n">other</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_analysis_dataset</span><span class="p">(</span><span class="s2">&quot;meaningless_data&quot;</span><span class="p">,</span>
+                                      <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
+    <span class="n">other</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;rows_per_event&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">add_analysis_indices</span><span class="p">(</span><span class="s2">&quot;meaningless_data&quot;</span><span class="p">,</span> <span class="n">global_index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                               <span class="n">start_index</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If reading an HDF5 file, the <code class="docutils literal"><span class="pre">slice_range</span></code> argument specifies the size of event slices to load into memory at once when iterating over events. In general, increasing the <code class="docutils literal"><span class="pre">slice_range</span></code> will improve the speed of iteration at the cost of greater memory consumption.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;my_data_file.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">slice_range</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>When reading HDF5 files, there are a number of methods and attributes available to access the data. With the <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> object alone, <code class="xref py py-attr docutils literal"><span class="pre">File.file_metadata</span></code> contains a dictionary of the file’s metadata and <code class="xref py py-attr docutils literal"><span class="pre">File.antenna_info</span></code> contains a list of dictionaries with data for each antenna in the detector the file was run with. If waveform data is available, <code class="xref py py-meth docutils literal"><span class="pre">File.get_waveforms()</span></code> can be used to get all waveforms in the file or a specific subset based on <code class="docutils literal"><span class="pre">event_id</span></code>, <code class="docutils literal"><span class="pre">antenna_id</span></code>, and <code class="docutils literal"><span class="pre">waveform_type</span></code> arguments. Finally, direct access to the contents of the HDF5 file is supported through either the proper paths or nicknames.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;my_data_file.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">file_metadata</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">antenna_info</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># No waveform data was stored above, so these will fail if run</span>
+    <span class="c1"># All waveforms:</span>
+    <span class="c1"># wfs = f.get_waveforms()</span>
+    <span class="c1"># Waveforms from event 0</span>
+    <span class="c1"># wfs = f.get_waveforms(event_id=0)</span>
+    <span class="c1"># Waveforms in antenna 1 from all events</span>
+    <span class="c1"># wfs = f.get_waveforms(antenna_id=1)</span>
+    <span class="c1"># Direct waveform in antenna 4 from event 5</span>
+    <span class="c1"># wf = f.get_waveforms(event_id=5, antenna_id=4, waveform_type=0)</span>
+
+    <span class="c1"># Using full file path</span>
+    <span class="n">triggers</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;data/triggers&#39;</span><span class="p">]</span>
+    <span class="c1"># Using dataset nickname</span>
+    <span class="n">particle_string_metadata</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;particles_meta_str&#39;</span><span class="p">]</span>
+    <span class="c1"># Using analysis dataset nickname</span>
+    <span class="n">other</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;meaningless_data&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>HDF5 files opened in read-only mode can also be iterated over, which allows access to the data for each event in turn. When iterating, the event objects have the following methods for accessing data. <code class="xref py py-meth docutils literal"><span class="pre">get_particle_info()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">get_rays_info()</span></code> return a list of dictionaries or attribute values for the event’s particles or rays, respectively. The <code class="xref py py-attr docutils literal"><span class="pre">is_neutrino</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">is_nubar</span></code>, and <code class="xref py py-attr docutils literal"><span class="pre">flavor</span></code> attributes also contain the associated basic information about the base particle of the event. <code class="xref py py-meth docutils literal"><span class="pre">get_waveforms()</span></code> returns the waveforms for the event, or a specific subset based on <code class="docutils literal"><span class="pre">antenna_id</span></code> and <code class="docutils literal"><span class="pre">waveform_type</span></code> (as above). The <code class="xref py py-attr docutils literal"><span class="pre">triggered</span></code> attribute contains whether the event triggered the detector and the <code class="xref py py-meth docutils literal"><span class="pre">get_triggered_components()</span></code> method returns a list of the trigger conditions of the detector which were met (as specified when writing the file). And finally, if noise data is recorded for the event it is contained in the <code class="xref py py-attr docutils literal"><span class="pre">noise_bases</span></code> attribute. Iteration of the HDF5 files supports slicing as long as the step size is positive-valued, and individual events can also be reached by indexing the <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> object.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;my_data_file.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">is_neutrino</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">is_nubar</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">flavor</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">triggered</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">get_triggered_components</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">6</span><span class="p">:</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">get_particle_info</span><span class="p">(</span><span class="s1">&#39;particle_name&#39;</span><span class="p">),</span>
+              <span class="n">event</span><span class="o">.</span><span class="n">get_particle_info</span><span class="p">(</span><span class="s1">&#39;vertex&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">get_rays_info</span><span class="p">(</span><span class="s1">&#39;receiving_angle&#39;</span><span class="p">)))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">get_rays_info</span><span class="p">(</span><span class="s1">&#39;tof&#39;</span><span class="p">))</span>
+
+    <span class="c1"># No waveform data was stored above, so this will fail if run</span>
+    <span class="c1"># wfs = f[5].get_waveforms(antenna_id=4)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="more-examples">
 <h2>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
 <p>For more code examples, see the <a class="reference internal" href="examples.html#example-code"><span class="std std-ref">Example Code</span></a> section and the python notebooks in the examples directory.</p>
@@ -692,7 +829,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.0</p>
+Version 1.8.1</p>
 
 
 
@@ -730,6 +867,7 @@ Version 1.8.0</p>
 <li class="toctree-l2"><a class="reference internal" href="#ray-tracing">Ray Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#particle-generation">Particle Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#full-simulation">Full Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-file-i-o">Data File I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#more-examples">More Examples</a></li>
 </ul>
 </li>
