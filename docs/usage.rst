@@ -637,6 +637,133 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
 
 
 
+Data File I/O
+=============
+
+The :class:`File` class controls the reading and writing of data files for simulation. At the most basic it takes a filename and mode in which to open the file, and if the file type is supported the object will be the appropriate file handler. Like python's :func:`open` function, the :class:`File` class works as a context manager and should preferrably be used in :const:`with` statements. Currently the only data file type supported by PyREx is HDF5. Depending on whether an HDF5 file is being read or written there are additional keyword arguments that may be provided to :class:`File`. HDF5 files support the following modes: 'r' for read-only, 'w' for write (overwrites existing file), 'a'/'r+' for append (doesn't overwrite existing file), and 'x' for write (fails if file exists already).
+
+If writing an HDF5 file, the optional arguments specify which event data to write. The available write options are ``write_particles``, ``write_triggers``, ``write_antenna_triggers``, ``write_rays``, ``write_noise``, and ``write_waveforms``. Most of these are self-explanatory, but ``write_antenna_triggers`` will write triggering information for each antenna in the detector and ``write_noise`` will write the frequency data required to replicate noise waveforms. The last optional argument is ``require_trigger`` which specifies which data should only be written when the detector is triggered. If a boolean value, requires trigger or not for all data with the exception of particle and trigger data, which is always written. If a list of strings, the listed data will require triggers and any other data will always be written.
+
+The most straightforward way to write data files is to pass a :class:`File` object to the :class:`EventKernel` object handling the simulation::
+
+    particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
+                                               energy=1e8)
+    detector = []
+    for i, z in enumerate([-100, -150, -200, -250]):
+        detector.append(
+            pyrex.DipoleAntenna(name="antenna_"+str(i), position=(0, 0, z),
+                                center_frequency=250e6, bandwidth=300e6,
+                                resistance=0, effective_height=0.6,
+                                trigger_threshold=1e-4, noisy=False)
+        )
+
+    def trigger_condition(det):
+        for ant in det:
+            if ant.is_hit:
+                return True
+        return False
+
+    with pyrex.File('my_data_file.h5', 'x') as f:
+        kernel = pyrex.EventKernel(generator=particle_generator,
+                                   antennas=detector,
+                                   event_writer=f,
+                                   triggers=trigger_condition)
+
+        for _ in range(10):
+            event = kernel.event()
+
+If you want to manually write the data file, then the :meth:`File.set_detector` and :meth:`File.add` methods are necessary. :meth:`File.set_detector` associates the given antennas with the file object (and writes their data) and :meth:`File.add` adds the data from the given event to the file. Here we also manually open and close the file object with :meth:`File.open` and :meth:`File.close`, and add some metadata to the file with :meth:`File.add_file_metadata`::
+
+    f = pyrex.File('my_data_file_2.h5', 'w')
+    f.open()
+
+    f.add_file_metadata({"write_style": "manual", "number_of_events": 10})
+
+    f.set_detector(detector)
+
+    kernel = pyrex.EventKernel(generator=particle_generator,
+                               antennas=detector)
+
+    for _ in range(10):
+        event = kernel.event()
+        triggered = False
+        for antenna in detector:
+            if antenna.is_hit:
+                triggered = True
+                break
+        f.add(event, triggered=triggered)
+
+    f.close()
+
+The :class:`File` objects also support writing miscellaneous analysis data to the file. :meth:`File.create_analysis_dataset` creates and returns a basic HDF5 dataset. :meth:`File.create_analysis_metadataset` creates a joined set of tables for string and float data, which can be written to with :meth:`File.add_analysis_metadata`. And finally, :meth:`File.add_analysis_indices` allows for linking event indices to specific rows of analysis data. ::
+
+    with pyrex.File('my_data_file.h5', 'a') as f:
+        f.create_analysis_metadataset("effective_volume")
+        gen_vol = 1000*1000*500
+        data = {
+            "generation_volume": gen_vol,
+            "veff": 5/10*gen_vol,
+            "error": np.sqrt(5)/10*gen_vol,
+            "unit": "m^3"
+        }
+        f.add_analysis_metadata("effective_volume", data)
+
+        other = f.create_analysis_dataset("meaningless_data",
+                                          data=np.ones((20, 5)))
+        other.attrs['rows_per_event'] = 2
+        for i in range(10):
+            f.add_analysis_indices("meaningless_data", global_index=i,
+                                   start_index=2*i, length=2)
+
+If reading an HDF5 file, the ``slice_range`` argument specifies the size of event slices to load into memory at once when iterating over events. In general, increasing the ``slice_range`` will improve the speed of iteration at the cost of greater memory consumption. ::
+
+    with pyrex.File('my_data_file.h5', 'r', slice_range=100) as f:
+        pass
+
+When reading HDF5 files, there are a number of methods and attributes available to access the data. With the :class:`File` object alone, :attr:`File.file_metadata` contains a dictionary of the file's metadata and :attr:`File.antenna_info` contains a list of dictionaries with data for each antenna in the detector the file was run with. If waveform data is available, :meth:`File.get_waveforms` can be used to get all waveforms in the file or a specific subset based on ``event_id``, ``antenna_id``, and ``waveform_type`` arguments. Finally, direct access to the contents of the HDF5 file is supported through either the proper paths or nicknames ::
+
+    with pyrex.File('my_data_file.h5', 'r') as f:
+        print(f.file_metadata)
+        print(f.antenna_info[0])
+
+        # No waveform data was stored above, so these will fail if run
+        # All waveforms:
+        # wfs = f.get_waveforms()
+        # Waveforms from event 0
+        # wfs = f.get_waveforms(event_id=0)
+        # Waveforms in antenna 1 from all events
+        # wfs = f.get_waveforms(antenna_id=1)
+        # Direct waveform in antenna 4 from event 5
+        # wf = f.get_waveforms(event_id=5, antenna_id=4, waveform_type=0)
+
+        # Using full file path
+        triggers = f['data/triggers']
+        # Using dataset nickname
+        particle_string_metadata = f['particles_meta_str']
+        # Using analysis dataset nickname
+        other = f['meaningless_data']
+
+HDF5 files opened in read-only mode can also be iterated over, which allows access to the data for each event in turn. When iterating, the event objects have the following methods for accessing data. :meth:`get_particle_info` and :meth:`get_rays_info` return a list of dictionaries or attribute values for the event's particles or rays, respectively. The :attr:`is_neutrino`, :attr:`is_nubar`, and :attr:`flavor` attributes also contain the obvious basic information about the base particle of the event. :meth:`get_waveforms` returns the waveforms for the event, or a specific subset based on ``antenna_id`` and ``waveform_type`` (as above). The :attr:`triggered` attribute contains whether the event triggered the detector and the :meth:`get_triggered_components` method returns the parts of the detector which were triggered (as specified on writing the file). And finally, if noise data is recorded for the event it is contained in the :attr:`noise_bases` attribute. Iteration of the HDF5 files supports slicing as long as the step size is positive-valued, and individual events can also be reached by indexing the :class:`File` object. ::
+
+    with pyrex.File('my_data_file.h5', 'r') as f:
+        for event in f:
+            print(event.is_neutrino, event.is_nubar, event.flavor)
+
+        for event in f[2:6:2]:
+            print(event.get_particle_info('particle_name'),
+                  event.get_particle_info('vertex'))
+            print(np.degrees(event.get_rays_info('receiving_angle')))
+            print(event.triggered)
+
+        print(f[4].triggered)
+
+        # No additional trigger info was stored, so this will fail if run
+        # print(f[4].get_triggered_components())
+
+        # No waveform data was stored above, so this will fail if run
+        # wfs = f[5].get_waveforms(antenna_id=4)
+
+
 
 More Examples
 =============
