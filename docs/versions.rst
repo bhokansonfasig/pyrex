@@ -12,6 +12,8 @@ Version 1.8.1
 
 * File I/O supports HDF5 files, but should be considered to be in a public-beta state until the release of version 1.9.0.
 
+* :class:`EventKernel` now accepts ``event_writer`` and ``triggers`` arguments for writing simulation data to output files.
+
 .. rubric:: Changes
 
 * :class:`ThermalNoise` now uses Rayleigh-distributed amplitudes in frequency space by default.

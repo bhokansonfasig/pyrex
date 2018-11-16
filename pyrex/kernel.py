@@ -44,6 +44,12 @@ class EventKernel:
         A signal class which generates signals based on the particle.
     signal_times : array_like, optional
         The array of times over which the neutrino signal should be generated.
+    event_writer : File, optional
+        A file object to be used for writing data output.
+    triggers : function or dict, optional
+        A function or dictionary with function values representing trigger
+        conditions of the detector. If a dictionary, must have a "global" key
+        with its value representing the global detector trigger.
 
     Attributes
     ----------
@@ -60,6 +66,10 @@ class EventKernel:
         The signal class to use to generate signals based on the particle.
     signal_times
         The array of times over which the neutrino signal should be generated.
+    writer
+        The file object to be used for writing data output.
+    triggers
+        The trigger condition(s) of the detector.
 
     See Also
     --------
@@ -71,6 +81,7 @@ class EventKernel:
                       points.
     pyrex.AskaryanSignal : Class for generating Askaryan signals according to
                            ARVZ parameterization.
+    pyrex.File : Class for reading or writing data files.
 
     Notes
     -----
@@ -151,9 +162,12 @@ class EventKernel:
 
         Returns
         -------
-        Event
+        event : Event
             The neutrino event generated which is responsible for the waveforms
             on the antennas.
+        triggered : bool, optional
+            If the ``triggers`` parameter was specified, contains whether the
+            global trigger condition of the detector was met.
 
         See Also
         --------
