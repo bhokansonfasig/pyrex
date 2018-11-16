@@ -31,7 +31,8 @@ setup(
     python_requires = '>= 3.6',
     install_requires = [
         'numpy>=1.13',
-        'scipy>=0.19'
+        'scipy>=0.19',
+        'h5py>=2.7',
     ],
     setup_requires = ['pytest-runner'],
     tests_require = ['pytest'],

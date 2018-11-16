@@ -11,7 +11,7 @@ and handle antenna processing of the signals.
 import logging
 import numpy as np
 from pyrex.internal_functions import normalize
-from pyrex.signals import AskaryanSignal
+from pyrex.signals import AskaryanSignal, EmptySignal
 from pyrex.ray_tracing import RayTracer
 from pyrex.ice_model import IceModel
 
@@ -44,6 +44,12 @@ class EventKernel:
         A signal class which generates signals based on the particle.
     signal_times : array_like, optional
         The array of times over which the neutrino signal should be generated.
+    event_writer : File, optional
+        A file object to be used for writing data output.
+    triggers : function or dict, optional
+        A function or dictionary with function values representing trigger
+        conditions of the detector. If a dictionary, must have a "global" key
+        with its value representing the global detector trigger.
 
     Attributes
     ----------
@@ -60,6 +66,10 @@ class EventKernel:
         The signal class to use to generate signals based on the particle.
     signal_times
         The array of times over which the neutrino signal should be generated.
+    writer
+        The file object to be used for writing data output.
+    triggers
+        The trigger condition(s) of the detector.
 
     See Also
     --------
@@ -71,6 +81,7 @@ class EventKernel:
                       points.
     pyrex.AskaryanSignal : Class for generating Askaryan signals according to
                            ARVZ parameterization.
+    pyrex.File : Class for reading or writing data files.
 
     Notes
     -----
@@ -113,13 +124,32 @@ class EventKernel:
     """
     def __init__(self, generator, antennas, ice_model=IceModel,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
-                 signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False)):
+                 signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False),
+                 event_writer=None, triggers=None):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
         self.ray_tracer = ray_tracer
         self.signal_model = signal_model
         self.signal_times = signal_times
+        self.writer = event_writer
+        self.triggers = triggers
+        if self.writer is not None:
+            if not self.writer.is_open:
+                logger.warning("Event writer was not open. Opening now.")
+                self.writer.open()
+            if not self.writer.has_detector:
+                self.writer.set_detector(antennas)
+            # Add metadata about the classes used
+            kernel_metadata = {
+                "detector_class": str(type(self.antennas)),
+                "generator_class": str(type(self.gen)),
+                "ice_model_class": str(self.ice),
+                "ray_tracer_class": str(self.ray_tracer),
+                "signal_model_class": str(self.signal_model),
+            }
+            self.writer.create_analysis_metadataset("sim_parameters")
+            self.writer.add_analysis_metadata("sim_parameters", kernel_metadata)
 
     def event(self):
         """
@@ -132,9 +162,12 @@ class EventKernel:
 
         Returns
         -------
-        Event
+        event : Event
             The neutrino event generated which is responsible for the waveforms
             on the antennas.
+        triggered : bool, optional
+            If the ``triggers`` parameter was specified, contains whether the
+            global trigger condition of the detector was met.
 
         See Also
         --------
@@ -144,9 +177,14 @@ class EventKernel:
 
         """
         event = self.gen.create_event()
+        ray_paths = []
+        polarizations = []
+        for i in range(len(self.antennas)):
+            ray_paths.append([])
+            polarizations.append([])
         for particle in event:
             logger.info("Processing event for %s", particle)
-            for ant in self.antennas:
+            for i, ant in enumerate(self.antennas):
                 rt = self.ray_tracer(particle.vertex, ant.position,
                                      ice_model=self.ice)
 
@@ -155,17 +193,22 @@ class EventKernel:
                     logger.debug("Ray paths to %s do not exist", ant)
                     continue
 
+                ray_paths[i].extend(rt.solutions)
                 for path in rt.solutions:
-                    # epol is (negative) vector rejection of
-                    # path.received_direction onto particle.direction,
-                    # making epol orthogonal to path.recieved_direction in the
-                    # same plane as p.direction and path.received_direction
-                    epol = normalize(np.vdot(path.received_direction,
-                                             particle.direction)
-                                     * path.received_direction
-                                     - particle.direction)
-                    # In case path.received_direction and particle.direction
-                    # are equal, just let epol be all zeros
+                    # nu_pol is the signal polarization at the neutrino vertex
+                    # It's calculated as the (negative) vector rejection of
+                    # path.emitted_direction onto particle.direction, making
+                    # epol orthogonal to path.emitted_direction in the same
+                    # plane as particle.direction and path.emitted_direction
+                    # This is equivalent to the vector triple product
+                    # (particle.direction x path.emitted_direction) x
+                    # path.emitted_direction
+                    nu_pol = normalize(np.vdot(path.emitted_direction,
+                                               particle.direction)
+                                       * path.emitted_direction
+                                       - particle.direction)
+                    # In the case when path.emitted_direction and
+                    # particle.direction are equal, just let epol be all zeros
 
                     psi = np.arccos(np.vdot(particle.direction,
                                             path.emitted_direction))
@@ -175,6 +218,8 @@ class EventKernel:
                     # (low priority since these angles are far from the
                     # cherenkov cone)
                     if psi>np.pi/2:
+                        ant_pol = path.propagate(polarization=nu_pol)
+                        polarizations[i].append(ant_pol)
                         continue
 
                     pulse = self.signal_model(times=self.signal_times,
@@ -183,9 +228,29 @@ class EventKernel:
                                               viewing_distance=path.path_length,
                                               ice_model=self.ice)
 
-                    path.propagate(pulse)
+                    ant_pulse, ant_pol = path.propagate(signal=pulse,
+                                                        polarization=nu_pol)
 
-                    ant.receive(pulse, direction=path.received_direction,
-                                polarization=epol)
+                    polarizations[i].append(ant_pol)
+                    ant.receive(ant_pulse,
+                                direction=path.received_direction,
+                                polarization=ant_pol)
 
-        return event
+        if self.triggers is None:
+            triggered = None
+        elif isinstance(self.triggers, dict):
+            triggered = {key: trigger_func(self.antennas)
+                         for key, trigger_func in self.triggers.items()}
+        else:
+            triggered = self.triggers(self.antennas)
+
+        if self.writer is not None:
+            self.writer.add(event=event, triggered=triggered,
+                            ray_paths=ray_paths, polarizations=polarizations)
+
+        if triggered is None:
+            return event
+        elif isinstance(self.triggers, dict):
+            return event, triggered['global']
+        else:
+            return event, triggered

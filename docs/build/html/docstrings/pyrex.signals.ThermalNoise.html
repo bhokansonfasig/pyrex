@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.signals.ThermalNoise &mdash; PyREx 1.8.0 documentation</title>
+    <title>pyrex.signals.ThermalNoise &mdash; PyREx 1.8.1 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.0',
+        VERSION:     '1.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
     <link rel="up" title="Signal Processing (pyrex.signals)" href="../api/signals.html" >
     <link rel="next" title="Antennas (pyrex.antenna)" href="../api/antenna.html" >
     <link rel="prev" title="pyrex.signals.GaussianNoise" href="pyrex.signals.GaussianNoise.html" > 
@@ -52,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/signals.html" accesskey="U">Signal Processing (<code class="docutils literal"><span class="pre">pyrex.signals</span></code>)</a></li> 
@@ -93,7 +93,7 @@
 <h1>pyrex.signals.ThermalNoise<a class="headerlink" href="#pyrex-signals-thermalnoise" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.signals.ThermalNoise">
-<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">ThermalNoise</code><span class="sig-paren">(</span><em>times</em>, <em>f_band</em>, <em>f_amplitude=1</em>, <em>rms_voltage=None</em>, <em>temperature=None</em>, <em>resistance=None</em>, <em>n_freqs=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.ThermalNoise" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyrex.signals.</code><code class="descname">ThermalNoise</code><span class="sig-paren">(</span><em>times</em>, <em>f_band</em>, <em>f_amplitude=None</em>, <em>rms_voltage=None</em>, <em>temperature=None</em>, <em>resistance=None</em>, <em>n_freqs=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.ThermalNoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for thermal Rayleigh noise signals.</p>
 <p>The Rayleigh thermal noise is calculated in a given frequency band with
 flat or otherwise specified amplitude and random phase at some number of
@@ -115,7 +115,8 @@ The first element should be smaller than the second.</p>
 <blockquote>
 <div><p>The frequency-domain amplitude of the noise. If <code class="docutils literal"><span class="pre">float</span></code>, then all
 frequencies will have the same amplitude. If <code class="docutils literal"><span class="pre">function</span></code>, then the
-function is evaluated at each frequency to determine its amplitude.</p>
+function is evaluated at each frequency to determine its amplitude.
+By default, uses Rayleigh-distributed amplitudes.</p>
 </div></blockquote>
 <p><strong>rms_voltage</strong> : float, optional</p>
 <blockquote>
@@ -170,7 +171,9 @@ is strongly recommended.</p>
 </div>
 <p class="rubric">Notes</p>
 <p>Calculation of the noise signal is based on the Rayleigh noise model used
-by ANITA <a class="reference internal" href="#r8585" id="id1">[R8585]</a>.</p>
+by ANITA <a class="reference internal" href="#r8585" id="id1">[R8585]</a>. Modifications have been made to the default to make the
+frequency-domain amplitudes Rayleigh-distributed, under the suggestion that
+this makes for more realistic noise traces.</p>
 <p class="rubric">References</p>
 <table class="docutils citation" frame="void" id="r8585" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
@@ -269,7 +272,7 @@ Time-Domain Model of the ANITA Trigger.”
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.0</p>
+Version 1.8.1</p>
 
 
 

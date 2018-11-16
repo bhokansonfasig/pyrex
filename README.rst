@@ -2,7 +2,7 @@ PyREx - (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension)
 ***************************************************************************
 
 PyREx (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension) is, as its name suggests, a Python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
-The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANA collaborations).
+The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANNA collaborations).
 
 
 Useful Links
@@ -19,13 +19,14 @@ Getting Started
 Requirements
 ------------
 
-PyREx requires python version 3.6+ as well as numpy version 1.13+ and scipy version 0.19+.
-After installing python from https://www.python.org/downloads/, numpy and scipy can be installed with ``pip`` as follows, or by simply installing pyrex as specified in the next section.
+PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+.
+After installing python from https://www.python.org/downloads/, the required packages can be installed with ``pip`` as follows, or they will be installed automatically by simply installing pyrex as specified in the next section.
 
 .. code-block:: shell
 
     pip install numpy>=1.13
     pip install scipy>=0.19
+    pip install h5py>=2.7
 
 Installing
 ----------
@@ -37,6 +38,25 @@ The easiest way to get the PyREx package is using ``pip`` as follows
     pip install git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
 
 Note that since PyREx is not currently available on PyPI, a simple ``pip install pyrex`` will not have the intended effect.
+
+Optional Dependencies
+---------------------
+
+The following packages are not required for running PyREx by default, but may be useful or required for running some specific parts of the code:
+
+`matplotlib <https://matplotlib.org>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Recommended version: 2.1+
+
+Used for creating plots in example code and auxilliary scripts.
+
+`PySpice <https://pyspice.fabrice-salvaire.fr>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Recommended version: 1.1
+
+Used by IREX sub-package for some complex front-end circuits. Not needed for default front-ends.
 
 
 Examples

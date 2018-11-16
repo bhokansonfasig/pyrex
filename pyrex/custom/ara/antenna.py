@@ -318,8 +318,13 @@ class ARAAntenna(Antenna):
         if self._dir_data is None:
             return np.array([1]), np.array([1]), np.array([0])
 
-        theta = np.degrees(theta) % 180
-        phi = np.degrees(phi) % 360
+        theta = np.degrees(theta)
+        phi = np.degrees(phi)
+
+        # Special case: if given exactly theta=180, don't take the modulus
+        if theta!=180:
+            theta %= 180
+        phi %= 360
         theta_under = 5*int(theta/5)
         theta_over = 5*(int(theta/5)+1)
         phi_under = 5*int(phi/5)
@@ -327,7 +332,7 @@ class ARAAntenna(Antenna):
         t = (theta - theta_under) / (theta_over - theta_under)
         u = (phi - phi_under) / (phi_over - phi_under)
 
-        theta_over %= 180
+        theta_over = min(theta_over, 180)
         phi_over %= 360
 
         nfreqs = len(self._dir_freqs)
@@ -379,14 +384,12 @@ class ARAAntenna(Antenna):
         """
         # From AraSim GaintoHeight function, removing gain to receive function.
         # gain=4*pi*A_eff/lambda^2 and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
+        # Then 0.5 to calculate power with heff (cancels 2 above)
         heff = np.zeros(len(frequencies))
         n = IceModel.index(self.position[2])
-        heff[frequencies!=0] = 2*np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
-                                         * n*50/377 /(4*np.pi))
-        # From AraSim ApplyAntFactors function, removing polarization.
-        # sqrt(2) for 3dB splitter for TURF, SURF,
-        # 0.5 to calculate power with heff
-        return heff * 0.5 / np.sqrt(2)
+        heff[frequencies!=0] = np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
+                                       * n*50/377 /(4*np.pi))
+        return heff
 
 
     def receive(self, signal, direction=None, polarization=None,
@@ -799,8 +802,21 @@ class ARAAntennaSystem(AntennaSystem):
 
         self._filter_data = ALL_FILTERS
 
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `ARAAntennaSystem` information."""
+        meta = super()._metadata
+        meta.update({
+            "name": self.name,
+            "lead_in_time": self.lead_in_time,
+            "amplification": self.amplification,
+            "amplifier_clipping": self.amplifier_clipping,
+            "power_threshold": self.power_threshold,
+        })
+        return meta
+
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
-                      resistance=8.5, orientation=(0,0,1),
+                      resistance=4.2, orientation=(0,0,1),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
                       **kwargs):
         """
@@ -839,7 +855,7 @@ class ARAAntennaSystem(AntennaSystem):
         """
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
         # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~8.5 Ohm
+        # resistance of ~4.2 Ohm
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
@@ -971,7 +987,8 @@ class ARAAntennaSystem(AntennaSystem):
         copy = Signal(signal.times, signal.values)
         copy.filter_frequencies(self.interpolate_filter,
                                 force_real=True)
-        clipped_values = np.clip(copy.values * self.amplification,
+        # sqrt(2) for 3dB splitter for TURF, SURF
+        clipped_values = np.clip(copy.values * np.sqrt(2) * self.amplification,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
         return Signal(signal.times, clipped_values,

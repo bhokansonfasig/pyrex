@@ -1082,6 +1082,7 @@ class ThermalNoise(FunctionSignal):
         The frequency-domain amplitude of the noise. If ``float``, then all
         frequencies will have the same amplitude. If ``function``, then the
         function is evaluated at each frequency to determine its amplitude.
+        By default, uses Rayleigh-distributed amplitudes.
     rms_voltage : float, optional
         The RMS voltage (V) of the noise. If specified, this value will be used
         instead of the RMS voltage calculated from the values of `temperature`
@@ -1145,7 +1146,9 @@ class ThermalNoise(FunctionSignal):
     Notes
     -----
     Calculation of the noise signal is based on the Rayleigh noise model used
-    by ANITA [1]_.
+    by ANITA [1]_. Modifications have been made to the default to make the
+    frequency-domain amplitudes Rayleigh-distributed, under the suggestion that
+    this makes for more realistic noise traces.
 
     References
     ----------
@@ -1154,7 +1157,7 @@ class ThermalNoise(FunctionSignal):
         https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps
 
     """
-    def __init__(self, times, f_band, f_amplitude=1, rms_voltage=None,
+    def __init__(self, times, f_band, f_amplitude=None, rms_voltage=None,
                  temperature=None, resistance=None, n_freqs=0):
         # Calculation based on Rician (Rayleigh) noise model for ANITA:
         # https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps
@@ -1180,9 +1183,22 @@ class ThermalNoise(FunctionSignal):
         self.freqs = np.linspace(self.f_min, self.f_max, int(n_freqs),
                                  endpoint=False)
 
+        if f_amplitude is None:
+            f_amplitude = lambda f: np.random.rayleigh(1/np.sqrt(2),
+                                                       size=f.shape)
+
         # Allow f_amplitude to be either a function or a single value
         if callable(f_amplitude):
-            self.amps = [f_amplitude(f) for f in self.freqs]
+            # Attempt to evaluate all amplitudes in one function call
+            try:
+                self.amps = np.array(f_amplitude(self.freqs))
+                if len(self.amps)!=len(self.freqs):
+                    raise ValueError("Amplitude calculation failed")
+            # Otherwise evaluate responses one at a time
+            except (TypeError, ValueError):
+                logger.debug("Amplitude function %r could not be evaluated "+
+                             "for multiple frequencies at once", f_amplitude)
+                self.amps = np.array([f_amplitude(f) for f in self.freqs])
         else:
             self.amps = np.full(len(self.freqs), f_amplitude, dtype="float64")
             # If the frequency range extends to zero, force the zero-frequency

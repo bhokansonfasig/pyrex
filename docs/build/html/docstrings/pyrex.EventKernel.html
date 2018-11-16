@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.EventKernel &mdash; PyREx 1.8.0 documentation</title>
+    <title>pyrex.EventKernel &mdash; PyREx 1.8.1 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.0',
+        VERSION:     '1.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,9 +27,9 @@
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
-    <link rel="next" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
+    <link rel="next" title="pyrex.File" href="pyrex.File.html" >
     <link rel="prev" title="pyrex.RayTracePath" href="pyrex.RayTracePath.html" > 
   </head>
   <body>
@@ -52,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -68,7 +68,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="../api/internal_functions.html" title="Helper Functions (pyrex.internal_functions)"
+        <a href="pyrex.File.html" title="pyrex.File"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -92,7 +92,7 @@
 <h1>pyrex.EventKernel<a class="headerlink" href="#pyrex-eventkernel" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.EventKernel">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">EventKernel</code><span class="sig-paren">(</span><em>generator</em>, <em>antennas</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em>signal_model=&lt;class 'pyrex.signals.ARVZAskaryanSignal'&gt;</em>, <em>signal_times=array([-2.000e-08</em>, <em>-1.995e-08</em>, <em>-1.990e-08</em>, <em>...</em>, <em>7.985e-08</em>, <em>7.990e-08</em>, <em>7.995e-08])</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">EventKernel</code><span class="sig-paren">(</span><em>generator</em>, <em>antennas</em>, <em>ice_model=&lt;class 'pyrex.ice_model.AntarcticIce'&gt;</em>, <em>ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em>signal_model=&lt;class 'pyrex.signals.ARVZAskaryanSignal'&gt;</em>, <em>signal_times=array([-2.000e-08</em>, <em>-1.995e-08</em>, <em>-1.990e-08</em>, <em>...</em>, <em>7.985e-08</em>, <em>7.990e-08</em>, <em>7.995e-08])</em>, <em>event_writer=None</em>, <em>triggers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>High-level kernel for controlling event simulation.</p>
 <p>The kernel is responsible for handling the classes and objects which
 control the major simulation steps: particle creation, signal production,
@@ -126,8 +126,18 @@ to the antenna positions.</p>
 <div><p>A signal class which generates signals based on the particle.</p>
 </div></blockquote>
 <p><strong>signal_times</strong> : array_like, optional</p>
-<blockquote class="last">
+<blockquote>
 <div><p>The array of times over which the neutrino signal should be generated.</p>
+</div></blockquote>
+<p><strong>event_writer</strong> : File, optional</p>
+<blockquote>
+<div><p>A file object to be used for writing data output.</p>
+</div></blockquote>
+<p><strong>triggers</strong> : function or dict, optional</p>
+<blockquote class="last">
+<div><p>A function or dictionary with function values representing trigger
+conditions of the detector. If a dictionary, must have a “global” key
+with its value representing the global detector trigger.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -146,6 +156,8 @@ to the antenna positions.</p>
 <dd>Class for calculating the ray-trace solutions between points.</dd>
 <dt><a class="reference internal" href="pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.AskaryanSignal</span></code></a></dt>
 <dd>Class for generating Askaryan signals according to ARVZ parameterization.</dd>
+<dt><a class="reference internal" href="pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.File</span></code></a></dt>
+<dd>Class for reading or writing data files.</dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
@@ -204,6 +216,12 @@ by the <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" t
 <tr class="row-even"><td><strong>signal_times</strong></td>
 <td>The array of times over which the neutrino signal should be generated.</td>
 </tr>
+<tr class="row-odd"><td><strong>writer</strong></td>
+<td>The file object to be used for writing data output.</td>
+</tr>
+<tr class="row-even"><td><strong>triggers</strong></td>
+<td>The trigger condition(s) of the detector.</td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
@@ -233,7 +251,7 @@ by the <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" t
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.0</p>
+Version 1.8.1</p>
 
 
 

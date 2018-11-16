@@ -12,6 +12,7 @@ import logging
 import numpy as np
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
+from pyrex.signals import Signal
 from pyrex.ice_model import AntarcticIce, IceModel
 
 logger = logging.getLogger(__name__)
@@ -82,6 +83,24 @@ class BasicRayTracePath(LazyMutableClass):
         self.dz = parent_tracer.dz
         self.direct = direct
         super().__init__()
+
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `BasicRayTracePath` information."""
+        return {
+            "n0": self.n0,
+            "dz": self.dz,
+            "emitted_x": self.emitted_direction[0],
+            "emitted_y": self.emitted_direction[1],
+            "emitted_z": self.emitted_direction[2],
+            "received_x": self.received_direction[0],
+            "received_y": self.received_direction[1],
+            "received_z": self.received_direction[2],
+            "launch_angle": np.arccos(self.emitted_direction[2]),
+            "receiving_angle": np.pi-np.arccos(self.received_direction[2]),
+            "path_length": self.path_length,
+            "tof": self.tof
+        }
 
     @property
     def z_turn_proximity(self):
@@ -249,30 +268,32 @@ class BasicRayTracePath(LazyMutableClass):
     @lazy_property
     def fresnel(self):
         """
-        Fresnel factor for reflection off the ice surface.
+        Fresnel factors for reflection off the ice surface.
 
         The fresnel reflectance calculated is the square root (ratio of
         amplitudes, not powers) for reflection off ice surface (1 if doesn't
-        reach surface).
+        reach surface). Stores the s and p polarized reflectances, respectively.
 
         """
         if self.direct or self.z_turn<0:
-            return 1
+            return 1, 1
         else:
             n_1 = self.ice.index(0)
             n_2 = 1 # air
             theta_1 = self.theta(0)
-            if theta_1>=np.arcsin(n_2/n_1):
-                # Total internal reflection
-                return 1
+            cos_1 = np.cos(theta_1)
+            sin_2 = n_1/n_2*np.sin(theta_1)
+            if sin_2<=1:
+                # Plain reflection with real coefficients
+                cos_2 = np.sqrt(1 - (sin_2)**2)
             else:
-                # Askaryan signal is p-polarized
-                # n_1 * cos(theta_2):
-                n_1_cos_2 = n_1 * np.sqrt(1 - (n_1/n_2*np.sin(theta_1))**2)
-                # n_2 * cos(theta_1):
-                n_2_cos_1 = n_2 * np.cos(theta_1)
-                # TODO: Confirm sign convention here
-                return (n_1_cos_2 - n_2_cos_1) / (n_1_cos_2 + n_2_cos_1)
+                # Total internal reflection off the surface, results in complex
+                # fresnel factors encoding the phase data
+                cos_2 = np.sqrt((sin_2)**2 - 1)*1j
+            # TODO: Confirm sign convention here
+            r_s = (n_1*cos_1 - n_2*cos_2) / (n_1*cos_1 + n_2*cos_2)
+            r_p = (n_2*cos_1 - n_1*cos_2) / (n_2*cos_1 + n_1*cos_2)
+            return r_s, r_p
 
     def attenuation(self, f):
         """
@@ -301,27 +322,80 @@ class BasicRayTracePath(LazyMutableClass):
             else:
                 return np.vstack(partial_integrand) / alen
 
-        return np.exp(-np.abs(self.z_integral(integrand))) * self.fresnel
+        return np.exp(-np.abs(self.z_integral(integrand)))
 
-    def propagate(self, signal):
+    def propagate(self, signal=None, polarization=None):
         """
-        Propagate the signal along the ray path, in-place.
+        Propagate the signal with optional polarization along the ray path.
 
         Applies the frequency-dependent signal attenuation along the ray path
-        and shifts the times according to the ray time of flight.
+        and shifts the times according to the ray time of flight. Additionally
+        rotates the polarization vector appropriately.
 
         Parameters
         ----------
-        signal : Signal
+        signal : Signal, optional
             ``Signal`` object to propagate.
+        polarization : array_like, optional
+            Vector representing the linear polarization of the `signal`.
+
+        Returns
+        -------
+        Signal
+            ``Signal`` object representing the original `signal` attenuated
+            along the ray path. Only returned if `signal` was not ``None``.
+        array_like
+            Polarization of the `signal` at the end of the ray path. Only
+            returned if `polarization` was not ``None``.
 
         See Also
         --------
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        signal.filter_frequencies(self.attenuation)
-        signal.times += self.tof
+        if signal is None and polarization is None:
+            return
+
+        if signal is not None:
+            copy = Signal(signal.times+self.tof, signal.values,
+                          value_type=signal.value_type)
+
+        if polarization is None:
+            copy.filter_frequencies(self.attenuation)
+            return copy
+
+        else:
+            # Unit vectors perpendicular and parallel to plane of incidence
+            # at the launching point
+            u_s0 = normalize(np.cross(self.emitted_direction, [0, 0, 1]))
+            u_p0 = normalize(np.cross(u_s0, self.emitted_direction))
+            # Unit vector parallel to plane of incidence at the receiving point
+            # (perpendicular vector stays the same)
+            u_p1 = normalize(np.cross(u_s0, self.received_direction))
+            # Amplitudes of s and p components
+            pol_s = np.dot(polarization, u_s0)
+            pol_p = np.dot(polarization, u_p0)
+            # Fresnel reflectances of s and p components
+            r_s, r_p = self.fresnel
+
+            # Polarization vector at the receiving point
+            receiving_polarization = normalize(pol_s*np.abs(r_s) * u_s0 +
+                                               pol_p*np.abs(r_p) * u_p1)
+
+            if signal is None:
+                return receiving_polarization
+
+            else:
+                # Apply fresnel s and p coefficients in addition to attenuation
+                # (In order to treat the phase delays of total internal
+                # reflection properly, likely need a more robust framework
+                # capable of handling elliptically polarized signals)
+                def attenuation_with_fresnel(freqs):
+                    return (self.attenuation(freqs) *
+                            np.abs(np.sqrt(((r_s*pol_s)**2 + (r_p*pol_p)**2))))
+                copy.filter_frequencies(attenuation_with_fresnel)
+
+                return copy, receiving_polarization
 
     @lazy_property
     def coordinates(self):
@@ -879,12 +953,12 @@ class SpecializedRayTracePath(BasicRayTracePath):
 
         # If beta close to zero, just do the regular integral
         if np.isclose(self.beta, 0, atol=self.beta_tolerance):
-            return (np.exp(-np.abs(self.z_integral(z_integrand, numerical=True)))
-                    * self.fresnel)
+            return np.exp(-np.abs(self.z_integral(z_integrand,
+                                                  numerical=True)))
         # Otherwise, do xi integral designed to avoid singularity at z_turn
         else:
-            return (np.exp(-np.abs(self.z_integral(xi_integrand, numerical=True, x_func=xi)))
-                    * self.fresnel)
+            return np.exp(-np.abs(self.z_integral(xi_integrand,
+                                                  numerical=True, x_func=xi)))
 
     @lazy_property
     def coordinates(self):

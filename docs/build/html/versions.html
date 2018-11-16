@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Version History &mdash; PyREx 1.8.0 documentation</title>
+    <title>Version History &mdash; PyREx 1.8.1 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.0',
+        VERSION:     '1.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.1 documentation" href="index.html" >
     <link rel="prev" title="pyrex.custom.irex.detector.StationGrid" href="api/docstrings/pyrex.custom.irex.detector.StationGrid.html" > 
   </head>
   <body>
@@ -50,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.1 documentation</a></li>
 	 
     </ul>
               
@@ -83,6 +83,29 @@
             
   <div class="section" id="version-history">
 <h1>Version History<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-8-1">
+<h2>Version 1.8.1<a class="headerlink" href="#version-1-8-1" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
+<ul class="simple">
+<li>Added ability to write (and subsequently read) simulation data files using <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> objects.</li>
+<li>File I/O supports HDF5 files, but should be considered to be in a public-beta state until the release of version 1.9.0.</li>
+<li><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> now accepts <code class="docutils literal"><span class="pre">event_writer</span></code> and <code class="docutils literal"><span class="pre">triggers</span></code> arguments for writing simulation data to output files.</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li><a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal"><span class="pre">ThermalNoise</span></code></a> now uses Rayleigh-distributed amplitudes in frequency space by default.</li>
+<li>Handling of signal polarizations has been more closely integrated with the ray tracer; <code class="xref py py-meth docutils literal"><span class="pre">RayTracer.propagate()</span></code> now propagating the polarization vector as well as the signal.</li>
+<li>3 dB splitter effect moved from <code class="xref py py-meth docutils literal"><span class="pre">ARAAntenna.response()</span></code> to <code class="xref py py-meth docutils literal"><span class="pre">ARAAntennaSystem.front_end()</span></code> for a more logical separation of antenna and front-end.</li>
+<li>Adjusted default noise rms of <code class="xref py py-class docutils literal"><span class="pre">ARIANNAAntennaSystem</span></code> to the expected value in ARIANNA.</li>
+</ul>
+<p class="rubric">Bug Fixes</p>
+<ul class="simple">
+<li>Corrected signal polarization calculation.</li>
+<li>Fixed calculation of fresnel factors in surface reflection.</li>
+<li>Fixed bug in antenna gains of asymmetric antennas for theta angles near 180 degrees.</li>
+<li>Corrected effective height of antennas modeled by WIPL-D (i.e. <code class="xref py py-class docutils literal"><span class="pre">LPDA</span></code>).</li>
+</ul>
+</div>
 <div class="section" id="version-1-8-0">
 <h2>Version 1.8.0<a class="headerlink" href="#version-1-8-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
@@ -413,7 +436,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.0</p>
+Version 1.8.1</p>
 
 
 
@@ -449,6 +472,7 @@ Version 1.8.0</p>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Version History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-8-1">Version 1.8.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-8-0">Version 1.8.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-7-0">Version 1.7.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-6-0">Version 1.6.0</a></li>

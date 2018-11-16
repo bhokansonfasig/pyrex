@@ -23,11 +23,12 @@ def _read_response_data(filename):
     Gather antenna directionality/polarization data from a WIPLD data file.
 
     Data files should exist with names `filename`.ra1 and `filename`.ad1.
-    The ``.ad1`` file should contain frequencies in the first column and real
-    and imaginary parts of the impedance in the sixth and seventh columns.
+    The ``.ad1`` file should contain frequencies in the first column, real and
+    imaginary parts of the impedance in the sixth and seventh columns, and
+    S-parameter data in the eigth and ninth columns.
     The ``.ra1`` file should contain phi and theta in the first two columns,
-    the real and imaginary parts of the phi gain in the next two columns,
-    and the real and imaginary parts of the theta gain in the next two columns.
+    the real and imaginary parts of the phi field in the next two columns,
+    and the real and imaginary parts of the theta field in the next two columns.
     This should be divided into sections for each frequency with a header line
     "  >  Gen. no.    1 X  GHz   73   91  Gain" where "X" is the frequency in
     GHz.
@@ -42,11 +43,11 @@ def _read_response_data(filename):
     -------
     dict
         Dictionary containing the data with keys (freq, theta, phi) and values
-        (theta gain, phi gain).
+        (theta E-field, phi E-field).
     set
         Set of unique frequencies appearing in the data keys.
     ndarray
-        Array of impedance values corresponding to the frequencies.
+        Array of S-parameter values corresponding to the frequencies.
 
     Raises
     ------
@@ -70,9 +71,9 @@ def _read_response_data(filename):
                 tar.extract(os.path.basename(filename)+".ra1",
                             os.path.dirname(filename))
 
-    # Get impedance data from .ad1 file
+    # Get s-parameter data from .ad1 file
     freqs = set()
-    impedances = []
+    s_params = []
     with open(filename+".ad1") as f:
         for line in f:
             words = line.split()
@@ -90,8 +91,9 @@ def _read_response_data(filename):
             elif len(words)==9:
                 freq = float(words[0]) * freq_scale
                 freqs.add(freq)
-                z = float(words[5]) + float(words[6])*1j
-                impedances.append(z)
+                # z = float(words[5]) + float(words[6])*1j
+                s11 = float(words[7]) + float(words[8])*1j
+                s_params.append(s11)
 
     # Get directional/polarization gain from .ra1 file
     data = {}
@@ -130,14 +132,15 @@ def _read_response_data(filename):
     if freqs!=freqs_check:
         raise ValueError("Frequency values of input files do not match")
 
-    return data, freqs, np.array(impedances)
+    return data, freqs, np.array(s_params)
 
 
 def _read_response_pickle(filename):
     """
-    Gather antenna directionality/polarization data from a pickled data file.
+    Gather antenna effective height data from a pickled data file.
 
-    The data file should be a pickled file containing the data dictionary,
+    The data file should be a pickled file containing the effective height
+    data dictionary and frequency set, calculated based on the data dictionary,
     frequency set, and impedance array typically returned by the
     `_read_response_data` function.
 
@@ -149,12 +152,10 @@ def _read_response_pickle(filename):
     Returns
     -------
     dict
-        Dictionary containing the data with keys (freq, theta, phi) and values
-        (theta gain, phi gain).
+        Dictionary containing the effective height data with keys
+        (freq, theta, phi) and values (theta gain, phi gain).
     set
         Set of unique frequencies appearing in the data keys.
-    ndarray
-        Array of impedance values corresponding to the frequencies.
 
     See Also
     --------
@@ -170,10 +171,19 @@ def _read_response_pickle(filename):
     # If there is no pickle file, read the response data using the
     # _read_response_data function, and then make a pickle file
     if not os.path.isfile(filename+".pkl"):
-        data, freqs, impedances = _read_response_data(filename)
+        data, freqs, s_params = _read_response_data(filename)
+
+        # Calculate effective height from the data
+        heff_data = {}
+        s11s = {f: s for f, s in zip(sorted(freqs), s_params)}
+        for key, e_fields in data.items():
+            freq = key[0]
+            heff_factor = 3e8/freq * (1+s11s[freq]) * 50/377j
+            heff_data[key] = (e_fields[0]*heff_factor, e_fields[1]*heff_factor)
+
         with open(filename+".pkl", 'wb') as f:
-            pickle.dump((data, freqs, impedances), f)
-        return data, freqs, impedances
+            pickle.dump((heff_data, freqs), f)
+        return heff_data, freqs
 
     # Otherwise, read from the pickle file
     else:
@@ -309,7 +319,7 @@ AMP_PHASE_FILE = os.path.join(ARIANNA_DATA_DIR,
                               "amp_300_phase.csv")
 ARA_FILT_DATA_FILE = os.path.join(ARIANNA_DATA_DIR,
                                   "ARA_Electronics_TotalGain_TwoFilters.txt")
-LPDA_RESPONSE, LPDA_FREQS, LPDA_Z = _read_response_pickle(LPDA_DATA_FILE)
+LPDA_DIRECTIONALITY, LPDA_FREQS = _read_response_pickle(LPDA_DATA_FILE)
 AMPLIFIER_GAIN = _read_amplifier_data(AMP_GAIN_FILE, AMP_PHASE_FILE,
                                       gain_offset=40)
 # Series 100 and 200 amps should have gain_offset=60,
@@ -353,9 +363,6 @@ class ARIANNAAntenna(Antenna):
     response_freqs : None or set, optional
         Set of frequencies in the response data ``dict`` keys. If ``None``,
         calculated automatically from `response_data`.
-    response_zs : None or array_like, optional
-        Array of impedances corresponding to the `response_freqs`. If ``None``,
-        behavior is undefined.
 
     Attributes
     ----------
@@ -401,7 +408,7 @@ class ARIANNAAntenna(Antenna):
     def __init__(self, position, center_frequency, bandwidth, resistance,
                  z_axis=(0,0,1), x_axis=(1,0,0), efficiency=1, noisy=True,
                  unique_noise_waveforms=10,
-                 response_data=None, response_freqs=None, response_zs=None):
+                 response_data=None, response_freqs=None):
         # Get the critical frequencies in Hz
         f_low = center_frequency - bandwidth/2
         f_high = center_frequency + bandwidth/2
@@ -414,7 +421,6 @@ class ARIANNAAntenna(Antenna):
 
         self._resp_data = response_data
         self._resp_freqs = response_freqs
-        self._resp_zs = response_zs
         # Just in case the frequencies don't get set, set them now
         if self._resp_freqs is None and self._resp_data is not None:
             self._resp_freqs = set()
@@ -450,8 +456,13 @@ class ARIANNAAntenna(Antenna):
         if self._resp_data is None:
             return np.array([1]), np.array([1]), np.array([0])
 
-        theta = np.degrees(theta) % 180
-        phi = np.degrees(phi) % 360
+        theta = np.degrees(theta)
+        phi = np.degrees(phi)
+
+        # Special case: if given exactly theta=180, don't take the modulus
+        if theta!=180:
+            theta %= 180
+        phi %= 360
         theta_under = 2*int(theta/2)
         theta_over = 2*(int(theta/2)+1)
         phi_under = 5*int(phi/5)
@@ -459,7 +470,7 @@ class ARIANNAAntenna(Antenna):
         t = (theta - theta_under) / (theta_over - theta_under)
         u = (phi - phi_under) / (phi_over - phi_under)
 
-        theta_over %= 180
+        theta_over = min(theta_over, 180)
         phi_over %= 360
 
         # WIPLD file defines thetas from -90 to 90 rather than 0 to 180
@@ -492,40 +503,6 @@ class ARIANNAAntenna(Antenna):
                      (1-t)*u*phi_gain_ij1 + t*u*phi_gain_i1j1)
 
         return freqs, theta_gains, phi_gains
-
-    def response(self, frequencies):
-        """
-        Calculate the (complex) frequency response of the antenna.
-
-        Frequency response of the antenna is based on the effective height
-        calculation. The frequency dependence of the directional/polarization
-        gain is handled in the `generate_response_gains` method.
-
-        Parameters
-        ----------
-        frequencies : array_like
-            1D array of frequencies (Hz) at which to calculate gains.
-
-        Returns
-        -------
-        array_like
-            Complex gains in voltage for the given `frequencies`.
-
-        """
-        heff = np.zeros(len(frequencies), dtype=np.complex_)
-        # For the LPDA, Z_rx is given by the data files as a function of
-        # frequency.
-        Z_rx_func = scipy.interpolate.interp1d(sorted(self._resp_freqs),
-                                               self._resp_zs,
-                                               kind='nearest',
-                                               fill_value='extrapolate')
-
-        # Based on NuRadioMC the effective height should be calculated this way.
-        # Apparently this formula is used since the "gains" from the WIPLD files
-        # are not really gains.
-        Z_rx = Z_rx_func(np.abs(frequencies[frequencies!=0]))
-        heff[frequencies!=0] = 2 * 3e8/frequencies[frequencies!=0] * Z_rx/377j
-        return heff
 
 
     def receive(self, signal, direction=None, polarization=None,
@@ -674,9 +651,6 @@ class ARIANNAAntennaSystem(AntennaSystem):
     response_freqs : None or set, optional
         Set of frequencies in the response data ``dict`` keys. If ``None``,
         calculated automatically from `response_data`.
-    response_zs : None or array_like, optional
-        Array of impedances corresponding to the `response_freqs`. If ``None``,
-        behavior is undefined.
 
     Attributes
     ----------
@@ -716,7 +690,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
     def __init__(self, name, position, threshold, trigger_window=5e-9,
                  z_axis=(0,0,1), x_axis=(1,0,0), amplification=1,
                  amplifier_clipping=1, noisy=True, unique_noise_waveforms=10,
-                 response_data=None, response_freqs=None, response_zs=None):
+                 response_data=None, response_freqs=None, **kwargs):
         super().__init__(ARIANNAAntenna)
 
         self.name = str(name)
@@ -728,8 +702,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
         self.setup_antenna(z_axis=z_axis, x_axis=x_axis, noisy=noisy,
                            unique_noise_waveforms=unique_noise_waveforms,
                            response_data=response_data,
-                           response_freqs=response_freqs,
-                           response_zs=response_zs)
+                           response_freqs=response_freqs, **kwargs)
 
         self.threshold = threshold
         self.trigger_window = trigger_window
@@ -739,11 +712,24 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         self._filter_data = AMPLIFIER_GAIN
 
+    @property
+    def _metadata(self):
+        """Metadata dictionary for writing `ARIANNAAntennaSystem` information."""
+        meta = super()._metadata
+        meta.update({
+            "name": self.name,
+            "lead_in_time": self.lead_in_time,
+            "amplification": self.amplification,
+            "amplifier_clipping": self.amplifier_clipping,
+            "threshold": self.threshold,
+            "trigger_window": self.trigger_window
+        })
+        return meta
+
     def setup_antenna(self, center_frequency=350e6, bandwidth=600e6,
-                      resistance=8.5, z_axis=(0,0,1), x_axis=(1,0,0),
+                      resistance=16.5, z_axis=(0,0,1), x_axis=(1,0,0),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
-                      response_data=None, response_freqs=None,
-                      response_zs=None):
+                      response_data=None, response_freqs=None, **kwargs):
         """
         Setup the antenna by passing along its init arguments.
 
@@ -774,14 +760,11 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Dictionary containing data on the response of the antenna.
         response_freqs : None or set, optional
             Set of frequencies in the response data ``dict`` keys.
-        response_zs : None or array_like, optional
-            Array of impedances corresponding to the `response_freqs`.
 
         """
-        # The defaults for this method are pulled from the ARA antennas, where
-        # noise rms should be about 40 mV (after filtering with gain of ~5000).
+        # ARIANNA expects a noise rms of about 11 microvolts (before amps).
         # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~8.5 Ohm
+        # resistance of ~16.5 Ohm
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
@@ -796,7 +779,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
                               unique_noise_waveforms=unique_noise_waveforms,
                               response_data=response_data,
                               response_freqs=response_freqs,
-                              response_zs=response_zs)
+                              **kwargs)
 
     def interpolate_filter(self, frequencies):
         """
@@ -1018,6 +1001,5 @@ class LPDA(ARIANNAAntennaSystem):
                          amplifier_clipping=amplifier_clipping,
                          noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms,
-                         response_data=LPDA_RESPONSE,
-                         response_freqs=LPDA_FREQS,
-                         response_zs=LPDA_Z)
+                         response_data=LPDA_DIRECTIONALITY,
+                         response_freqs=LPDA_FREQS)
