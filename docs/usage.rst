@@ -523,17 +523,21 @@ The :class:`RayTracePath` class contains the attributes of the paths between poi
 
 .. image:: _static/example_outputs/ray_tracing_1.png
 
-Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. ::
+Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. :meth:`RayTracePath.propagate` can also propagate the polarization vector of the signal, either independently or in the same function call. ::
 
     time_array = np.linspace(0, 5e-9, 1001)
-    my_signal = (pyrex.FunctionSignal(time_array, lambda t: np.sin(1e9*2*np.pi*t))
-                + pyrex.FunctionSignal(time_array, lambda t: np.sin(1e10*2*np.pi*t)))
-    plt.plot(my_signal.times, my_signal.values)
+    launch_signal = (
+        pyrex.FunctionSignal(time_array, lambda t: np.sin(1e9*2*np.pi*t))
+        + pyrex.FunctionSignal(time_array, lambda t: np.sin(1e10*2*np.pi*t))
+    )
+    plt.plot(launch_signal.times*1e9, launch_signal.values)
     plt.show()
+    launch_pol = 1/np.sqrt(np.array([3, 3, 3]))
 
-    my_path.propagate(my_signal)
-    plt.plot(my_signal.times, my_signal.values)
+    rec_signal, rec_pol = my_path.propagate(launch_signal, polarization=launch_pol)
+    plt.plot(rec_signal.times*1e9, rec_signal.values)
     plt.show()
+    print(rec_pol)
 
 .. image:: _static/example_outputs/ray_tracing_2.png
 .. image:: _static/example_outputs/ray_tracing_3.png
@@ -644,7 +648,7 @@ The :class:`File` class controls the reading and writing of data files for simul
 
 If writing an HDF5 file, the optional arguments specify which event data to write. The available write options are ``write_particles``, ``write_triggers``, ``write_antenna_triggers``, ``write_rays``, ``write_noise``, and ``write_waveforms``. Most of these are self-explanatory, but ``write_antenna_triggers`` will write triggering information for each antenna in the detector and ``write_noise`` will write the frequency data required to replicate noise waveforms. The last optional argument is ``require_trigger`` which specifies which data should only be written when the detector is triggered. If a boolean value, requires trigger or not for all data with the exception of particle and trigger data, which is always written. If a list of strings, the listed data will require triggers and any other data will always be written.
 
-The most straightforward way to write data files is to pass a :class:`File` object to the :class:`EventKernel` object handling the simulation::
+The most straightforward way to write data files is to pass a :class:`File` object to the :class:`EventKernel` object handling the simulation. In such a case, a global trigger condition should be passed to the :class:`EventKernel` as well, either as a function which acts on a detector object, or as the "global" key in a dictionary of functions representing various trigger conditions::
 
     particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
                                                energy=1e8)
@@ -657,17 +661,29 @@ The most straightforward way to write data files is to pass a :class:`File` obje
                                 trigger_threshold=1e-4, noisy=False)
         )
 
-    def trigger_condition(det):
+    def global_trigger_condition(det):
         for ant in det:
             if ant.is_hit:
                 return True
         return False
 
+    def even_antenna_trigger(det):
+        for i, ant in enumerate(det):
+            if i%2==0 and ant.is_hit:
+                return True
+        return False
+
+    trigger_conditions = {
+        "global": global_trigger_condition,
+        "evens": even_antenna_trigger,
+        "ant1": lambda det: det[1].is_hit
+    }
+
     with pyrex.File('my_data_file.h5', 'x') as f:
         kernel = pyrex.EventKernel(generator=particle_generator,
                                    antennas=detector,
                                    event_writer=f,
-                                   triggers=trigger_condition)
+                                   triggers=trigger_conditions)
 
         for _ in range(10):
             event = kernel.event()
@@ -720,7 +736,7 @@ If reading an HDF5 file, the ``slice_range`` argument specifies the size of even
     with pyrex.File('my_data_file.h5', 'r', slice_range=100) as f:
         pass
 
-When reading HDF5 files, there are a number of methods and attributes available to access the data. With the :class:`File` object alone, :attr:`File.file_metadata` contains a dictionary of the file's metadata and :attr:`File.antenna_info` contains a list of dictionaries with data for each antenna in the detector the file was run with. If waveform data is available, :meth:`File.get_waveforms` can be used to get all waveforms in the file or a specific subset based on ``event_id``, ``antenna_id``, and ``waveform_type`` arguments. Finally, direct access to the contents of the HDF5 file is supported through either the proper paths or nicknames ::
+When reading HDF5 files, there are a number of methods and attributes available to access the data. With the :class:`File` object alone, :attr:`File.file_metadata` contains a dictionary of the file's metadata and :attr:`File.antenna_info` contains a list of dictionaries with data for each antenna in the detector the file was run with. If waveform data is available, :meth:`File.get_waveforms` can be used to get all waveforms in the file or a specific subset based on ``event_id``, ``antenna_id``, and ``waveform_type`` arguments. Finally, direct access to the contents of the HDF5 file is supported through either the proper paths or nicknames. ::
 
     with pyrex.File('my_data_file.h5', 'r') as f:
         print(f.file_metadata)
@@ -743,22 +759,19 @@ When reading HDF5 files, there are a number of methods and attributes available 
         # Using analysis dataset nickname
         other = f['meaningless_data']
 
-HDF5 files opened in read-only mode can also be iterated over, which allows access to the data for each event in turn. When iterating, the event objects have the following methods for accessing data. :meth:`get_particle_info` and :meth:`get_rays_info` return a list of dictionaries or attribute values for the event's particles or rays, respectively. The :attr:`is_neutrino`, :attr:`is_nubar`, and :attr:`flavor` attributes also contain the obvious basic information about the base particle of the event. :meth:`get_waveforms` returns the waveforms for the event, or a specific subset based on ``antenna_id`` and ``waveform_type`` (as above). The :attr:`triggered` attribute contains whether the event triggered the detector and the :meth:`get_triggered_components` method returns the parts of the detector which were triggered (as specified on writing the file). And finally, if noise data is recorded for the event it is contained in the :attr:`noise_bases` attribute. Iteration of the HDF5 files supports slicing as long as the step size is positive-valued, and individual events can also be reached by indexing the :class:`File` object. ::
+HDF5 files opened in read-only mode can also be iterated over, which allows access to the data for each event in turn. When iterating, the event objects have the following methods for accessing data. :meth:`get_particle_info` and :meth:`get_rays_info` return a list of dictionaries or attribute values for the event's particles or rays, respectively. The :attr:`is_neutrino`, :attr:`is_nubar`, and :attr:`flavor` attributes also contain the associated basic information about the base particle of the event. :meth:`get_waveforms` returns the waveforms for the event, or a specific subset based on ``antenna_id`` and ``waveform_type`` (as above). The :attr:`triggered` attribute contains whether the event triggered the detector and the :meth:`get_triggered_components` method returns a list of the trigger conditions of the detector which were met (as specified when writing the file). And finally, if noise data is recorded for the event it is contained in the :attr:`noise_bases` attribute. Iteration of the HDF5 files supports slicing as long as the step size is positive-valued, and individual events can also be reached by indexing the :class:`File` object. ::
 
     with pyrex.File('my_data_file.h5', 'r') as f:
         for event in f:
             print(event.is_neutrino, event.is_nubar, event.flavor)
+            print(event.triggered, event.get_triggered_components())
 
         for event in f[2:6:2]:
             print(event.get_particle_info('particle_name'),
                   event.get_particle_info('vertex'))
             print(np.degrees(event.get_rays_info('receiving_angle')))
-            print(event.triggered)
 
-        print(f[4].triggered)
-
-        # No additional trigger info was stored, so this will fail if run
-        # print(f[4].get_triggered_components())
+        print(f[4].get_rays_info('tof'))
 
         # No waveform data was stored above, so this will fail if run
         # wfs = f[5].get_waveforms(antenna_id=4)
