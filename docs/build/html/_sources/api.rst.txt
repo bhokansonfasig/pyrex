@@ -39,6 +39,7 @@ PyREx Package Imports
     RayTracer
     RayTracePath
     EventKernel
+    File
 
 
 .. _api-2:
@@ -59,6 +60,7 @@ Individual Module APIs
     api/particle
     api/generation
     api/kernel
+    api/io
 
 
 .. _api-3:
