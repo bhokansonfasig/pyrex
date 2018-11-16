@@ -28,6 +28,8 @@ Version 1.8.1
 
 * Corrected signal polarization calculation.
 
+* Fixed calculation of fresnel factors in surface reflection.
+
 * Fixed bug in antenna gains of asymmetric antennas for theta angles near 180 degrees.
 
 * Corrected effective height of antennas modeled by WIPL-D (i.e. :class:`LPDA`).
