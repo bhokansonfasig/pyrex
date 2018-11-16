@@ -686,7 +686,7 @@ The most straightforward way to write data files is to pass a :class:`File` obje
                                    triggers=trigger_conditions)
 
         for _ in range(10):
-            event = kernel.event()
+            event, triggered = kernel.event()
 
 If you want to manually write the data file, then the :meth:`File.set_detector` and :meth:`File.add` methods are necessary. :meth:`File.set_detector` associates the given antennas with the file object (and writes their data) and :meth:`File.add` adds the data from the given event to the file. Here we also manually open and close the file object with :meth:`File.open` and :meth:`File.close`, and add some metadata to the file with :meth:`File.add_file_metadata`::
 
