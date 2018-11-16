@@ -305,7 +305,7 @@ class TestGaussianNoise:
 def thermal_signal():
     """Thermal noise sample"""
     np.random.seed(SEED)
-    return ThermalNoise(times=np.linspace(0, 100e-9, 1001), f_band=(300e6, 700e6),
+    return ThermalNoise(times=np.linspace(0, 1e-6, 10001), f_band=(300e6, 700e6),
                         rms_voltage=1)
 
 
@@ -313,12 +313,11 @@ class TestThermalNoise:
     """Tests for ThermalNoise class"""
     def test_creation(self, thermal_signal):
         """Test initialization of thermal noise signal"""
-        assert np.array_equal(thermal_signal.times, np.linspace(0, 100e-9, 1001))
+        assert np.array_equal(thermal_signal.times, np.linspace(0, 1e-6, 10001))
         assert thermal_signal.value_type == Signal.Type.voltage
         assert thermal_signal.f_min == 300e6
         assert thermal_signal.f_max == 700e6
-        assert len(thermal_signal.freqs) == 40
-        assert np.array_equal(thermal_signal.amps, np.ones(len(thermal_signal.freqs)))
+        assert len(thermal_signal.freqs) == 400
         assert thermal_signal.rms == 1
 
     def test_creation_failure(self):
@@ -339,8 +338,10 @@ class TestThermalNoise:
         noise = ThermalNoise(times=[0,1,2], f_band=(0, 100), rms_voltage=1,
                              temperature=200, resistance=100)
         assert noise.rms == 1
-    
-    def test_rms(self, thermal_signal):
+
+    def test_mean_rms(self, thermal_signal):
         """Test the rms value of the thermal noise signal"""
-        assert (np.sqrt(np.mean(thermal_signal.values**2)) ==
-                pytest.approx(thermal_signal.rms, rel=1e-3))
+        mean = np.mean(thermal_signal.values)
+        assert mean == pytest.approx(0, abs=1e-3)
+        assert (np.sqrt(np.mean((thermal_signal.values-mean)**2)) ==
+                pytest.approx(thermal_signal.rms, rel=0.05))
