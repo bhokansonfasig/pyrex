@@ -442,14 +442,14 @@ class Detector:
         if not self._is_base_subset:
             self.antenna_positions = [sub.antenna_positions
                                       for sub in self.subsets]
-        if self.test_antenna_positions:
-            self._test_positions()
+        self._test_positions()
 
         # For a detector comprised of subsets which hasn't overwritten
         # build_antennas, mirror the function signature of build_antennas from
-        # the base subset
+        # the base subset (as long as the signature is the same for all subsets)
         if (not self._is_base_subset and
-                self.build_antennas.__func__==Detector.build_antennas):
+                self.build_antennas.__func__==Detector.build_antennas and
+                self._subset_builds_match):
             self.build_antennas = mirror_func(self.subsets[0].build_antennas,
                                               Detector.build_antennas,
                                               self=self)
@@ -505,14 +505,31 @@ class Detector:
                 antenna_class = kwargs["antenna_class"]
                 kwargs.pop("antenna_class")
             else:
+                if len(args)<1:
+                    raise TypeError("build_antennas() missing 1 reqiured "+
+                                    "positional argument: 'antenna_class'")
                 antenna_class = args[0]
                 args = args[1:]
             self.subsets = []
             for p in self.antenna_positions:
                 self.subsets.append(antenna_class(position=p, *args, **kwargs))
         else:
-            for sub in self.subsets:
-                sub.build_antennas(*args, **kwargs)
+            if self._subset_builds_match:
+                # If the signatures match, passing down args is fine
+                for sub in self.subsets:
+                    sub.build_antennas(*args, **kwargs)
+            else:
+                # If the signatures don't match, only pass down kwargs as needed
+                if len(args)>0:
+                    raise TypeError("Detector build_antennas cannot handle "+
+                                    "positional arguments when its subsets "+
+                                    "aren't identical")
+                for sub in self.subsets:
+                    sig = inspect.signature(sub.build_antennas)
+                    keys = sig.parameters.keys()
+                    sub_kwargs = {key: val for key, val in kwargs.items()
+                                  if key in keys}
+                    sub.build_antennas(**sub_kwargs)
 
     def triggered(self, *args, require_mc_truth=False, **kwargs):
         """
@@ -569,8 +586,16 @@ class Detector:
 
     @property
     def _is_base_subset(self):
+        """Whether the detector is the base subset."""
         return (len(self.subsets)==0 or
                 not isinstance(self.subsets[0], collections.Iterable))
+
+    @property
+    def _subset_builds_match(self):
+        """Whether the subsets of the detector have the same build_antennas."""
+        return (self._is_base_subset or
+                len(set([inspect.signature(sub.build_antennas)
+                         for sub in self.subsets])) == 1)
 
     def _test_positions(self):
         """
@@ -585,6 +610,8 @@ class Detector:
             If an antenna position is found above the ice surface.
 
         """
+        if not self.test_antenna_positions:
+            return
         if self._is_base_subset:
             for pos in self.antenna_positions:
                 if pos[2]>0:
