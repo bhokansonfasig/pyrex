@@ -5,6 +5,7 @@ Generators are responsible for the input of events into the simulation.
 
 """
 
+import collections
 import logging
 import numpy as np
 import pyrex.earth_model as earth_model
@@ -351,10 +352,13 @@ class ListGenerator:
 
     """
     def __init__(self, events, loop=True):
-        if isinstance(events, Event):
-            self.events = [events]
-        else:
+        if not isinstance(events, collections.Iterable):
             self.events = events
+        else:
+            self.events = [events]
+        for i, event in enumerate(self.events):
+            if isinstance(event, Particle):
+                self.events[i] = Event(event)
         self.loop = loop
         self._index = -1
 
@@ -440,10 +444,10 @@ class FileGenerator:
 
     """
     def __init__(self, files, interaction_model=NeutrinoInteraction):
-        if isinstance(files, str):
-            self.files = [files]
-        else:
+        if isinstance(files, collections.Iterable):
             self.files = files
+        else:
+            self.files = [files]
         self.interaction_model = interaction_model
         self._file_index = -1
         self._next_file()
