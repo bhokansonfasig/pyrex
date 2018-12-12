@@ -207,6 +207,7 @@ def mirror_func(match_func, run_func, self=None):
     <Signature (self, factor, power=1)>
 
     """
+    logger.debug("Mirroring %s onto %s", match_func, run_func)
     @functools.wraps(match_func)
     def wrapper(*args, **kwargs):
         if self is not None:
