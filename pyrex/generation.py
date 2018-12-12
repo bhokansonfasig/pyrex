@@ -352,7 +352,8 @@ class ListGenerator:
 
     """
     def __init__(self, events, loop=True):
-        if not isinstance(events, collections.Iterable):
+        if (isinstance(events, collections.Iterable) and
+                not isinstance(events, Event)):
             self.events = events
         else:
             self.events = [events]
@@ -444,10 +445,10 @@ class FileGenerator:
 
     """
     def __init__(self, files, interaction_model=NeutrinoInteraction):
-        if isinstance(files, collections.Iterable):
-            self.files = files
-        else:
+        if isinstance(files, str):
             self.files = [files]
+        else:
+            self.files = files
         self.interaction_model = interaction_model
         self._file_index = -1
         self._next_file()

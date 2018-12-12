@@ -1143,7 +1143,7 @@ class Event:
             self.roots = roots
         else:
             self.roots = [roots]
-        for root in roots:
+        for root in self.roots:
             if not isinstance(root, Particle):
                 raise ValueError("Root elements must be Particle objects")
         self._all = [particle for particle in self.roots]
