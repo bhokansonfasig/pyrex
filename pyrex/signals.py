@@ -90,16 +90,13 @@ class Signal:
 
         Raises
         ------
-        TypeError
-            If the other object in the addition is not a ``Signal``.
         ValueError
             If the other ``Signal`` has different ``times`` or ``value_type``.
 
         """
-        if not(isinstance(other, Signal)):
-            raise TypeError("Can't add object with type"
-                            +str(type(other))+" to a signal")
-        if not(np.array_equal(self.times, other.times)):
+        if not isinstance(other, Signal):
+            return NotImplemented
+        if not np.array_equal(self.times, other.times):
             raise ValueError("Can't add signals with different times")
         if (self.value_type!=self.Type.undefined and
                 other.value_type!=self.Type.undefined and
@@ -124,10 +121,49 @@ class Signal:
         error.
 
         """
-        if other!=0:
-            raise TypeError("unsupported operand type(s) for +: '"+
-                            str(type(other))+"' and 'Signal'")
+        if other==0:
+            return self
+        else:
+            return NotImplemented
 
+    def __mul__(self, other):
+        """Multiply signal values at all times by some value."""
+        try:
+            return Signal(self.times, self.values * other,
+                          value_type=self.value_type)
+        except TypeError:
+            return NotImplemented
+
+    def __rmul__(self, other):
+        """Multiply signal values at all times by some value."""
+        try:
+            return Signal(self.times, other * self.values,
+                          value_type=self.value_type)
+        except TypeError:
+            return NotImplemented
+
+    def __imul__(self, other):
+        """Multiply signal values at all times by some value in-place."""
+        try:
+            self.values *= other
+        except TypeError:
+            return NotImplemented
+        return self
+
+    def __truediv__(self, other):
+        """Divide signal values at all times by some value."""
+        try:
+            return Signal(self.times, self.values / other,
+                          value_type=self.value_type)
+        except TypeError:
+            return NotImplemented
+
+    def __itruediv__(self, other):
+        """Divide signal values at all times by some value in-place."""
+        try:
+            self.values /= other
+        except TypeError:
+            return NotImplemented
         return self
 
     @property
