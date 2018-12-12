@@ -770,9 +770,7 @@ class ARVZAskaryanSignal(Signal):
         z_max = 2.5*self.max_length(energy)
         n_Q = int(np.abs(z_max/dz))
         z_Q_vals = np.arange(n_Q) * np.abs(dz)
-        Q = np.zeros(n_Q)
-        for i, z in enumerate(z_Q_vals):
-            Q[i] = profile_function(z, energy)
+        Q = profile_function(z_Q_vals, energy)
 
         # Fail gracefully if the energy is less than the critical energy for
         # shower formation (i.e. all Q values are zero)
@@ -796,9 +794,7 @@ class ARVZAskaryanSignal(Signal):
                  + n_extra_beginning + n_extra_end)
         t_RAC_vals = (np.arange(n_RAC) * dz * z_to_t
                       + t_start - n_extra_beginning * dz * z_to_t)
-        RA_C = np.zeros(n_RAC)
-        for i, t in enumerate(t_RAC_vals):
-            RA_C[i] = self.RAC(t, energy)
+        RA_C = self.RAC(t_RAC_vals, energy)
 
         # Convolve Q and RAC to get unnormalized vector potential
         if n_Q*n_RAC>1e6:
@@ -872,14 +868,14 @@ class ARVZAskaryanSignal(Signal):
 
         Parameters
         ----------
-        time : float
+        time : array_like
             Time (s) at which to calculate the R*A_C value.
         energy : float
             Energy (GeV) of the shower.
 
         Returns
         -------
-        float
+        array_like
             The R*A_C value (V*s) at the given time.
 
         Notes
@@ -897,10 +893,12 @@ class ARVZAskaryanSignal(Signal):
         """
         # Get absolute value of time in nanoseconds
         ta = np.abs(time) * 1e9
-        if time>=0:
-            return -4.5e-17 * energy * (np.exp(-ta/0.057) + (1+2.87*ta)**-3)
-        else:
-            return -4.5e-17 * energy * (np.exp(-ta/0.030) + (1+3.05*ta)**-3.5)
+        rac = np.zeros_like(time)
+        rac[time>=0] = (-4.5e-17 * energy *
+                        (np.exp(-ta[time>=0]/0.057) + (1+2.87*ta[time>=0])**-3))
+        rac[time<0] = (-4.5e-17 * energy *
+                       (np.exp(-ta[time<0]/0.030) + (1+3.05*ta[time<0])**-3.5))
+        return rac
 
     @staticmethod
     def em_shower_profile(z, energy, density=0.92, crit_energy=7.86e-2,
@@ -914,7 +912,7 @@ class ARVZAskaryanSignal(Signal):
 
         Parameters
         ----------
-        z : float
+        z : array_like
             Distance (m) along the shower at which to calculate the charge.
         energy : float
             Energy (GeV) of the shower.
@@ -927,7 +925,7 @@ class ARVZAskaryanSignal(Signal):
 
         Returns
         -------
-        float
+        array_like
             The charge (C) at the given distance along the shower.
 
         Notes
@@ -942,8 +940,11 @@ class ARVZAskaryanSignal(Signal):
             **60**, 25-31 (2015).
 
         """
-        if z<=0 or energy<=crit_energy:
-            return 0
+        N = np.zeros_like(z)
+
+        # Below critical energy, no shower
+        if energy<=crit_energy:
+            return N
 
         # Depth calculated by "integrating" the density along the shower path
         # (in g/cm^2)
@@ -955,8 +956,8 @@ class ARVZAskaryanSignal(Signal):
         s = 3 * x_ratio / (x_ratio + 2*np.log(e_ratio))
 
         # Number of particles
-        N = (0.31 * np.exp(x_ratio * (1 - 1.5*np.log(s)))
-             / np.sqrt(np.log(e_ratio)))
+        N[z>0] = (0.31 * np.exp(x_ratio[z>0] * (1 - 1.5*np.log(s[z>0])))
+                  / np.sqrt(np.log(e_ratio)))
 
         return N * 1.602e-19
 
@@ -973,7 +974,7 @@ class ARVZAskaryanSignal(Signal):
 
         Parameters
         ----------
-        z : float
+        z : array_like
             Distance (m) along the shower at which to calculate the charge.
         energy : float
             Energy (GeV) of the shower.
@@ -991,7 +992,7 @@ class ARVZAskaryanSignal(Signal):
 
         Returns
         -------
-        float
+        array_like
             The charge (C) at the given distance along the shower.
 
         Notes
@@ -1005,8 +1006,11 @@ class ARVZAskaryanSignal(Signal):
             effect." ICRC proceedings, 17-25 (1999).
 
         """
-        if z<=0 or energy<=crit_energy:
-            return 0
+        N = np.zeros_like(z)
+
+        # Below critical energy, no shower
+        if energy<=crit_energy:
+            return N
 
         # Calculate shower depth and shower maximum depth in g/cm^2
         x = 100 * z * density
@@ -1014,9 +1018,9 @@ class ARVZAskaryanSignal(Signal):
         x_max = rad_length * np.log(e_ratio)
 
         # Number of particles
-        N = (scale_factor * e_ratio * (x_max - int_length) / x_max
-             * (x / (x_max - int_length))**(x_max / int_length)
-             * np.exp((x_max - x)/int_length - 1))
+        N[z>0] = (scale_factor * e_ratio * (x_max - int_length) / x_max
+                  * (x[z>0] / (x_max - int_length))**(x_max / int_length)
+                  * np.exp((x_max - x[z>0])/int_length - 1))
 
         return N * 1.602e-19
 
