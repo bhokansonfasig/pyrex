@@ -862,16 +862,39 @@ class CombinedDetector(Detector, mirror_set_positions=False):
             if hasattr(sub, 'triggered'):
                 if self._subset_triggers_match:
                     # If the signatures match, passing down args is fine
+                    logger.debug("Called %s with args %s and kwargs %s",
+                                 sub.triggered, args, kwargs)
                     if sub.triggered(*args, **kwargs):
                         return True
                 else:
-                    # Get the keyword arguments to be passed down
-                    keys = inspect.signature(sub.triggered).parameters.keys()
-                    sub_kwargs = {key: val for key, val in kwargs.items()
-                                  if key in keys}
-                    # Check the subset trigger
-                    if sub.triggered(**sub_kwargs):
-                        return True
+                    # Keep trying the subset trigger, removing keyword
+                    # arguments which cause errors one by one
+                    sub_kwargs = kwargs
+                    while True:
+                        prev_kwargs = sub_kwargs
+                        try:
+                            triggered = sub.triggered(**sub_kwargs)
+                        except TypeError as e:
+                            # Remove the problematic argument from sub_kwargs
+                            msg = e.args[0]
+                            if 'got an unexpected keyword argument' in msg:
+                                parts = msg.split("'")
+                                bad_kw = parts[1]
+                                sub_kwargs = {key: val
+                                              for key, val in sub_kwargs.items()
+                                              if key!=bad_kw}
+                            else:
+                                raise e
+                        else:
+                            logger.debug("Called %s with kwargs %s",
+                                         sub.triggered, sub_kwargs)
+                            if triggered:
+                                return True
+                            else:
+                                break
+                        if sub_kwargs==prev_kwargs:
+                            raise TypeError("Unable to pass keyword arguments"+
+                                            " down to subset triggers")
             elif isinstance(sub, collections.Iterable):
                 # Check for any antenna trigger in the subset
                 for ant in sub:
