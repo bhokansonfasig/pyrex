@@ -988,7 +988,7 @@ class ARAAntennaSystem(AntennaSystem):
         copy.filter_frequencies(self.interpolate_filter,
                                 force_real=True)
         # sqrt(2) for 3dB splitter for TURF, SURF
-        clipped_values = np.clip(copy.values * np.sqrt(2) * self.amplification,
+        clipped_values = np.clip(copy.values / np.sqrt(2) * self.amplification,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
         return Signal(signal.times, clipped_values,
