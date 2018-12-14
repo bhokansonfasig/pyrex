@@ -5,7 +5,7 @@ Generators are responsible for the input of events into the simulation.
 
 """
 
-import collections
+from collections.abc import Iterable
 import logging
 import numpy as np
 import pyrex.earth_model as earth_model
@@ -352,7 +352,7 @@ class ListGenerator:
 
     """
     def __init__(self, events, loop=True):
-        if (isinstance(events, collections.Iterable) and
+        if (isinstance(events, Iterable) and
                 not isinstance(events, Event)):
             self.events = events
         else:

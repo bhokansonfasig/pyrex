@@ -7,7 +7,7 @@ interactions.
 
 """
 
-import collections
+from collections.abc import Iterable
 from enum import Enum
 import inspect
 import logging
@@ -1139,7 +1139,7 @@ class Event:
 
     """
     def __init__(self, roots):
-        if isinstance(roots, collections.Iterable):
+        if isinstance(roots, Iterable):
             self.roots = roots
         else:
             self.roots = [roots]
@@ -1180,7 +1180,7 @@ class Event:
             raise ValueError("Parent particle is not in the event tree")
         else:
             parent_index = self._all.index(parent)
-        if not isinstance(children, collections.Iterable):
+        if not isinstance(children, Iterable):
             children = [children]
         new_index_start = len(self._all)
         self._all.extend(children)

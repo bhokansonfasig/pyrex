@@ -8,7 +8,7 @@ computer-science-motivated structures that python doesn't include naturally.
 
 """
 
-import collections
+from collections.abc import Iterable
 import copy
 import functools
 import logging
@@ -133,7 +133,7 @@ def flatten(iterator, dont_flatten=()):
 
     """
     for element in iterator:
-        if (isinstance(element, collections.Iterable) and
+        if (isinstance(element, Iterable) and
                 not isinstance(element, tuple(dont_flatten)+(str, bytes))):
             yield from flatten(element, dont_flatten=dont_flatten)
         else:

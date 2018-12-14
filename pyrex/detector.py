@@ -7,7 +7,7 @@ functions like front-end electronics chains and trigger systems.
 
 """
 
-import collections
+from collections.abc import Iterable
 import inspect
 import logging
 import numpy as np
@@ -623,7 +623,7 @@ class Detector:
     def _is_base_subset(self):
         """Whether the detector is a base subset."""
         return (len(self.subsets)==0 or
-                True not in [isinstance(sub, collections.Iterable)
+                True not in [isinstance(sub, Iterable)
                              for sub in self.subsets])
 
     @property
@@ -661,7 +661,7 @@ class Detector:
             for sub in self.subsets:
                 if hasattr(sub, '_test_positions'):
                     sub._test_positions()
-                elif isinstance(sub, collections.Iterable):
+                elif isinstance(sub, Iterable):
                     for ant in sub:
                         if ant.position[2]>0:
                             raise ValueError("Antenna placed outside of ice "+
@@ -755,7 +755,7 @@ class CombinedDetector(Detector, mirror_set_positions=False):
         for sub in self.subsets:
             if hasattr(sub, 'antenna_positions'):
                 positions.append(sub.antenna_positions)
-            elif isinstance(sub, collections.Iterable):
+            elif isinstance(sub, Iterable):
                 positions.append([ant.position for ant in sub])
             else:
                 positions.append(sub.position)
@@ -895,7 +895,7 @@ class CombinedDetector(Detector, mirror_set_positions=False):
                         if sub_kwargs==prev_kwargs:
                             raise TypeError("Unable to pass keyword arguments"+
                                             " down to subset triggers")
-            elif isinstance(sub, collections.Iterable):
+            elif isinstance(sub, Iterable):
                 # Check for any antenna trigger in the subset
                 for ant in sub:
                     if ((require_mc_truth and ant.is_hit_mc_truth) or
