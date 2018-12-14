@@ -981,10 +981,10 @@ class Particle:
         carefully chosen. By default, the `interaction_model` will choose an
         interaction type.
     weight : float, optional
-        Monte Carlo weight of the particle. The calculation of this weight
-        depends on the particle generation method, but this value should be the
-        total weight representing the probability of this particle's event
-        occurring.
+        Total Monte Carlo weight of the particle. The calculation of this
+        weight depends on the particle generation method, but this value should
+        be the total weight representing the probability of this particle's
+        event occurring.
 
     Attributes
     ----------
@@ -1000,7 +1000,17 @@ class Particle:
         Instance of the `interaction_model` class to be used for calculations
         related to interactions of the particle.
     weight : float
-        Monte Carlo weight of the particle.
+        Total Monte Carlo weight of the particle. Given by either the value
+        specified on initialization or the product of ``survival_weight`` and
+        ``interaction_weight``.
+    survival_weight : float
+        Monte Carlo weight of the particle surviving to its vertex. Represents
+        the probability that the particle does not interact along its path
+        through the Earth.
+    interaction_weight : float
+        Monte Carlo weight of the particle interacting at its vertex.
+        Represents the probability that the the particle interacts specifically
+        at its given vertex.
 
     See Also
     --------
@@ -1063,7 +1073,7 @@ class Particle:
 
     def __init__(self, particle_id, vertex, direction, energy,
                  interaction_model=NeutrinoInteraction, interaction_type=None,
-                 weight=1):
+                 weight=None):
         self.id = particle_id
         self.vertex = np.array(vertex)
         self.direction = normalize(direction)
@@ -1072,7 +1082,9 @@ class Particle:
             self.interaction = interaction_model(self, kind=interaction_type)
         else:
             raise ValueError("Particle class interaction_model must be a class")
-        self.weight = weight
+        self.survival_weight = None
+        self.interaction_weight = None
+        self._forced_weight = weight
 
     @property
     def _metadata(self):
@@ -1111,6 +1123,24 @@ class Particle:
             self._id = self.Type.undefined
         else:
             self._id = get_from_enum(particle_id, self.Type)
+
+    @property
+    def weight(self):
+        """
+        Total Monte Carlo weight of the particle
+
+        Given by either the value specified on initialization or the product of
+        ``survival_weight`` and ``interaction_weight``.
+
+        """
+        if self._forced_weight is not None:
+            return self._forced_weight
+        weight = 1
+        if self.survival_weight is not None:
+            weight *= self.survival_weight
+        if self.interaction_weight is not None:
+            weight *= self.interaction_weight
+        return weight
 
 
 
