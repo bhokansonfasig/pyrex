@@ -1099,6 +1099,12 @@ class Particle:
             "direction_y": self.direction[1],
             "direction_z": self.direction[2],
             "energy": self.energy,
+            "survival_weight": (self.survival_weight
+                                if self.survival_weight is not None
+                                else 1),
+            "interaction_weight": (self.interaction_weight
+                                   if self.interaction_weight is not None
+                                   else 1),
             "weight": self.weight,
             "interaction_class": str(type(self.interaction)),
         }
