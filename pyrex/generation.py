@@ -14,27 +14,16 @@ from pyrex.particle import Event, Particle, NeutrinoInteraction
 logger = logging.getLogger(__name__)
 
 
-class ShadowGenerator:
+class BaseGenerator:
     """
-    Class to generate neutrino vertices with Earth shadowing.
+    Base class for neutrino generators.
 
-    Generates neutrinos in a box with given width, length, and height. Accounts
-    for Earth shadowing by comparing the neutrino interaction length to the
-    material thickness of the Earth along the neutrino path, and rejecting
-    particles which would interact before reaching the vertex. Note the subtle
-    difference in x and y ranges compared to the z range.
+    Provides methods for generating neutrino attributes except for neutrino
+    vertex, which should be provided by child classes to generate neutrinos
+    in specific volumes.
 
     Parameters
     ----------
-    dx : float
-        Width of the ice volume in the x-direction. Neutrinos generated within
-        (-`dx` / 2, `dx` / 2).
-    dy : float
-        Length of the ice volume in the y-direction. Neutrinos generated within
-        (-`dy` / 2, `dy` / 2).
-    dz : float
-        Height of the ice volume in the z-direction. Neutrinos generated within
-        (-`dz`, 0).
     energy : float or function
         Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
         same constant energy. If ``function``, neutrinos are generated with the
@@ -48,15 +37,6 @@ class ShadowGenerator:
 
     Attributes
     ----------
-    dx : float
-        Width of the ice volume in the x-direction. Neutrinos generated within
-        (-`dx` / 2, `dx` / 2).
-    dy : float
-        Length of the ice volume in the y-direction. Neutrinos generated within
-        (-`dy` / 2, `dy` / 2).
-    dz : float
-        Height of the ice volume in the z-direction. Neutrinos generated within
-        (-`dz`, 0).
     get_energy : function
         Function returning energy (GeV) of the neutrinos by successive function
         calls.
@@ -72,15 +52,10 @@ class ShadowGenerator:
     --------
     pyrex.particle.Interaction : Base class for describing neutrino interaction
                                  attributes.
-    pyrex.slant_depth : Calculates the material thickness of a chord cutting
-                        through Earth.
 
     """
-    def __init__(self, dx, dy, dz, energy, flavor_ratio=(1,1,1),
+    def __init__(self, energy, flavor_ratio=(1,1,1),
                  interaction_model=NeutrinoInteraction):
-        self.dx = dx
-        self.dy = dy
-        self.dz = dz
         if not callable(energy):
             try:
                 e = float(energy)
@@ -98,17 +73,20 @@ class ShadowGenerator:
         """
         Get the vertex of the next particle to be generated.
 
-        Randomly generates a vertex uniformly distributed within the specified
-        ice volume.
+        For the `BaseGenerator` class, this method is not implemented.
+        Subclasses should override this method with their own procedure for
+        generating neutrino vertices in some volume.
 
-        Returns
-        -------
-        ndarray
-            Vector vertex in the ice volume.
+        Raises
+        ------
+        NotImplementedError
+            Always, unless a subclass overrides the function.
 
         """
-        return np.random.uniform(low=(-self.dx/2, -self.dy/2, -self.dz),
-                                 high=(self.dx/2, self.dy/2, 0))
+        logger.debug("Using default get_vertex from "+
+                     "pyrex.generation.BaseGenerator")
+        raise NotImplementedError("get_vertex method must be implemented by "
+                                  +"inheriting class")
 
     def get_direction(self):
         """
@@ -187,6 +165,360 @@ class ShadowGenerator:
         """
         Get the intersections of the particle path with the ice volume edges.
 
+        For the `BaseGenerator` class, this method is not implemented.
+        Subclasses should override this method with their own procedure for
+        calculating exit points given the generation volume.
+
+        Parameters
+        ----------
+        particle : Particle
+            Particle traveling through the ice.
+
+        Raises
+        ------
+        NotImplementedError
+            Always, unless a subclass overrides the function.
+
+        See Also
+        --------
+        pyrex.Particle : Class for storing particle attributes.
+
+        """
+        logger.debug("Using default get_exit_points from "+
+                     "pyrex.generation.BaseGenerator")
+        raise NotImplementedError("get_exit_points method must be implemented "
+                                  +"by inheriting class")
+
+    def get_weights(self, particle):
+        """
+        Get the weighting factors to be applied to the particle.
+
+        Calculates both the survival and interaction weights of `particle`.
+        The survival weight is based on the probability of interaction along
+        the path through the Earth. The interaction weight of `particle` based
+        on the probability of interaction at its given vertex in the ice
+        volume.
+
+        Parameters
+        ----------
+        particle : Particle
+            Particle to be weighted.
+
+        Returns
+        -------
+        survival_weight : float
+            Survival weight of the given `particle`.
+        interaction_weight : float
+            Interaction weight of the given `particle`.
+
+        See Also
+        --------
+        pyrex.Particle : Class for storing particle attributes.
+
+        """
+        nadir = np.arccos(particle.direction[2])
+        depth = -particle.vertex[2]
+        t = earth_model.slant_depth(nadir, depth)
+        x = t / particle.interaction.total_interaction_length
+        survival_weight = np.exp(-x)
+
+        entry_point, exit_point = self.get_exit_points(particle)
+        in_ice_vector = np.array(exit_point) - np.array(entry_point)
+        in_ice_length = np.sqrt(np.sum(in_ice_vector**2))
+        vertex_vector = particle.vertex - np.array(entry_point)
+        travel_length = np.sqrt(np.sum(vertex_vector**2))
+        # Convert cm water equivalent interaction length to meters in ice
+        interaction_length = (particle.interaction.total_interaction_length
+                              / 0.92 / 100)
+        interaction_weight = (in_ice_length/interaction_length *
+                              np.exp(-travel_length/interaction_length))
+
+        return survival_weight, interaction_weight
+
+
+    def create_event(self):
+        """
+        Generate a neutrino event in the ice volume.
+
+        Creates a neutrino with a random vertex in the volume, a random
+        direction, and an energy based on ``get_energy``. Particle type is
+        randomly chosen, and its interaction type is also randomly chosen based
+        on the branching ratio. Weights the particles according to their
+        survival probability through the Earth and their probability of
+        interacting in the ice at their vertex. Currently each `Event` returned
+        consists of only a single `Particle`.
+
+        Returns
+        -------
+        Event
+            Random neutrino event not shadowed by the Earth.
+
+        See Also
+        --------
+        pyrex.Event : Class for storing a tree of `Particle` objects
+                      representing an event.
+        pyrex.Particle : Class for storing particle attributes.
+
+        """
+        self.count += 1
+        vtx = self.get_vertex()
+        u = self.get_direction()
+        E = self.get_energy()
+        particle_id = self.get_particle_type()
+        particle = Particle(particle_id=particle_id, vertex=vtx, direction=u,
+                            energy=E, interaction_model=self.interaction_model)
+
+        weights = self.get_weights(particle)
+        particle.survival_weight = weights[0]
+        particle.interaction_weight = weights[1]
+        logger.debug("Successfully created %s with survival weight %d and "
+                     +"interaction weight %d", particle, weights[0], weights[1])
+        return Event(particle)
+
+
+class CylindricalGenerator(BaseGenerator):
+    """
+    Class to generate neutrino vertices in a cylindrical ice volume.
+
+    Generates neutrinos in a cylinder with given radius and height.
+
+    Parameters
+    ----------
+    dr : float
+        Radius of the ice volume. Neutrinos generated within (0, `dr`).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    energy : float or function
+        Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
+        same constant energy. If ``function``, neutrinos are generated with the
+        energy returned by successive function calls.
+    flavor_ratio : array_like, optional
+        Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
+        tau] neutrino fractions.
+    interaction_model : optional
+        Class to use to describe interactions of the generated particles.
+        Should inherit from (or behave like) the base ``Interaction`` class.
+
+    Attributes
+    ----------
+    dr : float
+        Radius of the ice volume. Neutrinos generated within (0, `dr`).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    get_energy : function
+        Function returning energy (GeV) of the neutrinos by successive function
+        calls.
+    ratio : ndarary
+        (Normalized) flavor ratio of neutrinos to be generated. Of the form
+        [electron, muon, tau] neutrino fractions.
+    interaction_model : Interaction
+        Class to use to describe interactions of the generated particles.
+    count : int
+        Number of neutrinos produced by the generator.
+
+    See Also
+    --------
+    pyrex.particle.Interaction : Base class for describing neutrino interaction
+                                 attributes.
+
+    """
+    def __init__(self, dr, dz, energy, flavor_ratio=(1,1,1),
+                 interaction_model=NeutrinoInteraction):
+        self.dr = dr
+        self.dz = dz
+        super().__init__(energy=energy, flavor_ratio=flavor_ratio,
+                         interaction_model=interaction_model)
+
+    def get_vertex(self):
+        """
+        Get the vertex of the next particle to be generated.
+
+        Randomly generates a vertex uniformly distributed within the specified
+        ice volume.
+
+        Returns
+        -------
+        ndarray
+            Vector vertex in the ice volume.
+
+        """
+        r = self.dr * np.sqrt(np.random.random_sample())
+        theta = 2*np.pi * np.random.random_sample()
+        z = -self.dz * np.random.random_sample()
+        return np.array([r*np.cos(theta), r*np.sin(theta), z])
+
+    def get_exit_points(self, particle):
+        """
+        Get the intersections of the particle path with the ice volume edges.
+
+        For the given `particle`, calculates where its travel path intersects
+        with the edges of the ice volume.
+
+        Parameters
+        ----------
+        particle : Particle
+            Particle traveling through the ice.
+
+        Returns
+        -------
+        enter_point, exit_point : ndarray
+            Vector points where the particle's path intersects with the edges
+            of the ice volume.
+
+        See Also
+        --------
+        pyrex.Particle : Class for storing particle attributes.
+
+        """
+        enter_point = None
+        exit_point = None
+
+        # Find the intersection points of the circle, assuming infinite z
+        if particle.direction[0]==0:
+            x0 = particle.vertex[0]
+            y0 = -np.sqrt(self.dr**2 - x0**2)
+            z0 = (particle.vertex[2] + (y0-particle.vertex[1])
+                  * particle.direction[2]/particle.direction[1])
+            x1 = particle.vertex[0]
+            y1 = np.sqrt(self.dr**2 - x1**2)
+            z1 = (particle.vertex[2] + (y1-particle.vertex[1])
+                  * particle.direction[2]/particle.direction[1])
+        else:
+            slope = particle.direction[1]/particle.direction[0]
+            a = 1 + slope**2
+            b = particle.vertex[1] - slope*particle.vertex[0]
+            x0 = - (slope*b + np.sqrt(-b**2 + a*self.dr**2)) / a
+            y0 = (particle.vertex[1] - slope *
+                  (particle.vertex[0] + np.sqrt(-b**2 + a*self.dr**2))) / a
+            z0 = (particle.vertex[2] + (x0-particle.vertex[0])
+                  * particle.direction[2]/particle.direction[0])
+            x1 = (-slope*b + np.sqrt(-b**2 + a*self.dr**2)) / a
+            y1 = (particle.vertex[1] + slope *
+                  (-particle.vertex[0] + np.sqrt(-b**2 + a*self.dr**2))) / a
+            z1 = (particle.vertex[2] + (x1-particle.vertex[0])
+                  * particle.direction[2]/particle.direction[0])
+
+        for pt in ([x0, y0, z0], [x1, y1, z1]):
+            # Check for intersections at the top & bottom that supersede the
+            # intersections at the sides
+            z = None
+            if pt[2]>0:
+                z = 0
+            elif pt[2]<-self.dz:
+                z = -self.dz
+            if z is not None:
+                pt[0] = (particle.vertex[0] + (z-particle.vertex[2])
+                         * particle.direction[0]/particle.direction[2])
+                pt[1] = (particle.vertex[1] + (z-particle.vertex[2])
+                         * particle.direction[1]/particle.direction[2])
+                pt[2] = z
+            pt = np.array(pt)
+            # Sort into enter and exit points based on particle direction
+            nonzero = particle.direction!=0
+            direction = ((pt[nonzero]-particle.vertex[nonzero])
+                         /particle.direction[nonzero])
+            if np.all(direction<0):
+                enter_point = pt
+            elif np.all(direction>0):
+                exit_point = pt
+            elif np.all(direction==0):
+                if enter_point is None:
+                    enter_point = pt
+                if exit_point is None:
+                    exit_point = pt
+
+        if enter_point is not None and exit_point is not None:
+            return enter_point, exit_point
+        else:
+            raise ValueError("Could not determine exit points")
+
+
+class RectangularGenerator:
+    """
+    Class to generate neutrino vertices in a rectangular ice volume.
+
+    Generates neutrinos in a box with given width, depth, and height.
+
+    Parameters
+    ----------
+    dx : float
+        Width of the ice volume in the x-direction. Neutrinos generated within
+        (-`dx` / 2, `dx` / 2).
+    dy : float
+        Length of the ice volume in the y-direction. Neutrinos generated within
+        (-`dy` / 2, `dy` / 2).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    energy : float or function
+        Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
+        same constant energy. If ``function``, neutrinos are generated with the
+        energy returned by successive function calls.
+    flavor_ratio : array_like, optional
+        Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
+        tau] neutrino fractions.
+    interaction_model : optional
+        Class to use to describe interactions of the generated particles.
+        Should inherit from (or behave like) the base ``Interaction`` class.
+
+    Attributes
+    ----------
+    dx : float
+        Width of the ice volume in the x-direction. Neutrinos generated within
+        (-`dx` / 2, `dx` / 2).
+    dy : float
+        Length of the ice volume in the y-direction. Neutrinos generated within
+        (-`dy` / 2, `dy` / 2).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    get_energy : function
+        Function returning energy (GeV) of the neutrinos by successive function
+        calls.
+    ratio : ndarary
+        (Normalized) flavor ratio of neutrinos to be generated. Of the form
+        [electron, muon, tau] neutrino fractions.
+    interaction_model : Interaction
+        Class to use to describe interactions of the generated particles.
+    count : int
+        Number of neutrinos produced by the generator.
+
+    See Also
+    --------
+    pyrex.particle.Interaction : Base class for describing neutrino interaction
+                                 attributes.
+
+    """
+    def __init__(self, dx, dy, dz, energy, flavor_ratio=(1,1,1),
+                 interaction_model=NeutrinoInteraction):
+        self.dx = dx
+        self.dy = dy
+        self.dz = dz
+        super().__init__(energy=energy, flavor_ratio=flavor_ratio,
+                         interaction_model=interaction_model)
+
+    def get_vertex(self):
+        """
+        Get the vertex of the next particle to be generated.
+
+        Randomly generates a vertex uniformly distributed within the specified
+        ice volume.
+
+        Returns
+        -------
+        ndarray
+            Vector vertex in the ice volume.
+
+        """
+        return np.random.uniform(low=(-self.dx/2, -self.dy/2, -self.dz),
+                                 high=(self.dx/2, self.dy/2, 0))
+
+    def get_exit_points(self, particle):
+        """
+        Get the intersections of the particle path with the ice volume edges.
+
         For the given `particle`, calculates where its travel path intersects
         with the edges of the ice volume.
 
@@ -235,40 +567,9 @@ class ShadowGenerator:
                 return enter_point, exit_point
         raise ValueError("Could not determine exit points")
 
-    def get_weight(self, particle):
-        """
-        Get the weighting to be applied to the particle.
-
-        Calculates the weight of `particle` based on the probability that it
-        interacts at its given vertex in the ice volume.
-
-        Parameters
-        ----------
-        particle : Particle
-            Particle to be weighted.
-
-        Returns
-        -------
-        float
-            Weight of the given `particle`.
-
-        See Also
-        --------
-        pyrex.Particle : Class for storing particle attributes.
-
-        """
-        entry_point, exit_point = self.get_exit_points(particle)
-        in_ice_vector = np.array(exit_point) - np.array(entry_point)
-        in_ice_length = np.sqrt(np.sum(in_ice_vector**2))
-        vertex_vector = particle.vertex - np.array(entry_point)
-        travel_length = np.sqrt(np.sum(vertex_vector**2))
-        # Convert cm water equivalent interaction length to meters in ice
-        interaction_length = (particle.interaction.total_interaction_length
-                              / 0.92 / 100)
-        return (in_ice_length/interaction_length *
-                np.exp(-travel_length/interaction_length))
 
 
+class CylindricalShadowGenerator(CylindricalGenerator):
     def create_event(self):
         """
         Generate a neutrino event in the ice volume.
@@ -294,6 +595,7 @@ class ShadowGenerator:
         pyrex.Particle : Class for storing particle attributes.
 
         """
+        self.count += 1
         vtx = self.get_vertex()
         u = self.get_direction()
         E = self.get_energy()
@@ -301,22 +603,71 @@ class ShadowGenerator:
         particle = Particle(particle_id=particle_id, vertex=vtx, direction=u,
                             energy=E, interaction_model=self.interaction_model)
 
-        # Check whether the particle would survive travel through the Earth
-        nadir = np.arccos(u[2])
-        depth = -vtx[2]
-        t = earth_model.slant_depth(nadir, depth)
-        x = t / particle.interaction.total_interaction_length
-        self.count += 1
+        weights = self.get_weights(particle)
         rand_exponential = np.random.exponential()
-        if rand_exponential > x:
-            particle.weight = self.get_weight(particle)
+        if rand_exponential > weights[0]:
+            particle.survival_weight = 1
+            particle.interaction_weight = weights[1]
             logger.debug("Successfully created %s with interaction weight %d",
-                         particle, particle.weight)
+                         particle, weights[1])
             return Event(particle)
         else:
             # Particle was shadowed by the earth. Try again
             logger.debug("Particle creation shadowed by the Earth")
             return self.create_event()
+
+
+class RectangularShadowGenerator(RectangularGenerator):
+    def create_event(self):
+        """
+        Generate a neutrino event in the ice volume.
+
+        Creates a neutrino with a random vertex in the volume, a random
+        direction, and an energy based on ``get_energy``. Particle type is
+        randomly chosen, and its interaction type is also randomly chosen based
+        on the branching ratio. Accounts for Earth shadowing by discarding
+        particles that wouldn't make it to their vertex based on the Earth's
+        thickness along their path. Weights the particles according to their
+        probability of interacting in the ice at their vertex. Currently each
+        `Event` returned consists of only a single `Particle`.
+
+        Returns
+        -------
+        Event
+            Random neutrino event not shadowed by the Earth.
+
+        See Also
+        --------
+        pyrex.Event : Class for storing a tree of `Particle` objects
+                      representing an event.
+        pyrex.Particle : Class for storing particle attributes.
+
+        """
+        self.count += 1
+        vtx = self.get_vertex()
+        u = self.get_direction()
+        E = self.get_energy()
+        particle_id = self.get_particle_type()
+        particle = Particle(particle_id=particle_id, vertex=vtx, direction=u,
+                            energy=E, interaction_model=self.interaction_model)
+
+        weights = self.get_weights(particle)
+        rand_exponential = np.random.exponential()
+        if rand_exponential > weights[0]:
+            particle.survival_weight = 1
+            particle.interaction_weight = weights[1]
+            logger.debug("Successfully created %s with interaction weight %d",
+                         particle, weights[1])
+            return Event(particle)
+        else:
+            # Particle was shadowed by the earth. Try again
+            logger.debug("Particle creation shadowed by the Earth")
+            return self.create_event()
+
+
+
+ShadowGenerator = RectangularShadowGenerator
+
 
 
 class ListGenerator:
