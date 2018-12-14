@@ -8,6 +8,7 @@ Generators are responsible for the input of events into the simulation.
 from collections.abc import Iterable
 import logging
 import numpy as np
+import warnings
 import pyrex.earth_model as earth_model
 from pyrex.particle import Event, Particle, NeutrinoInteraction
 
@@ -435,11 +436,11 @@ class CylindricalGenerator(BaseGenerator):
             raise ValueError("Could not determine exit points")
 
 
-class RectangularGenerator:
+class RectangularGenerator(BaseGenerator):
     """
     Class to generate neutrino vertices in a rectangular ice volume.
 
-    Generates neutrinos in a box with given width, depth, and height.
+    Generates neutrinos in a box with given width, length, and height.
 
     Parameters
     ----------
@@ -570,6 +571,56 @@ class RectangularGenerator:
 
 
 class CylindricalShadowGenerator(CylindricalGenerator):
+    """
+    Class to generate neutrino vertices in a cylindrical ice volume.
+
+    Generates neutrinos in a cylinder with given radius and height. Accounts
+    for Earth shadowing by comparing the neutrino interaction length to the
+    material thickness of the Earth along the neutrino path, and rejecting
+    particles which would interact before reaching the vertex.
+
+    Parameters
+    ----------
+    dr : float
+        Radius of the ice volume. Neutrinos generated within (0, `dr`).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    energy : float or function
+        Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
+        same constant energy. If ``function``, neutrinos are generated with the
+        energy returned by successive function calls.
+    flavor_ratio : array_like, optional
+        Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
+        tau] neutrino fractions.
+    interaction_model : optional
+        Class to use to describe interactions of the generated particles.
+        Should inherit from (or behave like) the base ``Interaction`` class.
+
+    Attributes
+    ----------
+    dr : float
+        Radius of the ice volume. Neutrinos generated within (0, `dr`).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    get_energy : function
+        Function returning energy (GeV) of the neutrinos by successive function
+        calls.
+    ratio : ndarary
+        (Normalized) flavor ratio of neutrinos to be generated. Of the form
+        [electron, muon, tau] neutrino fractions.
+    interaction_model : Interaction
+        Class to use to describe interactions of the generated particles.
+    count : int
+        Number of neutrinos produced by the generator.
+
+    See Also
+    --------
+    pyrex.particle.Interaction : Base class for describing neutrino interaction
+                                 attributes.
+
+    """
     def create_event(self):
         """
         Generate a neutrino event in the ice volume.
@@ -618,6 +669,65 @@ class CylindricalShadowGenerator(CylindricalGenerator):
 
 
 class RectangularShadowGenerator(RectangularGenerator):
+    """
+    Class to generate neutrino vertices in a rectangular ice volume.
+
+    Generates neutrinos in a box with given width, length, and height. Accounts
+    for Earth shadowing by comparing the neutrino interaction length to the
+    material thickness of the Earth along the neutrino path, and rejecting
+    particles which would interact before reaching the vertex. Note the subtle
+    difference in x and y ranges compared to the z range.
+
+    Parameters
+    ----------
+    dx : float
+        Width of the ice volume in the x-direction. Neutrinos generated within
+        (-`dx` / 2, `dx` / 2).
+    dy : float
+        Length of the ice volume in the y-direction. Neutrinos generated within
+        (-`dy` / 2, `dy` / 2).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    energy : float or function
+        Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
+        same constant energy. If ``function``, neutrinos are generated with the
+        energy returned by successive function calls.
+    flavor_ratio : array_like, optional
+        Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
+        tau] neutrino fractions.
+    interaction_model : optional
+        Class to use to describe interactions of the generated particles.
+        Should inherit from (or behave like) the base ``Interaction`` class.
+
+    Attributes
+    ----------
+    dx : float
+        Width of the ice volume in the x-direction. Neutrinos generated within
+        (-`dx` / 2, `dx` / 2).
+    dy : float
+        Length of the ice volume in the y-direction. Neutrinos generated within
+        (-`dy` / 2, `dy` / 2).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    get_energy : function
+        Function returning energy (GeV) of the neutrinos by successive function
+        calls.
+    ratio : ndarary
+        (Normalized) flavor ratio of neutrinos to be generated. Of the form
+        [electron, muon, tau] neutrino fractions.
+    interaction_model : Interaction
+        Class to use to describe interactions of the generated particles.
+    count : int
+        Number of neutrinos produced by the generator.
+
+    See Also
+    --------
+    pyrex.particle.Interaction : Base class for describing neutrino interaction
+                                 attributes.
+
+    """
     def create_event(self):
         """
         Generate a neutrino event in the ice volume.
@@ -666,7 +776,15 @@ class RectangularShadowGenerator(RectangularGenerator):
 
 
 
-ShadowGenerator = RectangularShadowGenerator
+class ShadowGenerator(RectangularShadowGenerator):
+    def __init__(self, dx, dy, dz, energy, flavor_ratio=(1,1,1),
+                 interaction_model=NeutrinoInteraction):
+        warnings.warn("The 'ShadowGenerator' class has been renamed to "+
+                      "'RectangularShadowGenerator' and will be removed in "+
+                      "a future release", FutureWarning, stacklevel=2)
+        super().__init__(dx=dx, dy=dy, dz=dz, energy=energy,
+                         flavor_ratio=flavor_ratio,
+                         interaction_model=interaction_model)
 
 
 
