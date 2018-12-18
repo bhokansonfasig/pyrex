@@ -39,6 +39,9 @@ class BaseGenerator:
 
     Attributes
     ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
     get_energy : function
         Function returning energy (GeV) of the neutrinos by successive function
         calls.
@@ -47,8 +50,6 @@ class BaseGenerator:
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
-    count : int
-        Number of neutrinos produced by the generator.
 
     See Also
     --------
@@ -304,6 +305,9 @@ class CylindricalGenerator(BaseGenerator):
 
     Attributes
     ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
     dr : float
         Radius of the ice volume. Neutrinos generated within (0, `dr`).
     dz : float
@@ -317,8 +321,6 @@ class CylindricalGenerator(BaseGenerator):
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
-    count : int
-        Number of neutrinos produced by the generator.
 
     See Also
     --------
@@ -467,6 +469,9 @@ class RectangularGenerator(BaseGenerator):
 
     Attributes
     ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
     dx : float
         Width of the ice volume in the x-direction. Neutrinos generated within
         (-`dx` / 2, `dx` / 2).
@@ -484,8 +489,6 @@ class RectangularGenerator(BaseGenerator):
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
-    count : int
-        Number of neutrinos produced by the generator.
 
     See Also
     --------
@@ -600,6 +603,9 @@ class CylindricalShadowGenerator(CylindricalGenerator):
 
     Attributes
     ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
     dr : float
         Radius of the ice volume. Neutrinos generated within (0, `dr`).
     dz : float
@@ -613,8 +619,6 @@ class CylindricalShadowGenerator(CylindricalGenerator):
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
-    count : int
-        Number of neutrinos produced by the generator.
 
     See Also
     --------
@@ -703,6 +707,9 @@ class RectangularShadowGenerator(RectangularGenerator):
 
     Attributes
     ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
     dx : float
         Width of the ice volume in the x-direction. Neutrinos generated within
         (-`dx` / 2, `dx` / 2).
@@ -720,8 +727,6 @@ class RectangularShadowGenerator(RectangularGenerator):
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
-    count : int
-        Number of neutrinos produced by the generator.
 
     See Also
     --------
@@ -809,6 +814,9 @@ class ListGenerator:
 
     Attributes
     ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
     events : list of Event
         List to draw `Event` objects from, sequentially.
     loop : boolean
@@ -836,6 +844,13 @@ class ListGenerator:
 
     @property
     def count(self):
+        """
+        Number of neutrinos produced by the generator.
+
+        Count includes events which were not returned due to Earth shadowing
+        or other effects.
+
+        """
         return self._index + 1 + self._additional_counts
 
     @count.setter
@@ -1082,10 +1097,11 @@ class FileGenerator:
 
     Attributes
     ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
     files : list of str
         List of file names containing neutrino information.
-    events : list
-        List of `Event` objects read from the files.
 
     Warnings
     --------
@@ -1116,6 +1132,13 @@ class FileGenerator:
 
     @property
     def count(self):
+        """
+        Number of neutrinos produced by the generator.
+
+        Count includes events which were not returned due to Earth shadowing
+        or other effects.
+
+        """
         return sum(self._file_counts)
 
     @count.setter
@@ -1147,7 +1170,7 @@ class FileGenerator:
         self._event_index += self.slice_range
         if stop>len(self._file):
             stop = len(self._file)
-        self.events = []
+        self._events = []
         self._event_counts = []
         for file_event in self._file[start:stop]:
             info = file_event.get_particle_info()
@@ -1171,7 +1194,7 @@ class FileGenerator:
                 part.survival_weight = p['survival_weight']
                 part.interaction_weight = p['interaction_weight']
                 particles.append(part)
-            self.events.append(Event(particles))
+            self._events.append(Event(particles))
             self._event_counts.append(file_event.total_events_thrown)
 
     def _next_file(self):
@@ -1225,7 +1248,7 @@ class FileGenerator:
         pyrex.Particle : Class for storing particle attributes.
 
         """
-        if len(self.events)==0:
+        if len(self._events)==0:
             self._load_events()
         self._file_counts[self._file_index+1] = self._event_counts.pop(0)
-        return self.events.pop(0)
+        return self._events.pop(0)
