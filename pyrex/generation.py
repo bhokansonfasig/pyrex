@@ -1102,7 +1102,16 @@ class FileGenerator:
         self.slice_range = slice_range
         self.interaction_model = interaction_model
         self._file_index = -1
-        self.events = self._load_events()
+        self._file_counts = [0] * (len(self.files)+1)
+        self._load_events()
+
+    @property
+    def count(self):
+        return sum(self._file_counts)
+
+    @count.setter
+    def count(self, custom_count):
+        self._file_counts[0] = custom_count - sum(self._file_counts[1:])
 
     def _load_events(self):
         """
@@ -1129,7 +1138,8 @@ class FileGenerator:
         self._event_index += self.slice_range
         if stop>len(self._file):
             stop = len(self._file)
-        events = []
+        self.events = []
+        self._event_counts = []
         for file_event in self._file[start:stop]:
             info = file_event.get_particle_info()
             particles = []
@@ -1152,8 +1162,8 @@ class FileGenerator:
                 part.survival_weight = p['survival_weight']
                 part.interaction_weight = p['interaction_weight']
                 particles.append(part)
-            events.append(Event(particles))
-        return events
+            self.events.append(Event(particles))
+            self._event_counts.append(file_event.total_events_thrown)
 
     def _next_file(self):
         """
@@ -1207,5 +1217,6 @@ class FileGenerator:
 
         """
         if len(self.events)==0:
-            self.events = self._load_events()
+            self._load_events()
+        self._file_counts[self._file_index+1] = self._event_counts.pop(0)
         return self.events.pop(0)
