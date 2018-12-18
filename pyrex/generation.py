@@ -832,6 +832,15 @@ class ListGenerator:
                 self.events[i] = Event(event)
         self.loop = loop
         self._index = -1
+        self._additional_counts = 0
+
+    @property
+    def count(self):
+        return self._index + 1 + self._additional_counts
+
+    @count.setter
+    def count(self, custom_count):
+        self._additional_counts = custom_count - self._index - 1
 
     def create_event(self):
         """
