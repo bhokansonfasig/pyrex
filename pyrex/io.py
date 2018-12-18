@@ -2507,7 +2507,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
                                          polarizations is None):
             raise ValueError("Ray path and polarization information must be "+
                              "provided if writing ray data")
-        if np.any(self._trig_only.items()) and triggered is None:
+        if np.any(list(self._trig_only.values())) and triggered is None:
             if triggered is None:
                 raise ValueError("Trigger information must be provided if "
                                  "writing only when triggered")
