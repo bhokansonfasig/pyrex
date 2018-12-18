@@ -18,7 +18,7 @@ from .earth_model import prem_density, slant_depth
 from .particle import Event, Particle, NeutrinoInteraction
 from .generation import (CylindricalGenerator, CylindricalShadowGenerator,
                          RectangularGenerator, RectangularShadowGenerator,
-                         ListGenerator, FileGenerator)
+                         ShadowGenerator, ListGenerator, FileGenerator)
 from .ray_tracing import RayTracer, RayTracePath
 from .kernel import EventKernel
 from .io import File
