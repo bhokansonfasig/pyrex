@@ -11,6 +11,7 @@ import numpy as np
 import warnings
 import pyrex.earth_model as earth_model
 from pyrex.particle import Event, Particle, NeutrinoInteraction
+from pyrex.io import File
 
 logger = logging.getLogger(__name__)
 
@@ -861,7 +862,7 @@ class ListGenerator:
         return self.events[self._index%len(self.events)]
 
 
-class FileGenerator:
+class NumpyFileGenerator:
     """
     Class to generate neutrino events from numpy file(s).
 
@@ -914,6 +915,9 @@ class FileGenerator:
 
     """
     def __init__(self, files, interaction_model=NeutrinoInteraction):
+        warnings.warn("The 'NumpyFileGenerator' class is planned to be "+
+                      "removed in a future release", FutureWarning,
+                      stacklevel=2)
         if isinstance(files, str):
             self.files = [files]
         else:
@@ -1045,3 +1049,163 @@ class FileGenerator:
                      interaction_type=interaction,
                      weight=weight)
         return Event(p)
+
+
+class FileGenerator:
+    """
+    Class to generate neutrino events from simulation file(s).
+
+    Generates neutrinos by pulling their attributes from a (list of) simulation
+    output file(s). Designed to make reproducing simulations easier.
+
+    Parameters
+    ----------
+    files : str or list of str
+        List of file names containing neutrino event information. If only a
+        single file name is provided, creates a list with that file alone.
+    slice_range : int, optional
+        Number of events to load into memory at a time from the files.
+        Increasing this value should result in an improvement in speed, while
+        decreasing this value should result in an improvement in memory
+        consumption.
+    interaction_model : optional
+        Class used to describe the interactions of the stored particles.
+
+    Attributes
+    ----------
+    files : list of str
+        List of file names containing neutrino information.
+    events : list
+        List of `Event` objects read from the files.
+
+    Warnings
+    --------
+    This generator only supports `Event` objects containing a single level of
+    `Particle` objects. Any dependencies among `Particle` objects will be
+    ignored and they will all appear in the root level.
+
+    See Also
+    --------
+    pyrex.particle.Interaction : Base class for describing neutrino interaction
+                                 attributes.
+    pyrex.Event : Class for storing a tree of `Particle` objects
+                  representing an event.
+    pyrex.Particle : Class for storing particle attributes.
+
+    """
+    def __init__(self, files, slice_range=100,
+                 interaction_model=NeutrinoInteraction):
+        if isinstance(files, str):
+            self.files = [files]
+        else:
+            self.files = files
+        self.slice_range = slice_range
+        self.interaction_model = interaction_model
+        self._file_index = -1
+        self.events = self._load_events()
+
+    def _load_events(self):
+        """
+        Pulls the next chunk of events into memory.
+
+        Reads events up to the ``slice_range`` into memory from the current
+        file. If the current file is exhausted, loads the next file.
+
+        Returns
+        -------
+        list
+            List of `Event` objects read from the current file.
+
+        Raises
+        ------
+        StopIteration
+            If the end of the last file in the file list has been reached.
+
+        """
+        if self._file_index<0 or self._event_index>=len(self._file):
+            self._next_file()
+        start = self._event_index
+        stop = self._event_index + self.slice_range
+        self._event_index += self.slice_range
+        if stop>len(self._file):
+            stop = len(self._file)
+        events = []
+        for file_event in self._file[start:stop]:
+            info = file_event.get_particle_info()
+            particles = []
+            for p in info:
+                part = Particle(
+                    particle_id=p['particle_id'],
+                    vertex=(p['vertex_x'],
+                            p['vertex_y'],
+                            p['vertex_z']),
+                    direction=(p['direction_x'],
+                               p['direction_y'],
+                               p['direction_z']),
+                    energy=p['energy'],
+                    interaction_model=self.interaction_model,
+                    interaction_type=p['interaction_kind']
+                )
+                part.interaction.inelasticity = p['interaction_inelasticity']
+                part.interaction.em_frac = p['interaction_em_frac']
+                part.interaction.had_frac = p['interaction_had_frac']
+                part.survival_weight = p['survival_weight']
+                part.interaction_weight = p['interaction_weight']
+                particles.append(part)
+            events.append(Event(particles))
+        return events
+
+    def _next_file(self):
+        """
+        Pulls the next file into memory.
+
+        Reads in the next file from the ``files`` list and stores its `Event`
+        objects in memory.
+
+        Raises
+        ------
+        StopIteration
+            If the end of the last file in the file list has been reached.
+
+        """
+        self._file_index += 1
+        self._event_index = 0
+        if self._file_index>0:
+            self._file.close()
+        if self._file_index>=len(self.files):
+            raise StopIteration("No more events to be generated")
+        # Try to open the next file with the appropriate slice range,
+        # otherwise just settle for opening it at all
+        try:
+            self._file = File(self.files[self._file_index], 'r',
+                              slice_range=self.slice_range)
+        except TypeError:
+            self._file = File(self.files[self._file_index], 'r')
+        self._file.open()
+
+    def create_event(self):
+        """
+        Generate a neutrino.
+
+        Pulls the next `Event` object from the file(s).
+
+        Returns
+        -------
+        Event
+            Next neutrino `Event` object from the file(s).
+
+        Raises
+        ------
+        StopIteration
+            If the end of the last file in the file list has been reached.
+
+        See Also
+        --------
+        pyrex.Event : Class for storing a tree of `Particle` objects
+                      representing an event.
+        pyrex.Particle : Class for storing particle attributes.
+
+        """
+        if len(self.events)==0:
+            self.events = self._load_events()
+        return self.events.pop(0)
