@@ -8,6 +8,7 @@ Event Generators (:mod:`pyrex.generation`)
 .. autosummary::
     :toctree: ../docstrings
 
+    BaseGenerator
     CylindricalGenerator
     RectangularGenerator
     CylindricalShadowGenerator
