@@ -36,20 +36,27 @@ While there are no specified units for :attr:`Signal.values`, there is the optio
     my_voltage_signal = pyrex.Signal(times=time_array, values=value_array,
                                      value_type=pyrex.Signal.Type.voltage)
 
-:class:`Signal` objects can be added as long as they have the same time array and :attr:`value_type`. :class:`Signal` objects also support the python :func:`sum` function::
+:class:`Signal` objects can be added as long as they have the same time array and :attr:`value_type`. :class:`Signal` objects can also be multiplied by numeric types, which will multiply the :attr:`values` attribute of the signal. ::
 
     time_array = np.linspace(0, 10)
     values1 = np.sin(time_array)
     values2 = np.cos(time_array)
     signal1 = pyrex.Signal(time_array, values1)
-    plt.plot(signal1.times, signal1.values, label="signal1 = sin(t)")
+    plt.plot(signal1.times, signal1.values,
+             label="signal1 = sin(t)")
     signal2 = pyrex.Signal(time_array, values2)
-    plt.plot(signal2.times, signal2.values, label="signal2 = cos(t)")
+    plt.plot(signal2.times, signal2.values,
+             label="signal2 = cos(t)")
     signal3 = signal1 + signal2
-    plt.plot(signal3.times, signal3.values, label="signal3 = sin(t)+cos(t)")
+    plt.plot(signal3.times, signal3.values,
+             label="signal3 = sin(t)+cos(t)")
+    signal4 = 2 * signal3
+    plt.plot(signal4.times, signal4.values,
+             label="signal4 = 2*(sin(t)+cos(t))")
     all_signals = [signal1, signal2, signal3]
-    signal4 = sum(all_signals)
-    plt.plot(signal4.times, signal4.values, label="signal4 = 2*(sin(t)+cos(t))")
+    signal5 = sum(all_signals)
+    plt.plot(signal5.times, signal5.values, '--',
+             label="signal5 = 2*(sin(t)+cos(t))")
     plt.legend()
     plt.show()
 
@@ -407,7 +414,7 @@ Objects of this class can then, for the most part, be interacted with as though 
 .. image:: _static/example_outputs/detector_3.png
 
 
-The :class:`Detector` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used in a detector). Subclasses must define a :meth:`Detector.set_positions` method to assign vector positions to the self.antenna_positions attribute. By default :meth:`Detector.set_positions` will raise a :exc:`NotImplementedError`. Additionally subclasses may extend the default :meth:`Detector.build_antennas` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the :class:`Detector` class is that once the :meth:`Detector.build_antennas` method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the :class:`Detector` class is shown below::
+The :class:`Detector` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used in a detector). Subclasses must define a :meth:`Detector.set_positions` method to assign vector positions to the self.antenna_positions attribute. By default :meth:`Detector.set_positions` will raise a :exc:`NotImplementedError`. Additionally subclasses may extend the default :meth:`Detector.build_antennas` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the :class:`Detector` class is that once the :meth:`Detector.build_antennas` method is run, it can be iterated directly as though the object were a list of the antennas it generated. And finally, the :meth:`Detector.triggered` method will check whether any of the antennas have been triggered, and can be overridden in subclasses to define a more complicated detector trigger. An example of subclassing the :class:`Detector` class is shown below::
 
     class AntennaGrid(pyrex.Detector):
         """A detector composed of a plane of antennas in a rectangular grid layout
@@ -464,6 +471,7 @@ Due to the parallels between :class:`Antenna` and :class:`AntennaSystem`, an ant
 
 .. image:: _static/example_outputs/detector_5.png
 
+For convenience, objects derived from the :class:`Detector` class can be added into a :class:`CombinedDetector` object, which behaves similarly. The :meth:`CombinedDetector.build_antennas` method should work seamlessly if the sub-detectors have the same :func:`build_antennas` method, otherwise it will do its best to dispatch keyword arguments between the sub-detectors. Similarly the :meth:`CombinedDetector.triggered` method will return ``True`` if either sub-detector was triggered, with arguments to the method dispatched to the proper sub-triggers.
 
 
 Ice and Earth Models
