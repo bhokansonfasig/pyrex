@@ -1272,6 +1272,7 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         """
         self._file.close()
+        self._is_open = False
 
     @property
     def is_open(self):
