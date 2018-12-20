@@ -568,20 +568,20 @@ The :attr:`interaction` attribute is an instance of an :class:`Interaction` clas
     particle.interaction.cross_section
     particle.interaction.interaction_length
 
-PyREx also includes a :class:`ShadowGenerator` class for generating random neutrinos, taking into account Earth shadowing. The neutrinos are generated in a box of given size, and with a given energy (which can be a scalar value or a function returning scalar values). A desired flavor ratio can also be given::
+PyREx also includes a number of classes for generating random neutrinos in various ice volumes. The :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes generate neutrinos uniformly in cylindrical or rectangular volumes respectively. The :class:`CylindricalShadowGenerator` and :class:`RectangularShadowGenerator` classes are similar, but take into account Earth shadowing when generating particles. These generator classes take as arguments the necessary dimensions and an energy (which can be a scalar value or a function returning scalar values). A desired flavor ratio can also be given::
 
-    box_width = 1000 # m
-    box_depth = 500 # m
+    volume_radius = 1000 # m
+    volume_depth = 500 # m
     flavor_ratio = (1, 1, 1) # even distribution of neutrino flavors
-    my_generator = pyrex.ShadowGenerator(dx=box_width, dy=box_width,
-                                         dz=box_depth,
-                                         energy=particle_energy,
-                                         flavor_ratio=flavor_ratio)
+    my_generator = pyrex.CylindricalGenerator(dr=volume_radius,
+                                              dz=volume_depth,
+                                              energy=particle_energy,
+                                              flavor_ratio=flavor_ratio)
     my_generator.create_event()
 
-The :meth:`ShadowGenerator.create_event` method returns an :class:`Event` object, which contains a tree of :class:`Particle` objects representing the event. Currently this tree will only contain a single neutrino, but could be expanded in the future in order to describe more exotic events. The neutrino is available as the only element in the list :attr:`Event.roots`. It could also be accessed by iterating the :class:`Event` object.
+The :meth:`create_event` method of the generator returns an :class:`Event` object, which contains a tree of :class:`Particle` objects representing the event. Currently this tree will only contain a single neutrino, but could be expanded in the future in order to describe more exotic events. The neutrino is available as the only element in the list :attr:`Event.roots`. It can also be accessed by iterating the :class:`Event` object.
 
-Lastly, PyREx includes :class:`ListGenerator` and :class:`FileGenerator` classes which can be used to reproduce pre-generated events from either a list or from numpy files, respectively. For example, to continuously re-throw our :class:`Particle` object from above::
+Lastly, PyREx includes :class:`ListGenerator` and :class:`FileGenerator` classes which can be used to reproduce pre-generated events from either a list or from simulation output files, respectively. For example, to continuously re-throw our :class:`Particle` object from above::
 
     repetitive_generator = pyrex.ListGenerator([pyrex.Event(particle)])
     repetitive_generator.create_event()

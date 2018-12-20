@@ -27,7 +27,7 @@ In this example we will calculate the effective area of a detector over a range 
 
     # Now set up a neutrino generator for each energy. We'll use unrealistically
     # small volumes to increase the chance of triggering.
-    generators = [pyrex.ShadowGenerator(dx=1000, dy=1000, dz=1000, energy=energy)
+    generators = [pyrex.CylindricalShadowGenerator(dr=1000, dz=1000, energy=energy)
                   for energy in energies]
 
     # And then set up the event kernels for each energy. Let's use the ArasimIce
