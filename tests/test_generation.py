@@ -4,7 +4,7 @@ import pytest
 
 from config import SEED
 
-from pyrex.generation import ShadowGenerator, ListGenerator, FileGenerator
+from pyrex.generation import ShadowGenerator, ListGenerator, NumpyFileGenerator
 from pyrex.particle import Event, Particle, NeutrinoInteraction
 
 import numpy as np
@@ -217,7 +217,7 @@ test_weights = [0.2, 0.3, 0.4, 0.5]
 
 @pytest.fixture
 def file_gen(tmpdir):
-    """Fixture for forming basic FileGenerator object,
+    """Fixture for forming basic NumpyFileGenerator object,
     including creating temporary .npz files (once per test)."""
     if not "test_particles_1.npz" in [f.basename for f in tmpdir.listdir()]:
         np.savez(str(tmpdir.join("test_particles_1.npz")),
@@ -227,17 +227,17 @@ def file_gen(tmpdir):
         np.savez(str(tmpdir.join("test_particles_2.npz")),
                  test_ids[2:], test_vertices[2:], test_directions[2:],
                  test_energies[2:], test_interactions[2:], test_weights[2:])
-    return FileGenerator([str(tmpdir.join("test_particles_1.npz")),
-                          str(tmpdir.join("test_particles_2.npz"))])
+    return NumpyFileGenerator([str(tmpdir.join("test_particles_1.npz")),
+                               str(tmpdir.join("test_particles_2.npz"))])
 
-class TestFileGenerator:
-    """Tests for FileGenerator class"""
+class TestNumpyFileGenerator:
+    """Tests for NumpyFileGenerator class"""
     def test_creation(self, file_gen, tmpdir):
-        """Test initialization of FileGenerator"""
+        """Test initialization of NumpyFileGenerator"""
         assert file_gen.files == [str(tmpdir.join("test_particles_1.npz")),
                                   str(tmpdir.join("test_particles_2.npz"))]
         assert issubclass(file_gen.interaction_model, NeutrinoInteraction)
-        file_gen_2 = FileGenerator(str(tmpdir.join("test_particles_1.npz")))
+        file_gen_2 = NumpyFileGenerator(str(tmpdir.join("test_particles_1.npz")))
         assert file_gen_2.files == [str(tmpdir.join("test_particles_1.npz"))]
 
     def test_create_event(self, file_gen, tmpdir):
@@ -268,8 +268,8 @@ class TestFileGenerator:
                  some=[(0, 0, 0), (0, 0, -100)], badly=[(0, 0, -1), (0, 0, 1)],
                  named=[0]*2, keys=[1e9]*2)
         with pytest.raises(KeyError):
-            FileGenerator(str(tmpdir.join("bad_particles_1.npz")))
+            NumpyFileGenerator(str(tmpdir.join("bad_particles_1.npz")))
         np.savez(str(tmpdir.join("bad_particles_2.npz")),
                  [(0, 0, 0), (0, 0, -100)], [(0, 0, -1), (0, 0, 1)], [0], [1e9])
         with pytest.raises(ValueError):
-            FileGenerator(str(tmpdir.join("bad_particles_2.npz")))
+            NumpyFileGenerator(str(tmpdir.join("bad_particles_2.npz")))
