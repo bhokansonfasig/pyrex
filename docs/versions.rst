@@ -3,6 +3,39 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.8.2
+=============
+
+.. rubric:: New Features
+
+* Added :class:`CylindricalGenerator`, :class:`RectangularGenerator`, :class:`CylindricalShadowGenerator`, and :class:`RectangularShadowGenerator` classes to provide options for generation volumes and how to account for shadowing by the Earth. :class:`RectangularShadowGenerator` has the same behavior as the existing :class:`ShadowGenerator`, so :class:`ShadowGenerator` is being deprecated.
+
+* Added ability to add :class:`Detector` (and :class:`Antenna` or :class:`AntennaSystem`) objects into a :class:`CombinedDetector` for ease of use.
+
+* Added ability to multiply (and divide) :class:`Signal` objects by numeric types.
+
+* Added support for total events thrown in simulation, accessed by the :attr:`File.total_events_thrown` attribute of file readers.
+
+.. rubric:: Changes
+
+* Separated :attr:`Particle.weight` into :attr:`Particle.survival_weight` and :attr:`Particle.interaction_weight`. Now :attr:`Particle.weight` serves as a convenience attribute which gives the product of the two weights.
+
+* Changed :class:`FileGenerator` to read from simulation output files rather than numpy files. For the time being numpy files can be read with :class:`NumpyFileGenerator`.
+
+* All generator classes now have a :attr:`count` attribute for keeping track of the total number of events thrown.
+
+.. rubric:: Bug Fixes
+
+* Fixed error in :math:`ARAAntenna` signal amplitudes introduced in version 1.8.1.
+
+* Fixed minor bugs in :class:`File` interfaces.
+
+.. rubric:: Performance Improvements
+
+* Changed :meth:`AskaryanSignal` charge profile and RAC calculations to accept numpy arrays. Should result in marginal improvements in signal calculation speed.
+
+
+
 Version 1.8.1
 =============
 
