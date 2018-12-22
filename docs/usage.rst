@@ -602,8 +602,8 @@ Full Simulation
 
 PyREx provides the :class:`EventKernel` class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The :class:`EventKernel` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
 
-    particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
-                                               energy=1e8)
+    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
+                                                          energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
@@ -658,8 +658,8 @@ If writing an HDF5 file, the optional arguments specify which event data to writ
 
 The most straightforward way to write data files is to pass a :class:`File` object to the :class:`EventKernel` object handling the simulation. In such a case, a global trigger condition should be passed to the :class:`EventKernel` as well, either as a function which acts on a detector object, or as the "global" key in a dictionary of functions representing various trigger conditions::
 
-    particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
-                                               energy=1e8)
+    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
+                                                          energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
