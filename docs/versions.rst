@@ -26,13 +26,13 @@ Version 1.8.2
 
 .. rubric:: Bug Fixes
 
-* Fixed error in :math:`ARAAntenna` signal amplitudes introduced in version 1.8.1.
+* Fixed error in :class:`ARAAntenna` signal amplitudes introduced in version 1.8.1.
 
 * Fixed minor bugs in :class:`File` interfaces.
 
 .. rubric:: Performance Improvements
 
-* Changed :meth:`AskaryanSignal` charge profile and RAC calculations to accept numpy arrays. Should result in marginal improvements in signal calculation speed.
+* Changed :class:`AskaryanSignal` charge profile and RAC calculations to accept numpy arrays. Should result in marginal improvements in signal calculation speed.
 
 
 
