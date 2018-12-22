@@ -1,5 +1,5 @@
-pyrex\.particle\.Interaction\.choose\_inelasticity
-==================================================
+pyrex.particle.Interaction.choose\_inelasticity
+===============================================
 
 .. currentmodule:: pyrex.particle
 

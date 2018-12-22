@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.LPDA\.trigger
-=====================================
+pyrex.custom.arianna.LPDA.trigger
+=================================
 
 .. currentmodule:: pyrex.custom.arianna
 

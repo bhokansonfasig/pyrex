@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.ARAAntenna\.polarization\_gain
-===========================================================
+pyrex.custom.ara.antenna.ARAAntenna.polarization\_gain
+======================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

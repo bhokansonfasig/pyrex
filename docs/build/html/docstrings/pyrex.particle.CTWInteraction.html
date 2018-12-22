@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.particle.CTWInteraction &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.particle.CTWInteraction &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Particles and Interaction Models (pyrex.particle)" href="../api/particle.html" >
     <link rel="next" title="pyrex.particle.NeutrinoInteraction" href="pyrex.particle.NeutrinoInteraction.html" >
     <link rel="prev" title="pyrex.particle.GQRSInteraction" href="pyrex.particle.GQRSInteraction.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/particle.html" accesskey="U">Particles and Interaction Models (<code class="docutils literal"><span class="pre">pyrex.particle</span></code>)</a></li> 
+          <li class="active"><a href="../api/particle.html" accesskey="U">Particles and Interaction Models (<code class="docutils literal notranslate"><span class="pre">pyrex.particle</span></code>)</a></li> 
     </ul>
               
               
@@ -101,17 +102,17 @@ Values based on CTW 2011.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>particle</strong> : Particle</p>
-<blockquote>
-<div><p><code class="docutils literal"><span class="pre">Particle</span></code> object for which the interaction is defined.</p>
-</div></blockquote>
-<p><strong>kind</strong> : optional</p>
-<blockquote class="last">
-<div><p>Value of the interaction type. Values should be from the
-<code class="docutils literal"><span class="pre">Interaction.Type</span></code> enum, but integer or string values may work if
-carefully chosen. By default will be chosen by the <a class="reference internal" href="pyrex.particle.CTWInteraction.choose_interaction.html#pyrex.particle.CTWInteraction.choose_interaction" title="pyrex.particle.CTWInteraction.choose_interaction"><code class="xref py py-obj docutils literal"><span class="pre">choose_interaction</span></code></a>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>particle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Particle</span></dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">Particle</span></code> object for which the interaction is defined.</p>
+</dd>
+<dt><strong>kind</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
+<dd><p class="first last">Value of the interaction type. Values should be from the
+<code class="docutils literal notranslate"><span class="pre">Interaction.Type</span></code> enum, but integer or string values may work if
+carefully chosen. By default will be chosen by the <a class="reference internal" href="pyrex.particle.CTWInteraction.choose_interaction.html#pyrex.particle.CTWInteraction.choose_interaction" title="pyrex.particle.CTWInteraction.choose_interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_interaction</span></code></a>
 method.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -119,67 +120,61 @@ method.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal"><span class="pre">Interaction</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Interaction</span></code></a></dt>
 <dd>Base class for describing neutrino interaction attributes.</dd>
-<dt><a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a></dt>
 <dd>Class for storing particle attributes.</dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
 <p>Neutrino intractions based on the CTW High Energy Neutrino-Nucleon Cross
-Sections paper <a class="reference internal" href="#r4343" id="id1">[R4343]</a>. Secondary generation method to determine shower
+Sections paper <a class="reference internal" href="#rb76422cf6a42-1" id="id1">[1]</a>. Secondary generation method to determine shower
 fractions was pulled from AraSim, which is unchanged from icemc.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r4343" rules="none">
+<table class="docutils citation" frame="void" id="rb76422cf6a42-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R4343]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> A. Connolly et al, “Calculation of High Energy Neutrino-Nucleon
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> A. Connolly et al, “Calculation of High Energy Neutrino-Nucleon
 Cross Sections and Uncertainties Using the MSTW Parton Distribution
 Functions and Implications for Future Experiments.” Physical Review D
 <strong>83</strong>, 113009 (2011).</td></tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">kind</span></code></td>
-<td>Value of the interaction type.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">total_cross_section</span></code></td>
-<td>The total neutrino cross section (cm^2) of the <code class="docutils literal"><span class="pre">particle</span></code> type.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">total_interaction_length</span></code></td>
-<td>The neutrino interaction length (cmwe) of the <code class="docutils literal"><span class="pre">particle</span></code> type.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">cross_section</span></code></td>
-<td>The neutrino cross section (cm^2) of the <code class="docutils literal"><span class="pre">particle</span></code> interaction.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">interaction_length</span></code></td>
-<td>The neutrino interaction length (cmwe) of the <code class="docutils literal"><span class="pre">particle</span></code> interaction.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="16%" />
-<col width="84%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>particle</strong></td>
-<td>(Particle) <code class="docutils literal"><span class="pre">Particle</span></code> object for which the interaction is defined.</td>
-</tr>
-<tr class="row-even"><td><strong>inelasticity</strong></td>
-<td>(float) Inelasticity value from <a class="reference internal" href="pyrex.particle.CTWInteraction.choose_inelasticity.html#pyrex.particle.CTWInteraction.choose_inelasticity" title="pyrex.particle.CTWInteraction.choose_inelasticity"><code class="xref py py-obj docutils literal"><span class="pre">choose_inelasticity</span></code></a> distribution for the interaction.</td>
-</tr>
-<tr class="row-odd"><td><strong>em_frac</strong></td>
-<td>(float) Fraction of <em class="xref py py-obj">particle</em> energy deposited into an electromagnetic shower.</td>
-</tr>
-<tr class="row-even"><td><strong>had_frac</strong></td>
-<td>(float) Fraction of <em class="xref py py-obj">particle</em> energy deposited into a hadronic shower.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>particle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Particle</span></dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">Particle</span></code> object for which the interaction is defined.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.particle.CTWInteraction.kind.html#pyrex.particle.CTWInteraction.kind" title="pyrex.particle.CTWInteraction.kind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kind</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">Interaction.Type</span></dt>
+<dd><p class="first last">Value of the interaction type.</p>
+</dd>
+<dt><strong>inelasticity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Inelasticity value from <a class="reference internal" href="pyrex.particle.CTWInteraction.choose_inelasticity.html#pyrex.particle.CTWInteraction.choose_inelasticity" title="pyrex.particle.CTWInteraction.choose_inelasticity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_inelasticity</span></code></a> distribution for the
+interaction.</p>
+</dd>
+<dt><strong>em_frac</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Fraction of <em class="xref py py-obj">particle</em> energy deposited into an electromagnetic shower.</p>
+</dd>
+<dt><strong>had_frac</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Fraction of <em class="xref py py-obj">particle</em> energy deposited into a hadronic shower.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.particle.CTWInteraction.total_cross_section.html#pyrex.particle.CTWInteraction.total_cross_section" title="pyrex.particle.CTWInteraction.total_cross_section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_cross_section</span></code></a></dt>
+<dd><p class="first last">The total neutrino cross section (cm^2) of the <code class="docutils literal notranslate"><span class="pre">particle</span></code> type.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.particle.CTWInteraction.total_interaction_length.html#pyrex.particle.CTWInteraction.total_interaction_length" title="pyrex.particle.CTWInteraction.total_interaction_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_interaction_length</span></code></a></dt>
+<dd><p class="first last">The neutrino interaction length (cmwe) of the <code class="docutils literal notranslate"><span class="pre">particle</span></code> type.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.particle.CTWInteraction.cross_section.html#pyrex.particle.CTWInteraction.cross_section" title="pyrex.particle.CTWInteraction.cross_section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_section</span></code></a></dt>
+<dd><p class="first last">The neutrino cross section (cm^2) of the <code class="docutils literal notranslate"><span class="pre">particle</span></code> interaction.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.particle.CTWInteraction.interaction_length.html#pyrex.particle.CTWInteraction.interaction_length" title="pyrex.particle.CTWInteraction.interaction_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interaction_length</span></code></a></dt>
+<dd><p class="first last">The neutrino interaction length (cmwe) of the <code class="docutils literal notranslate"><span class="pre">particle</span></code> interaction.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -190,16 +185,16 @@ Functions and Implications for Future Experiments.” Physical Review D
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Type</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code></td>
 <td>Enum containing possible interaction types.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.particle.CTWInteraction.choose_inelasticity.html#pyrex.particle.CTWInteraction.choose_inelasticity" title="pyrex.particle.CTWInteraction.choose_inelasticity"><code class="xref py py-obj docutils literal"><span class="pre">choose_inelasticity</span></code></a>()</td>
-<td>Choose an inelasticity for the <code class="docutils literal"><span class="pre">particle</span></code> attribute’s shower.</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.particle.CTWInteraction.choose_inelasticity.html#pyrex.particle.CTWInteraction.choose_inelasticity" title="pyrex.particle.CTWInteraction.choose_inelasticity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_inelasticity</span></code></a>()</td>
+<td>Choose an inelasticity for the <code class="docutils literal notranslate"><span class="pre">particle</span></code> attribute’s shower.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.particle.CTWInteraction.choose_interaction.html#pyrex.particle.CTWInteraction.choose_interaction" title="pyrex.particle.CTWInteraction.choose_interaction"><code class="xref py py-obj docutils literal"><span class="pre">choose_interaction</span></code></a>()</td>
-<td>Choose an interaction type for the <code class="docutils literal"><span class="pre">particle</span></code> attribute.</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.particle.CTWInteraction.choose_interaction.html#pyrex.particle.CTWInteraction.choose_interaction" title="pyrex.particle.CTWInteraction.choose_interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_interaction</span></code></a>()</td>
+<td>Choose an interaction type for the <code class="docutils literal notranslate"><span class="pre">particle</span></code> attribute.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.particle.CTWInteraction.choose_shower_fractions.html#pyrex.particle.CTWInteraction.choose_shower_fractions" title="pyrex.particle.CTWInteraction.choose_shower_fractions"><code class="xref py py-obj docutils literal"><span class="pre">choose_shower_fractions</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.particle.CTWInteraction.choose_shower_fractions.html#pyrex.particle.CTWInteraction.choose_shower_fractions" title="pyrex.particle.CTWInteraction.choose_shower_fractions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_shower_fractions</span></code></a>()</td>
 <td>Choose the electromagnetic and hadronic shower fractions.</td>
 </tr>
 </tbody>
@@ -219,7 +214,7 @@ Functions and Implications for Future Experiments.” Physical Review D
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -291,7 +286,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

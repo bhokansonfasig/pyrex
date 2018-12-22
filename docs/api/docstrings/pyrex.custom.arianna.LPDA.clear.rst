@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.LPDA\.clear
-===================================
+pyrex.custom.arianna.LPDA.clear
+===============================
 
 .. currentmodule:: pyrex.custom.arianna
 

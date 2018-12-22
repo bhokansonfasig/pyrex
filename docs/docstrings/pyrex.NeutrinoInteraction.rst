@@ -1,5 +1,5 @@
-pyrex\.NeutrinoInteraction
-==========================
+pyrex.NeutrinoInteraction
+=========================
 
 .. currentmodule:: pyrex
 
@@ -18,4 +18,14 @@ pyrex\.NeutrinoInteraction
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         NeutrinoInteraction.cross_section
+         NeutrinoInteraction.interaction_length
+         NeutrinoInteraction.kind
+         NeutrinoInteraction.total_cross_section
+         NeutrinoInteraction.total_interaction_length
 

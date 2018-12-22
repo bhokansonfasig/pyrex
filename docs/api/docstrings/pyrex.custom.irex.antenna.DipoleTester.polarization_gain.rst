@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.DipoleTester\.polarization\_gain
-==============================================================
+pyrex.custom.irex.antenna.DipoleTester.polarization\_gain
+=========================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

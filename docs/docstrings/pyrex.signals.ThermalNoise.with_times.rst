@@ -1,5 +1,5 @@
-pyrex\.signals\.ThermalNoise\.with\_times
-=========================================
+pyrex.signals.ThermalNoise.with\_times
+======================================
 
 .. currentmodule:: pyrex.signals
 

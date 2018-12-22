@@ -1,5 +1,5 @@
-pyrex\.ice\_model\.IceModel\.index
-==================================
+pyrex.ice\_model.IceModel.index
+===============================
 
 .. currentmodule:: pyrex.ice_model
 

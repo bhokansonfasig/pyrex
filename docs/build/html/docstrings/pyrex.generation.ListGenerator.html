@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.generation.ListGenerator &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.generation.ListGenerator &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,14 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Event Generators (pyrex.generation)" href="../api/generation.html" >
-    <link rel="next" title="pyrex.generation.FileGenerator" href="pyrex.generation.FileGenerator.html" >
+    <link rel="next" title="pyrex.generation.NumpyFileGenerator" href="pyrex.generation.NumpyFileGenerator.html" >
     <link rel="prev" title="pyrex.generation.ShadowGenerator" href="pyrex.generation.ShadowGenerator.html" > 
   </head>
   <body>
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/generation.html" accesskey="U">Event Generators (<code class="docutils literal"><span class="pre">pyrex.generation</span></code>)</a></li> 
+          <li class="active"><a href="../api/generation.html" accesskey="U">Event Generators (<code class="docutils literal notranslate"><span class="pre">pyrex.generation</span></code>)</a></li> 
     </ul>
               
               
@@ -69,7 +70,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="pyrex.generation.FileGenerator.html" title="pyrex.generation.FileGenerator"
+        <a href="pyrex.generation.NumpyFileGenerator.html" title="pyrex.generation.NumpyFileGenerator"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -95,24 +96,24 @@
 <dt id="pyrex.generation.ListGenerator">
 <em class="property">class </em><code class="descclassname">pyrex.generation.</code><code class="descname">ListGenerator</code><span class="sig-paren">(</span><em>events</em>, <em>loop=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.ListGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to generate neutrino events from a list.</p>
-<p>Generates events by simply pulling them from a list of <code class="xref py py-obj docutils literal"><span class="pre">Event</span></code> objects. By
+<p>Generates events by simply pulling them from a list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> objects. By
 default returns to the start of the list once the end is reached, but can
 optionally fail after reaching the list’s end.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>events</strong> : Event, or list of Event</p>
-<blockquote>
-<div><p>List of <code class="xref py py-obj docutils literal"><span class="pre">Event</span></code> objects to draw from. If only a single <code class="xref py py-obj docutils literal"><span class="pre">Event</span></code> object
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>events</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Event, or list of Event</span></dt>
+<dd><p class="first last">List of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> objects to draw from. If only a single <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> object
 is given, creates a list of that event alone.</p>
-</div></blockquote>
-<p><strong>loop</strong> : boolean, optional</p>
-<blockquote class="last">
-<div><p>Whether or not to return to the start of the list after throwing the
-last <code class="xref py py-obj docutils literal"><span class="pre">Event</span></code>. If <code class="docutils literal"><span class="pre">False</span></code>, raises an error if trying to throw after
-the last <code class="xref py py-obj docutils literal"><span class="pre">Event</span></code>.</p>
-</div></blockquote>
+</dd>
+<dt><strong>loop</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Whether or not to return to the start of the list after throwing the
+last <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code>. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, raises an error if trying to throw after
+the last <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code>.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -120,24 +121,28 @@ the last <code class="xref py py-obj docutils literal"><span class="pre">Event</
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Event</span></code></a></dt>
-<dd>Class for storing a tree of <code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code> objects representing an event.</dd>
-<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Particle</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Event</span></code></a></dt>
+<dd>Class for storing a tree of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code> objects representing an event.</dd>
+<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Particle</span></code></a></dt>
 <dd>Class for storing particle attributes.</dd>
 </dl>
 </div>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="13%" />
-<col width="87%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><strong>events</strong></td>
-<td>(list of Event) List to draw <code class="xref py py-obj docutils literal"><span class="pre">Event</span></code> objects from, sequentially.</td>
-</tr>
-<tr class="row-even"><td><strong>loop</strong></td>
-<td>(boolean) Whether or not to loop through the list more than once.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><a class="reference internal" href="pyrex.generation.ListGenerator.count.html#pyrex.generation.ListGenerator.count" title="pyrex.generation.ListGenerator.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of neutrinos produced by the generator.</p>
+</dd>
+<dt><strong>events</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of Event</span></dt>
+<dd><p class="first last">List to draw <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> objects from, sequentially.</p>
+</dd>
+<dt><strong>loop</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">Whether or not to loop through the list more than once.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -148,7 +153,7 @@ the last <code class="xref py py-obj docutils literal"><span class="pre">Event</
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.generation.ListGenerator.create_event.html#pyrex.generation.ListGenerator.create_event" title="pyrex.generation.ListGenerator.create_event"><code class="xref py py-obj docutils literal"><span class="pre">create_event</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.generation.ListGenerator.create_event.html#pyrex.generation.ListGenerator.create_event" title="pyrex.generation.ListGenerator.create_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_event</span></code></a>()</td>
 <td>Generate a neutrino event.</td>
 </tr>
 </tbody>
@@ -168,7 +173,7 @@ the last <code class="xref py py-obj docutils literal"><span class="pre">Event</
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -240,7 +245,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

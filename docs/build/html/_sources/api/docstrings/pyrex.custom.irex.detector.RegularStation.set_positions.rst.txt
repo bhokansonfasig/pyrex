@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.detector\.RegularStation\.set\_positions
-=============================================================
+pyrex.custom.irex.detector.RegularStation.set\_positions
+========================================================
 
 .. currentmodule:: pyrex.custom.irex.detector
 

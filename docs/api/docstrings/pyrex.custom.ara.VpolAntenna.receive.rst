@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.VpolAntenna\.receive
-========================================
+pyrex.custom.ara.VpolAntenna.receive
+====================================
 
 .. currentmodule:: pyrex.custom.ara
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.IREXString\.clear
-======================================
+pyrex.custom.irex.IREXString.clear
+==================================
 
 .. currentmodule:: pyrex.custom.irex
 

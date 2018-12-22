@@ -1,5 +1,5 @@
-pyrex\.NeutrinoInteraction\.choose\_interaction
-===============================================
+pyrex.NeutrinoInteraction.choose\_interaction
+=============================================
 
 .. currentmodule:: pyrex
 

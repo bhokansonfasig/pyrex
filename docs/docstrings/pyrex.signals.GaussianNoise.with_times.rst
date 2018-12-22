@@ -1,5 +1,5 @@
-pyrex\.signals\.GaussianNoise\.with\_times
-==========================================
+pyrex.signals.GaussianNoise.with\_times
+=======================================
 
 .. currentmodule:: pyrex.signals
 

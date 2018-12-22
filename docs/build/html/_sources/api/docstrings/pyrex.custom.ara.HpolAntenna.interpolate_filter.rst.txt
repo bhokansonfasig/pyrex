@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.HpolAntenna\.interpolate\_filter
-====================================================
+pyrex.custom.ara.HpolAntenna.interpolate\_filter
+================================================
 
 .. currentmodule:: pyrex.custom.ara
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.CoxeterStation\.set\_positions
-===================================================
+pyrex.custom.irex.CoxeterStation.set\_positions
+===============================================
 
 .. currentmodule:: pyrex.custom.irex
 

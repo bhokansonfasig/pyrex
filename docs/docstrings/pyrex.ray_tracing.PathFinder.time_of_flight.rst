@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.PathFinder\.time\_of\_flight
-=================================================
+pyrex.ray\_tracing.PathFinder.time\_of\_flight
+==============================================
 
 .. currentmodule:: pyrex.ray_tracing
 

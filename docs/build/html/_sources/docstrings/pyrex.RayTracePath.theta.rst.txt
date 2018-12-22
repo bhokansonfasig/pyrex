@@ -1,5 +1,5 @@
-pyrex\.RayTracePath\.theta
-==========================
+pyrex.RayTracePath.theta
+========================
 
 .. currentmodule:: pyrex
 

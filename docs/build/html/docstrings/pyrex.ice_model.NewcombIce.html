@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ice_model.NewcombIce &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.ice_model.NewcombIce &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" >
     <link rel="next" title="pyrex.ice_model.ArasimIce" href="pyrex.ice_model.ArasimIce.html" >
     <link rel="prev" title="pyrex.ice_model.AntarcticIce" href="pyrex.ice_model.AntarcticIce.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="docutils literal"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
+          <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="docutils literal notranslate"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
     </ul>
               
               
@@ -101,23 +102,24 @@ the class may not be necessary. In all methods, the depth z should be given
 as a negative value if it is below the surface of the ice.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The <a class="reference internal" href="pyrex.ice_model.NewcombIce.attenuation_length.html#pyrex.ice_model.NewcombIce.attenuation_length" title="pyrex.ice_model.NewcombIce.attenuation_length"><code class="xref py py-obj docutils literal"><span class="pre">attenuation_length</span></code></a> method if this class does not currently work
+<p class="last">The <a class="reference internal" href="pyrex.ice_model.NewcombIce.attenuation_length.html#pyrex.ice_model.NewcombIce.attenuation_length" title="pyrex.ice_model.NewcombIce.attenuation_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation_length</span></code></a> method if this class does not currently work
 properly. This class should not be used until it is fixed.</p>
 </div>
 <p class="rubric">Notes</p>
 <p>Mostly based on ice characteristics outlined by Matt Newcomb.</p>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="19%" />
-<col width="81%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><strong>k, a, n0</strong></td>
-<td>(float) Parameters of the index of refraction of the ice.</td>
-</tr>
-<tr class="row-even"><td><strong>thickness</strong></td>
-<td>(float) Thickness of the ice sheet.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>k, a, n0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Parameters of the index of refraction of the ice.</p>
+</dd>
+<dt><strong>thickness</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Thickness of the ice sheet.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -128,19 +130,19 @@ properly. This class should not be used until it is fixed.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.attenuation_length.html#pyrex.ice_model.NewcombIce.attenuation_length" title="pyrex.ice_model.NewcombIce.attenuation_length"><code class="xref py py-obj docutils literal"><span class="pre">attenuation_length</span></code></a>(z,&nbsp;f)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.attenuation_length.html#pyrex.ice_model.NewcombIce.attenuation_length" title="pyrex.ice_model.NewcombIce.attenuation_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation_length</span></code></a>(z,&nbsp;f)</td>
 <td>Calculates attenuation lengths for given depths and frequencies.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.depth_with_index.html#pyrex.ice_model.NewcombIce.depth_with_index" title="pyrex.ice_model.NewcombIce.depth_with_index"><code class="xref py py-obj docutils literal"><span class="pre">depth_with_index</span></code></a>(n)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.depth_with_index.html#pyrex.ice_model.NewcombIce.depth_with_index" title="pyrex.ice_model.NewcombIce.depth_with_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">depth_with_index</span></code></a>(n)</td>
 <td>Calculates the corresponding depth for a given index of refraction.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.gradient.html#pyrex.ice_model.NewcombIce.gradient" title="pyrex.ice_model.NewcombIce.gradient"><code class="xref py py-obj docutils literal"><span class="pre">gradient</span></code></a>(z)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.gradient.html#pyrex.ice_model.NewcombIce.gradient" title="pyrex.ice_model.NewcombIce.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a>(z)</td>
 <td>Calculates the gradient of the index of refraction at a given depth.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.index.html#pyrex.ice_model.NewcombIce.index" title="pyrex.ice_model.NewcombIce.index"><code class="xref py py-obj docutils literal"><span class="pre">index</span></code></a>(z)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.index.html#pyrex.ice_model.NewcombIce.index" title="pyrex.ice_model.NewcombIce.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(z)</td>
 <td>Calculates the index of refraction of the ice at a given depth.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.temperature.html#pyrex.ice_model.NewcombIce.temperature" title="pyrex.ice_model.NewcombIce.temperature"><code class="xref py py-obj docutils literal"><span class="pre">temperature</span></code></a>(z)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.NewcombIce.temperature.html#pyrex.ice_model.NewcombIce.temperature" title="pyrex.ice_model.NewcombIce.temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temperature</span></code></a>(z)</td>
 <td>Calculates the temperature of the ice at a given depth.</td>
 </tr>
 </tbody>
@@ -160,7 +162,7 @@ properly. This class should not be used until it is fixed.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -232,7 +234,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

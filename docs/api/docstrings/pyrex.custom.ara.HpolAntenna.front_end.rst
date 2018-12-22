@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.HpolAntenna\.front\_end
-===========================================
+pyrex.custom.ara.HpolAntenna.front\_end
+=======================================
 
 .. currentmodule:: pyrex.custom.ara
 

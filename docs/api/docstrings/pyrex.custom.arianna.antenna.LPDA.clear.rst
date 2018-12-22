@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.LPDA\.clear
-============================================
+pyrex.custom.arianna.antenna.LPDA.clear
+=======================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

@@ -1,5 +1,5 @@
-pyrex\.EventKernel\.event
-=========================
+pyrex.EventKernel.event
+=======================
 
 .. currentmodule:: pyrex
 

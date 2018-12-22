@@ -1,5 +1,5 @@
-pyrex\.particle\.Interaction\.choose\_shower\_fractions
-=======================================================
+pyrex.particle.Interaction.choose\_shower\_fractions
+====================================================
 
 .. currentmodule:: pyrex.particle
 

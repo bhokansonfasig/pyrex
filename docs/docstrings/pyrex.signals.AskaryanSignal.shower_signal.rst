@@ -1,5 +1,5 @@
-pyrex\.signals\.AskaryanSignal\.shower\_signal
-==============================================
+pyrex.signals.AskaryanSignal.shower\_signal
+===========================================
 
 .. currentmodule:: pyrex.signals
 

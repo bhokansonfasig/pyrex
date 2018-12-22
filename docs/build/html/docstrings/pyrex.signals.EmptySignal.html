@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.signals.EmptySignal &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.signals.EmptySignal &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Signal Processing (pyrex.signals)" href="../api/signals.html" >
     <link rel="next" title="pyrex.signals.FunctionSignal" href="pyrex.signals.FunctionSignal.html" >
     <link rel="prev" title="pyrex.signals.Signal" href="pyrex.signals.Signal.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/signals.html" accesskey="U">Signal Processing (<code class="docutils literal"><span class="pre">pyrex.signals</span></code>)</a></li> 
+          <li class="active"><a href="../api/signals.html" accesskey="U">Signal Processing (<code class="docutils literal notranslate"><span class="pre">pyrex.signals</span></code>)</a></li> 
     </ul>
               
               
@@ -99,15 +100,15 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>times</strong> : array_like</p>
-<blockquote>
-<div><p>1D array of times (s) for which the signal is defined.</p>
-</div></blockquote>
-<p><strong>value_type</strong></p>
-<blockquote class="last">
-<div><p>Type of signal, representing the units of the values. Must be from the
-<code class="docutils literal"><span class="pre">Signal.Type</span></code> Enum.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>times</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">1D array of times (s) for which the signal is defined.</p>
+</dd>
+<dt><strong>value_type</strong></dt>
+<dd><p class="first last">Type of signal, representing the units of the values. Must be from the
+<code class="docutils literal notranslate"><span class="pre">Signal.Type</span></code> Enum.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -115,45 +116,38 @@
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.signals.Signal.html#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-obj docutils literal"><span class="pre">Signal</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.signals.Signal.html#pyrex.signals.Signal" title="pyrex.signals.Signal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Signal</span></code></a></dt>
 <dd>Base class for time-domain signals.</dd>
 </dl>
 </div>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">value_type</span></code></td>
-<td>Type of signal, representing the units of the values.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Type</span></code></td>
-<td>Enum containing possible types (units) for signal values.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dt</span></code></td>
-<td>The time spacing of the <em class="xref py py-obj">times</em> array, or <code class="docutils literal"><span class="pre">None</span></code> if invalid.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">frequencies</span></code></td>
-<td>The FFT frequencies of the signal.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">spectrum</span></code></td>
-<td>The FFT complex spectrum values of the signal.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">envelope</span></code></td>
-<td>The envelope of the signal by Hilbert transform.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="17%" />
-<col width="83%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>times, values</strong></td>
-<td>(ndarray) 1D arrays of times (s) and corresponding values which define the signal.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>times, values</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">1D arrays of times (s) and corresponding values which define the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.EmptySignal.value_type.html#pyrex.signals.EmptySignal.value_type" title="pyrex.signals.EmptySignal.value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_type</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">Signal.Type</span></dt>
+<dd><p class="first last">Type of signal, representing the units of the values.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code> <span class="classifier-delimiter">:</span> <span class="classifier">Enum</span></dt>
+<dd><p class="first last">Enum containing possible types (units) for signal values.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.EmptySignal.dt.html#pyrex.signals.EmptySignal.dt" title="pyrex.signals.EmptySignal.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></dt>
+<dd><p class="first last">The time spacing of the <em class="xref py py-obj">times</em> array, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if invalid.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.EmptySignal.frequencies.html#pyrex.signals.EmptySignal.frequencies" title="pyrex.signals.EmptySignal.frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></a></dt>
+<dd><p class="first last">The FFT frequencies of the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.EmptySignal.spectrum.html#pyrex.signals.EmptySignal.spectrum" title="pyrex.signals.EmptySignal.spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spectrum</span></code></a></dt>
+<dd><p class="first last">The FFT complex spectrum values of the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.EmptySignal.envelope.html#pyrex.signals.EmptySignal.envelope" title="pyrex.signals.EmptySignal.envelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">envelope</span></code></a></dt>
+<dd><p class="first last">The envelope of the signal by Hilbert transform.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,16 +158,16 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Type</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code></td>
 <td>Enum containing possible types (units) for signal values.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.signals.EmptySignal.filter_frequencies.html#pyrex.signals.EmptySignal.filter_frequencies" title="pyrex.signals.EmptySignal.filter_frequencies"><code class="xref py py-obj docutils literal"><span class="pre">filter_frequencies</span></code></a>(freq_response[,&nbsp;force_real])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.signals.EmptySignal.filter_frequencies.html#pyrex.signals.EmptySignal.filter_frequencies" title="pyrex.signals.EmptySignal.filter_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_frequencies</span></code></a>(freq_response[,&nbsp;force_real])</td>
 <td>Apply the given frequency response function to the signal, in-place.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.signals.EmptySignal.resample.html#pyrex.signals.EmptySignal.resample" title="pyrex.signals.EmptySignal.resample"><code class="xref py py-obj docutils literal"><span class="pre">resample</span></code></a>(n)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.signals.EmptySignal.resample.html#pyrex.signals.EmptySignal.resample" title="pyrex.signals.EmptySignal.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(n)</td>
 <td>Resamples the signal into n points in the same time range, in-place.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.signals.EmptySignal.with_times.html#pyrex.signals.EmptySignal.with_times" title="pyrex.signals.EmptySignal.with_times"><code class="xref py py-obj docutils literal"><span class="pre">with_times</span></code></a>(new_times)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.signals.EmptySignal.with_times.html#pyrex.signals.EmptySignal.with_times" title="pyrex.signals.EmptySignal.with_times"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_times</span></code></a>(new_times)</td>
 <td>Returns a representation of this signal over a different times array.</td>
 </tr>
 </tbody>
@@ -193,7 +187,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -265,7 +259,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

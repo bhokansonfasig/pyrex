@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Custom Detectors (pyrex.custom.ara.detector) &mdash; PyREx 1.8.1 documentation</title>
+    <title>Custom Detectors (pyrex.custom.ara.detector) &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
     <link rel="up" title="Askaryan Radio Array (pyrex.custom.ara)" href="../custom-ara.html" >
     <link rel="next" title="pyrex.custom.ara.detector.convert_hex_coords" href="../docstrings/pyrex.custom.ara.detector.convert_hex_coords.html" >
     <link rel="prev" title="pyrex.custom.ara.antenna.VpolAntenna" href="../docstrings/pyrex.custom.ara.antenna.VpolAntenna.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="docutils literal"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
+          <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
     </ul>
               
               
@@ -90,7 +91,7 @@
           <div class="body" id="spc-section-body">
             
   <div class="section" id="module-pyrex.custom.ara.detector">
-<span id="custom-detectors-pyrex-custom-ara-detector"></span><h1>Custom Detectors (<a class="reference internal" href="#module-pyrex.custom.ara.detector" title="pyrex.custom.ara.detector"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.ara.detector</span></code></a>)<a class="headerlink" href="#module-pyrex.custom.ara.detector" title="Permalink to this headline">¶</a></h1>
+<span id="custom-detectors-pyrex-custom-ara-detector"></span><h1>Custom Detectors (<a class="reference internal" href="#module-pyrex.custom.ara.detector" title="pyrex.custom.ara.detector"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara.detector</span></code></a>)<a class="headerlink" href="#module-pyrex.custom.ara.detector" title="Permalink to this headline">¶</a></h1>
 <p>Module containing customized detector geometry classes for ARA.</p>
 <p>Designed to be flexible such that stations can be built up from any string
 types and the detector grid can be made up of stations or strings.</p>
@@ -100,22 +101,22 @@ types and the detector grid can be made up of stations or strings.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.convert_hex_coords.html#pyrex.custom.ara.detector.convert_hex_coords" title="pyrex.custom.ara.detector.convert_hex_coords"><code class="xref py py-obj docutils literal"><span class="pre">convert_hex_coords</span></code></a>(hex_coords[,&nbsp;unit])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.convert_hex_coords.html#pyrex.custom.ara.detector.convert_hex_coords" title="pyrex.custom.ara.detector.convert_hex_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_hex_coords</span></code></a>(hex_coords[,&nbsp;unit])</td>
 <td>Convert from hexagonal coordinates to Cartesian.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.ARAString.html#pyrex.custom.ara.detector.ARAString" title="pyrex.custom.ara.detector.ARAString"><code class="xref py py-obj docutils literal"><span class="pre">ARAString</span></code></a>(x,&nbsp;y[,&nbsp;antennas_per_string,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.ARAString.html#pyrex.custom.ara.detector.ARAString" title="pyrex.custom.ara.detector.ARAString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAString</span></code></a>(x,&nbsp;y[,&nbsp;antennas_per_string,&nbsp;…])</td>
 <td>String of ARA Hpol and Vpol antennas.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.PhasedArrayString.html#pyrex.custom.ara.detector.PhasedArrayString" title="pyrex.custom.ara.detector.PhasedArrayString"><code class="xref py py-obj docutils literal"><span class="pre">PhasedArrayString</span></code></a>(x,&nbsp;y[,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.PhasedArrayString.html#pyrex.custom.ara.detector.PhasedArrayString" title="pyrex.custom.ara.detector.PhasedArrayString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhasedArrayString</span></code></a>(x,&nbsp;y[,&nbsp;…])</td>
 <td>Phased string of closely-packed antennas.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.RegularStation.html#pyrex.custom.ara.detector.RegularStation" title="pyrex.custom.ara.detector.RegularStation"><code class="xref py py-obj docutils literal"><span class="pre">RegularStation</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.RegularStation.html#pyrex.custom.ara.detector.RegularStation" title="pyrex.custom.ara.detector.RegularStation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegularStation</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
 <td>Station geometry with strings evenly spaced radially around the center.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.AlbrechtStation.html#pyrex.custom.ara.detector.AlbrechtStation" title="pyrex.custom.ara.detector.AlbrechtStation"><code class="xref py py-obj docutils literal"><span class="pre">AlbrechtStation</span></code></a>(x,&nbsp;y[,&nbsp;station_diameter,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.AlbrechtStation.html#pyrex.custom.ara.detector.AlbrechtStation" title="pyrex.custom.ara.detector.AlbrechtStation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlbrechtStation</span></code></a>(x,&nbsp;y[,&nbsp;station_diameter,&nbsp;…])</td>
 <td>Station geometry with center phased string and some outrigger strings.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.HexagonalGrid.html#pyrex.custom.ara.detector.HexagonalGrid" title="pyrex.custom.ara.detector.HexagonalGrid"><code class="xref py py-obj docutils literal"><span class="pre">HexagonalGrid</span></code></a>([stations,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.detector.HexagonalGrid.html#pyrex.custom.ara.detector.HexagonalGrid" title="pyrex.custom.ara.detector.HexagonalGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HexagonalGrid</span></code></a>([stations,&nbsp;…])</td>
 <td>Hexagonal grid of stations or strings.</td>
 </tr>
 </tbody>
@@ -133,7 +134,7 @@ types and the detector grid can be made up of stations or strings.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -205,7 +206,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

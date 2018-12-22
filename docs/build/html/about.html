@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>About PyREx &mdash; PyREx 1.8.1 documentation</title>
+    <title>About PyREx &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="#" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="index.html" >
     <link rel="next" title="How to Use PyREx" href="usage.html" >
     <link rel="prev" title="PyREx Documentation" href="index.html" > 
   </head>
@@ -51,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -92,42 +93,42 @@
 The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANNA collaborations).</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>The easiest way to get the PyREx package is using <code class="docutils literal"><span class="pre">pip</span></code> as follows:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bhokansonfasig</span><span class="o">/</span><span class="n">pyrex</span><span class="c1">#egg=pyrex</span>
+<p>The easiest way to get the PyREx package is using <code class="docutils literal notranslate"><span class="pre">pip</span></code> as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bhokansonfasig</span><span class="o">/</span><span class="n">pyrex</span><span class="c1">#egg=pyrex</span>
 </pre></div>
 </div>
-<p>PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+, which should be automatically installed when installing via <code class="docutils literal"><span class="pre">pip</span></code>.</p>
-<p>Alternatively, you can download the code from <a class="reference external" href="https://github.com/bhokansonfasig/pyrex">https://github.com/bhokansonfasig/pyrex</a> and then either include the <code class="docutils literal"><span class="pre">pyrex</span></code> directory (the one containing the python modules) in your <code class="docutils literal"><span class="pre">PYTHON_PATH</span></code>, or just copy the <code class="docutils literal"><span class="pre">pyrex</span></code> directory into your working directory.
-PyREx is not currently available on PyPI, so a simple <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyrex</span></code> will not have the intended effect.</p>
+<p>PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+, which should be automatically installed when installing via <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
+<p>Alternatively, you can download the code from <a class="reference external" href="https://github.com/bhokansonfasig/pyrex">https://github.com/bhokansonfasig/pyrex</a> and then either include the <code class="docutils literal notranslate"><span class="pre">pyrex</span></code> directory (the one containing the python modules) in your <code class="docutils literal notranslate"><span class="pre">PYTHON_PATH</span></code>, or just copy the <code class="docutils literal notranslate"><span class="pre">pyrex</span></code> directory into your working directory.
+PyREx is not currently available on PyPI, so a simple <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyrex</span></code> will not have the intended effect.</p>
 </div>
 <div class="section" id="quick-code-example">
 <h2>Quick Code Example<a class="headerlink" href="#quick-code-example" title="Permalink to this headline">¶</a></h2>
 <p>The most basic simulation can be produced as follows:</p>
 <p>First, import the package:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pryex</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pryex</span>
 </pre></div>
 </div>
-<p>Then, create a particle generator object that will produce random particles in  a cube of 1 km on each side with a fixed energy of 100 PeV:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-                                           <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
+<p>Then, create a particle generator object that will produce random particles in a cylinder with radius and depth of 1 km and with a fixed energy of 100 PeV:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">CylindricalShadowGenerator</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                                      <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>An array of antennas that represent the detector is also needed. The base <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical “string” of four antennas with no noise:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">antenna_array</span> <span class="o">=</span> <span class="p">[]</span>
+<p>An array of antennas that represent the detector is also needed. The base <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical “string” of four antennas with no noise:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">antenna_array</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">150</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">250</span><span class="p">]:</span>
     <span class="n">antenna_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="n">pyrex</span><span class="o">.</span><span class="n">Antenna</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="p">),</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="p">)</span>
 </pre></div>
 </div>
-<p>Finally, we want to pass these into the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> and produce an event:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">particle_generator</span><span class="p">,</span>
+<p>Finally, we want to pass these into the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a> and produce an event:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">particle_generator</span><span class="p">,</span>
                            <span class="n">antennas</span><span class="o">=</span><span class="n">antenna_array</span><span class="p">)</span>
 <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Now the signals received by each antenna can be accessed by their <code class="xref py py-attr docutils literal"><span class="pre">waveforms</span></code> parameter:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<p>Now the signals received by each antenna can be accessed by their <code class="xref py py-attr docutils literal notranslate"><span class="pre">waveforms</span></code> parameter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">kernel</span><span class="o">.</span><span class="n">ant_array</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ant</span><span class="o">.</span><span class="n">waveforms</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
@@ -196,7 +197,7 @@ PyREx is not currently available on PyPI, so a simple <code class="docutils lite
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -268,7 +269,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

@@ -1,5 +1,5 @@
-pyrex\.ice\_model\.NewcombIce\.index
-====================================
+pyrex.ice\_model.NewcombIce.index
+=================================
 
 .. currentmodule:: pyrex.ice_model
 

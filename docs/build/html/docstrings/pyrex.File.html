@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.File &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.File &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="prev" title="pyrex.EventKernel" href="pyrex.EventKernel.html" > 
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -101,18 +102,17 @@ the appropriate class for handling the given file type.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filename</strong> : str</p>
-<blockquote>
-<div><p>File name to open in the given write mode.</p>
-</div></blockquote>
-<p><strong>mode</strong> : str, optional</p>
-<blockquote>
-<div><p>Mode with which to open the file.</p>
-</div></blockquote>
-<p><strong>**kwargs</strong></p>
-<blockquote class="last">
-<div><p>Keyword arguments passed on to the appropriate file handler.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">File name to open in the given write mode.</p>
+</dd>
+<dt><strong>mode</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Mode with which to open the file.</p>
+</dd>
+<dt><strong>**kwargs</strong></dt>
+<dd><p class="first last">Keyword arguments passed on to the appropriate file handler.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -120,24 +120,27 @@ the appropriate class for handling the given file type.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><code class="xref py py-obj docutils literal"><span class="pre">HDF5Reader</span></code></dt>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5Reader</span></code></dt>
 <dd>Class for reading data from an hdf5 file.</dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">HDF5Writer</span></code></dt>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5Writer</span></code></dt>
 <dd>Class for writing data to an hdf5 file.</dd>
 </dl>
 </div>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="8%" />
-<col width="92%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><strong>readers</strong></td>
-<td>(dict) Dictionary with file extensions as keys and values with the corresponding classes used to handle reading of those file types.</td>
-</tr>
-<tr class="row-even"><td><strong>writers</strong></td>
-<td>(dict) Dictionary with file extensions as keys and values with the corresponding classes used to handle writing of those file types.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>readers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">Dictionary with file extensions as keys and values with the
+corresponding classes used to handle reading of those file types.</p>
+</dd>
+<dt><strong>writers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">Dictionary with file extensions as keys and values with the
+corresponding classes used to handle writing of those file types.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -156,7 +159,7 @@ the appropriate class for handling the given file type.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -228,7 +231,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

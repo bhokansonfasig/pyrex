@@ -1,5 +1,5 @@
-pyrex\.generation\.ShadowGenerator
-==================================
+pyrex.generation.ShadowGenerator
+================================
 
 .. currentmodule:: pyrex.generation
 
@@ -16,7 +16,7 @@ pyrex\.generation\.ShadowGenerator
          ShadowGenerator.get_exit_points
          ShadowGenerator.get_particle_type
          ShadowGenerator.get_vertex
-         ShadowGenerator.get_weight
+         ShadowGenerator.get_weights
 
 
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.VpolBase\.generate\_directionality\_gains
-======================================================================
+pyrex.custom.ara.antenna.VpolBase.generate\_directionality\_gains
+=================================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

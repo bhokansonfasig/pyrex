@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.detector\.StationGrid\.build\_antennas
-===========================================================
+pyrex.custom.irex.detector.StationGrid.build\_antennas
+======================================================
 
 .. currentmodule:: pyrex.custom.irex.detector
 

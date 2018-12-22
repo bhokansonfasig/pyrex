@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.RayTracePath\.propagate
-============================================
+pyrex.ray\_tracing.RayTracePath.propagate
+=========================================
 
 .. currentmodule:: pyrex.ray_tracing
 

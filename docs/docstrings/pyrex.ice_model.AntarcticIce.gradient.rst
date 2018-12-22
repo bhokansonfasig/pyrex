@@ -1,5 +1,5 @@
-pyrex\.ice\_model\.AntarcticIce\.gradient
-=========================================
+pyrex.ice\_model.AntarcticIce.gradient
+======================================
 
 .. currentmodule:: pyrex.ice_model
 

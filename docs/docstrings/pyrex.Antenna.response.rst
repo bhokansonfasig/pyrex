@@ -1,5 +1,5 @@
-pyrex\.Antenna\.response
-========================
+pyrex.Antenna.response
+======================
 
 .. currentmodule:: pyrex
 

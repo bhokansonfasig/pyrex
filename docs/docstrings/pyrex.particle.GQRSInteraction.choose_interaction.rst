@@ -1,5 +1,5 @@
-pyrex\.particle\.GQRSInteraction\.choose\_interaction
-=====================================================
+pyrex.particle.GQRSInteraction.choose\_interaction
+==================================================
 
 .. currentmodule:: pyrex.particle
 

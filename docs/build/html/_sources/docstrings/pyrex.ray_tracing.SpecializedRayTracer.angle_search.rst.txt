@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.SpecializedRayTracer\.angle\_search
-========================================================
+pyrex.ray\_tracing.SpecializedRayTracer.angle\_search
+=====================================================
 
 .. currentmodule:: pyrex.ray_tracing
 

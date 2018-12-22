@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ray_tracing.SpecializedRayTracer.angle_search &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.ray_tracing.SpecializedRayTracer.angle_search &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -78,9 +79,9 @@
             
   <div class="section" id="pyrex-ray-tracing-specializedraytracer-angle-search">
 <h1>pyrex.ray_tracing.SpecializedRayTracer.angle_search<a class="headerlink" href="#pyrex-ray-tracing-specializedraytracer-angle-search" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="staticmethod">
 <dt id="pyrex.ray_tracing.SpecializedRayTracer.angle_search">
-<code class="descclassname">SpecializedRayTracer.</code><code class="descname">angle_search</code><span class="sig-paren">(</span><em>true_r</em>, <em>r_function</em>, <em>min_angle</em>, <em>max_angle</em>, <em>tolerance=1e-12</em>, <em>max_iterations=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer.angle_search" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descclassname">SpecializedRayTracer.</code><code class="descname">angle_search</code><span class="sig-paren">(</span><em>true_r</em>, <em>r_function</em>, <em>min_angle</em>, <em>max_angle</em>, <em>tolerance=1e-12</em>, <em>max_iterations=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.SpecializedRayTracer.angle_search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the angle where <em class="xref py py-obj">r_function</em> (angle) == <em class="xref py py-obj">true_r</em>.</p>
 <p>Runs the brentq root-finding algorithm on <em class="xref py py-obj">r_function</em> with an offset
 of <em class="xref py py-obj">true_r</em> to find the angle at which they are equal.</p>
@@ -88,43 +89,41 @@ of <em class="xref py py-obj">true_r</em> to find the angle at which they are eq
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>true_r</strong> : float</p>
-<blockquote>
-<div><p>Desired value for the radial distance.</p>
-</div></blockquote>
-<p><strong>r_function</strong> : function</p>
-<blockquote>
-<div><p>Function to calculate the radial distance for a given launch angle.</p>
-</div></blockquote>
-<p><strong>min_angle</strong> : float</p>
-<blockquote>
-<div><p>Minimum allowed angle for the <em class="xref py py-obj">r_function</em>.</p>
-</div></blockquote>
-<p><strong>max_angle</strong> : float</p>
-<blockquote>
-<div><p>Maximum allowed angle for the <em class="xref py py-obj">r_function</em>.</p>
-</div></blockquote>
-<p><strong>tolerance</strong> : float, optional</p>
-<blockquote>
-<div><p>Tolerance in the root value for convergence.</p>
-</div></blockquote>
-<p><strong>max_iterations</strong> : int, optional</p>
-<blockquote>
-<div><p>Maximum number of iterations the root finder will attempt.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>true_r</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Desired value for the radial distance.</p>
+</dd>
+<dt><strong>r_function</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
+<dd><p class="first last">Function to calculate the radial distance for a given launch angle.</p>
+</dd>
+<dt><strong>min_angle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Minimum allowed angle for the <em class="xref py py-obj">r_function</em>.</p>
+</dd>
+<dt><strong>max_angle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Maximum allowed angle for the <em class="xref py py-obj">r_function</em>.</p>
+</dd>
+<dt><strong>tolerance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Tolerance in the root value for convergence.</p>
+</dd>
+<dt><strong>max_iterations</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Maximum number of iterations the root finder will attempt.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">float</p>
-<blockquote>
-<div><p>The launch angle which will satisfy the condition
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>float</strong></dt>
+<dd><p class="first last">The launch angle which will satisfy the condition
 <em class="xref py py-obj">r_function</em> (angle) == <em class="xref py py-obj">true_r</em>.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>RuntimeError</strong></p>
-<blockquote class="last">
-<div><p>If the root finder doesn’t converge.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>RuntimeError</strong></dt>
+<dd><p class="first last">If the root finder doesn’t converge.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -144,7 +143,7 @@ of <em class="xref py py-obj">true_r</em> to find the angle at which they are eq
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -211,7 +210,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

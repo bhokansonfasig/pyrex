@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.HexagonalGrid\.set\_positions
-=================================================
+pyrex.custom.ara.HexagonalGrid.set\_positions
+=============================================
 
 .. currentmodule:: pyrex.custom.ara
 

@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.PathFinder
-===============================
+pyrex.ray\_tracing.PathFinder
+=============================
 
 .. currentmodule:: pyrex.ray_tracing
 
@@ -18,4 +18,14 @@ pyrex\.ray\_tracing\.PathFinder
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         PathFinder.emitted_ray
+         PathFinder.exists
+         PathFinder.path_length
+         PathFinder.received_ray
+         PathFinder.tof
 

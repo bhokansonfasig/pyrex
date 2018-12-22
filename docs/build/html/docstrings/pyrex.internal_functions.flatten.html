@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.flatten &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.internal_functions.flatten &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="next" title="pyrex.internal_functions.mirror_func" href="pyrex.internal_functions.mirror_func.html" >
     <link rel="prev" title="pyrex.internal_functions.normalize" href="pyrex.internal_functions.normalize.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
+          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
     </ul>
               
               
@@ -102,39 +103,40 @@ classes. Will not flatten strings or bytes to avoid recursion errors.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>iterator</strong> : iterable object</p>
-<blockquote>
-<div><p>Iterable object to flatten.</p>
-</div></blockquote>
-<p><strong>dont_flatten</strong> : tuple_like, optional</p>
-<blockquote>
-<div><p>Tuple (or similar) of classes which should not be flattened.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>iterator</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iterable object</span></dt>
+<dd><p class="first last">Iterable object to flatten.</p>
+</dd>
+<dt><strong>dont_flatten</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple_like, optional</span></dt>
+<dd><p class="first last">Tuple (or similar) of classes which should not be flattened.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first"><strong>element</strong> : any</p>
-<blockquote class="last">
-<div><p>Each element of <em class="xref py py-obj">iterator</em> with sub-iterators expanded out.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>element</strong> <span class="classifier-delimiter">:</span> <span class="classifier">any</span></dt>
+<dd><p class="first last">Each element of <em class="xref py py-obj">iterator</em> with sub-iterators expanded out.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>Since <code class="docutils literal"><span class="pre">str</span></code> and <code class="docutils literal"><span class="pre">bytes</span></code> objects are always considered iterable despite
+<p>Since <code class="docutils literal notranslate"><span class="pre">str</span></code> and <code class="docutils literal notranslate"><span class="pre">bytes</span></code> objects are always considered iterable despite
 their length, these objects will not be flattened and will remain intact.</p>
 <p>If a class is asked not to be flattened, any sub-iterators contained in an
 iterator of that class will not be flattened either (see examples).</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="mi">7</span><span class="p">),</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="mi">7</span><span class="p">),</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]))</span>
 <span class="go">[1, 2, 3, &#39;four&#39;, 5, 6, 7, 8, 9]</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="mi">7</span><span class="p">),</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dont_flatten</span><span class="o">=</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,)))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="mi">7</span><span class="p">),</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dont_flatten</span><span class="o">=</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,)))</span>
 <span class="go">[1, 2, (3, &#39;four&#39;, [5, 6], 7), 8, 9]</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dont_flatten</span><span class="o">=</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,)))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">flatten</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dont_flatten</span><span class="o">=</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,)))</span>
 <span class="go">[1, 2, 3, &#39;four&#39;, (5, 6), 7, 8, 9]</span>
 </pre></div>
 </div>
@@ -153,7 +155,7 @@ iterator of that class will not be flattened either (see examples).</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -225,7 +227,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

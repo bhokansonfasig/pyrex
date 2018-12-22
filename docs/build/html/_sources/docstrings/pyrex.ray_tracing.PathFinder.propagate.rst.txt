@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.PathFinder\.propagate
-==========================================
+pyrex.ray\_tracing.PathFinder.propagate
+=======================================
 
 .. currentmodule:: pyrex.ray_tracing
 

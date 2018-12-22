@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.LPDA\.set\_orientation
-==============================================
+pyrex.custom.arianna.LPDA.set\_orientation
+==========================================
 
 .. currentmodule:: pyrex.custom.arianna
 

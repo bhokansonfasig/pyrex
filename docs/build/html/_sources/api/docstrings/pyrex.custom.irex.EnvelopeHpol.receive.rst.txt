@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeHpol\.receive
-==========================================
+pyrex.custom.irex.EnvelopeHpol.receive
+======================================
 
 .. currentmodule:: pyrex.custom.irex
 

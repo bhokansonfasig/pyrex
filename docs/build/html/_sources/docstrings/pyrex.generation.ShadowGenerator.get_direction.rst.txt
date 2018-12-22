@@ -1,5 +1,5 @@
-pyrex\.generation\.ShadowGenerator\.get\_direction
-==================================================
+pyrex.generation.ShadowGenerator.get\_direction
+===============================================
 
 .. currentmodule:: pyrex.generation
 

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.mirror_func &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.internal_functions.mirror_func &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="next" title="pyrex.internal_functions.lazy_property" href="pyrex.internal_functions.lazy_property.html" >
     <link rel="prev" title="pyrex.internal_functions.flatten" href="pyrex.internal_functions.flatten.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
+          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
     </ul>
               
               
@@ -101,33 +102,33 @@ attributes of another. Works for functions or class methods.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>match_func</strong> : function</p>
-<blockquote>
-<div><p>Function with the attributes to be mirrored.</p>
-</div></blockquote>
-<p><strong>run_func</strong> : function</p>
-<blockquote>
-<div><p>Function with the desired behavior.</p>
-</div></blockquote>
-<p><strong>self</strong> : object or None, optional</p>
-<blockquote>
-<div><p>If <code class="docutils literal"><span class="pre">None</span></code>, <em class="xref py py-obj">run_func</em> called as a regular function, otherwise
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>match_func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
+<dd><p class="first last">Function with the attributes to be mirrored.</p>
+</dd>
+<dt><strong>run_func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
+<dd><p class="first last">Function with the desired behavior.</p>
+</dd>
+<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">object or None, optional</span></dt>
+<dd><p class="first last">If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <em class="xref py py-obj">run_func</em> called as a regular function, otherwise
 <em class="xref py py-obj">run_func</em> is called as a class method (with <em class="xref py py-obj">self</em> as its first
 argument).</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">function</p>
-<blockquote class="last">
-<div><p>Function with the behavior of <em class="xref py py-obj">run_func</em>, but the attributes of
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>function</strong></dt>
+<dd><p class="first last">Function with the behavior of <em class="xref py py-obj">run_func</em>, but the attributes of
 <em class="xref py py-obj">match_func</em>.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">signature</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">signature</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">descriptive_add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;Function with a descriptive docstring.&quot;&quot;&quot;</span>
 <span class="gp">... </span>    <span class="k">pass</span>
@@ -143,7 +144,7 @@ argument).</p>
 <span class="go">&lt;Signature (a, b)&gt;</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">signature</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">signature</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -183,7 +184,7 @@ argument).</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -255,7 +256,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

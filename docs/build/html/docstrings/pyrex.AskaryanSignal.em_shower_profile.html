@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.AskaryanSignal.em_shower_profile &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.AskaryanSignal.em_shower_profile &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -89,44 +90,42 @@ in ice.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>z</strong> : float</p>
-<blockquote>
-<div><p>Distance (m) along the shower at which to calculate the charge.</p>
-</div></blockquote>
-<p><strong>energy</strong> : float</p>
-<blockquote>
-<div><p>Energy (GeV) of the shower.</p>
-</div></blockquote>
-<p><strong>density</strong> : float, optional</p>
-<blockquote>
-<div><p>Density (g/cm^3) of ice.</p>
-</div></blockquote>
-<p><strong>crit_energy</strong> : float, optional</p>
-<blockquote>
-<div><p>Critical energy (GeV) for shower formation.</p>
-</div></blockquote>
-<p><strong>rad_length</strong> : float, optional</p>
-<blockquote>
-<div><p>Electron radiation length (g/cm^2) in ice.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>z</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">Distance (m) along the shower at which to calculate the charge.</p>
+</dd>
+<dt><strong>energy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Energy (GeV) of the shower.</p>
+</dd>
+<dt><strong>density</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Density (g/cm^3) of ice.</p>
+</dd>
+<dt><strong>crit_energy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Critical energy (GeV) for shower formation.</p>
+</dd>
+<dt><strong>rad_length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Electron radiation length (g/cm^2) in ice.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">float</p>
-<blockquote class="last">
-<div><p>The charge (C) at the given distance along the shower.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>array_like</strong></dt>
+<dd><p class="first last">The charge (C) at the given distance along the shower.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
 <p>Profile calculated by a simplified Heitler model based on equations 24
-and 25 of the radar feasibility paper <a class="reference internal" href="#r2323" id="id1">[R2323]</a>.</p>
+and 25 of the radar feasibility paper <a class="reference internal" href="#r4b0f6afd3355-1" id="id1">[1]</a>.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r2323" rules="none">
+<table class="docutils citation" frame="void" id="r4b0f6afd3355-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R2323]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> K.D. de Vries et al, “On the feasibility of RADAR detection of
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> K.D. de Vries et al, “On the feasibility of RADAR detection of
 high-energy neutrino-induced showers in ice.” Astropart. Phys.
 <strong>60</strong>, 25-31 (2015).</td></tr>
 </tbody>
@@ -146,7 +145,7 @@ high-energy neutrino-induced showers in ice.” Astropart. Phys.
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -213,7 +212,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

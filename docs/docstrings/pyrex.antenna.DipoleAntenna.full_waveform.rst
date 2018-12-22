@@ -1,5 +1,5 @@
-pyrex\.antenna\.DipoleAntenna\.full\_waveform
-=============================================
+pyrex.antenna.DipoleAntenna.full\_waveform
+==========================================
 
 .. currentmodule:: pyrex.antenna
 

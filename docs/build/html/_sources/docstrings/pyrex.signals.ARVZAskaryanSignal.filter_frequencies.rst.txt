@@ -1,5 +1,5 @@
-pyrex\.signals\.ARVZAskaryanSignal\.filter\_frequencies
-=======================================================
+pyrex.signals.ARVZAskaryanSignal.filter\_frequencies
+====================================================
 
 .. currentmodule:: pyrex.signals
 

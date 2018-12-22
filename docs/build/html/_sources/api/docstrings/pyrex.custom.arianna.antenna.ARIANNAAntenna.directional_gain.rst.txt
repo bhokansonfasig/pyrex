@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.ARIANNAAntenna\.directional\_gain
-==================================================================
+pyrex.custom.arianna.antenna.ARIANNAAntenna.directional\_gain
+=============================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

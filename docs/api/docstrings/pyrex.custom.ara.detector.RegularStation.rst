@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.RegularStation
-============================================
+pyrex.custom.ara.detector.RegularStation
+========================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 
@@ -19,4 +19,10 @@ pyrex\.custom\.ara\.detector\.RegularStation
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         RegularStation.test_antenna_positions
 

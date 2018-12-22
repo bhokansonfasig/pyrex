@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeVpol\.full\_waveform
-=================================================
+pyrex.custom.irex.EnvelopeVpol.full\_waveform
+=============================================
 
 .. currentmodule:: pyrex.custom.irex
 

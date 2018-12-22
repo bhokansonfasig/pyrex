@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Version History &mdash; PyREx 1.8.1 documentation</title>
+    <title>Version History &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="index.html" >
     <link rel="prev" title="pyrex.custom.irex.detector.StationGrid" href="api/docstrings/pyrex.custom.irex.detector.StationGrid.html" > 
   </head>
   <body>
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -83,27 +84,52 @@
             
   <div class="section" id="version-history">
 <h1>Version History<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-8-2">
+<h2>Version 1.8.2<a class="headerlink" href="#version-1-8-2" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">New Features</p>
+<ul class="simple">
+<li>Added <a class="reference internal" href="docstrings/pyrex.CylindricalGenerator.html#pyrex.CylindricalGenerator" title="pyrex.CylindricalGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">CylindricalGenerator</span></code></a>, <a class="reference internal" href="docstrings/pyrex.RectangularGenerator.html#pyrex.RectangularGenerator" title="pyrex.RectangularGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">RectangularGenerator</span></code></a>, <a class="reference internal" href="docstrings/pyrex.CylindricalShadowGenerator.html#pyrex.CylindricalShadowGenerator" title="pyrex.CylindricalShadowGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">CylindricalShadowGenerator</span></code></a>, and <a class="reference internal" href="docstrings/pyrex.RectangularShadowGenerator.html#pyrex.RectangularShadowGenerator" title="pyrex.RectangularShadowGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">RectangularShadowGenerator</span></code></a> classes to provide options for generation volumes and how to account for shadowing by the Earth. <a class="reference internal" href="docstrings/pyrex.RectangularShadowGenerator.html#pyrex.RectangularShadowGenerator" title="pyrex.RectangularShadowGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">RectangularShadowGenerator</span></code></a> has the same behavior as the existing <code class="xref py py-class docutils literal notranslate"><span class="pre">ShadowGenerator</span></code>, so <code class="xref py py-class docutils literal notranslate"><span class="pre">ShadowGenerator</span></code> is being deprecated.</li>
+<li>Added ability to add <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> (and <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> or <a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AntennaSystem</span></code></a>) objects into a <code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedDetector</span></code> for ease of use.</li>
+<li>Added ability to multiply (and divide) <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> objects by numeric types.</li>
+<li>Added support for total events thrown in simulation, accessed by the <code class="xref py py-attr docutils literal notranslate"><span class="pre">File.total_events_thrown</span></code> attribute of file readers.</li>
+</ul>
+<p class="rubric">Changes</p>
+<ul class="simple">
+<li>Separated <a class="reference internal" href="docstrings/pyrex.Particle.weight.html#pyrex.Particle.weight" title="pyrex.Particle.weight"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.weight</span></code></a> into <code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.survival_weight</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.interaction_weight</span></code>. Now <a class="reference internal" href="docstrings/pyrex.Particle.weight.html#pyrex.Particle.weight" title="pyrex.Particle.weight"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.weight</span></code></a> serves as a convenience attribute which gives the product of the two weights.</li>
+<li>Changed <a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileGenerator</span></code></a> to read from simulation output files rather than numpy files. For the time being numpy files can be read with <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyFileGenerator</span></code>.</li>
+<li>All generator classes now have a <code class="xref py py-attr docutils literal notranslate"><span class="pre">count</span></code> attribute for keeping track of the total number of events thrown.</li>
+</ul>
+<p class="rubric">Bug Fixes</p>
+<ul class="simple">
+<li>Fixed error in <span class="math notranslate nohighlight">\(ARAAntenna\)</span> signal amplitudes introduced in version 1.8.1.</li>
+<li>Fixed minor bugs in <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> interfaces.</li>
+</ul>
+<p class="rubric">Performance Improvements</p>
+<ul class="simple">
+<li>Changed <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AskaryanSignal()</span></code></a> charge profile and RAC calculations to accept numpy arrays. Should result in marginal improvements in signal calculation speed.</li>
+</ul>
+</div>
 <div class="section" id="version-1-8-1">
 <h2>Version 1.8.1<a class="headerlink" href="#version-1-8-1" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added ability to write (and subsequently read) simulation data files using <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> objects.</li>
+<li>Added ability to write (and subsequently read) simulation data files using <a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> objects.</li>
 <li>File I/O supports HDF5 files, but should be considered to be in a public-beta state until the release of version 1.9.0.</li>
-<li><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> now accepts <code class="docutils literal"><span class="pre">event_writer</span></code> and <code class="docutils literal"><span class="pre">triggers</span></code> arguments for writing simulation data to output files.</li>
+<li><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a> now accepts <code class="docutils literal notranslate"><span class="pre">event_writer</span></code> and <code class="docutils literal notranslate"><span class="pre">triggers</span></code> arguments for writing simulation data to output files.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li><a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal"><span class="pre">ThermalNoise</span></code></a> now uses Rayleigh-distributed amplitudes in frequency space by default.</li>
-<li>Handling of signal polarizations has been more closely integrated with the ray tracer; <code class="xref py py-meth docutils literal"><span class="pre">RayTracer.propagate()</span></code> now propagating the polarization vector as well as the signal.</li>
-<li>3 dB splitter effect moved from <code class="xref py py-meth docutils literal"><span class="pre">ARAAntenna.response()</span></code> to <code class="xref py py-meth docutils literal"><span class="pre">ARAAntennaSystem.front_end()</span></code> for a more logical separation of antenna and front-end.</li>
-<li>Adjusted default noise rms of <code class="xref py py-class docutils literal"><span class="pre">ARIANNAAntennaSystem</span></code> to the expected value in ARIANNA.</li>
+<li><a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalNoise</span></code></a> now uses Rayleigh-distributed amplitudes in frequency space by default.</li>
+<li>Handling of signal polarizations has been more closely integrated with the ray tracer; <code class="xref py py-meth docutils literal notranslate"><span class="pre">RayTracer.propagate()</span></code> now propagating the polarization vector as well as the signal.</li>
+<li>3 dB splitter effect moved from <code class="xref py py-meth docutils literal notranslate"><span class="pre">ARAAntenna.response()</span></code> to <code class="xref py py-meth docutils literal notranslate"><span class="pre">ARAAntennaSystem.front_end()</span></code> for a more logical separation of antenna and front-end.</li>
+<li>Adjusted default noise rms of <code class="xref py py-class docutils literal notranslate"><span class="pre">ARIANNAAntennaSystem</span></code> to the expected value in ARIANNA.</li>
 </ul>
 <p class="rubric">Bug Fixes</p>
 <ul class="simple">
 <li>Corrected signal polarization calculation.</li>
 <li>Fixed calculation of fresnel factors in surface reflection.</li>
 <li>Fixed bug in antenna gains of asymmetric antennas for theta angles near 180 degrees.</li>
-<li>Corrected effective height of antennas modeled by WIPL-D (i.e. <code class="xref py py-class docutils literal"><span class="pre">LPDA</span></code>).</li>
+<li>Corrected effective height of antennas modeled by WIPL-D (i.e. <code class="xref py py-class docutils literal notranslate"><span class="pre">LPDA</span></code>).</li>
 </ul>
 </div>
 <div class="section" id="version-1-8-0">
@@ -111,21 +137,21 @@
 <p class="rubric">New Features</p>
 <ul class="simple">
 <li>Added model of the ARIANNA LPDA based primarily on the implementation in <a class="reference external" href="https://github.com/nu-radio/NuRadioReco">NuRadioReco</a>.</li>
-<li>Added <code class="xref py py-attr docutils literal"><span class="pre">Antenna.is_hit_mc</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">AntennaSystem.is_hit_mc</span></code> which test noise-only triggers to determine whether a triggered antenna as truly triggered by signal or not.</li>
-<li>Added <code class="docutils literal"><span class="pre">require_mc_truth</span></code> argument to <a class="reference internal" href="docstrings/pyrex.Detector.triggered.html#pyrex.Detector.triggered" title="pyrex.Detector.triggered"><code class="xref py py-meth docutils literal"><span class="pre">Detector.triggered()</span></code></a> to toggle whether a true Monte Carlo signal trigger (described above with <code class="xref py py-attr docutils literal"><span class="pre">Antenna.is_hit_mc</span></code>) is required for a detector trigger.</li>
-<li>Added <code class="xref py py-attr docutils literal"><span class="pre">AntennaSystem.lead_in_time</span></code> which allows front-end systems time to equilibrate before waveforms are recorded.</li>
+<li>Added <code class="xref py py-attr docutils literal notranslate"><span class="pre">Antenna.is_hit_mc</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">AntennaSystem.is_hit_mc</span></code> which test noise-only triggers to determine whether a triggered antenna as truly triggered by signal or not.</li>
+<li>Added <code class="docutils literal notranslate"><span class="pre">require_mc_truth</span></code> argument to <a class="reference internal" href="docstrings/pyrex.Detector.triggered.html#pyrex.Detector.triggered" title="pyrex.Detector.triggered"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Detector.triggered()</span></code></a> to toggle whether a true Monte Carlo signal trigger (described above with <code class="xref py py-attr docutils literal notranslate"><span class="pre">Antenna.is_hit_mc</span></code>) is required for a detector trigger.</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.AntennaSystem.lead_in_time.html#pyrex.AntennaSystem.lead_in_time" title="pyrex.AntennaSystem.lead_in_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">AntennaSystem.lead_in_time</span></code></a> which allows front-end systems time to equilibrate before waveforms are recorded.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li><code class="xref py py-attr docutils literal"><span class="pre">Antenna.waveforms</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">Antenna.all_waveforms</span></code> now include all relevant signals in the waveform during that time, similar to <a class="reference internal" href="docstrings/pyrex.Antenna.full_waveform.html#pyrex.Antenna.full_waveform" title="pyrex.Antenna.full_waveform"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.full_waveform()</span></code></a>.</li>
-<li><code class="xref py py-meth docutils literal"><span class="pre">ARAAntenna.interpolate_filter()</span></code> moved to <code class="xref py py-meth docutils literal"><span class="pre">ARAAntennaSystem.interpolate_filter()</span></code>, since this better matches the logical location of the front-end electronics.</li>
+<li><a class="reference internal" href="docstrings/pyrex.Antenna.waveforms.html#pyrex.Antenna.waveforms" title="pyrex.Antenna.waveforms"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Antenna.waveforms</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Antenna.all_waveforms.html#pyrex.Antenna.all_waveforms" title="pyrex.Antenna.all_waveforms"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Antenna.all_waveforms</span></code></a> now include all relevant signals in the waveform during that time, similar to <a class="reference internal" href="docstrings/pyrex.Antenna.full_waveform.html#pyrex.Antenna.full_waveform" title="pyrex.Antenna.full_waveform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.full_waveform()</span></code></a>.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">ARAAntenna.interpolate_filter()</span></code> moved to <code class="xref py py-meth docutils literal notranslate"><span class="pre">ARAAntennaSystem.interpolate_filter()</span></code>, since this better matches the logical location of the front-end electronics.</li>
 </ul>
 <p class="rubric">Bug Fixes</p>
 <ul class="simple">
 <li>Fixed error in calculation of ARA Hpol polarization gain.</li>
-<li>Corrected amplification of <code class="xref py py-class docutils literal"><span class="pre">ARAAntennaSystem</span></code> (previously was silently ignored).</li>
+<li>Corrected amplification of <code class="xref py py-class docutils literal notranslate"><span class="pre">ARAAntennaSystem</span></code> (previously was silently ignored).</li>
 <li>Corrected tunnel diode and other triggers to use standard deviation from mean rather than rms.</li>
-<li>Fixed accidental duplication of antennas when <a class="reference internal" href="docstrings/pyrex.Detector.build_antennas.html#pyrex.Detector.build_antennas" title="pyrex.Detector.build_antennas"><code class="xref py py-meth docutils literal"><span class="pre">Detector.build_antennas()</span></code></a> is called more than once.</li>
+<li>Fixed accidental duplication of antennas when <a class="reference internal" href="docstrings/pyrex.Detector.build_antennas.html#pyrex.Detector.build_antennas" title="pyrex.Detector.build_antennas"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Detector.build_antennas()</span></code></a> is called more than once.</li>
 <li>Fixed numerical issue when checking that antenna axes are perpendicular.</li>
 </ul>
 </div>
@@ -133,80 +159,80 @@
 <h2>Version 1.7.0<a class="headerlink" href="#version-1-7-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Moved <code class="xref py py-mod docutils literal"><span class="pre">pyrex.custom.ara</span></code> module into main PyREx package instead of being a plug-in.</li>
+<li>Moved <code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code> module into main PyREx package instead of being a plug-in.</li>
 <li>All docstrings now follow numpy docstring style.</li>
-<li>Added particle types and interaction information to <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> class.</li>
-<li>Added <code class="xref py py-class docutils literal"><span class="pre">Interaction</span></code> classes <code class="xref py py-class docutils literal"><span class="pre">GQRSInteraction</span></code> and <code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code> for defining different neutrino interaction models. Preferred model (<code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code>) aliased to <a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-class docutils literal"><span class="pre">NeutrinoInteraction</span></code></a>.</li>
-<li>Added <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_vertex.html#pyrex.ShadowGenerator.get_vertex" title="pyrex.ShadowGenerator.get_vertex"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_vertex()</span></code></a>, <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_direction.html#pyrex.ShadowGenerator.get_direction" title="pyrex.ShadowGenerator.get_direction"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_direction()</span></code></a>, <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_particle_type.html#pyrex.ShadowGenerator.get_particle_type" title="pyrex.ShadowGenerator.get_particle_type"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_particle_type()</span></code></a>, <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_exit_points.html#pyrex.ShadowGenerator.get_exit_points" title="pyrex.ShadowGenerator.get_exit_points"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_exit_points()</span></code></a>, and <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.get_weight.html#pyrex.ShadowGenerator.get_weight" title="pyrex.ShadowGenerator.get_weight"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.get_weight()</span></code></a> methods for generating neutrinos more modularly.</li>
-<li>Added <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a> class for holding a tree of <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> objects. <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a> objects are now returned by generators and the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a>.</li>
-<li>Added <code class="xref py py-class docutils literal"><span class="pre">ZHSAskaryanSignal</span></code> class for the Zas, Halzen, Stanev parameterization of Askaryan pulses. Mostly for comparison purposes.</li>
+<li>Added particle types and interaction information to <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a> class.</li>
+<li>Added <code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code> classes <code class="xref py py-class docutils literal notranslate"><span class="pre">GQRSInteraction</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">CTWInteraction</span></code> for defining different neutrino interaction models. Preferred model (<code class="xref py py-class docutils literal notranslate"><span class="pre">CTWInteraction</span></code>) aliased to <a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeutrinoInteraction</span></code></a>.</li>
+<li>Added <code class="xref py py-meth docutils literal notranslate"><span class="pre">ShadowGenerator.get_vertex()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ShadowGenerator.get_direction()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ShadowGenerator.get_particle_type()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ShadowGenerator.get_exit_points()</span></code>, and <code class="xref py py-meth docutils literal notranslate"><span class="pre">ShadowGenerator.get_weight()</span></code> methods for generating neutrinos more modularly.</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> class for holding a tree of <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a> objects. <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> objects are now returned by generators and the <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a>.</li>
+<li>Added <code class="xref py py-class docutils literal notranslate"><span class="pre">ZHSAskaryanSignal</span></code> class for the Zas, Halzen, Stanev parameterization of Askaryan pulses. Mostly for comparison purposes.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.create_particle()</span></code> changed to <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.create_event.html#pyrex.ShadowGenerator.create_event" title="pyrex.ShadowGenerator.create_event"><code class="xref py py-meth docutils literal"><span class="pre">ShadowGenerator.create_event()</span></code></a> and now returns an <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a> object.</li>
-<li>Generator classes moved to <a class="reference internal" href="api/generation.html#module-pyrex.generation" title="pyrex.generation"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.generation</span></code></a> module.</li>
-<li><code class="xref py py-class docutils literal"><span class="pre">Signal.ValueTypes</span></code> changed to <code class="xref py py-class docutils literal"><span class="pre">Signal.Type</span></code> to match <code class="xref py py-class docutils literal"><span class="pre">Particle.Type</span></code> and <code class="xref py py-class docutils literal"><span class="pre">Interaction.Type</span></code>.</li>
-<li><code class="xref py py-class docutils literal"><span class="pre">FastAskaryanSignal</span></code> changed to <code class="xref py py-class docutils literal"><span class="pre">ARVZAskaryanSignal</span></code>. This class is still the preferred parameterization aliased to <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a>.</li>
-<li>Arguments of <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a> changed to take a <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> object rather than taking its parameters individually.</li>
-<li>Removed unused <code class="xref py py-class docutils literal"><span class="pre">SlowAskaryanSignal</span></code>.</li>
-<li>Now that <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a> can handle different particle and shower types, secondary particle generation was added to determine shower fractions: <code class="xref py py-attr docutils literal"><span class="pre">NeutrinoInteraction.em_frac</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">NeutrinoInteraction.had_frac</span></code>.</li>
-<li>Changed IREX envelope antennas to be an envelope front-end on top of an ARA antenna. Results in <code class="xref py py-class docutils literal"><span class="pre">IREXAntennaSystem</span></code> becoming <code class="xref py py-class docutils literal"><span class="pre">EnvelopeHpol</span></code> and <code class="xref py py-class docutils literal"><span class="pre">EnvelopeVpol</span></code>.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">ShadowGenerator.create_particle()</span></code> changed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">ShadowGenerator.create_event()</span></code> and now returns an <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code></a> object.</li>
+<li>Generator classes moved to <a class="reference internal" href="api/generation.html#module-pyrex.generation" title="pyrex.generation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.generation</span></code></a> module.</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal.ValueTypes</span></code> changed to <code class="xref py py-class docutils literal notranslate"><span class="pre">Signal.Type</span></code> to match <code class="xref py py-class docutils literal notranslate"><span class="pre">Particle.Type</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction.Type</span></code>.</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAskaryanSignal</span></code> changed to <code class="xref py py-class docutils literal notranslate"><span class="pre">ARVZAskaryanSignal</span></code>. This class is still the preferred parameterization aliased to <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">AskaryanSignal</span></code></a>.</li>
+<li>Arguments of <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">AskaryanSignal</span></code></a> changed to take a <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a> object rather than taking its parameters individually.</li>
+<li>Removed unused <code class="xref py py-class docutils literal notranslate"><span class="pre">SlowAskaryanSignal</span></code>.</li>
+<li>Now that <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">AskaryanSignal</span></code></a> can handle different particle and shower types, secondary particle generation was added to determine shower fractions: <code class="xref py py-attr docutils literal notranslate"><span class="pre">NeutrinoInteraction.em_frac</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">NeutrinoInteraction.had_frac</span></code>.</li>
+<li>Changed IREX envelope antennas to be an envelope front-end on top of an ARA antenna. Results in <code class="xref py py-class docutils literal notranslate"><span class="pre">IREXAntennaSystem</span></code> becoming <code class="xref py py-class docutils literal notranslate"><span class="pre">EnvelopeHpol</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">EnvelopeVpol</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="version-1-6-0">
 <h2>Version 1.6.0<a class="headerlink" href="#version-1-6-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> can now take arguments to specify the ray tracer to be used and the times array to be used in signal generation.</li>
+<li><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a> can now take arguments to specify the ray tracer to be used and the times array to be used in signal generation.</li>
 <li>Added shell scripts to more easily work with git branching model.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li><a class="reference internal" href="docstrings/pyrex.ShadowGenerator.html#pyrex.ShadowGenerator" title="pyrex.ShadowGenerator"><code class="xref py py-class docutils literal"><span class="pre">ShadowGenerator</span></code></a> <code class="docutils literal"><span class="pre">energy_generator</span></code> argument changed to <code class="docutils literal"><span class="pre">energy</span></code> and can now take a function or a scalar value, in which case all particles will have that scalar value for their energy.</li>
-<li><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> now uses <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal"><span class="pre">pyrex.IceModel</span></code></a> as its ice model by default.</li>
-<li><a class="reference internal" href="docstrings/pyrex.Antenna.receive.html#pyrex.Antenna.receive" title="pyrex.Antenna.receive"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.receive()</span></code></a> method (and <code class="xref py py-meth docutils literal"><span class="pre">receive()</span></code> method of all inheriting antennas) now uses <code class="docutils literal"><span class="pre">direction</span></code> argument instead of <code class="docutils literal"><span class="pre">origin</span></code> argument to calculate directional gain.</li>
-<li><a class="reference internal" href="docstrings/pyrex.Antenna.clear.html#pyrex.Antenna.clear" title="pyrex.Antenna.clear"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.clear()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Detector.clear.html#pyrex.Detector.clear" title="pyrex.Detector.clear"><code class="xref py py-meth docutils literal"><span class="pre">Detector.clear()</span></code></a> functions can now optionally reset the noise calculation by using the <code class="docutils literal"><span class="pre">reset_noise</span></code> argument.</li>
-<li><a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> classes can now set the <code class="docutils literal"><span class="pre">unique_noise_waveforms</span></code> argument to specify the expected number of unique noise waveforms needed.</li>
-<li><code class="xref py py-meth docutils literal"><span class="pre">ArasimIce.attenuation_length()</span></code> changed to more closely match AraSim.</li>
-<li><a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal"><span class="pre">IceModel</span></code></a> reverted to <code class="xref py py-class docutils literal"><span class="pre">AntarcticIce</span></code> with new index of refraction coefficients matching those of <code class="xref py py-class docutils literal"><span class="pre">ArasimIce</span></code>.</li>
-<li><a class="reference internal" href="docstrings/pyrex.prem_density.html#pyrex.prem_density" title="pyrex.prem_density"><code class="xref py py-func docutils literal"><span class="pre">prem_density()</span></code></a> can now be calculated for an array of radii.</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ShadowGenerator</span></code> <code class="docutils literal notranslate"><span class="pre">energy_generator</span></code> argument changed to <code class="docutils literal notranslate"><span class="pre">energy</span></code> and can now take a function or a scalar value, in which case all particles will have that scalar value for their energy.</li>
+<li><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a> now uses <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.IceModel</span></code></a> as its ice model by default.</li>
+<li><a class="reference internal" href="docstrings/pyrex.Antenna.receive.html#pyrex.Antenna.receive" title="pyrex.Antenna.receive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.receive()</span></code></a> method (and <code class="xref py py-meth docutils literal notranslate"><span class="pre">receive()</span></code> method of all inheriting antennas) now uses <code class="docutils literal notranslate"><span class="pre">direction</span></code> argument instead of <code class="docutils literal notranslate"><span class="pre">origin</span></code> argument to calculate directional gain.</li>
+<li><a class="reference internal" href="docstrings/pyrex.Antenna.clear.html#pyrex.Antenna.clear" title="pyrex.Antenna.clear"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.clear()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Detector.clear.html#pyrex.Detector.clear" title="pyrex.Detector.clear"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Detector.clear()</span></code></a> functions can now optionally reset the noise calculation by using the <code class="docutils literal notranslate"><span class="pre">reset_noise</span></code> argument.</li>
+<li><a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> classes can now set the <code class="docutils literal notranslate"><span class="pre">unique_noise_waveforms</span></code> argument to specify the expected number of unique noise waveforms needed.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">ArasimIce.attenuation_length()</span></code> changed to more closely match AraSim.</li>
+<li><a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">IceModel</span></code></a> reverted to <code class="xref py py-class docutils literal notranslate"><span class="pre">AntarcticIce</span></code> with new index of refraction coefficients matching those of <code class="xref py py-class docutils literal notranslate"><span class="pre">ArasimIce</span></code>.</li>
+<li><a class="reference internal" href="docstrings/pyrex.prem_density.html#pyrex.prem_density" title="pyrex.prem_density"><code class="xref py py-func docutils literal notranslate"><span class="pre">prem_density()</span></code></a> can now be calculated for an array of radii.</li>
 </ul>
 <p class="rubric">Performance Improvements</p>
 <ul class="simple">
-<li>Improved performance of <a class="reference internal" href="docstrings/pyrex.slant_depth.html#pyrex.slant_depth" title="pyrex.slant_depth"><code class="xref py py-func docutils literal"><span class="pre">slant_depth()</span></code></a> calculation.</li>
-<li>Improved performance of <a class="reference internal" href="docstrings/pyrex.IceModel.attenuation_length.html#pyrex.IceModel.attenuation_length" title="pyrex.IceModel.attenuation_length"><code class="xref py py-meth docutils literal"><span class="pre">IceModel.attenuation_length()</span></code></a> calculation.</li>
-<li>Using the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> <code class="docutils literal"><span class="pre">unique_noise_waveforms</span></code> argument can improve noise waveform calculation speed (previously assumed 100 unique waveforms were necessary).</li>
+<li>Improved performance of <a class="reference internal" href="docstrings/pyrex.slant_depth.html#pyrex.slant_depth" title="pyrex.slant_depth"><code class="xref py py-func docutils literal notranslate"><span class="pre">slant_depth()</span></code></a> calculation.</li>
+<li>Improved performance of <a class="reference internal" href="docstrings/pyrex.IceModel.attenuation_length.html#pyrex.IceModel.attenuation_length" title="pyrex.IceModel.attenuation_length"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IceModel.attenuation_length()</span></code></a> calculation.</li>
+<li>Using the <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> <code class="docutils literal notranslate"><span class="pre">unique_noise_waveforms</span></code> argument can improve noise waveform calculation speed (previously assumed 100 unique waveforms were necessary).</li>
 </ul>
 <p class="rubric">Bug Fixes</p>
 <ul class="simple">
-<li>Fixed received direction bug in <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a>, which had still been assuming a straight-ray path.</li>
+<li>Fixed received direction bug in <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a>, which had still been assuming a straight-ray path.</li>
 <li>Lists in function keyword arguments were changed to tuples to prevent unexpected mutability issues.</li>
-<li>Fixed potential errors in <code class="xref py py-class docutils literal"><span class="pre">BasicRayTracer</span></code> and <code class="xref py py-class docutils literal"><span class="pre">BasicRayTracePath</span></code>.</li>
+<li>Fixed potential errors in <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicRayTracer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicRayTracePath</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="version-1-5-0">
 <h2>Version 1.5.0<a class="headerlink" href="#version-1-5-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li>Changed structure of <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal"><span class="pre">Detector</span></code></a> class so a detector can be built up from strings to stations to the full detector.</li>
-<li><code class="xref py py-attr docutils literal"><span class="pre">Detector.antennas</span></code> attribute changed to <code class="xref py py-attr docutils literal"><span class="pre">Detector.subsets</span></code>, which contains the pieces which make up the detector (e.g. antennas on a string, strings in a station).</li>
-<li>Iterating the <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal"><span class="pre">Detector</span></code></a> class directly retains its effect of iterating each antenna in the detector directly.</li>
+<li>Changed structure of <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> class so a detector can be built up from strings to stations to the full detector.</li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">Detector.antennas</span></code> attribute changed to <code class="xref py py-attr docutils literal notranslate"><span class="pre">Detector.subsets</span></code>, which contains the pieces which make up the detector (e.g. antennas on a string, strings in a station).</li>
+<li>Iterating the <a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> class directly retains its effect of iterating each antenna in the detector directly.</li>
 </ul>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added :meth`Detector.triggered` and <a class="reference internal" href="docstrings/pyrex.Detector.clear.html#pyrex.Detector.clear" title="pyrex.Detector.clear"><code class="xref py py-meth docutils literal"><span class="pre">Detector.clear()</span></code></a> methods.</li>
-<li>Added two new neutrino generators <a class="reference internal" href="docstrings/pyrex.ListGenerator.html#pyrex.ListGenerator" title="pyrex.ListGenerator"><code class="xref py py-class docutils literal"><span class="pre">ListGenerator</span></code></a> and <a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-class docutils literal"><span class="pre">FileGenerator</span></code></a> designed to pull pre-generated <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> objects.</li>
+<li>Added :meth`Detector.triggered` and <a class="reference internal" href="docstrings/pyrex.Detector.clear.html#pyrex.Detector.clear" title="pyrex.Detector.clear"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Detector.clear()</span></code></a> methods.</li>
+<li>Added two new neutrino generators <a class="reference internal" href="docstrings/pyrex.ListGenerator.html#pyrex.ListGenerator" title="pyrex.ListGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListGenerator</span></code></a> and <a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileGenerator</span></code></a> designed to pull pre-generated <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a> objects.</li>
 </ul>
 <p class="rubric">Bug Fixes</p>
 <ul class="simple">
-<li>Preserve <code class="xref py py-attr docutils literal"><span class="pre">value_type</span></code> of <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> objects passed to <code class="xref py py-meth docutils literal"><span class="pre">IREXAntennaSystem.front_end()</span></code>.</li>
+<li>Preserve <code class="xref py py-attr docutils literal notranslate"><span class="pre">value_type</span></code> of <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> objects passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">IREXAntennaSystem.front_end()</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="version-1-4-2">
 <h2>Version 1.4.2<a class="headerlink" href="#version-1-4-2" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">Performance Improvements</p>
 <ul class="simple">
-<li>Improved performance of <code class="xref py py-class docutils literal"><span class="pre">FastAskaryanSignal</span></code> by reducing the size of the convolution.</li>
+<li>Improved performance of <code class="xref py py-class docutils literal notranslate"><span class="pre">FastAskaryanSignal</span></code> by reducing the size of the convolution.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul class="simple">
@@ -217,38 +243,38 @@
 <h2>Version 1.4.1<a class="headerlink" href="#version-1-4-1" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li>Improved ray tracing and defaulted to the almost completely analytical <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracer</span></code> and <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code> classes as <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a>.</li>
-<li>Added ray tracer into <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> to replace <code class="xref py py-class docutils literal"><span class="pre">PathFinder</span></code> completely.</li>
+<li>Improved ray tracing and defaulted to the almost completely analytical <code class="xref py py-class docutils literal notranslate"><span class="pre">SpecializedRayTracer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">SpecializedRayTracePath</span></code> classes as <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a>.</li>
+<li>Added ray tracer into <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a> to replace <code class="xref py py-class docutils literal notranslate"><span class="pre">PathFinder</span></code> completely.</li>
 </ul>
 </div>
 <div class="section" id="version-1-4-0">
 <h2>Version 1.4.0<a class="headerlink" href="#version-1-4-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Implemented full ray tracing in the <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal"><span class="pre">RayTracePath</span></code></a> classes.</li>
+<li>Implemented full ray tracing in the <a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a> classes.</li>
 </ul>
 </div>
 <div class="section" id="version-1-3-1">
 <h2>Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added diode bridge rectifier envelope circuit analytic model to <code class="xref py py-mod docutils literal"><span class="pre">irex.frontends</span></code> and made it the default analytic envelope model in <a href="#id1"><span class="problematic" id="id2">:classs:`IREXAntennaSystem`</span></a>.</li>
-<li>Added <code class="xref py py-attr docutils literal"><span class="pre">allow_reflection</span></code> attribute to <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal"><span class="pre">EventKernel</span></code></a> class to determine whether <code class="xref py py-class docutils literal"><span class="pre">ReflectedPathFinder</span></code> solutions should be allowed.</li>
+<li>Added diode bridge rectifier envelope circuit analytic model to <code class="xref py py-mod docutils literal notranslate"><span class="pre">irex.frontends</span></code> and made it the default analytic envelope model in <a href="#id1"><span class="problematic" id="id2">:classs:`IREXAntennaSystem`</span></a>.</li>
+<li>Added <code class="xref py py-attr docutils literal notranslate"><span class="pre">allow_reflection</span></code> attribute to <a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventKernel</span></code></a> class to determine whether <code class="xref py py-class docutils literal notranslate"><span class="pre">ReflectedPathFinder</span></code> solutions should be allowed.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li>Changed neutrino interaction model to include all neutrino and anti-neutrino interactions rather than only charged-current neutrino (relevant for <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.html#pyrex.ShadowGenerator" title="pyrex.ShadowGenerator"><code class="xref py py-class docutils literal"><span class="pre">ShadowGenerator</span></code></a> class).</li>
+<li>Changed neutrino interaction model to include all neutrino and anti-neutrino interactions rather than only charged-current neutrino (relevant for <code class="xref py py-class docutils literal notranslate"><span class="pre">ShadowGenerator</span></code> class).</li>
 </ul>
 </div>
 <div class="section" id="version-1-3-0">
 <h2>Version 1.3.0<a class="headerlink" href="#version-1-3-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added and implemented <code class="xref py py-class docutils literal"><span class="pre">ReflectedPathFinder</span></code> class for rays which undergo total internal reflection and subsequently reach an antenna.</li>
+<li>Added and implemented <code class="xref py py-class docutils literal notranslate"><span class="pre">ReflectedPathFinder</span></code> class for rays which undergo total internal reflection and subsequently reach an antenna.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li>Change <code class="xref py py-class docutils literal"><span class="pre">AksaryanSignal</span></code> angle to always be positive and remove &lt; 90 degree restriction (Alvarez-Muniz, Romero-Wolf, &amp; Zas paper suggests the algorithm should work for all angles).</li>
+<li>Change <code class="xref py py-class docutils literal notranslate"><span class="pre">AksaryanSignal</span></code> angle to always be positive and remove &lt; 90 degree restriction (Alvarez-Muniz, Romero-Wolf, &amp; Zas paper suggests the algorithm should work for all angles).</li>
 </ul>
 <p class="rubric">Performance Improvements</p>
 <ul class="simple">
@@ -259,32 +285,32 @@
 <h2>Version 1.2.1<a class="headerlink" href="#version-1-2-1" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added <a class="reference internal" href="docstrings/pyrex.Antenna.set_orientation.html#pyrex.Antenna.set_orientation" title="pyrex.Antenna.set_orientation"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.set_orientation()</span></code></a> method for setting the <code class="xref py py-attr docutils literal"><span class="pre">z_axis</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">x_axis</span></code> attributes appropriately.</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.Antenna.set_orientation.html#pyrex.Antenna.set_orientation" title="pyrex.Antenna.set_orientation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.set_orientation()</span></code></a> method for setting the <code class="xref py py-attr docutils literal notranslate"><span class="pre">z_axis</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">x_axis</span></code> attributes appropriately.</li>
 </ul>
 <p class="rubric">Bug Fixes</p>
 <ul class="simple">
-<li>Fixed bug where <code class="xref py py-meth docutils literal"><span class="pre">Antenna._convert_to_antenna_coordinates()</span></code> function was returning coordinates relative to (0,0,0) rather than the antenna’s position.</li>
+<li>Fixed bug where <code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna._convert_to_antenna_coordinates()</span></code> function was returning coordinates relative to (0,0,0) rather than the antenna’s position.</li>
 </ul>
 </div>
 <div class="section" id="version-1-2-0">
 <h2>Version 1.2.0<a class="headerlink" href="#version-1-2-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li>Changed <code class="xref py py-mod docutils literal"><span class="pre">custom</span></code> module to a package containing <code class="xref py py-mod docutils literal"><span class="pre">irex</span></code> module.</li>
-<li><code class="xref py py-mod docutils literal"><span class="pre">custom</span></code> package leverages “Implicit Namespace Package” structure to allow plug-in style additions to the package in either the user’s <code class="docutils literal"><span class="pre">~/.pyrex-custom/</span></code> directory or the <code class="docutils literal"><span class="pre">./pyrex-custom</span></code> directory.</li>
+<li>Changed <code class="xref py py-mod docutils literal notranslate"><span class="pre">custom</span></code> module to a package containing <code class="xref py py-mod docutils literal notranslate"><span class="pre">irex</span></code> module.</li>
+<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">custom</span></code> package leverages “Implicit Namespace Package” structure to allow plug-in style additions to the package in either the user’s <code class="docutils literal notranslate"><span class="pre">~/.pyrex-custom/</span></code> directory or the <code class="docutils literal notranslate"><span class="pre">./pyrex-custom</span></code> directory.</li>
 </ul>
 </div>
 <div class="section" id="version-1-1-2">
 <h2>Version 1.1.2<a class="headerlink" href="#version-1-1-2" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added <a class="reference internal" href="docstrings/pyrex.Signal.with_times.html#pyrex.Signal.with_times" title="pyrex.Signal.with_times"><code class="xref py py-meth docutils literal"><span class="pre">Signal.with_times()</span></code></a> method for interpolation/extrapolation of signals to different times.</li>
-<li>Added <a class="reference internal" href="docstrings/pyrex.Antenna.full_waveform.html#pyrex.Antenna.full_waveform" title="pyrex.Antenna.full_waveform"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.full_waveform()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Antenna.is_hit_during.html#pyrex.Antenna.is_hit_during" title="pyrex.Antenna.is_hit_during"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.is_hit_during()</span></code></a> methods for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.</li>
-<li>Added <code class="xref py py-meth docutils literal"><span class="pre">IREXAntenna.front_end_processing()</span></code> method for processing envelope, amplifying signal, and downsampling result (downsampling currently inactive).</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.Signal.with_times.html#pyrex.Signal.with_times" title="pyrex.Signal.with_times"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Signal.with_times()</span></code></a> method for interpolation/extrapolation of signals to different times.</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.Antenna.full_waveform.html#pyrex.Antenna.full_waveform" title="pyrex.Antenna.full_waveform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.full_waveform()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Antenna.is_hit_during.html#pyrex.Antenna.is_hit_during" title="pyrex.Antenna.is_hit_during"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.is_hit_during()</span></code></a> methods for calculation of waveform over arbitrary time array and whether said waveform triggers the antenna, respectively.</li>
+<li>Added <code class="xref py py-meth docutils literal notranslate"><span class="pre">IREXAntenna.front_end_processing()</span></code> method for processing envelope, amplifying signal, and downsampling result (downsampling currently inactive).</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul>
-<li><p class="first">Change <a class="reference internal" href="docstrings/pyrex.Antenna.make_noise.html#pyrex.Antenna.make_noise" title="pyrex.Antenna.make_noise"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.make_noise()</span></code></a> to use a single master noise object and use <a class="reference internal" href="docstrings/pyrex.ThermalNoise.with_times.html#pyrex.ThermalNoise.with_times" title="pyrex.ThermalNoise.with_times"><code class="xref py py-meth docutils literal"><span class="pre">ThermalNoise.with_times()</span></code></a> to calculate noise at different times.</p>
+<li><p class="first">Change <a class="reference internal" href="docstrings/pyrex.Antenna.make_noise.html#pyrex.Antenna.make_noise" title="pyrex.Antenna.make_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.make_noise()</span></code></a> to use a single master noise object and use <a class="reference internal" href="docstrings/pyrex.ThermalNoise.with_times.html#pyrex.ThermalNoise.with_times" title="pyrex.ThermalNoise.with_times"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ThermalNoise.with_times()</span></code></a> to calculate noise at different times.</p>
 <blockquote>
 <div><ul class="simple">
 <li>To ensure noise is not obviously periodic (for &lt;100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.</li>
@@ -297,28 +323,28 @@
 <h2>Version 1.1.1<a class="headerlink" href="#version-1-1-1" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li>Moved <code class="xref py py-obj docutils literal"><span class="pre">ValueTypes</span></code> inside <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> class. Now access as <code class="xref py py-attr docutils literal"><span class="pre">Signal.ValueTypes.voltage</span></code>, etc.</li>
-<li>Changed signal envelope calculation in custom <code class="xref py py-class docutils literal"><span class="pre">IREXAntenna</span></code> from hilbert transform to a basic model. Spice model also available, but slower.</li>
+<li>Moved <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueTypes</span></code> inside <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> class. Now access as <code class="xref py py-attr docutils literal notranslate"><span class="pre">Signal.ValueTypes.voltage</span></code>, etc.</li>
+<li>Changed signal envelope calculation in custom <code class="xref py py-class docutils literal notranslate"><span class="pre">IREXAntenna</span></code> from hilbert transform to a basic model. Spice model also available, but slower.</li>
 </ul>
 </div>
 <div class="section" id="version-1-1-0">
 <h2>Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul>
-<li><p class="first">Added <a class="reference internal" href="docstrings/pyrex.Antenna.directional_gain.html#pyrex.Antenna.directional_gain" title="pyrex.Antenna.directional_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.directional_gain()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Antenna.polarization_gain.html#pyrex.Antenna.polarization_gain" title="pyrex.Antenna.polarization_gain"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.polarization_gain()</span></code></a> methods to base <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a>.</p>
+<li><p class="first">Added <a class="reference internal" href="docstrings/pyrex.Antenna.directional_gain.html#pyrex.Antenna.directional_gain" title="pyrex.Antenna.directional_gain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.directional_gain()</span></code></a> and <a class="reference internal" href="docstrings/pyrex.Antenna.polarization_gain.html#pyrex.Antenna.polarization_gain" title="pyrex.Antenna.polarization_gain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.polarization_gain()</span></code></a> methods to base <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a>.</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference internal" href="docstrings/pyrex.Antenna.receive.html#pyrex.Antenna.receive" title="pyrex.Antenna.receive"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.receive()</span></code></a> method should no longer be overwritten in most cases.</li>
-<li><a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> now has orientation defined by <code class="xref py py-attr docutils literal"><span class="pre">z_axis</span></code> and <code class="xref py py-class docutils literal"><span class="pre">x_axis</span></code>.</li>
-<li><code class="xref py py-attr docutils literal"><span class="pre">antenna_factor</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">efficiency</span></code> attributes added to <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> for more flexibility.</li>
+<li><a class="reference internal" href="docstrings/pyrex.Antenna.receive.html#pyrex.Antenna.receive" title="pyrex.Antenna.receive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.receive()</span></code></a> method should no longer be overwritten in most cases.</li>
+<li><a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> now has orientation defined by <code class="xref py py-attr docutils literal notranslate"><span class="pre">z_axis</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">x_axis</span></code>.</li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">antenna_factor</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">efficiency</span></code> attributes added to <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> for more flexibility.</li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">Added <code class="xref py py-attr docutils literal"><span class="pre">value_type</span></code> attribute to <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> class and derived classes.</p>
+<li><p class="first">Added <code class="xref py py-attr docutils literal notranslate"><span class="pre">value_type</span></code> attribute to <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> class and derived classes.</p>
 <blockquote>
 <div><ul class="simple">
-<li>Current value types are <code class="xref py py-attr docutils literal"><span class="pre">ValueTypes.undefined</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">ValueTypes.voltage</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">ValueTypes.field</span></code>, and <code class="xref py py-attr docutils literal"><span class="pre">ValueTypes.power</span></code>.</li>
-<li><a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> objects now must have the same <code class="xref py py-attr docutils literal"><span class="pre">value_type</span></code> to be added (though those with <code class="xref py py-attr docutils literal"><span class="pre">ValueTypes.undefined</span></code> can be coerced).</li>
+<li>Current value types are <code class="xref py py-attr docutils literal notranslate"><span class="pre">ValueTypes.undefined</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">ValueTypes.voltage</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">ValueTypes.field</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">ValueTypes.power</span></code>.</li>
+<li><a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> objects now must have the same <code class="xref py py-attr docutils literal notranslate"><span class="pre">value_type</span></code> to be added (though those with <code class="xref py py-attr docutils literal notranslate"><span class="pre">ValueTypes.undefined</span></code> can be coerced).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -326,57 +352,57 @@
 <p class="rubric">Changes</p>
 <ul class="simple">
 <li>Made units consistent across PyREx.</li>
-<li>Added ability to define <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> noise by RMS voltage rather than temperature and resistance if desired.</li>
-<li>Allow <a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-class docutils literal"><span class="pre">DipoleAntenna</span></code></a> to guess at <code class="xref py py-attr docutils literal"><span class="pre">effective_height</span></code> if not specified.</li>
+<li>Added ability to define <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> noise by RMS voltage rather than temperature and resistance if desired.</li>
+<li>Allow <a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">DipoleAntenna</span></code></a> to guess at <code class="xref py py-attr docutils literal notranslate"><span class="pre">effective_height</span></code> if not specified.</li>
 </ul>
 <p class="rubric">Performance Improvements</p>
 <ul class="simple">
-<li>Increase speed of <code class="xref py py-meth docutils literal"><span class="pre">IceModel.__atten_coeffs()</span></code> method, resulting in increased speed of attenuation length calculations.</li>
+<li>Increase speed of <code class="xref py py-meth docutils literal notranslate"><span class="pre">IceModel.__atten_coeffs()</span></code> method, resulting in increased speed of attenuation length calculations.</li>
 </ul>
 </div>
 <div class="section" id="version-1-0-3">
 <h2>Version 1.0.3<a class="headerlink" href="#version-1-0-3" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added <code class="xref py py-mod docutils literal"><span class="pre">custom</span></code> module to contain classes and functions specific to the IREX project.</li>
+<li>Added <code class="xref py py-mod docutils literal notranslate"><span class="pre">custom</span></code> module to contain classes and functions specific to the IREX project.</li>
 </ul>
 </div>
 <div class="section" id="version-1-0-2">
 <h2>Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">New Features</p>
 <ul class="simple">
-<li>Added <a class="reference internal" href="docstrings/pyrex.Antenna.make_noise.html#pyrex.Antenna.make_noise" title="pyrex.Antenna.make_noise"><code class="xref py py-meth docutils literal"><span class="pre">Antenna.make_noise()</span></code></a> method so custom antennas can use their own noise functions.</li>
+<li>Added <a class="reference internal" href="docstrings/pyrex.Antenna.make_noise.html#pyrex.Antenna.make_noise" title="pyrex.Antenna.make_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.make_noise()</span></code></a> method so custom antennas can use their own noise functions.</li>
 </ul>
 <p class="rubric">Changes</p>
 <ul>
-<li><p class="first">Allow passing of numpy arrays of depths and frequencies into most <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal"><span class="pre">IceModel</span></code></a> methods.</p>
+<li><p class="first">Allow passing of numpy arrays of depths and frequencies into most <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">IceModel</span></code></a> methods.</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference internal" href="docstrings/pyrex.IceModel.gradient.html#pyrex.IceModel.gradient" title="pyrex.IceModel.gradient"><code class="xref py py-meth docutils literal"><span class="pre">IceModel.gradient()</span></code></a> must still be calculated at individual depths.</li>
+<li><a class="reference internal" href="docstrings/pyrex.IceModel.gradient.html#pyrex.IceModel.gradient" title="pyrex.IceModel.gradient"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IceModel.gradient()</span></code></a> must still be calculated at individual depths.</li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">Added ability to specify RMS voltage of <a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal"><span class="pre">ThermalNoise</span></code></a> without providing temperature and resistance.</p>
+<li><p class="first">Added ability to specify RMS voltage of <a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalNoise</span></code></a> without providing temperature and resistance.</p>
 </li>
-<li><p class="first">Removed (deprecated) <code class="xref py py-meth docutils literal"><span class="pre">Antenna.isHit()</span></code>.</p>
+<li><p class="first">Removed (deprecated) <code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.isHit()</span></code>.</p>
 </li>
 </ul>
 <p class="rubric">Performance Improvements</p>
 <ul class="simple">
-<li>Allowing for <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal"><span class="pre">IceModel</span></code></a> to calculate many attenuation lengths at once improves speed of <code class="xref py py-meth docutils literal"><span class="pre">PathFinder.propagate()</span></code>.</li>
-<li>Improved speed of <code class="xref py py-meth docutils literal"><span class="pre">PathFinder.time_of_flight()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">PathFinder.attenuation()</span></code> (and improved accuracy to boot).</li>
+<li>Allowing for <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">IceModel</span></code></a> to calculate many attenuation lengths at once improves speed of <code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.propagate()</span></code>.</li>
+<li>Improved speed of <code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.time_of_flight()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.attenuation()</span></code> (and improved accuracy to boot).</li>
 </ul>
 </div>
 <div class="section" id="version-1-0-1">
 <h2>Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Permalink to this headline">¶</a></h2>
 <p class="rubric">Changes</p>
 <ul class="simple">
-<li>Changed <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> to not require a temperature and frequency range if no noise is produced.</li>
+<li>Changed <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> to not require a temperature and frequency range if no noise is produced.</li>
 </ul>
 <p class="rubric">Bug Fixes</p>
 <ul class="simple">
-<li>Fixed bugs in <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal"><span class="pre">AskaryanSignal</span></code></a> that caused the convolution to fail.</li>
-<li>Fixed bugs resulting from converting <a class="reference internal" href="docstrings/pyrex.IceModel.temperature.html#pyrex.IceModel.temperature" title="pyrex.IceModel.temperature"><code class="xref py py-meth docutils literal"><span class="pre">IceModel.temperature()</span></code></a> from Celsius to Kelvin.</li>
+<li>Fixed bugs in <a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">AskaryanSignal</span></code></a> that caused the convolution to fail.</li>
+<li>Fixed bugs resulting from converting <a class="reference internal" href="docstrings/pyrex.IceModel.temperature.html#pyrex.IceModel.temperature" title="pyrex.IceModel.temperature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IceModel.temperature()</span></code></a> from Celsius to Kelvin.</li>
 </ul>
 </div>
 <div class="section" id="version-1-0-0">
@@ -386,33 +412,33 @@
 </li>
 <li><p class="first">Added all signal classes to produce full-waveform Askaryan pulses and thermal noise.</p>
 </li>
-<li><p class="first">Changed <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> class to <a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-class docutils literal"><span class="pre">DipoleAntenna</span></code></a> to allow <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal"><span class="pre">Antenna</span></code></a> to be a base class.</p>
+<li><p class="first">Changed <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> class to <a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">DipoleAntenna</span></code></a> to allow <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> to be a base class.</p>
 </li>
-<li><p class="first">Changed <code class="xref py py-meth docutils literal"><span class="pre">Antenna.isHit()</span></code> method to <code class="xref py py-attr docutils literal"><span class="pre">Antenna.is_hit</span></code> property.</p>
+<li><p class="first">Changed <code class="xref py py-meth docutils literal notranslate"><span class="pre">Antenna.isHit()</span></code> method to <a class="reference internal" href="docstrings/pyrex.Antenna.is_hit.html#pyrex.Antenna.is_hit" title="pyrex.Antenna.is_hit"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Antenna.is_hit</span></code></a> property.</p>
 </li>
-<li><p class="first">Introduced <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal"><span class="pre">IceModel</span></code></a> alias for <code class="xref py py-class docutils literal"><span class="pre">AntarcticIce</span></code> (or any future preferred ice model).</p>
+<li><p class="first">Introduced <a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">IceModel</span></code></a> alias for <code class="xref py py-class docutils literal notranslate"><span class="pre">AntarcticIce</span></code> (or any future preferred ice model).</p>
 </li>
-<li><p class="first">Moved <code class="xref py py-meth docutils literal"><span class="pre">AntarcticIce.attenuationLengthMN()</span></code> to its own <code class="xref py py-class docutils literal"><span class="pre">NewcombIce</span></code> class inheriting from <code class="xref py py-class docutils literal"><span class="pre">AntarcticIce</span></code>.</p>
+<li><p class="first">Moved <code class="xref py py-meth docutils literal notranslate"><span class="pre">AntarcticIce.attenuationLengthMN()</span></code> to its own <code class="xref py py-class docutils literal notranslate"><span class="pre">NewcombIce</span></code> class inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">AntarcticIce</span></code>.</p>
 </li>
-<li><p class="first">Added <code class="xref py py-meth docutils literal"><span class="pre">PathFinder.propagate()</span></code> to propagate a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal"><span class="pre">Signal</span></code></a> object in a customizable way.</p>
+<li><p class="first">Added <code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.propagate()</span></code> to propagate a <a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> object in a customizable way.</p>
 </li>
 <li><p class="first">Changed naming conventions to be more consistent, verbose, and “pythonic”:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="xref py py-meth docutils literal"><span class="pre">AntarcticIce.attenuationLength()</span></code> becomes <code class="xref py py-meth docutils literal"><span class="pre">AntarcticIce.attenuation_length()</span></code>.</li>
-<li>In <a class="reference internal" href="api/earth_model.html#module-pyrex.earth_model" title="pyrex.earth_model"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.earth_model</span></code></a>, <code class="xref py py-const docutils literal"><span class="pre">RE</span></code> becomes <code class="xref py py-const docutils literal"><span class="pre">EARTH_RADIUS</span></code>.</li>
-<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">neutrino_interaction</span></code> becomes <a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-class docutils literal"><span class="pre">NeutrinoInteraction</span></code></a>.</li>
-<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-const docutils literal"><span class="pre">NA</span></code> becomes <code class="xref py py-const docutils literal"><span class="pre">AVOGADRO_NUMBER</span></code>.</li>
-<li><a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-class docutils literal"><span class="pre">particle</span></code></a> class becomes <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal"><span class="pre">Particle</span></code></a> namedtuple.</li>
-<li><code class="xref py py-attr docutils literal"><span class="pre">Particle.vtx</span></code> becomes <code class="xref py py-attr docutils literal"><span class="pre">Particle.vertex</span></code>.</li>
-<li><code class="xref py py-attr docutils literal"><span class="pre">Particle.dir</span></code> becomes <code class="xref py py-attr docutils literal"><span class="pre">Particle.direction</span></code>.</li>
-<li><code class="xref py py-attr docutils literal"><span class="pre">Particle.E</span></code> becomes <code class="xref py py-attr docutils literal"><span class="pre">Particle.energy</span></code>.</li>
-<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-func docutils literal"><span class="pre">next_direction()</span></code> becomes <code class="xref py py-func docutils literal"><span class="pre">random_direction()</span></code>.</li>
-<li><code class="xref py py-class docutils literal"><span class="pre">shadow_generator</span></code> becomes <a class="reference internal" href="docstrings/pyrex.ShadowGenerator.html#pyrex.ShadowGenerator" title="pyrex.ShadowGenerator"><code class="xref py py-class docutils literal"><span class="pre">ShadowGenerator</span></code></a>.</li>
-<li><code class="xref py py-meth docutils literal"><span class="pre">PathFinder.exists()</span></code> method becomes <code class="xref py py-attr docutils literal"><span class="pre">PathFinder.exists</span></code> property.</li>
-<li><code class="xref py py-meth docutils literal"><span class="pre">PathFinder.getEmittedRay()</span></code> method becomes <code class="xref py py-attr docutils literal"><span class="pre">PathFinder.emitted_ray</span></code> property.</li>
-<li><code class="xref py py-meth docutils literal"><span class="pre">PathFinder.getPathLength()</span></code> method becomes <code class="xref py py-attr docutils literal"><span class="pre">PathFinder.path_length</span></code> property.</li>
-<li><code class="xref py py-meth docutils literal"><span class="pre">PathFinder.propagateRay()</span></code> split into <code class="xref py py-meth docutils literal"><span class="pre">PathFinder.time_of_flight()</span></code> (with corresponding <code class="xref py py-attr docutils literal"><span class="pre">PathFinder.tof</span></code> property) and <code class="xref py py-meth docutils literal"><span class="pre">PathFinder.attenuation()</span></code>.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">AntarcticIce.attenuationLength()</span></code> becomes <code class="xref py py-meth docutils literal notranslate"><span class="pre">AntarcticIce.attenuation_length()</span></code>.</li>
+<li>In <a class="reference internal" href="api/earth_model.html#module-pyrex.earth_model" title="pyrex.earth_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.earth_model</span></code></a>, <code class="xref py py-const docutils literal notranslate"><span class="pre">RE</span></code> becomes <code class="xref py py-const docutils literal notranslate"><span class="pre">EARTH_RADIUS</span></code>.</li>
+<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">neutrino_interaction</span></code> becomes <a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeutrinoInteraction</span></code></a>.</li>
+<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-const docutils literal notranslate"><span class="pre">NA</span></code> becomes <code class="xref py py-const docutils literal notranslate"><span class="pre">AVOGADRO_NUMBER</span></code>.</li>
+<li><a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">particle</span></code></a> class becomes <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a> namedtuple.</li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.vtx</span></code> becomes <code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.vertex</span></code>.</li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.dir</span></code> becomes <code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.direction</span></code>.</li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.E</span></code> becomes <code class="xref py py-attr docutils literal notranslate"><span class="pre">Particle.energy</span></code>.</li>
+<li>In <a class="reference internal" href="api/particle.html#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.particle</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">next_direction()</span></code> becomes <code class="xref py py-func docutils literal notranslate"><span class="pre">random_direction()</span></code>.</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">shadow_generator</span></code> becomes <code class="xref py py-class docutils literal notranslate"><span class="pre">ShadowGenerator</span></code>.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.exists()</span></code> method becomes <code class="xref py py-attr docutils literal notranslate"><span class="pre">PathFinder.exists</span></code> property.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.getEmittedRay()</span></code> method becomes <code class="xref py py-attr docutils literal notranslate"><span class="pre">PathFinder.emitted_ray</span></code> property.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.getPathLength()</span></code> method becomes <code class="xref py py-attr docutils literal notranslate"><span class="pre">PathFinder.path_length</span></code> property.</li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.propagateRay()</span></code> split into <code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.time_of_flight()</span></code> (with corresponding <code class="xref py py-attr docutils literal notranslate"><span class="pre">PathFinder.tof</span></code> property) and <code class="xref py py-meth docutils literal notranslate"><span class="pre">PathFinder.attenuation()</span></code>.</li>
 </ul>
 </div></blockquote>
 </li>
@@ -436,7 +462,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -472,6 +498,7 @@ Version 1.8.1</p>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">PyREx API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Version History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-8-2">Version 1.8.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-8-1">Version 1.8.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-8-0">Version 1.8.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-7-0">Version 1.7.0</a></li>
@@ -525,7 +552,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

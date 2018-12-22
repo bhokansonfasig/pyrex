@@ -1,5 +1,5 @@
-pyrex\.signals\.ARVZAskaryanSignal
-==================================
+pyrex.signals.ARVZAskaryanSignal
+================================
 
 .. currentmodule:: pyrex.signals
 
@@ -23,4 +23,15 @@ pyrex\.signals\.ARVZAskaryanSignal
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ARVZAskaryanSignal.dt
+         ARVZAskaryanSignal.envelope
+         ARVZAskaryanSignal.frequencies
+         ARVZAskaryanSignal.spectrum
+         ARVZAskaryanSignal.value_type
+         ARVZAskaryanSignal.vector_potential
 

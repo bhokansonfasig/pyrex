@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.ARIANNAAntennaSystem\.interpolate\_filter
-==========================================================================
+pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.interpolate\_filter
+=====================================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

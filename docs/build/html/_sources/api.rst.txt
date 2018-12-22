@@ -33,7 +33,10 @@ PyREx Package Imports
     NeutrinoInteraction
     Particle
     Event
-    ShadowGenerator
+    CylindricalGenerator
+    RectangularGenerator
+    CylindricalShadowGenerator
+    RectangularShadowGenerator
     ListGenerator
     FileGenerator
     RayTracer

@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.ARIANNAAntennaSystem\.clear
-============================================================
+pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.clear
+=======================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

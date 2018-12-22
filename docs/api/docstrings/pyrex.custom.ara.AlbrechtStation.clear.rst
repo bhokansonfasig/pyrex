@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.AlbrechtStation\.clear
-==========================================
+pyrex.custom.ara.AlbrechtStation.clear
+======================================
 
 .. currentmodule:: pyrex.custom.ara
 

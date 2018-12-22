@@ -1,5 +1,5 @@
-pyrex\.Event\.get\_parent
-=========================
+pyrex.Event.get\_parent
+=======================
 
 .. currentmodule:: pyrex
 

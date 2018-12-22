@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.VpolAntenna\.make\_noise
-============================================
+pyrex.custom.ara.VpolAntenna.make\_noise
+========================================
 
 .. currentmodule:: pyrex.custom.ara
 

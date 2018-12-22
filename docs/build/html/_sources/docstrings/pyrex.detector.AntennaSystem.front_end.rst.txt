@@ -1,5 +1,5 @@
-pyrex\.detector\.AntennaSystem\.front\_end
-==========================================
+pyrex.detector.AntennaSystem.front\_end
+=======================================
 
 .. currentmodule:: pyrex.detector
 

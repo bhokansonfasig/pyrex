@@ -1,5 +1,5 @@
-pyrex\.generation\.FileGenerator\.create\_event
-===============================================
+pyrex.generation.FileGenerator.create\_event
+============================================
 
 .. currentmodule:: pyrex.generation
 

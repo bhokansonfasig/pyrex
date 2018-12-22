@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.DipoleTester\.set\_orientation
-============================================================
+pyrex.custom.irex.antenna.DipoleTester.set\_orientation
+=======================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

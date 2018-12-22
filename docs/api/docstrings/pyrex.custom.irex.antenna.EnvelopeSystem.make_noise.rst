@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeSystem\.make\_noise
-=========================================================
+pyrex.custom.irex.antenna.EnvelopeSystem.make\_noise
+====================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.HpolAntenna\.make\_noise
-=====================================================
+pyrex.custom.ara.antenna.HpolAntenna.make\_noise
+================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

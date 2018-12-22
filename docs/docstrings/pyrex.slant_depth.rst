@@ -1,5 +1,5 @@
-pyrex\.slant\_depth
-===================
+pyrex.slant\_depth
+==================
 
 .. currentmodule:: pyrex
 

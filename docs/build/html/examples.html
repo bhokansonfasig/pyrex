@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Example Code &mdash; PyREx 1.8.1 documentation</title>
+    <title>Example Code &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="index.html" >
     <link rel="next" title="Contributing to PyREx" href="contributing.html" >
     <link rel="prev" title="Custom Sub-Package" href="customize.html" > 
   </head>
@@ -51,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -92,7 +93,7 @@
 <div class="section" id="plot-detector-geometry">
 <h2>Plot Detector Geometry<a class="headerlink" href="#plot-detector-geometry" title="Permalink to this headline">¶</a></h2>
 <p>In this example we will make a few simple plots of the geometry of a detector object, handy for presentations or for visualizing your work. This code can be run from the Plot Detector notebook in the examples directory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
@@ -187,7 +188,7 @@
 <div class="section" id="askaryan-frequency-content">
 <h2>Askaryan Frequency Content<a class="headerlink" href="#askaryan-frequency-content" title="Permalink to this headline">¶</a></h2>
 <p>In this example we explore how the freqeuncy spectrum of an Askaryan pulse changes as a function of the off-cone angle (i.e. the angular distance between the Cherenkov angle and the observation angle). This code can be run from the Frequency Content notebook in the examples directory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
 
@@ -253,7 +254,7 @@
 <p class="first admonition-title">Warning</p>
 <p class="last">In order to finish reasonably quickly, the number of events thrown in this example is low. This means that there are likely not enough events to accurately represent the effective area of the detector. For an accurate measurement, the number of events must be increased, but this will need much more time to run in that case.</p>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
 <span class="kn">import</span> <span class="nn">pyrex.custom.ara</span> <span class="kn">as</span> <span class="nn">ara</span>
@@ -273,7 +274,7 @@
 
 <span class="c1"># Now set up a neutrino generator for each energy. We&#39;ll use unrealistically</span>
 <span class="c1"># small volumes to increase the chance of triggering.</span>
-<span class="n">generators</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">ShadowGenerator</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">)</span>
+<span class="n">generators</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">CylindricalShadowGenerator</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">)</span>
               <span class="k">for</span> <span class="n">energy</span> <span class="ow">in</span> <span class="n">energies</span><span class="p">]</span>
 
 <span class="c1"># And then set up the event kernels for each energy. Let&#39;s use the ArasimIce</span>
@@ -357,7 +358,7 @@
 <div class="section" id="examine-a-single-event">
 <h2>Examine a Single Event<a class="headerlink" href="#examine-a-single-event" title="Permalink to this headline">¶</a></h2>
 <p>In this example we will generate a single event with a given vertex, direction, and energy, and then we’ll examine the event by plotting the waveforms. This is typically useful for auditing events from a larger simulation. This code can be run from the Examine Event notebook in the examples directory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
 <span class="kn">import</span> <span class="nn">pyrex.custom.ara</span> <span class="kn">as</span> <span class="nn">ara</span>
@@ -494,7 +495,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -567,7 +568,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

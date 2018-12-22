@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.RegularStation\.triggered
-=============================================
+pyrex.custom.ara.RegularStation.triggered
+=========================================
 
 .. currentmodule:: pyrex.custom.ara
 

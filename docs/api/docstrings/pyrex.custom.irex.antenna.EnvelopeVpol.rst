@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeVpol
-==========================================
+pyrex.custom.irex.antenna.EnvelopeVpol
+======================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 
@@ -28,4 +28,15 @@ pyrex\.custom\.irex\.antenna\.EnvelopeVpol
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         EnvelopeVpol.all_waveforms
+         EnvelopeVpol.is_hit
+         EnvelopeVpol.is_hit_mc_truth
+         EnvelopeVpol.lead_in_time
+         EnvelopeVpol.signals
+         EnvelopeVpol.waveforms
 

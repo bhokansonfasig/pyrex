@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.NeutrinoInteraction.choose_interaction &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.NeutrinoInteraction.choose_interaction &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -81,29 +82,30 @@
 <dl class="method">
 <dt id="pyrex.NeutrinoInteraction.choose_interaction">
 <code class="descclassname">NeutrinoInteraction.</code><code class="descname">choose_interaction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.NeutrinoInteraction.choose_interaction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Choose an interaction type for the <code class="docutils literal"><span class="pre">particle</span></code> attribute.</p>
+<dd><p>Choose an interaction type for the <code class="docutils literal notranslate"><span class="pre">particle</span></code> attribute.</p>
 <p>Randomly generates the interaction type (charged-current or
 neutral-current) according to the cross-section ratio.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Interaction.Type</p>
-<blockquote class="last">
-<div><p>Enum value for the interaction type for the particle.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Interaction.Type</strong></dt>
+<dd><p class="first last">Enum value for the interaction type for the particle.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
 <p>The interaction type choice is based on the ratio equation in the CTW
-2011 paper <a class="reference internal" href="#r2929" id="id1">[R2929]</a> (Equation 8).</p>
+2011 paper <a class="reference internal" href="#rcf1da69eb94e-1" id="id1">[1]</a> (Equation 8).</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r2929" rules="none">
+<table class="docutils citation" frame="void" id="rcf1da69eb94e-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R2929]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> A. Connolly et al, “Calculation of High Energy Neutrino-Nucleon
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> A. Connolly et al, “Calculation of High Energy Neutrino-Nucleon
 Cross Sections and Uncertainties Using the MSTW Parton Distribution
 Functions and Implications for Future Experiments.” Physical Review
 D <strong>83</strong>, 113009 (2011).</td></tr>
@@ -124,7 +126,7 @@ D <strong>83</strong>, 113009 (2011).</td></tr>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -191,7 +193,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

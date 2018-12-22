@@ -1,5 +1,5 @@
-pyrex\.particle\.Event\.add\_children
-=====================================
+pyrex.particle.Event.add\_children
+==================================
 
 .. currentmodule:: pyrex.particle
 

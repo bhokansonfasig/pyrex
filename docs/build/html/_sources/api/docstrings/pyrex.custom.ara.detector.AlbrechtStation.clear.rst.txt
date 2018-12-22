@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.AlbrechtStation\.clear
-====================================================
+pyrex.custom.ara.detector.AlbrechtStation.clear
+===============================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 

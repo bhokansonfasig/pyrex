@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.ReflectedPathFinder\.attenuation
-=====================================================
+pyrex.ray\_tracing.ReflectedPathFinder.attenuation
+==================================================
 
 .. currentmodule:: pyrex.ray_tracing
 

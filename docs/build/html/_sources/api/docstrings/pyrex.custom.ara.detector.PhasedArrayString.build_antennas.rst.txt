@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.PhasedArrayString\.build\_antennas
-================================================================
+pyrex.custom.ara.detector.PhasedArrayString.build\_antennas
+===========================================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 

@@ -1,5 +1,5 @@
-pyrex\.ice\_model\.IceModel\.gradient
-=====================================
+pyrex.ice\_model.IceModel.gradient
+==================================
 
 .. currentmodule:: pyrex.ice_model
 

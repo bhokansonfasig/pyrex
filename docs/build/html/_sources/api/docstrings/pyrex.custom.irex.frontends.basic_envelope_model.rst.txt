@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.frontends\.basic\_envelope\_model
-======================================================
+pyrex.custom.irex.frontends.basic\_envelope\_model
+==================================================
 
 .. currentmodule:: pyrex.custom.irex.frontends
 

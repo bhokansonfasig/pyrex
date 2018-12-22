@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Writer\.close
-============================
+pyrex.io.HDF5Writer.close
+=========================
 
 .. currentmodule:: pyrex.io
 

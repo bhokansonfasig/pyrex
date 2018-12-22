@@ -1,5 +1,5 @@
-pyrex\.particle\.Event
-======================
+pyrex.particle.Event
+====================
 
 .. currentmodule:: pyrex.particle
 

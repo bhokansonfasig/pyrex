@@ -1,5 +1,5 @@
-pyrex\.generation\.ShadowGenerator\.create\_event
-=================================================
+pyrex.generation.ShadowGenerator.create\_event
+==============================================
 
 .. currentmodule:: pyrex.generation
 

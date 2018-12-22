@@ -1,5 +1,5 @@
-pyrex\.detector\.Detector\.set\_positions
-=========================================
+pyrex.detector.Detector.set\_positions
+======================================
 
 .. currentmodule:: pyrex.detector
 

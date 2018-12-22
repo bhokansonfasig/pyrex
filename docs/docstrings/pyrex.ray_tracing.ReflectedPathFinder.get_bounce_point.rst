@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.ReflectedPathFinder\.get\_bounce\_point
-============================================================
+pyrex.ray\_tracing.ReflectedPathFinder.get\_bounce\_point
+=========================================================
 
 .. currentmodule:: pyrex.ray_tracing
 

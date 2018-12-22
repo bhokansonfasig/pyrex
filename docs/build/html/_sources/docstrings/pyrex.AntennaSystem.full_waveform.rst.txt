@@ -1,5 +1,5 @@
-pyrex\.AntennaSystem\.full\_waveform
-====================================
+pyrex.AntennaSystem.full\_waveform
+==================================
 
 .. currentmodule:: pyrex
 

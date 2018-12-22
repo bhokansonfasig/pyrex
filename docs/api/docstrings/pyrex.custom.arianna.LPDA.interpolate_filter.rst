@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.LPDA\.interpolate\_filter
-=================================================
+pyrex.custom.arianna.LPDA.interpolate\_filter
+=============================================
 
 .. currentmodule:: pyrex.custom.arianna
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.LPDA\.make\_noise
-=========================================
+pyrex.custom.arianna.LPDA.make\_noise
+=====================================
 
 .. currentmodule:: pyrex.custom.arianna
 
