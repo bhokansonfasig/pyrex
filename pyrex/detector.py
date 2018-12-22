@@ -7,7 +7,7 @@ functions like front-end electronics chains and trigger systems.
 
 """
 
-import collections
+from collections.abc import Iterable
 import inspect
 import logging
 import numpy as np
@@ -442,24 +442,57 @@ class Detector:
         if not self._is_base_subset:
             self.antenna_positions = [sub.antenna_positions
                                       for sub in self.subsets]
-        if self.test_antenna_positions:
-            self._test_positions()
 
-        # For a detector comprised of subsets which hasn't overwritten
-        # build_antennas, mirror the function signature of build_antennas from
-        # the base subset
-        if (not self._is_base_subset and
-                self.build_antennas.__func__==Detector.build_antennas):
-            self.build_antennas = mirror_func(self.subsets[0].build_antennas,
-                                              Detector.build_antennas,
-                                              self=self)
+        self._test_positions()
+        self._mirror_build_function()
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, mirror_set_positions=True, **kwargs):
+        """
+        Automates function mirroring when subclasses are created.
+
+        When this class is subclassed, set the subclass's ``__init__`` method
+        to mirror its ``set_positions`` method (since all ``__init__``
+        arguments are passed to ``set_positions`` anyway).
+
+        Parameters
+        ----------
+        mirror_set_positions : boolean, optional
+            Whether or not to mirror the set_positions method.
+
+        Warnings
+        --------
+        If `mirror_set_positions` is ``True``, the ``__init__`` method of the
+        class is replaced by ``super().__init__``.
+
+        """
         super().__init_subclass__(**kwargs)
-        # When this class is sublassed, set the subclass's __init__ to mirror
-        # its set_positions function (since all __init__ arguments are passed
-        # to set_positions anyway)
-        cls.__init__ = mirror_func(cls.set_positions, Detector.__init__)
+        if mirror_set_positions:
+            cls.__init__ = mirror_func(cls.set_positions, Detector.__init__)
+
+    def __add__(self, other):
+        """
+        Adds two detectors into a ``CombinedDetector``.
+
+        Supports addition of ``Detector`` objects, ``Antenna``-like objects,
+        or lists of ``Antenna``-like objects.
+
+        """
+        return CombinedDetector(self, other)
+
+    def __radd__(self, other):
+        """
+        Allows for adding ``Detector`` object to 0.
+
+        Since the python ``sum`` function starts by adding the first element
+        to 0, to use ``sum`` with ``Detector`` objects we need to be able to
+        add a ``Detector`` object to 0. If adding to anything else, perform the
+        usual addition.
+
+        """
+        if other==0:
+            return self
+        else:
+            return CombinedDetector(other, self)
 
     @property
     def _metadata(self):
@@ -505,14 +538,33 @@ class Detector:
                 antenna_class = kwargs["antenna_class"]
                 kwargs.pop("antenna_class")
             else:
+                if len(args)<1:
+                    raise TypeError("build_antennas() missing 1 reqiured "+
+                                    "positional argument: 'antenna_class'")
                 antenna_class = args[0]
                 args = args[1:]
             self.subsets = []
             for p in self.antenna_positions:
                 self.subsets.append(antenna_class(position=p, *args, **kwargs))
         else:
-            for sub in self.subsets:
-                sub.build_antennas(*args, **kwargs)
+            if self._subset_builds_match:
+                # If the signatures match, passing down args is fine
+                for sub in self.subsets:
+                    if hasattr(sub, 'build_antennas'):
+                        sub.build_antennas(*args, **kwargs)
+            else:
+                # If the signatures don't match, only pass down kwargs as needed
+                if len(args)>0:
+                    raise TypeError("Detector build_antennas cannot handle "+
+                                    "positional arguments when its subsets "+
+                                    "aren't identical")
+                for sub in self.subsets:
+                    if hasattr(sub, 'build_antennas'):
+                        sig = inspect.signature(sub.build_antennas)
+                        keys = sig.parameters.keys()
+                        sub_kwargs = {key: val for key, val in kwargs.items()
+                                      if key in keys}
+                        sub.build_antennas(**sub_kwargs)
 
     def triggered(self, *args, require_mc_truth=False, **kwargs):
         """
@@ -569,8 +621,21 @@ class Detector:
 
     @property
     def _is_base_subset(self):
+        """Whether the detector is a base subset."""
         return (len(self.subsets)==0 or
-                not isinstance(self.subsets[0], collections.Iterable))
+                True not in [isinstance(sub, Iterable)
+                             for sub in self.subsets])
+
+    @property
+    def _subset_builds_match(self):
+        """
+        Whether the subsets of the detector have the same ``build_antennas``.
+
+        """
+        return (self._is_base_subset or
+                len(set([inspect.signature(sub.build_antennas)
+                         for sub in self.subsets
+                         if hasattr(sub, 'build_antennas')])) == 1)
 
     def _test_positions(self):
         """
@@ -585,6 +650,8 @@ class Detector:
             If an antenna position is found above the ice surface.
 
         """
+        if not self.test_antenna_positions:
+            return
         if self._is_base_subset:
             for pos in self.antenna_positions:
                 if pos[2]>0:
@@ -592,7 +659,42 @@ class Detector:
                                      +"unexpected issues")
         else:
             for sub in self.subsets:
-                sub._test_positions()
+                if hasattr(sub, '_test_positions'):
+                    sub._test_positions()
+                elif isinstance(sub, Iterable):
+                    for ant in sub:
+                        if ant.position[2]>0:
+                            raise ValueError("Antenna placed outside of ice "+
+                                             "may cause unexpected issues")
+                else:
+                    if sub.position[2]>0:
+                        raise ValueError("Antenna placed outside of ice "+
+                                         "may cause unexpected issues")
+
+    def _mirror_build_function(self):
+        """
+        Mirror the build function of the subsets.
+
+        For a detector comprised of subsets which hasn't overwritten the
+        default ``build_antennas`` method, mirrors the function signature of
+        ``build_antennas`` from the base subset (as long as the signature is
+        the same for all subsets).
+
+        """
+        if hasattr(self, '_actual_build'):
+            self.build_antennas = self._actual_build
+        if (not self._is_base_subset and
+                self.build_antennas.__func__==Detector.build_antennas and
+                self._subset_builds_match):
+            self._actual_build = self.build_antennas
+            for sub in self.subsets:
+                if hasattr(sub, 'build_antennas'):
+                    break
+            self.build_antennas = mirror_func(sub.build_antennas,
+                                              Detector.build_antennas,
+                                              self=self)
+        else:
+            self._actual_build = self.build_antennas
 
     # Allow direct iteration of the detector to be treated as iteration over
     # the flat list of all its antennas
@@ -604,3 +706,205 @@ class Detector:
 
     def __getitem__(self, key):
         return list(flatten(self.subsets))[key]
+
+
+
+class CombinedDetector(Detector, mirror_set_positions=False):
+    """
+    Class for detectors which have been added together.
+
+    Designed to allow addition of ``Detector`` and ``Antenna``-like objects
+    which can still build all antennas and trigger by smartly passing down
+    keyword arugments to the subsets. Maintains all other properties of the
+    ``Detector`` objects.
+
+    Attributes
+    ----------
+    antenna_positions : list
+        List (potentially with sub-lists) of the positions of the antennas
+        generated by the `set_positions` method.
+    subsets : list
+        List of the antenna or detector objects which make up the detector.
+    test_antenna_positions : boolean
+        Class attribute for whether or not an error should be raised if antenna
+        positions are found above the surface of the ice (where simulation
+        behavior is ill-defined). Defaults to ``True``.
+
+    Raises
+    ------
+    ValueError
+        If ``test_antenna_positions`` is ``True`` and an antenna is found to be
+        above the ice surface.
+
+    See Also
+    --------
+    pyrex.Antenna : Base class for antennas.
+    AntennaSystem : Base class for antenna system with front-end processing.
+    Detector : Base class for detectors for easily building up sets of antennas.
+
+    """
+    def __init__(self, *detectors):
+        self.subsets = list(detectors)
+        self._test_positions()
+        self._mirror_build_function()
+
+    @property
+    def antenna_positions(self):
+        """List of the positions of the antennas in the detector."""
+        positions = []
+        for sub in self.subsets:
+            if hasattr(sub, 'antenna_positions'):
+                positions.append(sub.antenna_positions)
+            elif isinstance(sub, Iterable):
+                positions.append([ant.position for ant in sub])
+            else:
+                positions.append(sub.position)
+        return positions
+
+    def __add__(self, other):
+        """
+        Adds two detectors into a ``CombinedDetector``.
+
+        Supports addition of ``Detector`` objects, ``Antenna``-like objects,
+        or lists of ``Antenna``-like objects. Adds additional support for
+        adding ``CombinedDetector`` objects so the subsets of the two are
+        treated on equal footing.
+
+        """
+        if isinstance(other, CombinedDetector):
+            return CombinedDetector(*self.subsets, *other.subsets)
+        else:
+            return CombinedDetector(*self.subsets, other)
+
+    def __radd__(self, other):
+        """
+        Allows for adding ``CombinedDetector`` object to 0.
+
+        Since the python ``sum`` function starts by adding the first element
+        to 0, to use ``sum`` with ``CombinedDetector`` objects we need to be
+        able to add a ``CombinedDetector`` object to 0. If adding to anything
+        else, perform the usual addition.
+
+        """
+        if other==0:
+            return self
+        elif isinstance(other, CombinedDetector):
+            return CombinedDetector(*other.subsets, *self.subsets)
+        else:
+            return CombinedDetector(other, *self.subsets)
+
+    def __iadd__(self, other):
+        """
+        Adds a detector in-place.
+
+        Supports addition of ``Detector`` objects, ``Antenna``-like objects,
+        or lists of ``Antenna``-like objects. Adds additional support for
+        adding ``CombinedDetector`` objects so the subsets of the two are
+        treated on equal footing.
+
+        """
+        if isinstance(other, CombinedDetector):
+            self.subsets.extend(other.subsets)
+        else:
+            self.subsets.append(other)
+        self._test_positions()
+        self._mirror_build_function()
+        return self
+
+    @property
+    def _subset_triggers_match(self):
+        """Whether the subsets of the detector have the same triggered."""
+        return len(set([inspect.signature(sub.triggered)
+                        for sub in self.subsets
+                        if hasattr(sub, 'triggered')])) == 1
+
+    def triggered(self, *args, require_mc_truth=False, **kwargs):
+        """
+        Check if the detector is triggered based on its current state.
+
+        By default triggers if any subset of the detector is triggered. Passes
+        arguments down to the appropriate subsets if the subsets are
+        ``Detector`` objects, or checks for any triggering waveforms in
+        ``Antenna``-like objects.
+
+        Parameters
+        ----------
+        require_mc_truth : boolean, optional
+            Whether or not the trigger should be based on the Monte-Carlo
+            truth. If ``True``, noise-only triggers are removed.
+        *args, **kwargs
+            Positional and keyword arguments to be passed down to `triggered`
+            methods of the detector subsets.
+
+        Returns
+        -------
+        boolean
+            Whether or not the detector is triggered in its current state.
+
+        See Also
+        --------
+        pyrex.Antenna.trigger : Check if an antenna triggers on a given signal.
+        pyrex.AntennaSystem.trigger : Check if an antenna system triggers on a
+                                      given signal.
+        pyrex.Detector.triggered : Check if the detector is triggered based on
+                                   its current state.
+
+        """
+        if not self._subset_triggers_match and len(args)>0:
+            raise TypeError("Combined detector trigger cannot handle "+
+                            "positional arguments when its subsets "+
+                            "aren't identical")
+
+        # Add require_mc_truth to kwargs for ease of use
+        kwargs['require_mc_truth'] = require_mc_truth
+
+        for sub in self.subsets:
+            if hasattr(sub, 'triggered'):
+                if self._subset_triggers_match:
+                    # If the signatures match, passing down args is fine
+                    logger.debug("Called %s with args %s and kwargs %s",
+                                 sub.triggered, args, kwargs)
+                    if sub.triggered(*args, **kwargs):
+                        return True
+                else:
+                    # Keep trying the subset trigger, removing keyword
+                    # arguments which cause errors one by one
+                    sub_kwargs = kwargs
+                    while True:
+                        prev_kwargs = sub_kwargs
+                        try:
+                            triggered = sub.triggered(**sub_kwargs)
+                        except TypeError as e:
+                            # Remove the problematic argument from sub_kwargs
+                            msg = e.args[0]
+                            if 'got an unexpected keyword argument' in msg:
+                                parts = msg.split("'")
+                                bad_kw = parts[1]
+                                sub_kwargs = {key: val
+                                              for key, val in sub_kwargs.items()
+                                              if key!=bad_kw}
+                            else:
+                                raise e
+                        else:
+                            logger.debug("Called %s with kwargs %s",
+                                         sub.triggered, sub_kwargs)
+                            if triggered:
+                                return True
+                            else:
+                                break
+                        if sub_kwargs==prev_kwargs:
+                            raise TypeError("Unable to pass keyword arguments"+
+                                            " down to subset triggers")
+            elif isinstance(sub, Iterable):
+                # Check for any antenna trigger in the subset
+                for ant in sub:
+                    if ((require_mc_truth and ant.is_hit_mc_truth) or
+                            (not require_mc_truth and ant.is_hit)):
+                        return True
+            else:
+                # Check for single antenna trigger
+                if ((require_mc_truth and sub.is_hit_mc_truth) or
+                        (not require_mc_truth and sub.is_hit)):
+                    return True
+
+        return False

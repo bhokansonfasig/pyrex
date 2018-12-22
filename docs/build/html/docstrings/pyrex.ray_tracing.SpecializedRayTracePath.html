@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ray_tracing.SpecializedRayTracePath &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.ray_tracing.SpecializedRayTracePath &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Ray Tracers (pyrex.ray_tracing)" href="../api/ray_tracing.html" >
     <link rel="next" title="pyrex.ray_tracing.BasicRayTracer" href="pyrex.ray_tracing.BasicRayTracer.html" >
     <link rel="prev" title="pyrex.ray_tracing.BasicRayTracePath" href="pyrex.ray_tracing.BasicRayTracePath.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/ray_tracing.html" accesskey="U">Ray Tracers (<code class="docutils literal"><span class="pre">pyrex.ray_tracing</span></code>)</a></li> 
+          <li class="active"><a href="../api/ray_tracing.html" accesskey="U">Ray Tracers (<code class="docutils literal notranslate"><span class="pre">pyrex.ray_tracing</span></code>)</a></li> 
     </ul>
               
               
@@ -100,7 +101,7 @@
 of refraction of the ice to be of the form n(z)=n0-k*exp(a*z). However this
 restriction allows for most of the integrations to be performed
 analytically. The attenuation is the only attribute which is still
-calculated by numerical integration with z-steps of size <code class="docutils literal"><span class="pre">dz</span></code>. Most
+calculated by numerical integration with z-steps of size <code class="docutils literal notranslate"><span class="pre">dz</span></code>. Most
 properties are lazily evaluated to save on computation time. If any
 attributes of the class instance are changed, the lazily-evaluated
 properties will be cleared.</p>
@@ -108,20 +109,19 @@ properties will be cleared.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>parent_tracer</strong> : SpecializedRayTracer</p>
-<blockquote>
-<div><p>Ray tracer for which this path is a solution.</p>
-</div></blockquote>
-<p><strong>launch_angle</strong> : float</p>
-<blockquote>
-<div><p>Launch angle (radians) of the ray path.</p>
-</div></blockquote>
-<p><strong>direct</strong> : boolean</p>
-<blockquote class="last">
-<div><p>Whether the ray path is direct. If <code class="docutils literal"><span class="pre">True</span></code> this means the path does
-not “turn over”. If <code class="docutils literal"><span class="pre">False</span></code> then the path does “turn over” by either
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>parent_tracer</strong> <span class="classifier-delimiter">:</span> <span class="classifier">SpecializedRayTracer</span></dt>
+<dd><p class="first last">Ray tracer for which this path is a solution.</p>
+</dd>
+<dt><strong>launch_angle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Launch angle (radians) of the ray path.</p>
+</dd>
+<dt><strong>direct</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">Whether the ray path is direct. If <code class="docutils literal notranslate"><span class="pre">True</span></code> this means the path does
+not “turn over”. If <code class="docutils literal notranslate"><span class="pre">False</span></code> then the path does “turn over” by either
 reflection or refraction after reaching some maximum depth.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -129,9 +129,9 @@ reflection or refraction after reaching some maximum depth.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.internal_functions.LazyMutableClass.html#pyrex.internal_functions.LazyMutableClass" title="pyrex.internal_functions.LazyMutableClass"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.internal_functions.LazyMutableClass</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.internal_functions.LazyMutableClass.html#pyrex.internal_functions.LazyMutableClass" title="pyrex.internal_functions.LazyMutableClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.internal_functions.LazyMutableClass</span></code></a></dt>
 <dd>Class with lazy properties which may depend on other class attributes.</dd>
-<dt><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracer.html#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-obj docutils literal"><span class="pre">SpecializedRayTracer</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracer.html#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpecializedRayTracer</span></code></a></dt>
 <dd>Class for calculating the ray-trace solutions between points.</dd>
 </dl>
 </div>
@@ -140,54 +140,54 @@ reflection or refraction after reaching some maximum depth.</p>
 are mainly for internal use. These attributes can be found by exploring
 the source code.</p>
 <p>The requirement that the ice model go as n(z)=n0-k*exp(a*z) is implemented
-by requiring the ice model to inherit from <code class="xref py py-obj docutils literal"><span class="pre">AntarcticIce</span></code>. Obviously this
+by requiring the ice model to inherit from <code class="xref py py-obj docutils literal notranslate"><span class="pre">AntarcticIce</span></code>. Obviously this
 is not fool-proof, but likely the ray tracing will obviously fail if the
 index follows a very different functional form.</p>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><strong>from_point</strong></td>
-<td>(ndarray) The starting point of the ray path.</td>
-</tr>
-<tr class="row-even"><td><strong>to_point</strong></td>
-<td>(ndarray) The ending point of the ray path.</td>
-</tr>
-<tr class="row-odd"><td><strong>theta0</strong></td>
-<td>(float) The launch angle of the ray path at <em class="xref py py-obj">from_point</em>.</td>
-</tr>
-<tr class="row-even"><td><strong>ice</strong></td>
-<td>The ice model used for the ray tracer.</td>
-</tr>
-<tr class="row-odd"><td><strong>dz</strong></td>
-<td>(float) The z-step (m) to be used for integration of the ray path attributes.</td>
-</tr>
-<tr class="row-even"><td><strong>direct</strong></td>
-<td>(boolean) Whether the ray path is direct. If <code class="docutils literal"><span class="pre">True</span></code> this means the path does not “turn over”. If <code class="docutils literal"><span class="pre">False</span></code> then the path does “turn over” by either reflection or refraction after reaching some maximum depth.</td>
-</tr>
-<tr class="row-odd"><td><strong>uniformity_factor</strong></td>
-<td>(float) Factor (&lt;1) of the base index of refraction (n0 in the ice model) beyond which calculations start to break down numerically.</td>
-</tr>
-<tr class="row-even"><td><strong>beta_tolerance</strong></td>
-<td>(float) <code class="docutils literal"><span class="pre">beta</span></code> value (near 0) below which calculations start to break down numerically.</td>
-</tr>
-<tr class="row-odd"><td><strong>emitted_direction</strong></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td><strong>received_direction</strong></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td><strong>path_length</strong></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td><strong>tof</strong></td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td><strong>coordinates</strong></td>
-<td>&#160;</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>from_point</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">The starting point of the ray path.</p>
+</dd>
+<dt><strong>to_point</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">The ending point of the ray path.</p>
+</dd>
+<dt><strong>theta0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">The launch angle of the ray path at <em class="xref py py-obj">from_point</em>.</p>
+</dd>
+<dt><strong>ice</strong></dt>
+<dd><p class="first last">The ice model used for the ray tracer.</p>
+</dd>
+<dt><strong>dz</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">The z-step (m) to be used for integration of the ray path attributes.</p>
+</dd>
+<dt><strong>direct</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">Whether the ray path is direct. If <code class="docutils literal notranslate"><span class="pre">True</span></code> this means the path does
+not “turn over”. If <code class="docutils literal notranslate"><span class="pre">False</span></code> then the path does “turn over” by either
+reflection or refraction after reaching some maximum depth.</p>
+</dd>
+<dt><strong>uniformity_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Factor (&lt;1) of the base index of refraction (n0 in the ice model)
+beyond which calculations start to break down numerically.</p>
+</dd>
+<dt><strong>beta_tolerance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">beta</span></code> value (near 0) below which calculations start to break down
+numerically.</p>
+</dd>
+<dt><strong>emitted_direction</strong></dt>
+<dd></dd>
+<dt><strong>received_direction</strong></dt>
+<dd></dd>
+<dt><strong>path_length</strong></dt>
+<dd></dd>
+<dt><strong>tof</strong></dt>
+<dd></dd>
+<dt><strong>coordinates</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -198,16 +198,16 @@ index follows a very different functional form.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.attenuation.html#pyrex.ray_tracing.SpecializedRayTracePath.attenuation" title="pyrex.ray_tracing.SpecializedRayTracePath.attenuation"><code class="xref py py-obj docutils literal"><span class="pre">attenuation</span></code></a>(f)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.attenuation.html#pyrex.ray_tracing.SpecializedRayTracePath.attenuation" title="pyrex.ray_tracing.SpecializedRayTracePath.attenuation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation</span></code></a>(f)</td>
 <td>Calculate the attenuation factor for signal frequencies.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.propagate.html#pyrex.ray_tracing.SpecializedRayTracePath.propagate" title="pyrex.ray_tracing.SpecializedRayTracePath.propagate"><code class="xref py py-obj docutils literal"><span class="pre">propagate</span></code></a>([signal,&nbsp;polarization])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.propagate.html#pyrex.ray_tracing.SpecializedRayTracePath.propagate" title="pyrex.ray_tracing.SpecializedRayTracePath.propagate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate</span></code></a>([signal,&nbsp;polarization])</td>
 <td>Propagate the signal with optional polarization along the ray path.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.theta.html#pyrex.ray_tracing.SpecializedRayTracePath.theta" title="pyrex.ray_tracing.SpecializedRayTracePath.theta"><code class="xref py py-obj docutils literal"><span class="pre">theta</span></code></a>(z)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.theta.html#pyrex.ray_tracing.SpecializedRayTracePath.theta" title="pyrex.ray_tracing.SpecializedRayTracePath.theta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">theta</span></code></a>(z)</td>
 <td>Polar angle of the ray at the given depths.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.z_integral.html#pyrex.ray_tracing.SpecializedRayTracePath.z_integral" title="pyrex.ray_tracing.SpecializedRayTracePath.z_integral"><code class="xref py py-obj docutils literal"><span class="pre">z_integral</span></code></a>(integrand[,&nbsp;numerical,&nbsp;x_func])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ray_tracing.SpecializedRayTracePath.z_integral.html#pyrex.ray_tracing.SpecializedRayTracePath.z_integral" title="pyrex.ray_tracing.SpecializedRayTracePath.z_integral"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z_integral</span></code></a>(integrand[,&nbsp;numerical,&nbsp;x_func])</td>
 <td>Calculate the integral of the given integrand.</td>
 </tr>
 </tbody>
@@ -227,7 +227,7 @@ index follows a very different functional form.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -299,7 +299,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

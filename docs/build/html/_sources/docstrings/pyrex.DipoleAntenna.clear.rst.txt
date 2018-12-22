@@ -1,5 +1,5 @@
-pyrex\.DipoleAntenna\.clear
-===========================
+pyrex.DipoleAntenna.clear
+=========================
 
 .. currentmodule:: pyrex
 

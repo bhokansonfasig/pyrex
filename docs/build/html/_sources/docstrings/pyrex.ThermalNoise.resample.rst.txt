@@ -1,5 +1,5 @@
-pyrex\.ThermalNoise\.resample
-=============================
+pyrex.ThermalNoise.resample
+===========================
 
 .. currentmodule:: pyrex
 

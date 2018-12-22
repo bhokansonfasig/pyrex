@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.AlbrechtStation\.build\_antennas
-====================================================
+pyrex.custom.ara.AlbrechtStation.build\_antennas
+================================================
 
 .. currentmodule:: pyrex.custom.ara
 

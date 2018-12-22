@@ -1,5 +1,5 @@
-pyrex\.NeutrinoInteraction\.choose\_shower\_fractions
-=====================================================
+pyrex.NeutrinoInteraction.choose\_shower\_fractions
+===================================================
 
 .. currentmodule:: pyrex
 

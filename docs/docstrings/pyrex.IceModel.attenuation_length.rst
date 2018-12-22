@@ -1,5 +1,5 @@
-pyrex\.IceModel\.attenuation\_length
-====================================
+pyrex.IceModel.attenuation\_length
+==================================
 
 .. currentmodule:: pyrex
 

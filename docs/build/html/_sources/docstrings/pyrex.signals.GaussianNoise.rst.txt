@@ -1,5 +1,5 @@
-pyrex\.signals\.GaussianNoise
-=============================
+pyrex.signals.GaussianNoise
+===========================
 
 .. currentmodule:: pyrex.signals
 
@@ -18,4 +18,14 @@ pyrex\.signals\.GaussianNoise
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         GaussianNoise.dt
+         GaussianNoise.envelope
+         GaussianNoise.frequencies
+         GaussianNoise.spectrum
+         GaussianNoise.value_type
 

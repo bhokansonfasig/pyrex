@@ -1,5 +1,5 @@
-pyrex\.ice\_model\.NewcombIce\.temperature
-==========================================
+pyrex.ice\_model.NewcombIce.temperature
+=======================================
 
 .. currentmodule:: pyrex.ice_model
 

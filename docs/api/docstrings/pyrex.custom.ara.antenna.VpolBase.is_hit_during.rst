@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.VpolBase\.is\_hit\_during
-======================================================
+pyrex.custom.ara.antenna.VpolBase.is\_hit\_during
+=================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

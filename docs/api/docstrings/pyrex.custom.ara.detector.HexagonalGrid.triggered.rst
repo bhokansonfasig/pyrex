@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.HexagonalGrid\.triggered
-======================================================
+pyrex.custom.ara.detector.HexagonalGrid.triggered
+=================================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 

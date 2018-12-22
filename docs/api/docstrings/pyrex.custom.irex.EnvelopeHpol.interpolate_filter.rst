@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeHpol\.interpolate\_filter
-======================================================
+pyrex.custom.irex.EnvelopeHpol.interpolate\_filter
+==================================================
 
 .. currentmodule:: pyrex.custom.irex
 

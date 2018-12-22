@@ -1,5 +1,5 @@
-pyrex\.signals\.ZHSAskaryanSignal\.resample
-===========================================
+pyrex.signals.ZHSAskaryanSignal.resample
+========================================
 
 .. currentmodule:: pyrex.signals
 

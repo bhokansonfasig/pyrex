@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.VpolAntenna\.full\_waveform
-===============================================
+pyrex.custom.ara.VpolAntenna.full\_waveform
+===========================================
 
 .. currentmodule:: pyrex.custom.ara
 

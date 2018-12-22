@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeSystem\.trigger
-=====================================================
+pyrex.custom.irex.antenna.EnvelopeSystem.trigger
+================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

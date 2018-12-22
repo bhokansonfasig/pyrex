@@ -134,6 +134,7 @@ class EventKernel:
         self.signal_times = signal_times
         self.writer = event_writer
         self.triggers = triggers
+        self._gen_count = self.gen.count
         if self.writer is not None:
             if not self.writer.is_open:
                 logger.warning("Event writer was not open. Opening now.")
@@ -246,7 +247,10 @@ class EventKernel:
 
         if self.writer is not None:
             self.writer.add(event=event, triggered=triggered,
-                            ray_paths=ray_paths, polarizations=polarizations)
+                            ray_paths=ray_paths, polarizations=polarizations,
+                            events_thrown=self.gen.count-self._gen_count)
+
+        self._gen_count = self.gen.count
 
         if triggered is None:
             return event

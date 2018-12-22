@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.detector\.RegularStation\.build\_antennas
-==============================================================
+pyrex.custom.irex.detector.RegularStation.build\_antennas
+=========================================================
 
 .. currentmodule:: pyrex.custom.irex.detector
 

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.RayTracePath.z_integral &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.RayTracePath.z_integral &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -88,35 +89,36 @@ integral is calculated along the ray path.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>integrand</strong> : function</p>
-<blockquote>
-<div><p>Function returning the values of the integrand at a given array of
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>integrand</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
+<dd><p class="first last">Function returning the values of the integrand at a given array of
 values for the depth z.</p>
-</div></blockquote>
-<p><strong>numerical</strong> : boolean, optional</p>
-<blockquote>
-<div><p>Whether to use the numerical integral instead of an analytic one.
-If <code class="docutils literal"><span class="pre">False</span></code> the analytic integral is calculated. If <code class="docutils literal"><span class="pre">True</span></code> the
+</dd>
+<dt><strong>numerical</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Whether to use the numerical integral instead of an analytic one.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code> the analytic integral is calculated. If <code class="docutils literal notranslate"><span class="pre">True</span></code> the
 numerical integral is calculated.</p>
-</div></blockquote>
-<p><strong>x_func</strong> : function, optional</p>
-<blockquote>
-<div><p>A function returning x values corresponding to given z values. By
+</dd>
+<dt><strong>x_func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function, optional</span></dt>
+<dd><p class="first last">A function returning x values corresponding to given z values. By
 default just matches the z values.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">float</p>
-<blockquote>
-<div><p>The value of the integral along the ray path.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>float</strong></dt>
+<dd><p class="first last">The value of the integral along the ray path.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>TypeError</strong></p>
-<blockquote class="last">
-<div><p>If the ice model is not valid for the specialized analytic
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>TypeError</strong></dt>
+<dd><p class="first last">If the ice model is not valid for the specialized analytic
 integrations.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -136,7 +138,7 @@ integrations.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -203,7 +205,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

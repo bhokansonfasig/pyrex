@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.LPDA\.receive
-==============================================
+pyrex.custom.arianna.antenna.LPDA.receive
+=========================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

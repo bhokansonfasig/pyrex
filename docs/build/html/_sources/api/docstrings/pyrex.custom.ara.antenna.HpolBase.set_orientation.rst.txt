@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.HpolBase\.set\_orientation
-=======================================================
+pyrex.custom.ara.antenna.HpolBase.set\_orientation
+==================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

@@ -1,5 +1,5 @@
-pyrex\.signals\.Signal\.resample
-================================
+pyrex.signals.Signal.resample
+=============================
 
 .. currentmodule:: pyrex.signals
 

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ThermalNoise &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.ThermalNoise &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.Antenna" href="pyrex.Antenna.html" >
     <link rel="prev" title="pyrex.AskaryanSignal" href="pyrex.AskaryanSignal.html" > 
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -101,58 +102,54 @@ frequencies. Values are scaled to a provided or calculated RMS voltage.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>times</strong> : array_like</p>
-<blockquote>
-<div><p>1D array of times (s) for which the signal is defined.</p>
-</div></blockquote>
-<p><strong>f_band</strong> : array_like</p>
-<blockquote>
-<div><p>Array of two elements denoting the frequency band (Hz) of the noise.
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>times</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">1D array of times (s) for which the signal is defined.</p>
+</dd>
+<dt><strong>f_band</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">Array of two elements denoting the frequency band (Hz) of the noise.
 The first element should be smaller than the second.</p>
-</div></blockquote>
-<p><strong>f_amplitude</strong> : float or function, optional</p>
-<blockquote>
-<div><p>The frequency-domain amplitude of the noise. If <code class="docutils literal"><span class="pre">float</span></code>, then all
-frequencies will have the same amplitude. If <code class="docutils literal"><span class="pre">function</span></code>, then the
+</dd>
+<dt><strong>f_amplitude</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float or function, optional</span></dt>
+<dd><p class="first last">The frequency-domain amplitude of the noise. If <code class="docutils literal notranslate"><span class="pre">float</span></code>, then all
+frequencies will have the same amplitude. If <code class="docutils literal notranslate"><span class="pre">function</span></code>, then the
 function is evaluated at each frequency to determine its amplitude.
 By default, uses Rayleigh-distributed amplitudes.</p>
-</div></blockquote>
-<p><strong>rms_voltage</strong> : float, optional</p>
-<blockquote>
-<div><p>The RMS voltage (V) of the noise. If specified, this value will be used
+</dd>
+<dt><strong>rms_voltage</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The RMS voltage (V) of the noise. If specified, this value will be used
 instead of the RMS voltage calculated from the values of <em class="xref py py-obj">temperature</em>
 and <em class="xref py py-obj">resistance</em>.</p>
-</div></blockquote>
-<p><strong>temperature</strong> : float, optional</p>
-<blockquote>
-<div><p>The thermal noise temperature (K). Used in combination with the value
+</dd>
+<dt><strong>temperature</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The thermal noise temperature (K). Used in combination with the value
 of <em class="xref py py-obj">resistance</em> to calculate the RMS voltage of the noise.</p>
-</div></blockquote>
-<p><strong>resistance</strong> : float, optional</p>
-<blockquote>
-<div><p>The resistance (ohm) for the noise. Used in combination with the value
+</dd>
+<dt><strong>resistance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The resistance (ohm) for the noise. Used in combination with the value
 of <em class="xref py py-obj">temperature</em> to calculate the RMS voltage of the noise.</p>
-</div></blockquote>
-<p><strong>n_freqs</strong> : int, optional</p>
-<blockquote>
-<div><p>The number of frequencies within the frequency band to use to calculate
+</dd>
+<dt><strong>n_freqs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The number of frequencies within the frequency band to use to calculate
 the noise signal. By default determines the number of frequencies based
 on the FFT bin size of <em class="xref py py-obj">times</em>.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>If the RMS voltage cannot be calculated (i.e. <em class="xref py py-obj">rms_voltage</em> or both
-<em class="xref py py-obj">temperature</em> and <em class="xref py py-obj">resistance</em> are <code class="docutils literal"><span class="pre">None</span></code>).</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ValueError</strong></dt>
+<dd><p class="first last">If the RMS voltage cannot be calculated (i.e. <em class="xref py py-obj">rms_voltage</em> or both
+<em class="xref py py-obj">temperature</em> and <em class="xref py py-obj">resistance</em> are <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
 </table>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Since this class inherits from <code class="docutils literal"><span class="pre">FunctionSignal</span></code>, its <code class="docutils literal"><span class="pre">with_times</span></code>
+<p class="last">Since this class inherits from <code class="docutils literal notranslate"><span class="pre">FunctionSignal</span></code>, its <code class="docutils literal notranslate"><span class="pre">with_times</span></code>
 method will properly extrapolate noise outside of the provided times. Be
 warned however that outside of the original signal times the noise signal
 will be highly periodic. Since the default number of frequencies used is
@@ -164,74 +161,68 @@ is strongly recommended.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-obj docutils literal"><span class="pre">FunctionSignal</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionSignal</span></code></a></dt>
 <dd>Class for signals generated by a function.</dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
 <p>Calculation of the noise signal is based on the Rayleigh noise model used
-by ANITA <a class="reference internal" href="#r3535" id="id1">[R3535]</a>. Modifications have been made to the default to make the
+by ANITA <a class="reference internal" href="#r0901bed6a500-1" id="id1">[1]</a>. Modifications have been made to the default to make the
 frequency-domain amplitudes Rayleigh-distributed, under the suggestion that
 this makes for more realistic noise traces.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r3535" rules="none">
+<table class="docutils citation" frame="void" id="r0901bed6a500-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R3535]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> A. Connolly et al, ANITA Note #76, “Thermal Noise Studies: Toward A
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> A. Connolly et al, ANITA Note #76, “Thermal Noise Studies: Toward A
 Time-Domain Model of the ANITA Trigger.”
 <a class="reference external" href="https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps">https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps</a></td></tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">value_type</span></code></td>
-<td>Type of signal, representing the units of the values.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Type</span></code></td>
-<td>Enum containing possible types (units) for signal values.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dt</span></code></td>
-<td>The time spacing of the <em class="xref py py-obj">times</em> array, or <code class="docutils literal"><span class="pre">None</span></code> if invalid.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">frequencies</span></code></td>
-<td>The FFT frequencies of the signal.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">spectrum</span></code></td>
-<td>The FFT complex spectrum values of the signal.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">envelope</span></code></td>
-<td>The envelope of the signal by Hilbert transform.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="18%" />
-<col width="82%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>times, values</strong></td>
-<td>(ndarray) 1D arrays of times (s) and corresponding values which define the signal.</td>
-</tr>
-<tr class="row-even"><td><strong>function</strong></td>
-<td>(function) Function to evaluate the signal values at given time(s).</td>
-</tr>
-<tr class="row-odd"><td><strong>f_min</strong></td>
-<td>(float) Minimum frequency of the noise frequency band.</td>
-</tr>
-<tr class="row-even"><td><strong>f_max</strong></td>
-<td>(float) Maximum frequency of the noise frequency band.</td>
-</tr>
-<tr class="row-odd"><td><strong>freqs, amps, phases</strong></td>
-<td>(ndarray) The frequencies used to define the noise signal and their corresponding amplitudes and phases.</td>
-</tr>
-<tr class="row-even"><td><strong>rms</strong></td>
-<td>(float) The RMS value of the noise signal.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>times, values</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">1D arrays of times (s) and corresponding values which define the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ThermalNoise.value_type.html#pyrex.ThermalNoise.value_type" title="pyrex.ThermalNoise.value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_type</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">Signal.Type.voltage</span></dt>
+<dd><p class="first last">Type of signal, representing the units of the values.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code> <span class="classifier-delimiter">:</span> <span class="classifier">Enum</span></dt>
+<dd><p class="first last">Enum containing possible types (units) for signal values.</p>
+</dd>
+<dt><strong>function</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
+<dd><p class="first last">Function to evaluate the signal values at given time(s).</p>
+</dd>
+<dt><strong>f_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Minimum frequency of the noise frequency band.</p>
+</dd>
+<dt><strong>f_max</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Maximum frequency of the noise frequency band.</p>
+</dd>
+<dt><strong>freqs, amps, phases</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">The frequencies used to define the noise signal and their corresponding
+amplitudes and phases.</p>
+</dd>
+<dt><strong>rms</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">The RMS value of the noise signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ThermalNoise.dt.html#pyrex.ThermalNoise.dt" title="pyrex.ThermalNoise.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></dt>
+<dd><p class="first last">The time spacing of the <em class="xref py py-obj">times</em> array, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if invalid.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ThermalNoise.frequencies.html#pyrex.ThermalNoise.frequencies" title="pyrex.ThermalNoise.frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></a></dt>
+<dd><p class="first last">The FFT frequencies of the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ThermalNoise.spectrum.html#pyrex.ThermalNoise.spectrum" title="pyrex.ThermalNoise.spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spectrum</span></code></a></dt>
+<dd><p class="first last">The FFT complex spectrum values of the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ThermalNoise.envelope.html#pyrex.ThermalNoise.envelope" title="pyrex.ThermalNoise.envelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">envelope</span></code></a></dt>
+<dd><p class="first last">The envelope of the signal by Hilbert transform.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -242,16 +233,16 @@ Time-Domain Model of the ANITA Trigger.”
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Type</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code></td>
 <td>Enum containing possible types (units) for signal values.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ThermalNoise.filter_frequencies.html#pyrex.ThermalNoise.filter_frequencies" title="pyrex.ThermalNoise.filter_frequencies"><code class="xref py py-obj docutils literal"><span class="pre">filter_frequencies</span></code></a>(freq_response[,&nbsp;force_real])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ThermalNoise.filter_frequencies.html#pyrex.ThermalNoise.filter_frequencies" title="pyrex.ThermalNoise.filter_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_frequencies</span></code></a>(freq_response[,&nbsp;force_real])</td>
 <td>Apply the given frequency response function to the signal, in-place.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ThermalNoise.resample.html#pyrex.ThermalNoise.resample" title="pyrex.ThermalNoise.resample"><code class="xref py py-obj docutils literal"><span class="pre">resample</span></code></a>(n)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ThermalNoise.resample.html#pyrex.ThermalNoise.resample" title="pyrex.ThermalNoise.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(n)</td>
 <td>Resamples the signal into n points in the same time range, in-place.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ThermalNoise.with_times.html#pyrex.ThermalNoise.with_times" title="pyrex.ThermalNoise.with_times"><code class="xref py py-obj docutils literal"><span class="pre">with_times</span></code></a>(new_times)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ThermalNoise.with_times.html#pyrex.ThermalNoise.with_times" title="pyrex.ThermalNoise.with_times"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_times</span></code></a>(new_times)</td>
 <td>Returns a representation of this signal over a different times array.</td>
 </tr>
 </tbody>
@@ -271,7 +262,7 @@ Time-Domain Model of the ANITA Trigger.”
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -343,7 +334,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

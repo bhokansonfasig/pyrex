@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.VpolAntenna\.trigger
-========================================
+pyrex.custom.ara.VpolAntenna.trigger
+====================================
 
 .. currentmodule:: pyrex.custom.ara
 

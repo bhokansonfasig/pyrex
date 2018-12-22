@@ -428,8 +428,7 @@ class EnvelopeSystem(ARAAntennaSystem):
 
         """
         amplified = super().front_end(signal)
-        amplified.values *= self.envelope_amplification
-        return self.make_envelope(amplified)
+        return self.make_envelope(amplified * self.envelope_amplification)
 
         # # Two options for downsampling:
         # envelope = self.make_envelope(copy)

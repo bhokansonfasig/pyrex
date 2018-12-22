@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Helper Functions (pyrex.internal_functions) &mdash; PyREx 1.8.1 documentation</title>
+    <title>Helper Functions (pyrex.internal_functions) &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.internal_functions.normalize" href="../docstrings/pyrex.internal_functions.normalize.html" >
     <link rel="prev" title="pyrex.File" href="../docstrings/pyrex.File.html" > 
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -89,7 +90,7 @@
           <div class="body" id="spc-section-body">
             
   <div class="section" id="module-pyrex.internal_functions">
-<span id="helper-functions-pyrex-internal-functions"></span><h1>Helper Functions (<a class="reference internal" href="#module-pyrex.internal_functions" title="pyrex.internal_functions"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.internal_functions</span></code></a>)<a class="headerlink" href="#module-pyrex.internal_functions" title="Permalink to this headline">¶</a></h1>
+<span id="helper-functions-pyrex-internal-functions"></span><h1>Helper Functions (<a class="reference internal" href="#module-pyrex.internal_functions" title="pyrex.internal_functions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code></a>)<a class="headerlink" href="#module-pyrex.internal_functions" title="Permalink to this headline">¶</a></h1>
 <p>Helper functions and classes for use in PyREx modules.</p>
 <p>This module is intended as a container for functions, typically used in more
 than one PyREx module, which are not physics-motivated and are instead used
@@ -101,19 +102,19 @@ computer-science-motivated structures that python doesn’t include naturally.</
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.normalize.html#pyrex.internal_functions.normalize" title="pyrex.internal_functions.normalize"><code class="xref py py-obj docutils literal"><span class="pre">normalize</span></code></a>(vector)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.normalize.html#pyrex.internal_functions.normalize" title="pyrex.internal_functions.normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize</span></code></a>(vector)</td>
 <td>Normalize the given vector.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.flatten.html#pyrex.internal_functions.flatten" title="pyrex.internal_functions.flatten"><code class="xref py py-obj docutils literal"><span class="pre">flatten</span></code></a>(iterator[,&nbsp;dont_flatten])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.flatten.html#pyrex.internal_functions.flatten" title="pyrex.internal_functions.flatten"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flatten</span></code></a>(iterator[,&nbsp;dont_flatten])</td>
 <td>Flattens an iterator to iterate over all elements individually.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.mirror_func.html#pyrex.internal_functions.mirror_func" title="pyrex.internal_functions.mirror_func"><code class="xref py py-obj docutils literal"><span class="pre">mirror_func</span></code></a>(match_func,&nbsp;run_func[,&nbsp;self])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.mirror_func.html#pyrex.internal_functions.mirror_func" title="pyrex.internal_functions.mirror_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mirror_func</span></code></a>(match_func,&nbsp;run_func[,&nbsp;self])</td>
 <td>Mirror the attributes of one function onto another.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.lazy_property.html#pyrex.internal_functions.lazy_property" title="pyrex.internal_functions.lazy_property"><code class="xref py py-obj docutils literal"><span class="pre">lazy_property</span></code></a>(fn)</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.lazy_property.html#pyrex.internal_functions.lazy_property" title="pyrex.internal_functions.lazy_property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lazy_property</span></code></a>(fn)</td>
 <td>Decorator that makes a property lazily evaluated.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.LazyMutableClass.html#pyrex.internal_functions.LazyMutableClass" title="pyrex.internal_functions.LazyMutableClass"><code class="xref py py-obj docutils literal"><span class="pre">LazyMutableClass</span></code></a>([static_attributes])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.internal_functions.LazyMutableClass.html#pyrex.internal_functions.LazyMutableClass" title="pyrex.internal_functions.LazyMutableClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LazyMutableClass</span></code></a>([static_attributes])</td>
 <td>Class with lazy properties which may depend on other class attributes.</td>
 </tr>
 </tbody>
@@ -131,7 +132,7 @@ computer-science-motivated structures that python doesn’t include naturally.</
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -203,7 +204,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>&lt;no title&gt; &mdash; PyREx 1.8.1 documentation</title>
+    <title>&lt;no title&gt; &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -77,8 +78,8 @@
           <div class="body" id="spc-section-body">
             
   <p>The IREX module contains classes for antennas and detectors which use waveform envelopes rather than raw waveforms. The detectors provided allow for testing of grid and station geometries.</p>
-<p>The <code class="xref py py-class docutils literal"><span class="pre">EvelopeHpol</span></code> and <code class="xref py py-class docutils literal"><span class="pre">EvelopeVpol</span></code> classes wrap models of ARA Hpol and Vpol antennas with an additional front-end which uses a diode-bridge circuit to create waveform envelopes. The trigger condition for these antennas is a simple threshold trigger on the envelopes.</p>
-<p>The <code class="xref py py-class docutils literal"><span class="pre">IREXString</span></code> class creates a string of <code class="xref py py-class docutils literal"><span class="pre">EvelopeVpol</span></code> antennas at a given position. The <code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code> class creates a station at a given position with 4 (or another given number) strings spaced evenly around the station center. The <code class="xref py py-class docutils literal"><span class="pre">CoxeterStation</span></code> class creates a station at a given position similar to the <code class="xref py py-class docutils literal"><span class="pre">RegularStation</span></code>, but with one string at the station center and the rest spaced evenly around the center. The <code class="xref py py-class docutils literal"><span class="pre">StationGrid</span></code> class creates a rectangular grid of stations (or strings, as specified by the station type). The dimensions of the grid in stations is Nx by Ny where N is the total number of stations, Nx=floor(sqrt(N)), and Ny=floor(N/Nx).</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">EvelopeHpol</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">EvelopeVpol</span></code> classes wrap models of ARA Hpol and Vpol antennas with an additional front-end which uses a diode-bridge circuit to create waveform envelopes. The trigger condition for these antennas is a simple threshold trigger on the envelopes.</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">IREXString</span></code> class creates a string of <code class="xref py py-class docutils literal notranslate"><span class="pre">EvelopeVpol</span></code> antennas at a given position. The <code class="xref py py-class docutils literal notranslate"><span class="pre">RegularStation</span></code> class creates a station at a given position with 4 (or another given number) strings spaced evenly around the station center. The <code class="xref py py-class docutils literal notranslate"><span class="pre">CoxeterStation</span></code> class creates a station at a given position similar to the <code class="xref py py-class docutils literal notranslate"><span class="pre">RegularStation</span></code>, but with one string at the station center and the rest spaced evenly around the center. The <code class="xref py py-class docutils literal notranslate"><span class="pre">StationGrid</span></code> class creates a rectangular grid of stations (or strings, as specified by the station type). The dimensions of the grid in stations is Nx by Ny where N is the total number of stations, Nx=floor(sqrt(N)), and Ny=floor(N/Nx).</p>
 
 
           </div>
@@ -91,7 +92,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -158,7 +159,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

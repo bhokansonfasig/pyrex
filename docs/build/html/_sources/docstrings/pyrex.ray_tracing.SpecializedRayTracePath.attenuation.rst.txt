@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.SpecializedRayTracePath\.attenuation
-=========================================================
+pyrex.ray\_tracing.SpecializedRayTracePath.attenuation
+======================================================
 
 .. currentmodule:: pyrex.ray_tracing
 

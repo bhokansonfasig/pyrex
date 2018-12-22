@@ -1,5 +1,5 @@
-pyrex\.IceModel\.depth\_with\_index
-===================================
+pyrex.IceModel.depth\_with\_index
+=================================
 
 .. currentmodule:: pyrex
 

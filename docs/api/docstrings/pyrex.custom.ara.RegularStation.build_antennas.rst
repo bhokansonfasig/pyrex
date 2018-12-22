@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.RegularStation\.build\_antennas
-===================================================
+pyrex.custom.ara.RegularStation.build\_antennas
+===============================================
 
 .. currentmodule:: pyrex.custom.ara
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.HpolAntenna\.tunnel\_diode
-=======================================================
+pyrex.custom.ara.antenna.HpolAntenna.tunnel\_diode
+==================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

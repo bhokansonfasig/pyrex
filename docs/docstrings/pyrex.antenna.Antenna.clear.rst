@@ -1,5 +1,5 @@
-pyrex\.antenna\.Antenna\.clear
-==============================
+pyrex.antenna.Antenna.clear
+===========================
 
 .. currentmodule:: pyrex.antenna
 

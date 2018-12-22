@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeSystem\.full\_waveform
-============================================================
+pyrex.custom.irex.antenna.EnvelopeSystem.full\_waveform
+=======================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

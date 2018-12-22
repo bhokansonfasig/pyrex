@@ -471,7 +471,7 @@ class ARAAntenna(Antenna):
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy.values *= signal_factor
+        copy *= signal_factor
         self.signals.append(copy)
 
 
@@ -816,7 +816,7 @@ class ARAAntennaSystem(AntennaSystem):
         return meta
 
     def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
-                      resistance=4.2, orientation=(0,0,1),
+                      resistance=16.8, orientation=(0,0,1),
                       efficiency=1, noisy=True, unique_noise_waveforms=10,
                       **kwargs):
         """
@@ -855,7 +855,7 @@ class ARAAntennaSystem(AntennaSystem):
         """
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
         # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~4.2 Ohm
+        # resistance of ~16.8 Ohm
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
@@ -988,7 +988,7 @@ class ARAAntennaSystem(AntennaSystem):
         copy.filter_frequencies(self.interpolate_filter,
                                 force_real=True)
         # sqrt(2) for 3dB splitter for TURF, SURF
-        clipped_values = np.clip(copy.values * np.sqrt(2) * self.amplification,
+        clipped_values = np.clip(copy.values / np.sqrt(2) * self.amplification,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
         return Signal(signal.times, clipped_values,

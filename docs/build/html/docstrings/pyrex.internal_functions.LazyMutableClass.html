@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.LazyMutableClass &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.internal_functions.LazyMutableClass &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="next" title="Signal Processing (pyrex.signals)" href="../api/signals.html" >
     <link rel="prev" title="pyrex.internal_functions.lazy_property" href="pyrex.internal_functions.lazy_property.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
+          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
     </ul>
               
               
@@ -102,17 +103,18 @@ class will be lazily evaluated as usual until one of the given static
 attributes changes, at which point all lazy properties will be cleared and
 will be recalculated on their next call. By default the static attributes
 of the class will be set to all attributes present at the time of the
-<code class="docutils literal"><span class="pre">LazyMutableClass.__init__</span></code> call.</p>
+<code class="docutils literal notranslate"><span class="pre">LazyMutableClass.__init__</span></code> call.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>static_attributes</strong> : None or sequence of str</p>
-<blockquote class="last">
-<div><p>Set of attribute names on which the lazy properties depend. If <code class="docutils literal"><span class="pre">None</span></code>
-then it will contain all members of <code class="docutils literal"><span class="pre">__dict__</span></code> at the time of the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>static_attributes</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None or sequence of str</span></dt>
+<dd><p class="first last">Set of attribute names on which the lazy properties depend. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+then it will contain all members of <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> at the time of the
 call.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -120,12 +122,12 @@ call.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.internal_functions.lazy_property.html#pyrex.internal_functions.lazy_property" title="pyrex.internal_functions.lazy_property"><code class="xref py py-obj docutils literal"><span class="pre">lazy_property</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.internal_functions.lazy_property.html#pyrex.internal_functions.lazy_property" title="pyrex.internal_functions.lazy_property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lazy_property</span></code></a></dt>
 <dd>Decorator for lazily-evaluated properties.</dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="n">LazyMutableClass</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -169,7 +171,7 @@ call.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -241,7 +243,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

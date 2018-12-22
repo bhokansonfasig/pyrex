@@ -1,5 +1,5 @@
-pyrex\.prem\_density
-====================
+pyrex.prem\_density
+===================
 
 .. currentmodule:: pyrex
 

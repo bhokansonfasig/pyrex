@@ -1,5 +1,5 @@
-pyrex\.AskaryanSignal\.max\_length
-==================================
+pyrex.AskaryanSignal.max\_length
+================================
 
 .. currentmodule:: pyrex
 

@@ -1,5 +1,5 @@
-pyrex\.signals\.Signal\.filter\_frequencies
-===========================================
+pyrex.signals.Signal.filter\_frequencies
+========================================
 
 .. currentmodule:: pyrex.signals
 

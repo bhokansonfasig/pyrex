@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.AlbrechtStation\.triggered
-========================================================
+pyrex.custom.ara.detector.AlbrechtStation.triggered
+===================================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 

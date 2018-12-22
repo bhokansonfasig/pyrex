@@ -1,5 +1,5 @@
-pyrex\.ice\_model\.ArasimIce\.attenuation\_length
-=================================================
+pyrex.ice\_model.ArasimIce.attenuation\_length
+==============================================
 
 .. currentmodule:: pyrex.ice_model
 

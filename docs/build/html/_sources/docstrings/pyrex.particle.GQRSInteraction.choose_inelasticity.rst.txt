@@ -1,5 +1,5 @@
-pyrex\.particle\.GQRSInteraction\.choose\_inelasticity
-======================================================
+pyrex.particle.GQRSInteraction.choose\_inelasticity
+===================================================
 
 .. currentmodule:: pyrex.particle
 

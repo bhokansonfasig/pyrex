@@ -1,5 +1,5 @@
-pyrex\.signals\.ARVZAskaryanSignal\.max\_length
-===============================================
+pyrex.signals.ARVZAskaryanSignal.max\_length
+============================================
 
 .. currentmodule:: pyrex.signals
 

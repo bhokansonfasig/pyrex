@@ -1,5 +1,5 @@
-pyrex\.RayTracePath\.propagate
-==============================
+pyrex.RayTracePath.propagate
+============================
 
 .. currentmodule:: pyrex
 

@@ -1,5 +1,5 @@
-pyrex\.internal\_functions\.flatten
-===================================
+pyrex.internal\_functions.flatten
+=================================
 
 .. currentmodule:: pyrex.internal_functions
 

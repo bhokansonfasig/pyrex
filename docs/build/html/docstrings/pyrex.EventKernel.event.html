@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.EventKernel.event &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.EventKernel.event &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -82,24 +83,24 @@
 <dt id="pyrex.EventKernel.event">
 <code class="descclassname">EventKernel.</code><code class="descname">event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel.event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a neutrino event and run it through the simulation chain.</p>
-<p>Creates a particle using the <code class="docutils literal"><span class="pre">generator</span></code>, produces a signal from that
+<p>Creates a particle using the <code class="docutils literal notranslate"><span class="pre">generator</span></code>, produces a signal from that
 event, propagates that signal through the ice according to the
-<code class="docutils literal"><span class="pre">ice_model</span></code> and the <code class="docutils literal"><span class="pre">ray_tracer</span></code>, and passes it into the
-<code class="docutils literal"><span class="pre">antennas</span></code> for processing.</p>
+<code class="docutils literal notranslate"><span class="pre">ice_model</span></code> and the <code class="docutils literal notranslate"><span class="pre">ray_tracer</span></code>, and passes it into the
+<code class="docutils literal notranslate"><span class="pre">antennas</span></code> for processing.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>event</strong> : Event</p>
-<blockquote>
-<div><p>The neutrino event generated which is responsible for the waveforms
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>event</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Event</span></dt>
+<dd><p class="first last">The neutrino event generated which is responsible for the waveforms
 on the antennas.</p>
-</div></blockquote>
-<p><strong>triggered</strong> : bool, optional</p>
-<blockquote class="last">
-<div><p>If the <code class="docutils literal"><span class="pre">triggers</span></code> parameter was specified, contains whether the
+</dd>
+<dt><strong>triggered</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">If the <code class="docutils literal notranslate"><span class="pre">triggers</span></code> parameter was specified, contains whether the
 global trigger condition of the detector was met.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -107,9 +108,9 @@ global trigger condition of the detector was met.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Event</span></code></a></dt>
-<dd>Class for storing a tree of <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects representing an event.</dd>
-<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.Particle</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Event</span></code></a></dt>
+<dd>Class for storing a tree of <a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects representing an event.</dd>
+<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Particle</span></code></a></dt>
 <dd>Class for storing particle attributes.</dd>
 </dl>
 </div>
@@ -128,7 +129,7 @@ global trigger condition of the detector was met.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -195,7 +196,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

@@ -1,5 +1,5 @@
-pyrex\.DipoleAntenna\.polarization\_gain
-========================================
+pyrex.DipoleAntenna.polarization\_gain
+======================================
 
 .. currentmodule:: pyrex
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.IREXString\.triggered
-==========================================
+pyrex.custom.irex.IREXString.triggered
+======================================
 
 .. currentmodule:: pyrex.custom.irex
 

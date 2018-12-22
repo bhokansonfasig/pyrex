@@ -1,5 +1,5 @@
-pyrex\.antenna\.DipoleAntenna\.trigger
-======================================
+pyrex.antenna.DipoleAntenna.trigger
+===================================
 
 .. currentmodule:: pyrex.antenna
 

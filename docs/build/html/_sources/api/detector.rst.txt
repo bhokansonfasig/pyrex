@@ -10,3 +10,4 @@ High-level Detectors (:mod:`pyrex.detector`)
 
     AntennaSystem
     Detector
+    CombinedDetector

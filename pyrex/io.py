@@ -584,6 +584,7 @@ class EventIterator(HDF5Base):
             len(self._object[self._locations["antennas_meta_str"]])
         )
         self._max_events = hdf5_file[self._locations["indices"]].shape[0]
+        self._total_thrown = hdf5_file[self._locations_original["particles_meta"]].attrs["total_thrown"]
 
         start_event = 0 if start_event is None else start_event
         step = 1 if step is None else step
@@ -1060,6 +1061,20 @@ class EventIterator(HDF5Base):
         """
         return "neutrino" in self.get_particle_info("particle_name")[0]
 
+    @property
+    def total_events_thrown(self):
+        """
+        Proportional number of events thrown by the generator.
+
+        Uses the total number of events thrown in the full file and portions
+        them evenly among the actual events to give the total number of
+        events thrown up to the present event.
+
+        """
+        event_number = (self._iter_counter * self._slice_step
+                        + self._slice_start_event)
+        return int((event_number+1)/self._max_events*self._total_thrown)
+
 
 
 class HDF5Reader(BaseReader, HDF5Base):
@@ -1257,6 +1272,7 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         """
         self._file.close()
+        self._is_open = False
 
     @property
     def is_open(self):
@@ -1448,6 +1464,19 @@ class HDF5Reader(BaseReader, HDF5Base):
         return self._read_metadata_to_dicts(
             self._file, self._locations_original["file_meta"]
         )
+
+    @property
+    def total_events_thrown(self):
+        """
+        Total number of events thrown by the generator.
+
+        This value may be different than the number of events in the file,
+        particularly for shadowing generators which skip events that don't
+        survive travel through the Earth.
+
+        """
+        return self._file[self._locations_original['particles_meta']].attrs['total_thrown']
+
 
 
 
@@ -2194,7 +2223,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         """
         return hasattr(self, "_detector")
 
-    def _write_particles(self, event):
+    def _write_particles(self, event, throw_count=1):
         """
         Write the particle metadata of the particles in `event`.
 
@@ -2205,6 +2234,9 @@ class HDF5Writer(BaseWriter, HDF5Base):
         ----------
         event : Event
             `Event` object whose metadata will be written to the file.
+        throw_count : int, optional
+            Number of events thrown to reach this event, i.e. value to add to
+            the total count of events thrown.
 
         """
         start_index = self._counters['particles_meta']
@@ -2220,6 +2252,10 @@ class HDF5Writer(BaseWriter, HDF5Base):
                             start_index, len(event))
         self._write_metadata(self._data_locs['particles_meta'],
                              event._metadata, start_index)
+        try:
+            metadata.attrs['total_thrown'] += throw_count
+        except KeyError:
+            metadata.attrs['total_thrown'] = throw_count
 
 
     @staticmethod
@@ -2471,7 +2507,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
                             start_index, max_waves)
 
 
-    def add(self, event, triggered=None, ray_paths=None, polarizations=None):
+    def add(self, event, triggered=None, ray_paths=None, polarizations=None,
+            events_thrown=1):
         """
         Add the data from an event to the file.
 
@@ -2495,6 +2532,9 @@ class HDF5Writer(BaseWriter, HDF5Base):
         polarizations : list of list of array_like, optional
             Vector polarizations for each antenna, for each ray solution from
             the event.
+        events_thrown : int, optional
+            Number of events thrown to reach this event, i.e. how much to
+            increase the total throw count of the file by.
 
         Raises
         ------
@@ -2507,7 +2547,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
                                          polarizations is None):
             raise ValueError("Ray path and polarization information must be "+
                              "provided if writing ray data")
-        if np.any(self._trig_only.items()) and triggered is None:
+        if np.any(list(self._trig_only.values())) and triggered is None:
             if triggered is None:
                 raise ValueError("Trigger information must be provided if "
                                  "writing only when triggered")
@@ -2517,7 +2557,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         if (self._write_data['particles'] and
                 (not self._trig_only['particles']
                  or self._check_trigger(triggered))):
-            self._write_particles(event)
+            self._write_particles(event, events_thrown)
 
         if (self._write_data['triggers'] and
                 (not self._trig_only['triggers']

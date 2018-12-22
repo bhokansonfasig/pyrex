@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.VpolAntenna\.interpolate\_filter
-=============================================================
+pyrex.custom.ara.antenna.VpolAntenna.interpolate\_filter
+========================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

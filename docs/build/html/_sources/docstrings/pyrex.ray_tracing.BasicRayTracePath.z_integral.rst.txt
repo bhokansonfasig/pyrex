@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.BasicRayTracePath\.z\_integral
-===================================================
+pyrex.ray\_tracing.BasicRayTracePath.z\_integral
+================================================
 
 .. currentmodule:: pyrex.ray_tracing
 

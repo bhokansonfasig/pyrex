@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.ARIANNAAntenna
-===============================================
+pyrex.custom.arianna.antenna.ARIANNAAntenna
+===========================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 
@@ -26,4 +26,13 @@ pyrex\.custom\.arianna\.antenna\.ARIANNAAntenna
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ARIANNAAntenna.all_waveforms
+         ARIANNAAntenna.is_hit
+         ARIANNAAntenna.is_hit_mc_truth
+         ARIANNAAntenna.waveforms
 

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.io.HDF5Reader &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.io.HDF5Reader &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Data File I/O (pyrex.io)" href="../api/io.html" >
     <link rel="next" title="pyrex.io.HDF5Writer" href="pyrex.io.HDF5Writer.html" >
     <link rel="prev" title="pyrex.io.File" href="pyrex.io.File.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/io.html" accesskey="U">Data File I/O (<code class="docutils literal"><span class="pre">pyrex.io</span></code>)</a></li> 
+          <li class="active"><a href="../api/io.html" accesskey="U">Data File I/O (<code class="docutils literal notranslate"><span class="pre">pyrex.io</span></code>)</a></li> 
     </ul>
               
               
@@ -101,47 +102,34 @@ analysis-level data from the given file.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filename</strong> : str</p>
-<blockquote>
-<div><p>File name to open in read mode.</p>
-</div></blockquote>
-<p><strong>slice_range</strong> : int, optional</p>
-<blockquote class="last">
-<div><p>Number of events to include in each slice when iterating the file.
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">File name to open in read mode.</p>
+</dd>
+<dt><strong>slice_range</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of events to include in each slice when iterating the file.
 Increasing this value should result in an improvement in speed, while
 decreasing this value should result in an improvement in memory
 consumption.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">is_open</span></code></td>
-<td>Boolean of whether the file is currently open.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">antenna_info</span></code></td>
-<td>Antenna data from the file.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">file_metadata</span></code></td>
-<td>Metadata from the file’s metadata datasets.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="76%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>filename</strong></td>
-<td>(str) Name of the file (to be) opened.</td>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Name of the file (to be) opened.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.io.HDF5Reader.is_open.html#pyrex.io.HDF5Reader.is_open" title="pyrex.io.HDF5Reader.is_open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_open</span></code></a></dt>
+<dd><p class="first last">Boolean of whether the file is currently open.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.io.HDF5Reader.antenna_info.html#pyrex.io.HDF5Reader.antenna_info" title="pyrex.io.HDF5Reader.antenna_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">antenna_info</span></code></a></dt>
+<dd><p class="first last">Antenna data from the file.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.io.HDF5Reader.file_metadata.html#pyrex.io.HDF5Reader.file_metadata" title="pyrex.io.HDF5Reader.file_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_metadata</span></code></a></dt>
+<dd><p class="first last">Metadata from the file’s metadata datasets.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -152,13 +140,13 @@ consumption.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Reader.close.html#pyrex.io.HDF5Reader.close" title="pyrex.io.HDF5Reader.close"><code class="xref py py-obj docutils literal"><span class="pre">close</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Reader.close.html#pyrex.io.HDF5Reader.close" title="pyrex.io.HDF5Reader.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</td>
 <td>Close the hdf5 file.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.io.HDF5Reader.get_waveforms.html#pyrex.io.HDF5Reader.get_waveforms" title="pyrex.io.HDF5Reader.get_waveforms"><code class="xref py py-obj docutils literal"><span class="pre">get_waveforms</span></code></a>([event_id,&nbsp;antenna_id,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.io.HDF5Reader.get_waveforms.html#pyrex.io.HDF5Reader.get_waveforms" title="pyrex.io.HDF5Reader.get_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_waveforms</span></code></a>([event_id,&nbsp;antenna_id,&nbsp;…])</td>
 <td>Get waveform data from the file.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Reader.open.html#pyrex.io.HDF5Reader.open" title="pyrex.io.HDF5Reader.open"><code class="xref py py-obj docutils literal"><span class="pre">open</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Reader.open.html#pyrex.io.HDF5Reader.open" title="pyrex.io.HDF5Reader.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>()</td>
 <td>Open the hdf5 file for reading.</td>
 </tr>
 </tbody>
@@ -178,7 +166,7 @@ consumption.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -250,7 +238,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

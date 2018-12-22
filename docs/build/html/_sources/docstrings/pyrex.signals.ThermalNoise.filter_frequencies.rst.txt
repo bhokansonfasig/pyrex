@@ -1,5 +1,5 @@
-pyrex\.signals\.ThermalNoise\.filter\_frequencies
-=================================================
+pyrex.signals.ThermalNoise.filter\_frequencies
+==============================================
 
 .. currentmodule:: pyrex.signals
 

@@ -8,7 +8,7 @@ computer-science-motivated structures that python doesn't include naturally.
 
 """
 
-import collections
+from collections.abc import Iterable
 import copy
 import functools
 import logging
@@ -133,7 +133,7 @@ def flatten(iterator, dont_flatten=()):
 
     """
     for element in iterator:
-        if (isinstance(element, collections.Iterable) and
+        if (isinstance(element, Iterable) and
                 not isinstance(element, tuple(dont_flatten)+(str, bytes))):
             yield from flatten(element, dont_flatten=dont_flatten)
         else:
@@ -207,6 +207,7 @@ def mirror_func(match_func, run_func, self=None):
     <Signature (self, factor, power=1)>
 
     """
+    logger.debug("Mirroring %s onto %s", match_func, run_func)
     @functools.wraps(match_func)
     def wrapper(*args, **kwargs):
         if self is not None:

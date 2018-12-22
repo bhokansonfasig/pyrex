@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.EnvelopeHpol.receive &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.custom.irex.EnvelopeHpol.receive &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -90,33 +91,32 @@ parameters. Finally stores the processed signal to the signals list.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>signal</strong> : Signal</p>
-<blockquote>
-<div><p>Incoming <code class="docutils literal"><span class="pre">Signal</span></code> object to process and store.</p>
-</div></blockquote>
-<p><strong>direction</strong> : array_like, optional</p>
-<blockquote>
-<div><p>Vector denoting the direction of travel of the signal as it reaches
-the antenna. If <code class="docutils literal"><span class="pre">None</span></code> no directional response will be applied.</p>
-</div></blockquote>
-<p><strong>polarization</strong> : array_like, optional</p>
-<blockquote>
-<div><p>Vector denoting the signal’s polarization direction. If <code class="docutils literal"><span class="pre">None</span></code>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>signal</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Signal</span></dt>
+<dd><p class="first last">Incoming <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object to process and store.</p>
+</dd>
+<dt><strong>direction</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like, optional</span></dt>
+<dd><p class="first last">Vector denoting the direction of travel of the signal as it reaches
+the antenna. If <code class="docutils literal notranslate"><span class="pre">None</span></code> no directional response will be applied.</p>
+</dd>
+<dt><strong>polarization</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like, optional</span></dt>
+<dd><p class="first last">Vector denoting the signal’s polarization direction. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
 no polarization gain will be applied.</p>
-</div></blockquote>
-<p><strong>force_real</strong> : boolean, optional</p>
-<blockquote>
-<div><p>Whether or not the frequency response should be redefined in the
+</dd>
+<dt><strong>force_real</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Whether or not the frequency response should be redefined in the
 negative-frequency domain to keep the values of the filtered signal
 real.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>If the given <code class="xref py py-obj docutils literal"><span class="pre">signal</span></code> does not have a <code class="docutils literal"><span class="pre">value_type</span></code> of <code class="docutils literal"><span class="pre">voltage</span></code>
-or <code class="docutils literal"><span class="pre">field</span></code>.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ValueError</strong></dt>
+<dd><p class="first last">If the given <code class="xref py py-obj docutils literal notranslate"><span class="pre">signal</span></code> does not have a <code class="docutils literal notranslate"><span class="pre">value_type</span></code> of <code class="docutils literal notranslate"><span class="pre">voltage</span></code>
+or <code class="docutils literal notranslate"><span class="pre">field</span></code>.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -136,7 +136,7 @@ or <code class="docutils literal"><span class="pre">field</span></code>.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -203,7 +203,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

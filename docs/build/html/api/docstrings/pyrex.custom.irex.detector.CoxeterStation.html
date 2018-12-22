@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.detector.CoxeterStation &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.custom.irex.detector.CoxeterStation &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
     <link rel="up" title="Custom Detectors (pyrex.custom.irex.detector)" href="../custom-irex/detector.html" >
     <link rel="next" title="pyrex.custom.irex.detector.StationGrid" href="pyrex.custom.irex.detector.StationGrid.html" >
     <link rel="prev" title="pyrex.custom.irex.detector.RegularStation" href="pyrex.custom.irex.detector.RegularStation.html" > 
@@ -52,11 +53,11 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-irex.html" >IceCube Radio Extension (<code class="docutils literal"><span class="pre">pyrex.custom.irex</span></code>)</a></li>
-          <li class="active"><a href="../custom-irex/detector.html" accesskey="U">Custom Detectors (<code class="docutils literal"><span class="pre">pyrex.custom.irex.detector</span></code>)</a></li> 
+          <li class="active"><a href="../custom-irex.html" >IceCube Radio Extension (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.irex</span></code>)</a></li>
+          <li class="active"><a href="../custom-irex/detector.html" accesskey="U">Custom Detectors (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.irex.detector</span></code>)</a></li> 
     </ul>
               
               
@@ -98,47 +99,44 @@
 <dd><p>Station geometry with center string and the rest evenly spaced radially.</p>
 <p>Sets the positions of strings around the station based on the parameters.
 Supports any string type and passes extra keyword arguments on to the
-string class. Once the antennas have been built with <a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.build_antennas.html#pyrex.custom.irex.detector.CoxeterStation.build_antennas" title="pyrex.custom.irex.detector.CoxeterStation.build_antennas"><code class="xref py py-obj docutils literal"><span class="pre">build_antennas</span></code></a>,
+string class. Once the antennas have been built with <a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.build_antennas.html#pyrex.custom.irex.detector.CoxeterStation.build_antennas" title="pyrex.custom.irex.detector.CoxeterStation.build_antennas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_antennas</span></code></a>,
 the object can be directly iterated over to iterate over the antennas (as
 if the object were just a list of the antennas).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : float</p>
-<blockquote>
-<div><p>Cartesian x-position (m) of the station.</p>
-</div></blockquote>
-<p><strong>y</strong> : float</p>
-<blockquote>
-<div><p>Cartesian y-position (m) of the station.</p>
-</div></blockquote>
-<p><strong>strings_per_station</strong> : float, optional</p>
-<blockquote>
-<div><p>Number of strings to be placed around the station. Note that the first
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Cartesian x-position (m) of the station.</p>
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Cartesian y-position (m) of the station.</p>
+</dd>
+<dt><strong>strings_per_station</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Number of strings to be placed around the station. Note that the first
 string is always placed at the center and the rest of the strings are
 placed evenly around that center string.</p>
-</div></blockquote>
-<p><strong>station_diameter</strong> : float, optional</p>
-<blockquote>
-<div><p>Diameter (m) of the circle around which strings are placed.</p>
-</div></blockquote>
-<p><strong>string_type</strong> : optional</p>
-<blockquote>
-<div><p>Class to be used for creating string objects for <em class="xref py py-obj">subsets</em>.</p>
-</div></blockquote>
-<p><strong>**string_kwargs</strong></p>
-<blockquote>
-<div><p>Keyword arguments to be passed on to the <code class="docutils literal"><span class="pre">__init__</span></code> methods of
+</dd>
+<dt><strong>station_diameter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Diameter (m) of the circle around which strings are placed.</p>
+</dd>
+<dt><strong>string_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
+<dd><p class="first last">Class to be used for creating string objects for <em class="xref py py-obj">subsets</em>.</p>
+</dd>
+<dt><strong>**string_kwargs</strong></dt>
+<dd><p class="first last">Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
 the <em class="xref py py-obj">string_type</em> class.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>If <code class="docutils literal"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal"><span class="pre">True</span></code> and an antenna is found to be
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ValueError</strong></dt>
+<dd><p class="first last">If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
 above the ice surface.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -146,33 +144,37 @@ above the ice surface.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeHpol.html#pyrex.custom.irex.EnvelopeHpol" title="pyrex.custom.irex.EnvelopeHpol"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.custom.irex.EnvelopeHpol</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeHpol.html#pyrex.custom.irex.EnvelopeHpol" title="pyrex.custom.irex.EnvelopeHpol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.irex.EnvelopeHpol</span></code></a></dt>
 <dd>ARA Hpol (“quad-slot”) antenna system with front-end processing.</dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.html#pyrex.custom.irex.EnvelopeVpol" title="pyrex.custom.irex.EnvelopeVpol"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.custom.irex.EnvelopeVpol</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.html#pyrex.custom.irex.EnvelopeVpol" title="pyrex.custom.irex.EnvelopeVpol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.irex.EnvelopeVpol</span></code></a></dt>
 <dd>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.detector.IREXString.html#pyrex.custom.irex.detector.IREXString" title="pyrex.custom.irex.detector.IREXString"><code class="xref py py-obj docutils literal"><span class="pre">IREXString</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.irex.detector.IREXString.html#pyrex.custom.irex.detector.IREXString" title="pyrex.custom.irex.detector.IREXString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IREXString</span></code></a></dt>
 <dd>String of IREX Vpol antennas.</dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
 <p>This class is designed to have string-like objects (which are subclasses of
-<code class="docutils literal"><span class="pre">Detector</span></code>) as its <em class="xref py py-obj">subsets</em>. Then whenver an object of this class is
+<code class="docutils literal notranslate"><span class="pre">Detector</span></code>) as its <em class="xref py py-obj">subsets</em>. Then whenver an object of this class is
 iterated, all the antennas of its strings will be yielded as in a 1D list.</p>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="12%" />
-<col width="88%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><strong>antenna_positions</strong></td>
-<td>(list) List (potentially with sub-lists) of the positions of the antennas generated by the <a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.set_positions.html#pyrex.custom.irex.detector.CoxeterStation.set_positions" title="pyrex.custom.irex.detector.CoxeterStation.set_positions"><code class="xref py py-obj docutils literal"><span class="pre">set_positions</span></code></a> method.</td>
-</tr>
-<tr class="row-even"><td><strong>subsets</strong></td>
-<td>(list) List of the antenna or detector objects which make up the detector.</td>
-</tr>
-<tr class="row-odd"><td><strong>test_antenna_positions</strong></td>
-<td>(boolean) Class attribute for whether or not an error should be raised if antenna positions are found above the surface of the ice (where simulation behavior is ill-defined). Defaults to <code class="docutils literal"><span class="pre">True</span></code>.</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>antenna_positions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">List (potentially with sub-lists) of the positions of the antennas
+generated by the <a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.set_positions.html#pyrex.custom.irex.detector.CoxeterStation.set_positions" title="pyrex.custom.irex.detector.CoxeterStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_positions</span></code></a> method.</p>
+</dd>
+<dt><strong>subsets</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">List of the antenna or detector objects which make up the detector.</p>
+</dd>
+<dt><strong>test_antenna_positions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">Class attribute for whether or not an error should be raised if antenna
+positions are found above the surface of the ice (where simulation
+behavior is ill-defined). Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -183,16 +185,16 @@ iterated, all the antennas of its strings will be yielded as in a 1D list.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.build_antennas.html#pyrex.custom.irex.detector.CoxeterStation.build_antennas" title="pyrex.custom.irex.detector.CoxeterStation.build_antennas"><code class="xref py py-obj docutils literal"><span class="pre">build_antennas</span></code></a>(*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.build_antennas.html#pyrex.custom.irex.detector.CoxeterStation.build_antennas" title="pyrex.custom.irex.detector.CoxeterStation.build_antennas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_antennas</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>Creates antenna objects at the set antenna positions.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.clear.html#pyrex.custom.irex.detector.CoxeterStation.clear" title="pyrex.custom.irex.detector.CoxeterStation.clear"><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></a>([reset_noise])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.clear.html#pyrex.custom.irex.detector.CoxeterStation.clear" title="pyrex.custom.irex.detector.CoxeterStation.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</td>
 <td>Reset the detector to an empty state.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.set_positions.html#pyrex.custom.irex.detector.CoxeterStation.set_positions" title="pyrex.custom.irex.detector.CoxeterStation.set_positions"><code class="xref py py-obj docutils literal"><span class="pre">set_positions</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.set_positions.html#pyrex.custom.irex.detector.CoxeterStation.set_positions" title="pyrex.custom.irex.detector.CoxeterStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_positions</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
 <td>Generates antenna positions around the station.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.triggered.html#pyrex.custom.irex.detector.CoxeterStation.triggered" title="pyrex.custom.irex.detector.CoxeterStation.triggered"><code class="xref py py-obj docutils literal"><span class="pre">triggered</span></code></a>([antenna_requirement,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.detector.CoxeterStation.triggered.html#pyrex.custom.irex.detector.CoxeterStation.triggered" title="pyrex.custom.irex.detector.CoxeterStation.triggered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triggered</span></code></a>([antenna_requirement,&nbsp;…])</td>
 <td>Check if the station is triggered based on its current state.</td>
 </tr>
 </tbody>
@@ -212,7 +214,7 @@ iterated, all the antennas of its strings will be yielded as in a 1D list.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -284,7 +286,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeHpol\.tunnel\_diode
-================================================
+pyrex.custom.irex.EnvelopeHpol.tunnel\_diode
+============================================
 
 .. currentmodule:: pyrex.custom.irex
 

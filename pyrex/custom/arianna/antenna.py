@@ -610,7 +610,7 @@ class ARIANNAAntenna(Antenna):
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy.values *= signal_factor
+        copy *= signal_factor
         self.signals.append(copy)
 
 

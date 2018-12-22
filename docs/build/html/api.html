@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>PyREx API &mdash; PyREx 1.8.1 documentation</title>
+    <title>PyREx API &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="index.html" >
     <link rel="next" title="pyrex.Signal" href="docstrings/pyrex.Signal.html" >
     <link rel="prev" title="Contributing to PyREx" href="contributing.html" > 
   </head>
@@ -51,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -89,7 +90,7 @@
   <div class="section" id="pyrex-api">
 <span id="id1"></span><h1>PyREx API<a class="headerlink" href="#pyrex-api" title="Permalink to this headline">¶</a></h1>
 <p>The API documentation here is split into three sections.
-First, the <a class="reference internal" href="#api-1"><span class="std std-ref">PyREx Package Imports</span></a> section documents all classes and functions that are imported by PyREx under a <code class="docutils literal"><span class="pre">from</span> <span class="pre">pyrex</span> <span class="pre">import</span> <span class="pre">*</span></code> command.
+First, the <a class="reference internal" href="#api-1"><span class="std std-ref">PyREx Package Imports</span></a> section documents all classes and functions that are imported by PyREx under a <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyrex</span> <span class="pre">import</span> <span class="pre">*</span></code> command.
 Next, the <a class="reference internal" href="#api-2"><span class="std std-ref">Individual Module APIs</span></a> section is a full documentation of all the modules which make up the base PyREx package.
 And finally, the <a class="reference internal" href="#api-3"><span class="std std-ref">Included Custom Sub-Packages</span></a> section documents the custom subpackages included with PyREx by default.</p>
 <div class="section" id="pyrex-package-imports">
@@ -100,70 +101,79 @@ And finally, the <a class="reference internal" href="#api-3"><span class="std st
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-obj docutils literal"><span class="pre">Signal</span></code></a>(times,&nbsp;values[,&nbsp;value_type])</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Signal</span></code></a>(times,&nbsp;values[,&nbsp;value_type])</td>
 <td>Base class for time-domain signals.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.EmptySignal.html#pyrex.EmptySignal" title="pyrex.EmptySignal"><code class="xref py py-obj docutils literal"><span class="pre">EmptySignal</span></code></a>(times[,&nbsp;value_type])</td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.EmptySignal.html#pyrex.EmptySignal" title="pyrex.EmptySignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EmptySignal</span></code></a>(times[,&nbsp;value_type])</td>
 <td>Class for signal with zero amplitude (all values = 0).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-obj docutils literal"><span class="pre">FunctionSignal</span></code></a>(times,&nbsp;function[,&nbsp;value_type])</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionSignal</span></code></a>(times,&nbsp;function[,&nbsp;value_type])</td>
 <td>Class for signals generated by a function.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal"><span class="pre">AskaryanSignal</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal"><span class="pre">ARVZAskaryanSignal</span></code></td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AskaryanSignal</span></code></a></td>
+<td>alias of <a class="reference internal" href="docstrings/pyrex.signals.ARVZAskaryanSignal.html#pyrex.signals.ARVZAskaryanSignal" title="pyrex.signals.ARVZAskaryanSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.signals.ARVZAskaryanSignal</span></code></a></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-obj docutils literal"><span class="pre">ThermalNoise</span></code></a>(times,&nbsp;f_band[,&nbsp;f_amplitude,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.ThermalNoise.html#pyrex.ThermalNoise" title="pyrex.ThermalNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ThermalNoise</span></code></a>(times,&nbsp;f_band[,&nbsp;f_amplitude,&nbsp;…])</td>
 <td>Class for thermal Rayleigh noise signals.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-obj docutils literal"><span class="pre">Antenna</span></code></a>(position[,&nbsp;z_axis,&nbsp;x_axis,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Antenna</span></code></a>(position[,&nbsp;z_axis,&nbsp;x_axis,&nbsp;…])</td>
 <td>Base class for antennas.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-obj docutils literal"><span class="pre">DipoleAntenna</span></code></a>(name,&nbsp;position,&nbsp;…[,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.DipoleAntenna.html#pyrex.DipoleAntenna" title="pyrex.DipoleAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DipoleAntenna</span></code></a>(name,&nbsp;position,&nbsp;…[,&nbsp;…])</td>
 <td>Class for half-wave dipole antennas.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-obj docutils literal"><span class="pre">AntennaSystem</span></code></a>(antenna)</td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.AntennaSystem.html#pyrex.AntennaSystem" title="pyrex.AntennaSystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AntennaSystem</span></code></a>(antenna)</td>
 <td>Base class for antenna system with front-end processing.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-obj docutils literal"><span class="pre">Detector</span></code></a>(*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Detector.html#pyrex.Detector" title="pyrex.Detector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Detector</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>Base class for detectors for easily building up sets of antennas.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-obj docutils literal"><span class="pre">IceModel</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal"><span class="pre">AntarcticIce</span></code></td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IceModel</span></code></a></td>
+<td>alias of <a class="reference internal" href="docstrings/pyrex.ice_model.AntarcticIce.html#pyrex.ice_model.AntarcticIce" title="pyrex.ice_model.AntarcticIce"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.ice_model.AntarcticIce</span></code></a></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.prem_density.html#pyrex.prem_density" title="pyrex.prem_density"><code class="xref py py-obj docutils literal"><span class="pre">prem_density</span></code></a>(r)</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.prem_density.html#pyrex.prem_density" title="pyrex.prem_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prem_density</span></code></a>(r)</td>
 <td>Calculates the Earth’s density at a given radius.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.slant_depth.html#pyrex.slant_depth" title="pyrex.slant_depth"><code class="xref py py-obj docutils literal"><span class="pre">slant_depth</span></code></a>(angle,&nbsp;depth[,&nbsp;step])</td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.slant_depth.html#pyrex.slant_depth" title="pyrex.slant_depth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slant_depth</span></code></a>(angle,&nbsp;depth[,&nbsp;step])</td>
 <td>Calculates the material thickness of a chord cutting through Earth.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-obj docutils literal"><span class="pre">NeutrinoInteraction</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code></td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.NeutrinoInteraction.html#pyrex.NeutrinoInteraction" title="pyrex.NeutrinoInteraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NeutrinoInteraction</span></code></a></td>
+<td>alias of <a class="reference internal" href="docstrings/pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.particle.CTWInteraction</span></code></a></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a>(particle_id,&nbsp;vertex,&nbsp;direction,&nbsp;energy)</td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a>(particle_id,&nbsp;vertex,&nbsp;direction,&nbsp;energy)</td>
 <td>Class for storing particle attributes.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a>(roots)</td>
-<td>Class for storing a tree of <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects representing an event.</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code></a>(roots)</td>
+<td>Class for storing a tree of <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects representing an event.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.ShadowGenerator.html#pyrex.ShadowGenerator" title="pyrex.ShadowGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ShadowGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
-<td>Class to generate neutrino vertices with Earth shadowing.</td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.CylindricalGenerator.html#pyrex.CylindricalGenerator" title="pyrex.CylindricalGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CylindricalGenerator</span></code></a>(dr,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td>Class to generate neutrino vertices in a cylindrical ice volume.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.ListGenerator.html#pyrex.ListGenerator" title="pyrex.ListGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ListGenerator</span></code></a>(events[,&nbsp;loop])</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.RectangularGenerator.html#pyrex.RectangularGenerator" title="pyrex.RectangularGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td>Class to generate neutrino vertices in a rectangular ice volume.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.CylindricalShadowGenerator.html#pyrex.CylindricalShadowGenerator" title="pyrex.CylindricalShadowGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CylindricalShadowGenerator</span></code></a>(dr,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td>Class to generate neutrino vertices in a cylindrical ice volume.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.RectangularShadowGenerator.html#pyrex.RectangularShadowGenerator" title="pyrex.RectangularShadowGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularShadowGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy)</td>
+<td>Class to generate neutrino vertices in a rectangular ice volume.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.ListGenerator.html#pyrex.ListGenerator" title="pyrex.ListGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListGenerator</span></code></a>(events[,&nbsp;loop])</td>
 <td>Class to generate neutrino events from a list.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-obj docutils literal"><span class="pre">FileGenerator</span></code></a>(files[,&nbsp;interaction_model])</td>
-<td>Class to generate neutrino events from numpy file(s).</td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.FileGenerator.html#pyrex.FileGenerator" title="pyrex.FileGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileGenerator</span></code></a>(files[,&nbsp;slice_range,&nbsp;…])</td>
+<td>Class to generate neutrino events from simulation file(s).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-obj docutils literal"><span class="pre">RayTracer</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracer</span></code></td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RayTracer</span></code></a></td>
+<td>alias of <a class="reference internal" href="docstrings/pyrex.ray_tracing.SpecializedRayTracer.html#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.ray_tracing.SpecializedRayTracer</span></code></a></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-obj docutils literal"><span class="pre">RayTracePath</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code></td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RayTracePath</span></code></a></td>
+<td>alias of <a class="reference internal" href="docstrings/pyrex.ray_tracing.SpecializedRayTracePath.html#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.ray_tracing.SpecializedRayTracePath</span></code></a></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-obj docutils literal"><span class="pre">EventKernel</span></code></a>(generator,&nbsp;antennas[,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.EventKernel.html#pyrex.EventKernel" title="pyrex.EventKernel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EventKernel</span></code></a>(generator,&nbsp;antennas[,&nbsp;…])</td>
 <td>High-level kernel for controlling event simulation.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-obj docutils literal"><span class="pre">File</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="docstrings/pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-obj docutils literal notranslate"><span class="pre">File</span></code></a></td>
 <td>Class for reading or writing data files.</td>
 </tr>
 </tbody>
@@ -173,17 +183,17 @@ And finally, the <a class="reference internal" href="#api-3"><span class="std st
 <span id="api-2"></span><h2>Individual Module APIs<a class="headerlink" href="#individual-module-apis" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/internal_functions.html">Helper Functions (<code class="docutils literal"><span class="pre">pyrex.internal_functions</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/signals.html">Signal Processing (<code class="docutils literal"><span class="pre">pyrex.signals</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/antenna.html">Antennas (<code class="docutils literal"><span class="pre">pyrex.antenna</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/detector.html">High-level Detectors (<code class="docutils literal"><span class="pre">pyrex.detector</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/earth_model.html">Earth Model (<code class="docutils literal"><span class="pre">pyrex.earth_model</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/ice_model.html">Ice Models (<code class="docutils literal"><span class="pre">pyrex.ice_model</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/ray_tracing.html">Ray Tracers (<code class="docutils literal"><span class="pre">pyrex.ray_tracing</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/particle.html">Particles and Interaction Models (<code class="docutils literal"><span class="pre">pyrex.particle</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/generation.html">Event Generators (<code class="docutils literal"><span class="pre">pyrex.generation</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/kernel.html">Simulation Kernel (<code class="docutils literal"><span class="pre">pyrex.kernel</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/io.html">Data File I/O (<code class="docutils literal"><span class="pre">pyrex.io</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/internal_functions.html">Helper Functions (<code class="docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/signals.html">Signal Processing (<code class="docutils literal notranslate"><span class="pre">pyrex.signals</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/antenna.html">Antennas (<code class="docutils literal notranslate"><span class="pre">pyrex.antenna</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/detector.html">High-level Detectors (<code class="docutils literal notranslate"><span class="pre">pyrex.detector</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/earth_model.html">Earth Model (<code class="docutils literal notranslate"><span class="pre">pyrex.earth_model</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ice_model.html">Ice Models (<code class="docutils literal notranslate"><span class="pre">pyrex.ice_model</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ray_tracing.html">Ray Tracers (<code class="docutils literal notranslate"><span class="pre">pyrex.ray_tracing</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/particle.html">Particles and Interaction Models (<code class="docutils literal notranslate"><span class="pre">pyrex.particle</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/generation.html">Event Generators (<code class="docutils literal notranslate"><span class="pre">pyrex.generation</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/kernel.html">Simulation Kernel (<code class="docutils literal notranslate"><span class="pre">pyrex.kernel</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/io.html">Data File I/O (<code class="docutils literal notranslate"><span class="pre">pyrex.io</span></code>)</a></li>
 </ul>
 </div>
 </div>
@@ -191,9 +201,9 @@ And finally, the <a class="reference internal" href="#api-3"><span class="std st
 <span id="api-3"></span><h2>Included Custom Sub-Packages<a class="headerlink" href="#included-custom-sub-packages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/custom-ara.html">Askaryan Radio Array (<code class="docutils literal"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/custom-arianna.html">Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="docutils literal"><span class="pre">pyrex.custom.arianna</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/custom-irex.html">IceCube Radio Extension (<code class="docutils literal"><span class="pre">pyrex.custom.irex</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/custom-ara.html">Askaryan Radio Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/custom-arianna.html">Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.arianna</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/custom-irex.html">IceCube Radio Extension (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.irex</span></code>)</a></li>
 </ul>
 </div>
 </div>
@@ -210,7 +220,7 @@ And finally, the <a class="reference internal" href="#api-3"><span class="std st
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -282,7 +292,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

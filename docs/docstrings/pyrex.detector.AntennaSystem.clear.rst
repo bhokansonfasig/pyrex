@@ -1,5 +1,5 @@
-pyrex\.detector\.AntennaSystem\.clear
-=====================================
+pyrex.detector.AntennaSystem.clear
+==================================
 
 .. currentmodule:: pyrex.detector
 

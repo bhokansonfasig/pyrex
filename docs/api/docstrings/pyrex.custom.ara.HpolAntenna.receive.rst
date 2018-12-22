@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.HpolAntenna\.receive
-========================================
+pyrex.custom.ara.HpolAntenna.receive
+====================================
 
 .. currentmodule:: pyrex.custom.ara
 

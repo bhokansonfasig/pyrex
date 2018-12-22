@@ -1,5 +1,5 @@
-pyrex\.signals\.ARVZAskaryanSignal\.with\_times
-===============================================
+pyrex.signals.ARVZAskaryanSignal.with\_times
+============================================
 
 .. currentmodule:: pyrex.signals
 

@@ -1,5 +1,5 @@
-pyrex\.particle\.Interaction\.choose\_interaction
-=================================================
+pyrex.particle.Interaction.choose\_interaction
+==============================================
 
 .. currentmodule:: pyrex.particle
 

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Ray Tracers (pyrex.ray_tracing) &mdash; PyREx 1.8.1 documentation</title>
+    <title>Ray Tracers (pyrex.ray_tracing) &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.ray_tracing.BasicRayTracePath" href="../docstrings/pyrex.ray_tracing.BasicRayTracePath.html" >
     <link rel="prev" title="pyrex.ice_model.IceModel" href="../docstrings/pyrex.ice_model.IceModel.html" > 
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -89,7 +90,7 @@
           <div class="body" id="spc-section-body">
             
   <div class="section" id="module-pyrex.ray_tracing">
-<span id="ray-tracers-pyrex-ray-tracing"></span><h1>Ray Tracers (<a class="reference internal" href="#module-pyrex.ray_tracing" title="pyrex.ray_tracing"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.ray_tracing</span></code></a>)<a class="headerlink" href="#module-pyrex.ray_tracing" title="Permalink to this headline">¶</a></h1>
+<span id="ray-tracers-pyrex-ray-tracing"></span><h1>Ray Tracers (<a class="reference internal" href="#module-pyrex.ray_tracing" title="pyrex.ray_tracing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.ray_tracing</span></code></a>)<a class="headerlink" href="#module-pyrex.ray_tracing" title="Permalink to this headline">¶</a></h1>
 <p>Module containing classes for ray tracing through the ice.</p>
 <p>Ray tracer classes correspond to ray trace path classes, where the ray
 tracer is responsible for calculating the existance and launch angle of
@@ -101,28 +102,28 @@ returning information about propagation along their respective path.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.BasicRayTracePath.html#pyrex.ray_tracing.BasicRayTracePath" title="pyrex.ray_tracing.BasicRayTracePath"><code class="xref py py-obj docutils literal"><span class="pre">BasicRayTracePath</span></code></a>(parent_tracer,&nbsp;…)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.BasicRayTracePath.html#pyrex.ray_tracing.BasicRayTracePath" title="pyrex.ray_tracing.BasicRayTracePath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BasicRayTracePath</span></code></a>(parent_tracer,&nbsp;…)</td>
 <td>Class for representing a single ray-trace solution between points.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracePath.html#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-obj docutils literal"><span class="pre">SpecializedRayTracePath</span></code></a>(parent_tracer,&nbsp;…)</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracePath.html#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpecializedRayTracePath</span></code></a>(parent_tracer,&nbsp;…)</td>
 <td>Class for representing a single ray-trace solution between points.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.BasicRayTracer.html#pyrex.ray_tracing.BasicRayTracer" title="pyrex.ray_tracing.BasicRayTracer"><code class="xref py py-obj docutils literal"><span class="pre">BasicRayTracer</span></code></a>(from_point,&nbsp;to_point[,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.BasicRayTracer.html#pyrex.ray_tracing.BasicRayTracer" title="pyrex.ray_tracing.BasicRayTracer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BasicRayTracer</span></code></a>(from_point,&nbsp;to_point[,&nbsp;…])</td>
 <td>Class for calculating the ray-trace solutions between points.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracer.html#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-obj docutils literal"><span class="pre">SpecializedRayTracer</span></code></a>(from_point,&nbsp;to_point[,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracer.html#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpecializedRayTracer</span></code></a>(from_point,&nbsp;to_point[,&nbsp;…])</td>
 <td>Class for calculating the ray-trace solutions between points.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.RayTracer.html#pyrex.ray_tracing.RayTracer" title="pyrex.ray_tracing.RayTracer"><code class="xref py py-obj docutils literal"><span class="pre">RayTracer</span></code></a></td>
-<td>alias of <a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracer.html#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracer</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.RayTracer.html#pyrex.ray_tracing.RayTracer" title="pyrex.ray_tracing.RayTracer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RayTracer</span></code></a></td>
+<td>alias of <a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracer.html#pyrex.ray_tracing.SpecializedRayTracer" title="pyrex.ray_tracing.SpecializedRayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.ray_tracing.SpecializedRayTracer</span></code></a></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.RayTracePath.html#pyrex.ray_tracing.RayTracePath" title="pyrex.ray_tracing.RayTracePath"><code class="xref py py-obj docutils literal"><span class="pre">RayTracePath</span></code></a></td>
-<td>alias of <a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracePath.html#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-class docutils literal"><span class="pre">SpecializedRayTracePath</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.RayTracePath.html#pyrex.ray_tracing.RayTracePath" title="pyrex.ray_tracing.RayTracePath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RayTracePath</span></code></a></td>
+<td>alias of <a class="reference internal" href="../docstrings/pyrex.ray_tracing.SpecializedRayTracePath.html#pyrex.ray_tracing.SpecializedRayTracePath" title="pyrex.ray_tracing.SpecializedRayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.ray_tracing.SpecializedRayTracePath</span></code></a></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.PathFinder.html#pyrex.ray_tracing.PathFinder" title="pyrex.ray_tracing.PathFinder"><code class="xref py py-obj docutils literal"><span class="pre">PathFinder</span></code></a>(ice_model,&nbsp;from_point,&nbsp;to_point)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.PathFinder.html#pyrex.ray_tracing.PathFinder" title="pyrex.ray_tracing.PathFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PathFinder</span></code></a>(ice_model,&nbsp;from_point,&nbsp;to_point)</td>
 <td>Class for pseudo ray tracing.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.ReflectedPathFinder.html#pyrex.ray_tracing.ReflectedPathFinder" title="pyrex.ray_tracing.ReflectedPathFinder"><code class="xref py py-obj docutils literal"><span class="pre">ReflectedPathFinder</span></code></a>(ice_model,&nbsp;from_point,&nbsp;…)</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.ray_tracing.ReflectedPathFinder.html#pyrex.ray_tracing.ReflectedPathFinder" title="pyrex.ray_tracing.ReflectedPathFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReflectedPathFinder</span></code></a>(ice_model,&nbsp;from_point,&nbsp;…)</td>
 <td>Class for pseudo ray tracing of a reflected ray.</td>
 </tr>
 </tbody>
@@ -140,7 +141,7 @@ returning information about propagation along their respective path.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -212,7 +213,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

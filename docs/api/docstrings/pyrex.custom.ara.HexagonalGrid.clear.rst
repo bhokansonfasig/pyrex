@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.HexagonalGrid\.clear
-========================================
+pyrex.custom.ara.HexagonalGrid.clear
+====================================
 
 .. currentmodule:: pyrex.custom.ara
 

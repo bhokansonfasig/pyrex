@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.VpolAntenna
-===============================
+pyrex.custom.ara.VpolAntenna
+============================
 
 .. currentmodule:: pyrex.custom.ara
 
@@ -26,4 +26,15 @@ pyrex\.custom\.ara\.VpolAntenna
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         VpolAntenna.all_waveforms
+         VpolAntenna.is_hit
+         VpolAntenna.is_hit_mc_truth
+         VpolAntenna.lead_in_time
+         VpolAntenna.signals
+         VpolAntenna.waveforms
 

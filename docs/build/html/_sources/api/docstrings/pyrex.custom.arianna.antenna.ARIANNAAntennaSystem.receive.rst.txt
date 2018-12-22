@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.ARIANNAAntennaSystem\.receive
-==============================================================
+pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.receive
+=========================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

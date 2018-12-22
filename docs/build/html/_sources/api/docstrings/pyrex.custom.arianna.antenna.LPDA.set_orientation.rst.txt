@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.LPDA\.set\_orientation
-=======================================================
+pyrex.custom.arianna.antenna.LPDA.set\_orientation
+==================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Writer
-=====================
+pyrex.io.HDF5Writer
+===================
 
 .. currentmodule:: pyrex.io
 
@@ -25,4 +25,11 @@ pyrex\.io\.HDF5Writer
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         HDF5Writer.has_detector
+         HDF5Writer.is_open
 

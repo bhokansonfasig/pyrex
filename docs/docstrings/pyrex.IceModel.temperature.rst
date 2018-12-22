@@ -1,5 +1,5 @@
-pyrex\.IceModel\.temperature
-============================
+pyrex.IceModel.temperature
+==========================
 
 .. currentmodule:: pyrex
 
