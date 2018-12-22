@@ -1,5 +1,5 @@
-pyrex\.antenna\.Antenna\.make\_noise
-====================================
+pyrex.antenna.Antenna.make\_noise
+=================================
 
 .. currentmodule:: pyrex.antenna
 

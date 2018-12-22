@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.StationGrid\.set\_positions
-================================================
+pyrex.custom.irex.StationGrid.set\_positions
+============================================
 
 .. currentmodule:: pyrex.custom.irex
 

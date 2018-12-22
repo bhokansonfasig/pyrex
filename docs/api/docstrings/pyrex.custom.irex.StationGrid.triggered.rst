@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.StationGrid\.triggered
-===========================================
+pyrex.custom.irex.StationGrid.triggered
+=======================================
 
 .. currentmodule:: pyrex.custom.irex
 

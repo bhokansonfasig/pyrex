@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Event Generators (pyrex.generation) &mdash; PyREx 1.8.1 documentation</title>
+    <title>Event Generators (pyrex.generation) &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,14 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
-    <link rel="next" title="pyrex.generation.ShadowGenerator" href="../docstrings/pyrex.generation.ShadowGenerator.html" >
+    <link rel="next" title="pyrex.generation.BaseGenerator" href="../docstrings/pyrex.generation.BaseGenerator.html" >
     <link rel="prev" title="pyrex.particle.NeutrinoInteraction" href="../docstrings/pyrex.particle.NeutrinoInteraction.html" > 
   </head>
   <body>
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -68,7 +69,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="../docstrings/pyrex.generation.ShadowGenerator.html" title="pyrex.generation.ShadowGenerator"
+        <a href="../docstrings/pyrex.generation.BaseGenerator.html" title="pyrex.generation.BaseGenerator"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -89,7 +90,7 @@
           <div class="body" id="spc-section-body">
             
   <div class="section" id="module-pyrex.generation">
-<span id="event-generators-pyrex-generation"></span><h1>Event Generators (<a class="reference internal" href="#module-pyrex.generation" title="pyrex.generation"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.generation</span></code></a>)<a class="headerlink" href="#module-pyrex.generation" title="Permalink to this headline">¶</a></h1>
+<span id="event-generators-pyrex-generation"></span><h1>Event Generators (<a class="reference internal" href="#module-pyrex.generation" title="pyrex.generation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.generation</span></code></a>)<a class="headerlink" href="#module-pyrex.generation" title="Permalink to this headline">¶</a></h1>
 <p>Module for particle (neutrino) generators.</p>
 <p>Generators are responsible for the input of events into the simulation.</p>
 <table border="1" class="longtable docutils">
@@ -98,14 +99,33 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.generation.ShadowGenerator.html#pyrex.generation.ShadowGenerator" title="pyrex.generation.ShadowGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ShadowGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
-<td>Class to generate neutrino vertices with Earth shadowing.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.generation.BaseGenerator.html#pyrex.generation.BaseGenerator" title="pyrex.generation.BaseGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseGenerator</span></code></a>(energy[,&nbsp;flavor_ratio,&nbsp;…])</td>
+<td>Base class for neutrino generators.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.generation.ListGenerator.html#pyrex.generation.ListGenerator" title="pyrex.generation.ListGenerator"><code class="xref py py-obj docutils literal"><span class="pre">ListGenerator</span></code></a>(events[,&nbsp;loop])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.generation.CylindricalGenerator.html#pyrex.generation.CylindricalGenerator" title="pyrex.generation.CylindricalGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CylindricalGenerator</span></code></a>(dr,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td>Class to generate neutrino vertices in a cylindrical ice volume.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.generation.RectangularGenerator.html#pyrex.generation.RectangularGenerator" title="pyrex.generation.RectangularGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td>Class to generate neutrino vertices in a rectangular ice volume.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.generation.CylindricalShadowGenerator.html#pyrex.generation.CylindricalShadowGenerator" title="pyrex.generation.CylindricalShadowGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CylindricalShadowGenerator</span></code></a>(dr,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td>Class to generate neutrino vertices in a cylindrical ice volume.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.generation.RectangularShadowGenerator.html#pyrex.generation.RectangularShadowGenerator" title="pyrex.generation.RectangularShadowGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularShadowGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy)</td>
+<td>Class to generate neutrino vertices in a rectangular ice volume.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.generation.ShadowGenerator.html#pyrex.generation.ShadowGenerator" title="pyrex.generation.ShadowGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShadowGenerator</span></code></a>(dx,&nbsp;dy,&nbsp;dz,&nbsp;energy[,&nbsp;…])</td>
+<td><p class="rubric">Methods</p>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.generation.ListGenerator.html#pyrex.generation.ListGenerator" title="pyrex.generation.ListGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListGenerator</span></code></a>(events[,&nbsp;loop])</td>
 <td>Class to generate neutrino events from a list.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.generation.FileGenerator.html#pyrex.generation.FileGenerator" title="pyrex.generation.FileGenerator"><code class="xref py py-obj docutils literal"><span class="pre">FileGenerator</span></code></a>(files[,&nbsp;interaction_model])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.generation.NumpyFileGenerator.html#pyrex.generation.NumpyFileGenerator" title="pyrex.generation.NumpyFileGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NumpyFileGenerator</span></code></a>(files[,&nbsp;interaction_model])</td>
 <td>Class to generate neutrino events from numpy file(s).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.generation.FileGenerator.html#pyrex.generation.FileGenerator" title="pyrex.generation.FileGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileGenerator</span></code></a>(files[,&nbsp;slice_range,&nbsp;…])</td>
+<td>Class to generate neutrino events from simulation file(s).</td>
 </tr>
 </tbody>
 </table>
@@ -122,7 +142,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -194,7 +214,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

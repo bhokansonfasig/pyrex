@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeVpol\.tunnel\_diode
-=========================================================
+pyrex.custom.irex.antenna.EnvelopeVpol.tunnel\_diode
+====================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

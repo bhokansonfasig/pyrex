@@ -1,5 +1,5 @@
-pyrex\.AskaryanSignal\.with\_times
-==================================
+pyrex.AskaryanSignal.with\_times
+================================
 
 .. currentmodule:: pyrex
 

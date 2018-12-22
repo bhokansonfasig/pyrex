@@ -1,5 +1,5 @@
-pyrex\.ray\_tracing\.SpecializedRayTracePath\.theta
-===================================================
+pyrex.ray\_tracing.SpecializedRayTracePath.theta
+================================================
 
 .. currentmodule:: pyrex.ray_tracing
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.PhasedArrayString\.clear
-======================================================
+pyrex.custom.ara.detector.PhasedArrayString.clear
+=================================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.ARAString\.set\_positions
-=============================================
+pyrex.custom.ara.ARAString.set\_positions
+=========================================
 
 .. currentmodule:: pyrex.custom.ara
 

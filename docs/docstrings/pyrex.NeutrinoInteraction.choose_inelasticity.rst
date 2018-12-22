@@ -1,5 +1,5 @@
-pyrex\.NeutrinoInteraction\.choose\_inelasticity
-================================================
+pyrex.NeutrinoInteraction.choose\_inelasticity
+==============================================
 
 .. currentmodule:: pyrex
 

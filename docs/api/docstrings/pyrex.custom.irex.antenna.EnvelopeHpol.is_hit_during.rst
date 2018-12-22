@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeHpol\.is\_hit\_during
-===========================================================
+pyrex.custom.irex.antenna.EnvelopeHpol.is\_hit\_during
+======================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

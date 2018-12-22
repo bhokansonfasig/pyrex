@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ray_tracing.PathFinder &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.ray_tracing.PathFinder &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="Ray Tracers (pyrex.ray_tracing)" href="../api/ray_tracing.html" >
     <link rel="next" title="pyrex.ray_tracing.ReflectedPathFinder" href="pyrex.ray_tracing.ReflectedPathFinder.html" >
     <link rel="prev" title="pyrex.ray_tracing.RayTracePath" href="pyrex.ray_tracing.RayTracePath.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/ray_tracing.html" accesskey="U">Ray Tracers (<code class="docutils literal"><span class="pre">pyrex.ray_tracing</span></code>)</a></li> 
+          <li class="active"><a href="../api/ray_tracing.html" accesskey="U">Ray Tracers (<code class="docutils literal notranslate"><span class="pre">pyrex.ray_tracing</span></code>)</a></li> 
     </ul>
               
               
@@ -99,60 +100,46 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ice_model</strong></p>
-<blockquote>
-<div><p>The ice model used for the ray tracer.</p>
-</div></blockquote>
-<p><strong>from_point</strong> : array_like</p>
-<blockquote>
-<div><p>Vector starting point of the ray path.</p>
-</div></blockquote>
-<p><strong>to_point</strong> : array_like</p>
-<blockquote class="last">
-<div><p>Vector ending point of the ray path.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ice_model</strong></dt>
+<dd><p class="first last">The ice model used for the ray tracer.</p>
+</dd>
+<dt><strong>from_point</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">Vector starting point of the ray path.</p>
+</dd>
+<dt><strong>to_point</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">Vector ending point of the ray path.</p>
+</dd>
+</dl>
 </td>
 </tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">exists</span></code></td>
-<td>Boolean of whether the path exists between the endpoints.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">emitted_ray</span></code></td>
-<td>Direction in which the ray is emitted.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">received_ray</span></code></td>
-<td>Direction from which the ray is received.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">path_length</span></code></td>
-<td>Length (m) of the path.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">tof</span></code></td>
-<td>Time of flight (s) for a particle along the path.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="76%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>from_point</strong></td>
-<td>(ndarray) The starting point of the ray path.</td>
-</tr>
-<tr class="row-even"><td><strong>to_point</strong></td>
-<td>(ndarray) The ending point of the ray path.</td>
-</tr>
-<tr class="row-odd"><td><strong>ice</strong></td>
-<td>The ice model used for the ray tracer.</td>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>from_point</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">The starting point of the ray path.</p>
+</dd>
+<dt><strong>to_point</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd><p class="first last">The ending point of the ray path.</p>
+</dd>
+<dt><strong>ice</strong></dt>
+<dd><p class="first last">The ice model used for the ray tracer.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ray_tracing.PathFinder.exists.html#pyrex.ray_tracing.PathFinder.exists" title="pyrex.ray_tracing.PathFinder.exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exists</span></code></a></dt>
+<dd><p class="first last">Boolean of whether the path exists between the endpoints.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ray_tracing.PathFinder.emitted_ray.html#pyrex.ray_tracing.PathFinder.emitted_ray" title="pyrex.ray_tracing.PathFinder.emitted_ray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">emitted_ray</span></code></a></dt>
+<dd><p class="first last">Direction in which the ray is emitted.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ray_tracing.PathFinder.received_ray.html#pyrex.ray_tracing.PathFinder.received_ray" title="pyrex.ray_tracing.PathFinder.received_ray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">received_ray</span></code></a></dt>
+<dd><p class="first last">Direction from which the ray is received.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ray_tracing.PathFinder.path_length.html#pyrex.ray_tracing.PathFinder.path_length" title="pyrex.ray_tracing.PathFinder.path_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_length</span></code></a></dt>
+<dd><p class="first last">Length (m) of the path.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ray_tracing.PathFinder.tof.html#pyrex.ray_tracing.PathFinder.tof" title="pyrex.ray_tracing.PathFinder.tof"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tof</span></code></a></dt>
+<dd><p class="first last">Time of flight (s) for a particle along the path.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -163,13 +150,13 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.PathFinder.attenuation.html#pyrex.ray_tracing.PathFinder.attenuation" title="pyrex.ray_tracing.PathFinder.attenuation"><code class="xref py py-obj docutils literal"><span class="pre">attenuation</span></code></a>(f[,&nbsp;n_steps])</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.PathFinder.attenuation.html#pyrex.ray_tracing.PathFinder.attenuation" title="pyrex.ray_tracing.PathFinder.attenuation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation</span></code></a>(f[,&nbsp;n_steps])</td>
 <td>Calculate the attenuation factor for signal frequencies.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ray_tracing.PathFinder.propagate.html#pyrex.ray_tracing.PathFinder.propagate" title="pyrex.ray_tracing.PathFinder.propagate"><code class="xref py py-obj docutils literal"><span class="pre">propagate</span></code></a>(signal)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.ray_tracing.PathFinder.propagate.html#pyrex.ray_tracing.PathFinder.propagate" title="pyrex.ray_tracing.PathFinder.propagate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate</span></code></a>(signal)</td>
 <td>Propagate the signal along the ray path, in-place.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.PathFinder.time_of_flight.html#pyrex.ray_tracing.PathFinder.time_of_flight" title="pyrex.ray_tracing.PathFinder.time_of_flight"><code class="xref py py-obj docutils literal"><span class="pre">time_of_flight</span></code></a>([n_steps])</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.ray_tracing.PathFinder.time_of_flight.html#pyrex.ray_tracing.PathFinder.time_of_flight" title="pyrex.ray_tracing.PathFinder.time_of_flight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_of_flight</span></code></a>([n_steps])</td>
 <td>Time of flight (s) for a particle along the path.</td>
 </tr>
 </tbody>
@@ -189,7 +176,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -261,7 +248,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

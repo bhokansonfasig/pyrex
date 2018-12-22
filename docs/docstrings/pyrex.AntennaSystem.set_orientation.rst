@@ -1,5 +1,5 @@
-pyrex\.AntennaSystem\.set\_orientation
-======================================
+pyrex.AntennaSystem.set\_orientation
+====================================
 
 .. currentmodule:: pyrex
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.RegularStation
-===================================
+pyrex.custom.irex.RegularStation
+================================
 
 .. currentmodule:: pyrex.custom.irex
 
@@ -19,4 +19,10 @@ pyrex\.custom\.irex\.RegularStation
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         RegularStation.test_antenna_positions
 

@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Writer\.add\_analysis\_indices
-=============================================
+pyrex.io.HDF5Writer.add\_analysis\_indices
+==========================================
 
 .. currentmodule:: pyrex.io
 

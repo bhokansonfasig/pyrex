@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.CoxeterStation\.clear
-==========================================
+pyrex.custom.irex.CoxeterStation.clear
+======================================
 
 .. currentmodule:: pyrex.custom.irex
 

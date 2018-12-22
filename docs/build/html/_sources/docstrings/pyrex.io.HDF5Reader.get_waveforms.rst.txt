@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Reader\.get\_waveforms
-=====================================
+pyrex.io.HDF5Reader.get\_waveforms
+==================================
 
 .. currentmodule:: pyrex.io
 

@@ -1,5 +1,5 @@
-pyrex\.signals\.EmptySignal\.with\_times
-========================================
+pyrex.signals.EmptySignal.with\_times
+=====================================
 
 .. currentmodule:: pyrex.signals
 

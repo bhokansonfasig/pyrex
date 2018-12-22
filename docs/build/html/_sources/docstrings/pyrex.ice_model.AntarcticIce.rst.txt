@@ -1,5 +1,5 @@
-pyrex\.ice\_model\.AntarcticIce
-===============================
+pyrex.ice\_model.AntarcticIce
+=============================
 
 .. currentmodule:: pyrex.ice_model
 
@@ -20,4 +20,13 @@ pyrex\.ice\_model\.AntarcticIce
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         AntarcticIce.a
+         AntarcticIce.k
+         AntarcticIce.n0
+         AntarcticIce.thickness
 

@@ -1,5 +1,5 @@
-pyrex\.generation\.ShadowGenerator\.get\_vertex
-===============================================
+pyrex.generation.ShadowGenerator.get\_vertex
+============================================
 
 .. currentmodule:: pyrex.generation
 

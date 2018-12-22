@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeVpol\.trigger
-==========================================
+pyrex.custom.irex.EnvelopeVpol.trigger
+======================================
 
 .. currentmodule:: pyrex.custom.irex
 

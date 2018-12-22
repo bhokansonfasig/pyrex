@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.\_read\_directionality\_data
-=========================================================
+pyrex.custom.ara.antenna.\_read\_directionality\_data
+=====================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

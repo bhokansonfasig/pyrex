@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.PhasedArrayString\.triggered
-================================================
+pyrex.custom.ara.PhasedArrayString.triggered
+============================================
 
 .. currentmodule:: pyrex.custom.ara
 

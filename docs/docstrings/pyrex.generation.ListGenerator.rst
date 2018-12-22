@@ -1,5 +1,5 @@
-pyrex\.generation\.ListGenerator
-================================
+pyrex.generation.ListGenerator
+==============================
 
 .. currentmodule:: pyrex.generation
 
@@ -16,4 +16,10 @@ pyrex\.generation\.ListGenerator
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ListGenerator.count
 

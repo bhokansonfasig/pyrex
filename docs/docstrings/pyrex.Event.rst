@@ -1,5 +1,5 @@
-pyrex\.Event
-============
+pyrex.Event
+===========
 
 .. currentmodule:: pyrex
 

@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeHpol\.receive
-===================================================
+pyrex.custom.irex.antenna.EnvelopeHpol.receive
+==============================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

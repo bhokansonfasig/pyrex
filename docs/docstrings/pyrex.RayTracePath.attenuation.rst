@@ -1,5 +1,5 @@
-pyrex\.RayTracePath\.attenuation
-================================
+pyrex.RayTracePath.attenuation
+==============================
 
 .. currentmodule:: pyrex
 

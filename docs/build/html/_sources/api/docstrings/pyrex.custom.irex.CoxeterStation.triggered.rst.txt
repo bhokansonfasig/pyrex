@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.CoxeterStation\.triggered
-==============================================
+pyrex.custom.irex.CoxeterStation.triggered
+==========================================
 
 .. currentmodule:: pyrex.custom.irex
 

@@ -1,5 +1,5 @@
-pyrex\.signals\.GaussianNoise\.resample
-=======================================
+pyrex.signals.GaussianNoise.resample
+====================================
 
 .. currentmodule:: pyrex.signals
 

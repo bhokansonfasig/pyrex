@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Writer\.create\_analysis\_group
-==============================================
+pyrex.io.HDF5Writer.create\_analysis\_group
+===========================================
 
 .. currentmodule:: pyrex.io
 

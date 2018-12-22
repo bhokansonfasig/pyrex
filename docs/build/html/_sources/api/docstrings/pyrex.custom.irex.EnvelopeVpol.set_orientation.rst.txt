@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeVpol\.set\_orientation
-===================================================
+pyrex.custom.irex.EnvelopeVpol.set\_orientation
+===============================================
 
 .. currentmodule:: pyrex.custom.irex
 

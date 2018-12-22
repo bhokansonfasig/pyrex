@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeVpol\.front\_end
-======================================================
+pyrex.custom.irex.antenna.EnvelopeVpol.front\_end
+=================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

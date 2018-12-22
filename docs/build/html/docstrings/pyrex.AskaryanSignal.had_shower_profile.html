@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.AskaryanSignal.had_shower_profile &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.AskaryanSignal.had_shower_profile &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -89,53 +90,49 @@ length in ice, plus a scale factor for the number of particles.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>z</strong> : float</p>
-<blockquote>
-<div><p>Distance (m) along the shower at which to calculate the charge.</p>
-</div></blockquote>
-<p><strong>energy</strong> : float</p>
-<blockquote>
-<div><p>Energy (GeV) of the shower.</p>
-</div></blockquote>
-<p><strong>density</strong> : float, optional</p>
-<blockquote>
-<div><p>Density (g/cm^3) of ice.</p>
-</div></blockquote>
-<p><strong>crit_energy</strong> : float, optional</p>
-<blockquote>
-<div><p>Critical energy (GeV) for shower formation.</p>
-</div></blockquote>
-<p><strong>rad_length</strong> : float, optional</p>
-<blockquote>
-<div><p>Hadron radiation length (g/cm^2) in ice.</p>
-</div></blockquote>
-<p><strong>int_length</strong> : float, optional</p>
-<blockquote>
-<div><p>Interaction length (g/cm^2) in ice.</p>
-</div></blockquote>
-<p><strong>scale_factor</strong> : float, optional</p>
-<blockquote>
-<div><p>Scale factor S_0 which multiplies the number of particles in the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>z</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">Distance (m) along the shower at which to calculate the charge.</p>
+</dd>
+<dt><strong>energy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Energy (GeV) of the shower.</p>
+</dd>
+<dt><strong>density</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Density (g/cm^3) of ice.</p>
+</dd>
+<dt><strong>crit_energy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Critical energy (GeV) for shower formation.</p>
+</dd>
+<dt><strong>rad_length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Hadron radiation length (g/cm^2) in ice.</p>
+</dd>
+<dt><strong>int_length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Interaction length (g/cm^2) in ice.</p>
+</dd>
+<dt><strong>scale_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Scale factor S_0 which multiplies the number of particles in the
 shower.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">float</p>
-<blockquote class="last">
-<div><p>The charge (C) at the given distance along the shower.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>array_like</strong></dt>
+<dd><p class="first last">The charge (C) at the given distance along the shower.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
 <p>Profile calculated by a Gaisser-Hillas model based on equation 1 of the
-Alvarez hadronic shower paper <a class="reference internal" href="#r2525" id="id1">[R2525]</a>.</p>
+Alvarez hadronic shower paper <a class="reference internal" href="#r38c2f3609300-1" id="id1">[1]</a>.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r2525" rules="none">
+<table class="docutils citation" frame="void" id="r38c2f3609300-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R2525]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> J. Alvarez-Muniz &amp; E. Zas, “EeV Hadronic Showers in Ice: The LPM
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> J. Alvarez-Muniz &amp; E. Zas, “EeV Hadronic Showers in Ice: The LPM
 effect.” ICRC proceedings, 17-25 (1999).</td></tr>
 </tbody>
 </table>
@@ -154,7 +151,7 @@ effect.” ICRC proceedings, 17-25 (1999).</td></tr>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -221,7 +218,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

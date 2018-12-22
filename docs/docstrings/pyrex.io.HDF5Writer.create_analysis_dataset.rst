@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Writer\.create\_analysis\_dataset
-================================================
+pyrex.io.HDF5Writer.create\_analysis\_dataset
+=============================================
 
 .. currentmodule:: pyrex.io
 

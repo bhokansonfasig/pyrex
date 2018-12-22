@@ -1,5 +1,5 @@
-pyrex\.detector\.AntennaSystem\.make\_noise
-===========================================
+pyrex.detector.AntennaSystem.make\_noise
+========================================
 
 .. currentmodule:: pyrex.detector
 

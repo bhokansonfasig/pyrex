@@ -1,5 +1,5 @@
-pyrex\.detector\.Detector\.triggered
-====================================
+pyrex.detector.Detector.triggered
+=================================
 
 .. currentmodule:: pyrex.detector
 

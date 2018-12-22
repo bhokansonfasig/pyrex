@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeHpol\.set\_orientation
-============================================================
+pyrex.custom.irex.antenna.EnvelopeHpol.set\_orientation
+=======================================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

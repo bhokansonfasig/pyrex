@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.AlbrechtStation\.set\_positions
-===================================================
+pyrex.custom.ara.AlbrechtStation.set\_positions
+===============================================
 
 .. currentmodule:: pyrex.custom.ara
 

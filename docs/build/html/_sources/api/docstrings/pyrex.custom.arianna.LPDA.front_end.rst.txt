@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.LPDA\.front\_end
-========================================
+pyrex.custom.arianna.LPDA.front\_end
+====================================
 
 .. currentmodule:: pyrex.custom.arianna
 

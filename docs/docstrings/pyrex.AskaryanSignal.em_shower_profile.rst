@@ -1,5 +1,5 @@
-pyrex\.AskaryanSignal\.em\_shower\_profile
-==========================================
+pyrex.AskaryanSignal.em\_shower\_profile
+========================================
 
 .. currentmodule:: pyrex
 

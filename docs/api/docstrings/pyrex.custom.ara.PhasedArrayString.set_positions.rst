@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.PhasedArrayString\.set\_positions
-=====================================================
+pyrex.custom.ara.PhasedArrayString.set\_positions
+=================================================
 
 .. currentmodule:: pyrex.custom.ara
 

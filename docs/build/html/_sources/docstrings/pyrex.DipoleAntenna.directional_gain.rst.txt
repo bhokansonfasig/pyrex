@@ -1,5 +1,5 @@
-pyrex\.DipoleAntenna\.directional\_gain
-=======================================
+pyrex.DipoleAntenna.directional\_gain
+=====================================
 
 .. currentmodule:: pyrex
 

@@ -1,5 +1,5 @@
-pyrex\.particle\.GQRSInteraction\.choose\_shower\_fractions
-===========================================================
+pyrex.particle.GQRSInteraction.choose\_shower\_fractions
+========================================================
 
 .. currentmodule:: pyrex.particle
 

@@ -1,5 +1,5 @@
-pyrex\.Detector\.clear
-======================
+pyrex.Detector.clear
+====================
 
 .. currentmodule:: pyrex
 

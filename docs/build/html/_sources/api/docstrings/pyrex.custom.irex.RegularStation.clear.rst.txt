@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.RegularStation\.clear
-==========================================
+pyrex.custom.irex.RegularStation.clear
+======================================
 
 .. currentmodule:: pyrex.custom.irex
 

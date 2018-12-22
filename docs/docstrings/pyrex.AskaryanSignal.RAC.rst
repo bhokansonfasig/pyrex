@@ -1,5 +1,5 @@
-pyrex\.AskaryanSignal\.RAC
-==========================
+pyrex.AskaryanSignal.RAC
+========================
 
 .. currentmodule:: pyrex
 

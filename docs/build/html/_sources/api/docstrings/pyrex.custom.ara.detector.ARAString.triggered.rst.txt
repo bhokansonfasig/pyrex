@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.ARAString\.triggered
-==================================================
+pyrex.custom.ara.detector.ARAString.triggered
+=============================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 

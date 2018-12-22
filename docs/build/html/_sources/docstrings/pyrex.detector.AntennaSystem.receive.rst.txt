@@ -1,5 +1,5 @@
-pyrex\.detector\.AntennaSystem\.receive
-=======================================
+pyrex.detector.AntennaSystem.receive
+====================================
 
 .. currentmodule:: pyrex.detector
 

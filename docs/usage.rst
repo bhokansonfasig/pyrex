@@ -36,20 +36,27 @@ While there are no specified units for :attr:`Signal.values`, there is the optio
     my_voltage_signal = pyrex.Signal(times=time_array, values=value_array,
                                      value_type=pyrex.Signal.Type.voltage)
 
-:class:`Signal` objects can be added as long as they have the same time array and :attr:`value_type`. :class:`Signal` objects also support the python :func:`sum` function::
+:class:`Signal` objects can be added as long as they have the same time array and :attr:`value_type`. :class:`Signal` objects can also be multiplied by numeric types, which will multiply the :attr:`values` attribute of the signal. ::
 
     time_array = np.linspace(0, 10)
     values1 = np.sin(time_array)
     values2 = np.cos(time_array)
     signal1 = pyrex.Signal(time_array, values1)
-    plt.plot(signal1.times, signal1.values, label="signal1 = sin(t)")
+    plt.plot(signal1.times, signal1.values,
+             label="signal1 = sin(t)")
     signal2 = pyrex.Signal(time_array, values2)
-    plt.plot(signal2.times, signal2.values, label="signal2 = cos(t)")
+    plt.plot(signal2.times, signal2.values,
+             label="signal2 = cos(t)")
     signal3 = signal1 + signal2
-    plt.plot(signal3.times, signal3.values, label="signal3 = sin(t)+cos(t)")
+    plt.plot(signal3.times, signal3.values,
+             label="signal3 = sin(t)+cos(t)")
+    signal4 = 2 * signal3
+    plt.plot(signal4.times, signal4.values,
+             label="signal4 = 2*(sin(t)+cos(t))")
     all_signals = [signal1, signal2, signal3]
-    signal4 = sum(all_signals)
-    plt.plot(signal4.times, signal4.values, label="signal4 = 2*(sin(t)+cos(t))")
+    signal5 = sum(all_signals)
+    plt.plot(signal5.times, signal5.values, '--',
+             label="signal5 = 2*(sin(t)+cos(t))")
     plt.legend()
     plt.show()
 
@@ -407,7 +414,7 @@ Objects of this class can then, for the most part, be interacted with as though 
 .. image:: _static/example_outputs/detector_3.png
 
 
-The :class:`Detector` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used in a detector). Subclasses must define a :meth:`Detector.set_positions` method to assign vector positions to the self.antenna_positions attribute. By default :meth:`Detector.set_positions` will raise a :exc:`NotImplementedError`. Additionally subclasses may extend the default :meth:`Detector.build_antennas` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the :class:`Detector` class is that once the :meth:`Detector.build_antennas` method is run, it can be iterated directly as though the object were a list of the antennas it generated. An example of subclassing the :class:`Detector` class is shown below::
+The :class:`Detector` class is another convenience class meant to be subclassed. It is useful for automatically generating many antennas (as would be used in a detector). Subclasses must define a :meth:`Detector.set_positions` method to assign vector positions to the self.antenna_positions attribute. By default :meth:`Detector.set_positions` will raise a :exc:`NotImplementedError`. Additionally subclasses may extend the default :meth:`Detector.build_antennas` method which by default simply builds antennas of a passed antenna class using any keyword arguments passed to the method. In addition to simply generating many antennas at desired positions, another convenience of the :class:`Detector` class is that once the :meth:`Detector.build_antennas` method is run, it can be iterated directly as though the object were a list of the antennas it generated. And finally, the :meth:`Detector.triggered` method will check whether any of the antennas have been triggered, and can be overridden in subclasses to define a more complicated detector trigger. An example of subclassing the :class:`Detector` class is shown below::
 
     class AntennaGrid(pyrex.Detector):
         """A detector composed of a plane of antennas in a rectangular grid layout
@@ -464,6 +471,7 @@ Due to the parallels between :class:`Antenna` and :class:`AntennaSystem`, an ant
 
 .. image:: _static/example_outputs/detector_5.png
 
+For convenience, objects derived from the :class:`Detector` class can be added into a :class:`CombinedDetector` object, which behaves similarly. The :meth:`CombinedDetector.build_antennas` method should work seamlessly if the sub-detectors have the same :func:`build_antennas` method, otherwise it will do its best to dispatch keyword arguments between the sub-detectors. Similarly the :meth:`CombinedDetector.triggered` method will return ``True`` if either sub-detector was triggered, with arguments to the method dispatched to the proper sub-triggers.
 
 
 Ice and Earth Models
@@ -568,20 +576,20 @@ The :attr:`interaction` attribute is an instance of an :class:`Interaction` clas
     particle.interaction.cross_section
     particle.interaction.interaction_length
 
-PyREx also includes a :class:`ShadowGenerator` class for generating random neutrinos, taking into account Earth shadowing. The neutrinos are generated in a box of given size, and with a given energy (which can be a scalar value or a function returning scalar values). A desired flavor ratio can also be given::
+PyREx also includes a number of classes for generating random neutrinos in various ice volumes. The :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes generate neutrinos uniformly in cylindrical or rectangular volumes respectively. The :class:`CylindricalShadowGenerator` and :class:`RectangularShadowGenerator` classes are similar, but take into account Earth shadowing when generating particles. These generator classes take as arguments the necessary dimensions and an energy (which can be a scalar value or a function returning scalar values). A desired flavor ratio can also be given::
 
-    box_width = 1000 # m
-    box_depth = 500 # m
+    volume_radius = 1000 # m
+    volume_depth = 500 # m
     flavor_ratio = (1, 1, 1) # even distribution of neutrino flavors
-    my_generator = pyrex.ShadowGenerator(dx=box_width, dy=box_width,
-                                         dz=box_depth,
-                                         energy=particle_energy,
-                                         flavor_ratio=flavor_ratio)
+    my_generator = pyrex.CylindricalGenerator(dr=volume_radius,
+                                              dz=volume_depth,
+                                              energy=particle_energy,
+                                              flavor_ratio=flavor_ratio)
     my_generator.create_event()
 
-The :meth:`ShadowGenerator.create_event` method returns an :class:`Event` object, which contains a tree of :class:`Particle` objects representing the event. Currently this tree will only contain a single neutrino, but could be expanded in the future in order to describe more exotic events. The neutrino is available as the only element in the list :attr:`Event.roots`. It could also be accessed by iterating the :class:`Event` object.
+The :meth:`create_event` method of the generator returns an :class:`Event` object, which contains a tree of :class:`Particle` objects representing the event. Currently this tree will only contain a single neutrino, but could be expanded in the future in order to describe more exotic events. The neutrino is available as the only element in the list :attr:`Event.roots`. It can also be accessed by iterating the :class:`Event` object.
 
-Lastly, PyREx includes :class:`ListGenerator` and :class:`FileGenerator` classes which can be used to reproduce pre-generated events from either a list or from numpy files, respectively. For example, to continuously re-throw our :class:`Particle` object from above::
+Lastly, PyREx includes :class:`ListGenerator` and :class:`FileGenerator` classes which can be used to reproduce pre-generated events from either a list or from simulation output files, respectively. For example, to continuously re-throw our :class:`Particle` object from above::
 
     repetitive_generator = pyrex.ListGenerator([pyrex.Event(particle)])
     repetitive_generator.create_event()
@@ -594,8 +602,8 @@ Full Simulation
 
 PyREx provides the :class:`EventKernel` class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The :class:`EventKernel` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
 
-    particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
-                                               energy=1e8)
+    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
+                                                          energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
@@ -650,8 +658,8 @@ If writing an HDF5 file, the optional arguments specify which event data to writ
 
 The most straightforward way to write data files is to pass a :class:`File` object to the :class:`EventKernel` object handling the simulation. In such a case, a global trigger condition should be passed to the :class:`EventKernel` as well, either as a function which acts on a detector object, or as the "global" key in a dictionary of functions representing various trigger conditions::
 
-    particle_generator = pyrex.ShadowGenerator(dx=1000, dy=1000, dz=500,
-                                               energy=1e8)
+    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
+                                                          energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(

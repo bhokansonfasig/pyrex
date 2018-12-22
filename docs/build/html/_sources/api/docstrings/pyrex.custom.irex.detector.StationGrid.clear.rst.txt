@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.detector\.StationGrid\.clear
-=================================================
+pyrex.custom.irex.detector.StationGrid.clear
+============================================
 
 .. currentmodule:: pyrex.custom.irex.detector
 

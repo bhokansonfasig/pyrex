@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.LPDA\.full\_waveform
-============================================
+pyrex.custom.arianna.LPDA.full\_waveform
+========================================
 
 .. currentmodule:: pyrex.custom.arianna
 

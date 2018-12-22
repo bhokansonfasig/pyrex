@@ -1,5 +1,5 @@
-pyrex\.particle\.CTWInteraction\.choose\_inelasticity
-=====================================================
+pyrex.particle.CTWInteraction.choose\_inelasticity
+==================================================
 
 .. currentmodule:: pyrex.particle
 

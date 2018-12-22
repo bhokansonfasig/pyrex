@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeVpol\.is\_hit\_during
-==================================================
+pyrex.custom.irex.EnvelopeVpol.is\_hit\_during
+==============================================
 
 .. currentmodule:: pyrex.custom.irex
 

@@ -1,5 +1,5 @@
-pyrex\.particle\.Event\.get\_from\_level
-========================================
+pyrex.particle.Event.get\_from\_level
+=====================================
 
 .. currentmodule:: pyrex.particle
 

@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Writer\.add\_analysis\_metadata
-==============================================
+pyrex.io.HDF5Writer.add\_analysis\_metadata
+===========================================
 
 .. currentmodule:: pyrex.io
 

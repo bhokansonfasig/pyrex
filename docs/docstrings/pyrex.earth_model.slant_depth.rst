@@ -1,5 +1,5 @@
-pyrex\.earth\_model\.slant\_depth
-=================================
+pyrex.earth\_model.slant\_depth
+===============================
 
 .. currentmodule:: pyrex.earth_model
 

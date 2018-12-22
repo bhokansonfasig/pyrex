@@ -1,5 +1,5 @@
-pyrex\.generation\.ShadowGenerator\.get\_particle\_type
-=======================================================
+pyrex.generation.ShadowGenerator.get\_particle\_type
+====================================================
 
 .. currentmodule:: pyrex.generation
 

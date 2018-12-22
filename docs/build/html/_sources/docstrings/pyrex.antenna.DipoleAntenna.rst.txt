@@ -1,5 +1,5 @@
-pyrex\.antenna\.DipoleAntenna
-=============================
+pyrex.antenna.DipoleAntenna
+===========================
 
 .. currentmodule:: pyrex.antenna
 
@@ -25,4 +25,13 @@ pyrex\.antenna\.DipoleAntenna
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         DipoleAntenna.all_waveforms
+         DipoleAntenna.is_hit
+         DipoleAntenna.is_hit_mc_truth
+         DipoleAntenna.waveforms
 

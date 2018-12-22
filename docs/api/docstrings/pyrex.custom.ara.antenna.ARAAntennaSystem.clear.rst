@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.ARAAntennaSystem\.clear
-====================================================
+pyrex.custom.ara.antenna.ARAAntennaSystem.clear
+===============================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

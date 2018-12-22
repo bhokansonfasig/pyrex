@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.DipoleTester\.clear
-=================================================
+pyrex.custom.irex.antenna.DipoleTester.clear
+============================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

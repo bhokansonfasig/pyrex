@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.HexagonalGrid
-===========================================
+pyrex.custom.ara.detector.HexagonalGrid
+=======================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 
@@ -19,4 +19,10 @@ pyrex\.custom\.ara\.detector\.HexagonalGrid
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         HexagonalGrid.test_antenna_positions
 

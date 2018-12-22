@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.RegularStation\.clear
-=========================================
+pyrex.custom.ara.RegularStation.clear
+=====================================
 
 .. currentmodule:: pyrex.custom.ara
 

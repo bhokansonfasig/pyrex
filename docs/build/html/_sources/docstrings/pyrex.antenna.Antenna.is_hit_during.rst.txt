@@ -1,5 +1,5 @@
-pyrex\.antenna\.Antenna\.is\_hit\_during
-========================================
+pyrex.antenna.Antenna.is\_hit\_during
+=====================================
 
 .. currentmodule:: pyrex.antenna
 

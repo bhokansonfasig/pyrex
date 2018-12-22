@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.ARAString
-=============================
+pyrex.custom.ara.ARAString
+==========================
 
 .. currentmodule:: pyrex.custom.ara
 
@@ -19,4 +19,10 @@ pyrex\.custom\.ara\.ARAString
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ARAString.test_antenna_positions
 

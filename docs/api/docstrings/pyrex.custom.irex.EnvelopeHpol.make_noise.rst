@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeHpol\.make\_noise
-==============================================
+pyrex.custom.irex.EnvelopeHpol.make\_noise
+==========================================
 
 .. currentmodule:: pyrex.custom.irex
 

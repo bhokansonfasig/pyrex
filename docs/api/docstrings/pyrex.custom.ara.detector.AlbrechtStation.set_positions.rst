@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.detector\.AlbrechtStation\.set\_positions
-=============================================================
+pyrex.custom.ara.detector.AlbrechtStation.set\_positions
+========================================================
 
 .. currentmodule:: pyrex.custom.ara.detector
 

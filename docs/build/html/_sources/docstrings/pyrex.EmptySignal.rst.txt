@@ -1,5 +1,5 @@
-pyrex\.EmptySignal
-==================
+pyrex.EmptySignal
+=================
 
 .. currentmodule:: pyrex
 
@@ -18,4 +18,14 @@ pyrex\.EmptySignal
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         EmptySignal.dt
+         EmptySignal.envelope
+         EmptySignal.frequencies
+         EmptySignal.spectrum
+         EmptySignal.value_type
 

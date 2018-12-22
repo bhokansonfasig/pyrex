@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.ARAString\.triggered
-========================================
+pyrex.custom.ara.ARAString.triggered
+====================================
 
 .. currentmodule:: pyrex.custom.ara
 

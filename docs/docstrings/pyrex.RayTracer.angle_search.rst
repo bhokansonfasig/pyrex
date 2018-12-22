@@ -1,5 +1,5 @@
-pyrex\.RayTracer\.angle\_search
-===============================
+pyrex.RayTracer.angle\_search
+=============================
 
 .. currentmodule:: pyrex
 

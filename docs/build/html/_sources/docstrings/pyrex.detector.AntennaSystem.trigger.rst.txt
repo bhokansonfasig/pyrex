@@ -1,5 +1,5 @@
-pyrex\.detector\.AntennaSystem\.trigger
-=======================================
+pyrex.detector.AntennaSystem.trigger
+====================================
 
 .. currentmodule:: pyrex.detector
 

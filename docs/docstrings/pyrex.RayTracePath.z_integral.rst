@@ -1,5 +1,5 @@
-pyrex\.RayTracePath\.z\_integral
-================================
+pyrex.RayTracePath.z\_integral
+==============================
 
 .. currentmodule:: pyrex
 

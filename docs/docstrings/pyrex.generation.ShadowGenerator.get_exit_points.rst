@@ -1,5 +1,5 @@
-pyrex\.generation\.ShadowGenerator\.get\_exit\_points
-=====================================================
+pyrex.generation.ShadowGenerator.get\_exit\_points
+==================================================
 
 .. currentmodule:: pyrex.generation
 

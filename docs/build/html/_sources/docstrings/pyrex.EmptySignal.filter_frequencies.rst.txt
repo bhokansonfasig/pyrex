@@ -1,5 +1,5 @@
-pyrex\.EmptySignal\.filter\_frequencies
-=======================================
+pyrex.EmptySignal.filter\_frequencies
+=====================================
 
 .. currentmodule:: pyrex
 

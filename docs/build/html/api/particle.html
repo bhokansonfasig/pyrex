@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Particles and Interaction Models (pyrex.particle) &mdash; PyREx 1.8.1 documentation</title>
+    <title>Particles and Interaction Models (pyrex.particle) &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.particle.Event" href="../docstrings/pyrex.particle.Event.html" >
     <link rel="prev" title="pyrex.ray_tracing.ReflectedPathFinder" href="../docstrings/pyrex.ray_tracing.ReflectedPathFinder.html" > 
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -89,7 +90,7 @@
           <div class="body" id="spc-section-body">
             
   <div class="section" id="module-pyrex.particle">
-<span id="particles-and-interaction-models-pyrex-particle"></span><h1>Particles and Interaction Models (<a class="reference internal" href="#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal"><span class="pre">pyrex.particle</span></code></a>)<a class="headerlink" href="#module-pyrex.particle" title="Permalink to this headline">¶</a></h1>
+<span id="particles-and-interaction-models-pyrex-particle"></span><h1>Particles and Interaction Models (<a class="reference internal" href="#module-pyrex.particle" title="pyrex.particle"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.particle</span></code></a>)<a class="headerlink" href="#module-pyrex.particle" title="Permalink to this headline">¶</a></h1>
 <p>Module for particles (neutrinos) and neutrino interactions in the ice.</p>
 <p>Included in the module are the Particle class for storing particle/shower
 attributes and some Interaction classes which store models describing neutrino
@@ -100,23 +101,23 @@ interactions.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.Event.html#pyrex.particle.Event" title="pyrex.particle.Event"><code class="xref py py-obj docutils literal"><span class="pre">Event</span></code></a>(roots)</td>
-<td>Class for storing a tree of <a class="reference internal" href="../docstrings/pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a> objects representing an event.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.Event.html#pyrex.particle.Event" title="pyrex.particle.Event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code></a>(roots)</td>
+<td>Class for storing a tree of <a class="reference internal" href="../docstrings/pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects representing an event.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal"><span class="pre">Particle</span></code></a>(particle_id,&nbsp;vertex,&nbsp;direction,&nbsp;energy)</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a>(particle_id,&nbsp;vertex,&nbsp;direction,&nbsp;energy)</td>
 <td>Class for storing particle attributes.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal"><span class="pre">Interaction</span></code></a>(particle[,&nbsp;kind])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Interaction</span></code></a>(particle[,&nbsp;kind])</td>
 <td>Base class for describing neutrino interaction attributes.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.GQRSInteraction.html#pyrex.particle.GQRSInteraction" title="pyrex.particle.GQRSInteraction"><code class="xref py py-obj docutils literal"><span class="pre">GQRSInteraction</span></code></a>(particle[,&nbsp;kind])</td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.GQRSInteraction.html#pyrex.particle.GQRSInteraction" title="pyrex.particle.GQRSInteraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GQRSInteraction</span></code></a>(particle[,&nbsp;kind])</td>
 <td>Class for describing neutrino interaction attributes.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-obj docutils literal"><span class="pre">CTWInteraction</span></code></a>(particle[,&nbsp;kind])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CTWInteraction</span></code></a>(particle[,&nbsp;kind])</td>
 <td>Class for describing neutrino interaction attributes.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.NeutrinoInteraction.html#pyrex.particle.NeutrinoInteraction" title="pyrex.particle.NeutrinoInteraction"><code class="xref py py-obj docutils literal"><span class="pre">NeutrinoInteraction</span></code></a></td>
-<td>alias of <a class="reference internal" href="../docstrings/pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-class docutils literal"><span class="pre">CTWInteraction</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.particle.NeutrinoInteraction.html#pyrex.particle.NeutrinoInteraction" title="pyrex.particle.NeutrinoInteraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NeutrinoInteraction</span></code></a></td>
+<td>alias of <a class="reference internal" href="../docstrings/pyrex.particle.CTWInteraction.html#pyrex.particle.CTWInteraction" title="pyrex.particle.CTWInteraction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyrex.particle.CTWInteraction</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -133,7 +134,7 @@ interactions.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -205,7 +206,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

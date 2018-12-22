@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.IREXString\.build\_antennas
-================================================
+pyrex.custom.irex.IREXString.build\_antennas
+============================================
 
 .. currentmodule:: pyrex.custom.irex
 

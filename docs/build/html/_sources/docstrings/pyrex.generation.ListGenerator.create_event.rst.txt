@@ -1,5 +1,5 @@
-pyrex\.generation\.ListGenerator\.create\_event
-===============================================
+pyrex.generation.ListGenerator.create\_event
+============================================
 
 .. currentmodule:: pyrex.generation
 

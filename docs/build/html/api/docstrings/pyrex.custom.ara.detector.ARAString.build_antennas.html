@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.detector.ARAString.build_antennas &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.custom.ara.detector.ARAString.build_antennas &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -88,38 +89,34 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>power_threshold</strong> : float</p>
-<blockquote>
-<div><p>Power threshold for antenna trigger conditions.</p>
-</div></blockquote>
-<p><strong>amplification</strong> : float, optional</p>
-<blockquote>
-<div><p>Amplification to be applied to antenna signals.</p>
-</div></blockquote>
-<p><strong>naming_scheme</strong> : function, optional</p>
-<blockquote>
-<div><p>Function used to assign the <code class="docutils literal"><span class="pre">name</span></code> parameter for each antenna.
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>power_threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Power threshold for antenna trigger conditions.</p>
+</dd>
+<dt><strong>amplification</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Amplification to be applied to antenna signals.</p>
+</dd>
+<dt><strong>naming_scheme</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function, optional</span></dt>
+<dd><p class="first last">Function used to assign the <code class="docutils literal notranslate"><span class="pre">name</span></code> parameter for each antenna.
 Takes the index of the antenna on the string and the antenna
 object itself as parameters and should return a string for the
 antenna’s name. By default names antennas “Hpol_X” or “Vpol_X”
 where “X” is the antenna’s index.</p>
-</div></blockquote>
-<p><strong>class_scheme</strong> : function, optional</p>
-<blockquote>
-<div><p>Function used to decide the class to use for each antenna. Takes
+</dd>
+<dt><strong>class_scheme</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function, optional</span></dt>
+<dd><p class="first last">Function used to decide the class to use for each antenna. Takes
 the index of the antenna on the string as a parameter and should
 return which class to use to create the antenna object. By default
 alternates VpolAntenna and HpolAntenna going up the string.</p>
-</div></blockquote>
-<p><strong>noisy</strong> : boolean, optional</p>
-<blockquote>
-<div><p>Whether or not the antenna should add noise to incoming signals.</p>
-</div></blockquote>
-<p><strong>unique_noise_waveforms</strong> : int, optional</p>
-<blockquote class="last">
-<div><p>The number of expected noise waveforms needed for each received
+</dd>
+<dt><strong>noisy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Whether or not the antenna should add noise to incoming signals.</p>
+</dd>
+<dt><strong>unique_noise_waveforms</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The number of expected noise waveforms needed for each received
 signal to have its own noise (per antenna).</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -139,7 +136,7 @@ signal to have its own noise (per antenna).</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -206,7 +203,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

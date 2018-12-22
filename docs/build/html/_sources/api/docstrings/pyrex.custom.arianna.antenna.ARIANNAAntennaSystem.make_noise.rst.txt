@@ -1,5 +1,5 @@
-pyrex\.custom\.arianna\.antenna\.ARIANNAAntennaSystem\.make\_noise
-==================================================================
+pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.make\_noise
+=============================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna
 

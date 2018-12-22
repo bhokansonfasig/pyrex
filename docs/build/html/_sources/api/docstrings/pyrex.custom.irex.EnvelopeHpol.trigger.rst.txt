@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeHpol\.trigger
-==========================================
+pyrex.custom.irex.EnvelopeHpol.trigger
+======================================
 
 .. currentmodule:: pyrex.custom.irex
 

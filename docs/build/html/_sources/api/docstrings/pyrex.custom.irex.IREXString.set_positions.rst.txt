@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.IREXString\.set\_positions
-===============================================
+pyrex.custom.irex.IREXString.set\_positions
+===========================================
 
 .. currentmodule:: pyrex.custom.irex
 

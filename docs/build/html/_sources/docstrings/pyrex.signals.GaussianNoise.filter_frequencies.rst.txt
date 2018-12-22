@@ -1,5 +1,5 @@
-pyrex\.signals\.GaussianNoise\.filter\_frequencies
-==================================================
+pyrex.signals.GaussianNoise.filter\_frequencies
+===============================================
 
 .. currentmodule:: pyrex.signals
 

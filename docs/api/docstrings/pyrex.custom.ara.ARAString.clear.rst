@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.ARAString\.clear
-====================================
+pyrex.custom.ara.ARAString.clear
+================================
 
 .. currentmodule:: pyrex.custom.ara
 

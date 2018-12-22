@@ -1,5 +1,5 @@
-pyrex\.io\.HDF5Reader\.open
-===========================
+pyrex.io.HDF5Reader.open
+========================
 
 .. currentmodule:: pyrex.io
 

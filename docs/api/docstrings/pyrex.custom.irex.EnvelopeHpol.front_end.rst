@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.EnvelopeHpol\.front\_end
-=============================================
+pyrex.custom.irex.EnvelopeHpol.front\_end
+=========================================
 
 .. currentmodule:: pyrex.custom.irex
 

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.detector.HexagonalGrid.set_positions &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.custom.ara.detector.HexagonalGrid.set_positions &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -86,23 +87,21 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stations</strong> : float, optional</p>
-<blockquote>
-<div><p>Number of stations to be placed.</p>
-</div></blockquote>
-<p><strong>station_separation</strong> : float, optional</p>
-<blockquote>
-<div><p>Distance (m) between adjacent stations.</p>
-</div></blockquote>
-<p><strong>station_type</strong> : optional</p>
-<blockquote>
-<div><p>Class to be used for creating station objects for <em class="xref py py-obj">subsets</em>.</p>
-</div></blockquote>
-<p><strong>**station_kwargs</strong></p>
-<blockquote class="last">
-<div><p>Keyword arguments to be passed on to the <code class="docutils literal"><span class="pre">__init__</span></code> methods of
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>stations</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Number of stations to be placed.</p>
+</dd>
+<dt><strong>station_separation</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Distance (m) between adjacent stations.</p>
+</dd>
+<dt><strong>station_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
+<dd><p class="first last">Class to be used for creating station objects for <em class="xref py py-obj">subsets</em>.</p>
+</dd>
+<dt><strong>**station_kwargs</strong></dt>
+<dd><p class="first last">Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
 the <em class="xref py py-obj">station_type</em> class.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -110,9 +109,9 @@ the <em class="xref py py-obj">station_type</em> class.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.custom.ara.detector.ARAString.set_positions.html#pyrex.custom.ara.detector.ARAString.set_positions" title="pyrex.custom.ara.detector.ARAString.set_positions"><code class="xref py py-obj docutils literal"><span class="pre">ARAString.set_positions</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.ara.detector.ARAString.set_positions.html#pyrex.custom.ara.detector.ARAString.set_positions" title="pyrex.custom.ara.detector.ARAString.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAString.set_positions</span></code></a></dt>
 <dd>Generates antenna positions along the string.</dd>
-<dt><a class="reference internal" href="pyrex.custom.ara.detector.RegularStation.set_positions.html#pyrex.custom.ara.detector.RegularStation.set_positions" title="pyrex.custom.ara.detector.RegularStation.set_positions"><code class="xref py py-obj docutils literal"><span class="pre">RegularStation.set_positions</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.ara.detector.RegularStation.set_positions.html#pyrex.custom.ara.detector.RegularStation.set_positions" title="pyrex.custom.ara.detector.RegularStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegularStation.set_positions</span></code></a></dt>
 <dd>Generates antenna positions around the station.</dd>
 </dl>
 </div>
@@ -131,7 +130,7 @@ the <em class="xref py py-obj">station_type</em> class.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -198,7 +197,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

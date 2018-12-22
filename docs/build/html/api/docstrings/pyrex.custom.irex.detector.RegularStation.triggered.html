@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.detector.RegularStation.triggered &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.custom.irex.detector.RegularStation.triggered &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -49,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
 	 
     </ul>
               
@@ -83,33 +84,33 @@
 <code class="descclassname">RegularStation.</code><code class="descname">triggered</code><span class="sig-paren">(</span><em>antenna_requirement=1</em>, <em>string_requirement=1</em>, <em>require_mc_truth=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation.triggered" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the station is triggered based on its current state.</p>
 <p>Station is triggered if the number of antennas that have been hit
-(according to <code class="docutils literal"><span class="pre">is_hit</span></code>) is greater than or equal to the
+(according to <code class="docutils literal notranslate"><span class="pre">is_hit</span></code>) is greater than or equal to the
 <em class="xref py py-obj">antenna_requirement</em> and the number of strings with antennas that
 have been hit is greater than or equal to the <em class="xref py py-obj">string_requirement</em>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>antenna_requirement</strong> : float, optional</p>
-<blockquote>
-<div><p>The number of antennas which must be hit for the station to
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>antenna_requirement</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The number of antennas which must be hit for the station to
 trigger.</p>
-</div></blockquote>
-<p><strong>string_requirement</strong> : float, optional</p>
-<blockquote>
-<div><p>The number of strings which must be hit for the station to trigger.</p>
-</div></blockquote>
-<p><strong>require_mc_truth</strong> : boolean, optional</p>
-<blockquote>
-<div><p>Whether or not the trigger should be based on the Monte-Carlo
-truth. If <code class="docutils literal"><span class="pre">True</span></code>, noise-only triggers are removed.</p>
-</div></blockquote>
+</dd>
+<dt><strong>string_requirement</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">The number of strings which must be hit for the station to trigger.</p>
+</dd>
+<dt><strong>require_mc_truth</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Whether or not the trigger should be based on the Monte-Carlo
+truth. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, noise-only triggers are removed.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">boolean</p>
-<blockquote class="last">
-<div><p>Whether or not the station is triggered in its current state.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>boolean</strong></dt>
+<dd><p class="first last">Whether or not the station is triggered in its current state.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -117,11 +118,11 @@ truth. If <code class="docutils literal"><span class="pre">True</span></code>, n
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeHpol.trigger.html#pyrex.custom.irex.EnvelopeHpol.trigger" title="pyrex.custom.irex.EnvelopeHpol.trigger"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.custom.irex.EnvelopeHpol.trigger</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeHpol.trigger.html#pyrex.custom.irex.EnvelopeHpol.trigger" title="pyrex.custom.irex.EnvelopeHpol.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.irex.EnvelopeHpol.trigger</span></code></a></dt>
 <dd>Check if the antenna triggers on a given signal.</dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.trigger.html#pyrex.custom.irex.EnvelopeVpol.trigger" title="pyrex.custom.irex.EnvelopeVpol.trigger"><code class="xref py py-obj docutils literal"><span class="pre">pyrex.custom.irex.EnvelopeVpol.trigger</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.trigger.html#pyrex.custom.irex.EnvelopeVpol.trigger" title="pyrex.custom.irex.EnvelopeVpol.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.irex.EnvelopeVpol.trigger</span></code></a></dt>
 <dd>Check if the antenna triggers on a given signal.</dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.detector.IREXString.triggered.html#pyrex.custom.irex.detector.IREXString.triggered" title="pyrex.custom.irex.detector.IREXString.triggered"><code class="xref py py-obj docutils literal"><span class="pre">IREXString.triggered</span></code></a></dt>
+<dt><a class="reference internal" href="pyrex.custom.irex.detector.IREXString.triggered.html#pyrex.custom.irex.detector.IREXString.triggered" title="pyrex.custom.irex.detector.IREXString.triggered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IREXString.triggered</span></code></a></dt>
 <dd>Check if the string is triggered based on its current state.</dd>
 </dl>
 </div>
@@ -140,7 +141,7 @@ truth. If <code class="docutils literal"><span class="pre">True</span></code>, n
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -207,7 +208,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>

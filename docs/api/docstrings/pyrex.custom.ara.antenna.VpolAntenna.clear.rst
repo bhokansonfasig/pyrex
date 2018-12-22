@@ -1,5 +1,5 @@
-pyrex\.custom\.ara\.antenna\.VpolAntenna\.clear
-===============================================
+pyrex.custom.ara.antenna.VpolAntenna.clear
+==========================================
 
 .. currentmodule:: pyrex.custom.ara.antenna
 

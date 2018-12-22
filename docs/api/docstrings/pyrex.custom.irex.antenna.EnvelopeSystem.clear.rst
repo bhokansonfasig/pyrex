@@ -1,5 +1,5 @@
-pyrex\.custom\.irex\.antenna\.EnvelopeSystem\.clear
-===================================================
+pyrex.custom.irex.antenna.EnvelopeSystem.clear
+==============================================
 
 .. currentmodule:: pyrex.custom.irex.antenna
 

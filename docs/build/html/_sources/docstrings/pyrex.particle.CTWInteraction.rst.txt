@@ -1,5 +1,5 @@
-pyrex\.particle\.CTWInteraction
-===============================
+pyrex.particle.CTWInteraction
+=============================
 
 .. currentmodule:: pyrex.particle
 
@@ -18,4 +18,14 @@ pyrex\.particle\.CTWInteraction
 
 
    
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         CTWInteraction.cross_section
+         CTWInteraction.interaction_length
+         CTWInteraction.kind
+         CTWInteraction.total_cross_section
+         CTWInteraction.total_interaction_length
 

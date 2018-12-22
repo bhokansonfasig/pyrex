@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.arianna.LPDA &mdash; PyREx 1.8.1 documentation</title>
+    <title>pyrex.custom.arianna.LPDA &mdash; PyREx 1.8.2 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.1',
+        VERSION:     '1.8.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.1 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
     <link rel="up" title="Antarctic Ross Ice-Shelf Antenna Neutrino Array (pyrex.custom.arianna)" href="../custom-arianna.html" >
     <link rel="next" title="Custom Antennas (pyrex.custom.arianna.antenna)" href="../custom-arianna/antenna.html" >
     <link rel="prev" title="Antarctic Ross Ice-Shelf Antenna Neutrino Array (pyrex.custom.arianna)" href="../custom-arianna.html" > 
@@ -52,10 +53,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.1 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-arianna.html" accesskey="U">Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="docutils literal"><span class="pre">pyrex.custom.arianna</span></code>)</a></li> 
+          <li class="active"><a href="../custom-arianna.html" accesskey="U">Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.arianna</span></code>)</a></li> 
     </ul>
               
               
@@ -101,48 +102,40 @@ signal clipping.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
-<blockquote>
-<div><p>Name of the antenna.</p>
-</div></blockquote>
-<p><strong>position</strong> : array_like</p>
-<blockquote>
-<div><p>Vector position of the antenna.</p>
-</div></blockquote>
-<p><strong>threshold</strong> : float</p>
-<blockquote>
-<div><p>Voltage sigma threshold for the trigger condition.</p>
-</div></blockquote>
-<p><strong>trigger_window</strong> : float</p>
-<blockquote>
-<div><p>Time window (ns) for the trigger condition.</p>
-</div></blockquote>
-<p><strong>z_axis</strong> : array_like, optional</p>
-<blockquote>
-<div><p>Vector direction of the z-axis of the antenna.</p>
-</div></blockquote>
-<p><strong>x_axis</strong> : array_like, optional</p>
-<blockquote>
-<div><p>Vector direction of the x-axis of the antenna.</p>
-</div></blockquote>
-<p><strong>amplification</strong> : float, optional</p>
-<blockquote>
-<div><p>Amplification to be applied to the signal pre-clipping.</p>
-</div></blockquote>
-<p><strong>amplifier_clipping</strong> : float, optional</p>
-<blockquote>
-<div><p>Voltage (V) above which the amplified signal is clipped (in positive
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Name of the antenna.</p>
+</dd>
+<dt><strong>position</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">Vector position of the antenna.</p>
+</dd>
+<dt><strong>threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Voltage sigma threshold for the trigger condition.</p>
+</dd>
+<dt><strong>trigger_window</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Time window (ns) for the trigger condition.</p>
+</dd>
+<dt><strong>z_axis</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like, optional</span></dt>
+<dd><p class="first last">Vector direction of the z-axis of the antenna.</p>
+</dd>
+<dt><strong>x_axis</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like, optional</span></dt>
+<dd><p class="first last">Vector direction of the x-axis of the antenna.</p>
+</dd>
+<dt><strong>amplification</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Amplification to be applied to the signal pre-clipping.</p>
+</dd>
+<dt><strong>amplifier_clipping</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Voltage (V) above which the amplified signal is clipped (in positive
 and negative values).</p>
-</div></blockquote>
-<p><strong>noisy</strong> : boolean, optional</p>
-<blockquote>
-<div><p>Whether or not the antenna should add noise to incoming signals.</p>
-</div></blockquote>
-<p><strong>unique_noise_waveforms</strong> : int, optional</p>
-<blockquote class="last">
-<div><p>The number of expected noise waveforms needed for each received signal
+</dd>
+<dt><strong>noisy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Whether or not the antenna should add noise to incoming signals.</p>
+</dd>
+<dt><strong>unique_noise_waveforms</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The number of expected noise waveforms needed for each received signal
 to have its own noise.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -150,59 +143,54 @@ to have its own noise.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><code class="xref py py-obj docutils literal"><span class="pre">ARIANNAAntennaSystem</span></code></dt>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARIANNAAntennaSystem</span></code></dt>
 <dd>Antenna system extending base ARIANNA antenna with front-end processing.</dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">ARIANNAAntenna</span></code></dt>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARIANNAAntenna</span></code></dt>
 <dd>Antenna class to be used for ARIANNA antennas.</dd>
 </dl>
 </div>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">is_hit</span></code></td>
-<td>Boolean of whether the antenna system has been triggered.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">signals</span></code></td>
-<td>The signals received by the antenna with front-end processing.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">waveforms</span></code></td>
-<td>The antenna system signal + noise for each triggered hit.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">all_waveforms</span></code></td>
-<td>The antenna system signal + noise for all hits.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="13%" />
-<col width="87%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>antenna</strong></td>
-<td>(Antenna) <code class="docutils literal"><span class="pre">Antenna</span></code> object extended by the front end.</td>
-</tr>
-<tr class="row-even"><td><strong>name</strong></td>
-<td>(str) Name of the antenna.</td>
-</tr>
-<tr class="row-odd"><td><strong>position</strong></td>
-<td>(array_like) Vector position of the antenna.</td>
-</tr>
-<tr class="row-even"><td><strong>threshold</strong></td>
-<td>(float) Voltage sigma threshold for the trigger condition.</td>
-</tr>
-<tr class="row-odd"><td><strong>trigger_window</strong></td>
-<td>(float) Time window (ns) for the trigger condition.</td>
-</tr>
-<tr class="row-even"><td><strong>amplification</strong></td>
-<td>(float) Amplification to be applied to the signal pre-clipping. Note that the usual ARA electronics amplification is already applied without this.</td>
-</tr>
-<tr class="row-odd"><td><strong>amplifier_clipping</strong></td>
-<td>(float) Voltage (V) above which the amplified signal is clipped (in positive and negative values).</td>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>antenna</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Antenna</span></dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">Antenna</span></code> object extended by the front end.</p>
+</dd>
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Name of the antenna.</p>
+</dd>
+<dt><strong>position</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
+<dd><p class="first last">Vector position of the antenna.</p>
+</dd>
+<dt><strong>threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Voltage sigma threshold for the trigger condition.</p>
+</dd>
+<dt><strong>trigger_window</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Time window (ns) for the trigger condition.</p>
+</dd>
+<dt><strong>amplification</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Amplification to be applied to the signal pre-clipping. Note that the
+usual ARA electronics amplification is already applied without this.</p>
+</dd>
+<dt><strong>amplifier_clipping</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Voltage (V) above which the amplified signal is clipped (in positive
+and negative values).</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.arianna.LPDA.is_hit.html#pyrex.custom.arianna.LPDA.is_hit" title="pyrex.custom.arianna.LPDA.is_hit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit</span></code></a></dt>
+<dd><p class="first last">Boolean of whether the antenna system has been triggered.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.arianna.LPDA.signals.html#pyrex.custom.arianna.LPDA.signals" title="pyrex.custom.arianna.LPDA.signals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signals</span></code></a></dt>
+<dd><p class="first last">The signals received by the antenna with front-end processing.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.arianna.LPDA.waveforms.html#pyrex.custom.arianna.LPDA.waveforms" title="pyrex.custom.arianna.LPDA.waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waveforms</span></code></a></dt>
+<dd><p class="first last">The antenna system signal + noise for each triggered hit.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.arianna.LPDA.all_waveforms.html#pyrex.custom.arianna.LPDA.all_waveforms" title="pyrex.custom.arianna.LPDA.all_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_waveforms</span></code></a></dt>
+<dd><p class="first last">The antenna system signal + noise for all hits.</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -213,34 +201,34 @@ to have its own noise.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.clear.html#pyrex.custom.arianna.LPDA.clear" title="pyrex.custom.arianna.LPDA.clear"><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></a>([reset_noise])</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.clear.html#pyrex.custom.arianna.LPDA.clear" title="pyrex.custom.arianna.LPDA.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</td>
 <td>Reset the antenna system to an empty state.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.front_end.html#pyrex.custom.arianna.LPDA.front_end" title="pyrex.custom.arianna.LPDA.front_end"><code class="xref py py-obj docutils literal"><span class="pre">front_end</span></code></a>(signal)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.front_end.html#pyrex.custom.arianna.LPDA.front_end" title="pyrex.custom.arianna.LPDA.front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">front_end</span></code></a>(signal)</td>
 <td>Apply front-end processes to a signal and return the output.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.full_waveform.html#pyrex.custom.arianna.LPDA.full_waveform" title="pyrex.custom.arianna.LPDA.full_waveform"><code class="xref py py-obj docutils literal"><span class="pre">full_waveform</span></code></a>(times)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.full_waveform.html#pyrex.custom.arianna.LPDA.full_waveform" title="pyrex.custom.arianna.LPDA.full_waveform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_waveform</span></code></a>(times)</td>
 <td>Signal + noise for the antenna system for the given times.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.interpolate_filter.html#pyrex.custom.arianna.LPDA.interpolate_filter" title="pyrex.custom.arianna.LPDA.interpolate_filter"><code class="xref py py-obj docutils literal"><span class="pre">interpolate_filter</span></code></a>(frequencies)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.interpolate_filter.html#pyrex.custom.arianna.LPDA.interpolate_filter" title="pyrex.custom.arianna.LPDA.interpolate_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_filter</span></code></a>(frequencies)</td>
 <td>Generate interpolated filter values for given frequencies.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.is_hit_during.html#pyrex.custom.arianna.LPDA.is_hit_during" title="pyrex.custom.arianna.LPDA.is_hit_during"><code class="xref py py-obj docutils literal"><span class="pre">is_hit_during</span></code></a>(times)</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.is_hit_during.html#pyrex.custom.arianna.LPDA.is_hit_during" title="pyrex.custom.arianna.LPDA.is_hit_during"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit_during</span></code></a>(times)</td>
 <td>Check if the antenna system is triggered in a time range.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.make_noise.html#pyrex.custom.arianna.LPDA.make_noise" title="pyrex.custom.arianna.LPDA.make_noise"><code class="xref py py-obj docutils literal"><span class="pre">make_noise</span></code></a>(times)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.make_noise.html#pyrex.custom.arianna.LPDA.make_noise" title="pyrex.custom.arianna.LPDA.make_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_noise</span></code></a>(times)</td>
 <td>Creates a noise signal over the given times.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.receive.html#pyrex.custom.arianna.LPDA.receive" title="pyrex.custom.arianna.LPDA.receive"><code class="xref py py-obj docutils literal"><span class="pre">receive</span></code></a>(signal[,&nbsp;direction,&nbsp;polarization,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.receive.html#pyrex.custom.arianna.LPDA.receive" title="pyrex.custom.arianna.LPDA.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(signal[,&nbsp;direction,&nbsp;polarization,&nbsp;…])</td>
 <td>Process and store an incoming signal.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.set_orientation.html#pyrex.custom.arianna.LPDA.set_orientation" title="pyrex.custom.arianna.LPDA.set_orientation"><code class="xref py py-obj docutils literal"><span class="pre">set_orientation</span></code></a>([z_axis,&nbsp;x_axis])</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.set_orientation.html#pyrex.custom.arianna.LPDA.set_orientation" title="pyrex.custom.arianna.LPDA.set_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientation</span></code></a>([z_axis,&nbsp;x_axis])</td>
 <td>Sets the orientation of the antenna system.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.setup_antenna.html#pyrex.custom.arianna.LPDA.setup_antenna" title="pyrex.custom.arianna.LPDA.setup_antenna"><code class="xref py py-obj docutils literal"><span class="pre">setup_antenna</span></code></a>([center_frequency,&nbsp;bandwidth,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.setup_antenna.html#pyrex.custom.arianna.LPDA.setup_antenna" title="pyrex.custom.arianna.LPDA.setup_antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_antenna</span></code></a>([center_frequency,&nbsp;bandwidth,&nbsp;…])</td>
 <td>Setup the antenna by passing along its init arguments.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.trigger.html#pyrex.custom.arianna.LPDA.trigger" title="pyrex.custom.arianna.LPDA.trigger"><code class="xref py py-obj docutils literal"><span class="pre">trigger</span></code></a>(signal)</td>
+<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.arianna.LPDA.trigger.html#pyrex.custom.arianna.LPDA.trigger" title="pyrex.custom.arianna.LPDA.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a>(signal)</td>
 <td>Check if the antenna system triggers on a given signal.</td>
 </tr>
 </tbody>
@@ -260,7 +248,7 @@ to have its own noise.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.1</p>
+Version 1.8.2</p>
 
 
 
@@ -332,7 +320,7 @@ Version 1.8.1</p>
         &copy; Copyright 2018, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
       </li>
     </ul>
     </div>
