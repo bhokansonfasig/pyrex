@@ -142,8 +142,30 @@ class LayeredIce:
     """
     def __init__(self, layers, index_above=1, index_below=None):
         self.layers = list(sorted(layers, key=lambda x: -x.range[0]))
-        self.index_above = index_above
-        self.index_below = index_below
+        self._index_above = index_above
+        self._index_below = index_below
+
+    @property
+    def index_above(self):
+        if self._index_above is None:
+            return self.layers[0].index(self.layers[0].range[1])
+        else:
+            return self._index_above
+
+    @index_above.setter
+    def index_above(self, index):
+        self._index_above = index
+
+    @property
+    def index_below(self):
+        if self._index_below is None:
+            return self.layers[-1].index(self.layers[-1].range[0])
+        else:
+            return self._index_below
+
+    @index_below.setter
+    def index_below(self, index):
+        self._index_below = index
 
     @property
     def boundaries(self):
@@ -228,15 +250,9 @@ class LayeredIce:
                 n = self.layer_at_depth(depth).index(depth)
             except ValueError:
                 if depth>self.layers[0].range[1]:
-                    if self.index_above is None:
-                        n = self.layers[0].index(self.layers[0].range[1])
-                    else:
-                        n = self.index_above
+                    n = self.index_above
                 elif depth<=self.layers[-1].range[0]:
-                    if self.index_below is None:
-                        n = self.layers[-1].index(self.layers[-1].range[0])
-                    else:
-                        n = self.index_below
+                    n = self.index_below
                 else:
                     raise ValueError("No index at depth "+str(depth))
             indices.append(n)
