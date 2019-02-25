@@ -89,6 +89,7 @@ class LayeredRayTracePath(LazyMutableClass):
             self._directions.append(direction)
             if path[i+1]==path[i]:
                 direction *= -1
+        self._directions.append(direction)
         self._points.append(self.to_point)
         super().__init__()
 
