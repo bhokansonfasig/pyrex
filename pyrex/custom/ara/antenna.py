@@ -13,7 +13,7 @@ from pyrex.internal_functions import normalize
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 
 def _read_directionality_data(filename):
@@ -254,7 +254,7 @@ class ARAAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          efficiency=efficiency, freq_range=(f_low, f_high),
-                         temperature=IceModel.temperature(position[2]),
+                         temperature=ice.temperature(position[2]),
                          resistance=resistance, noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms)
 
@@ -386,7 +386,7 @@ class ARAAntenna(Antenna):
         # gain=4*pi*A_eff/lambda^2 and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
         # Then 0.5 to calculate power with heff (cancels 2 above)
         heff = np.zeros(len(frequencies))
-        n = IceModel.index(self.position[2])
+        n = ice.index(self.position[2])
         heff[frequencies!=0] = np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
                                        * n*50/377 /(4*np.pi))
         return heff

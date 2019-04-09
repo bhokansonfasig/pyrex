@@ -13,7 +13,7 @@ from .signals import (Signal, EmptySignal, FunctionSignal,
                       AskaryanSignal, ThermalNoise)
 from .antenna import Antenna, DipoleAntenna
 from .detector import AntennaSystem, Detector
-from .ice_model import IceModel
+from .ice_model import ice
 from .earth_model import prem_density, slant_depth
 from .particle import Event, Particle, NeutrinoInteraction
 from .generation import (CylindricalGenerator, CylindricalShadowGenerator,

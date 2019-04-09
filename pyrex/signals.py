@@ -13,7 +13,7 @@ import numpy as np
 import scipy.signal
 import scipy.fftpack
 from pyrex.internal_functions import get_from_enum
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -520,7 +520,7 @@ class ZHSAskaryanSignal(Signal):
 
     """
     def __init__(self, times, particle, viewing_angle, viewing_distance=1,
-                 ice_model=IceModel, t0=0):
+                 ice_model=ice, t0=0):
         # Theta should represent the angle from the shower axis, and so should
         # always be positive
         theta = np.abs(viewing_angle)
@@ -656,7 +656,7 @@ class ARVZAskaryanSignal(Signal):
 
     """
     def __init__(self, times, particle, viewing_angle, viewing_distance=1,
-                 ice_model=IceModel, t0=0):
+                 ice_model=ice, t0=0):
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
         #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),

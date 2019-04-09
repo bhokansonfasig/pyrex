@@ -34,31 +34,41 @@ class AntarcticIce:
 
     """
     # Based mostly on sources from http://icecube.wisc.edu/~mnewcomb/radio/
-    k = 0.43
-    a = 0.0132
-    n0 = 1.78
-    thickness = 2850
+    def __init__(self, n0=1.78, k=0.43, a=0.0132, valid_range=(-2850, 0),
+                 index_above=1, index_below=None):
+        self.n0 = n0
+        self.k = k
+        self.a = a
+        self.valid_range = tuple(sorted(valid_range))
+        self._index_above = index_above
+        self._index_below = index_below
 
-    @classmethod
-    def gradient(cls, z):
-        """
-        Calculates the gradient of the index of refraction at a given depth.
+    @property
+    def index_above(self):
+        if self._index_above is None:
+            return self.index(self.valid_range[1])
+        else:
+            return self._index_above
 
-        Parameters
-        ----------
-        z : float
-            (Negative-valued) depth (m) in the ice.
+    @index_above.setter
+    def index_above(self, index):
+        self._index_above = index
 
-        Returns
-        -------
-        float
-            Gradient of the index of refraction at `depth`.
+    @property
+    def index_below(self):
+        if self._index_below is None:
+            return self.index(self.valid_range[0])
+        else:
+            return self._index_below
 
-        """
-        return np.array([0, 0, -cls.k * cls.a * np.exp(cls.a * z)])
+    @index_below.setter
+    def index_below(self, index):
+        self._index_below = index
 
-    @classmethod
-    def index(cls, z):
+    def contains(self, point):
+        return self.valid_range[0]<=point[2]<=self.valid_range[1]
+
+    def index(self, z):
         """
         Calculates the index of refraction of the ice at a given depth.
 
@@ -79,18 +89,37 @@ class AntarcticIce:
         try:
             indices = np.ones(len(z))
         except TypeError:
-            # z is a scalar, so just return one value
-            if z>0:
-                return 1
+            if z<self.valid_range[0]:
+                return self.index_below
+            elif z>self.valid_range[1]:
+                return self.index_above
             else:
-                return cls.n0 - cls.k * np.exp(cls.a * z)
+                return self.n0 - self.k * np.exp(self.a * z)
 
-        indices[z<=0] = cls.n0 - cls.k * np.exp(cls.a * z[z<=0])
-
+        indices = self.n0 - self.k * np.exp(self.a * np.asarray(z))
+        indices[z<self.valid_range[0]] = self.index_below
+        indices[z>self.valid_range[1]] = self.index_above
         return indices
 
-    @classmethod
-    def depth_with_index(cls, n):
+    def gradient(self, z):
+        """
+        Calculates the gradient of the index of refraction at a given depth.
+
+        Parameters
+        ----------
+        z : float
+            (Negative-valued) depth (m) in the ice.
+
+        Returns
+        -------
+        float
+            Gradient of the index of refraction at `depth`.
+
+        """
+        return np.array([0, 0, -self.k * self.a * np.exp(self.a * z)])
+
+
+    def depth_with_index(self, n):
         """
         Calculates the corresponding depth for a given index of refraction.
 
@@ -108,19 +137,28 @@ class AntarcticIce:
         array_like
             (Negative-valued) depths corresponding to the given `n` values.
 
+        Notes
+        -----
+        For indices of refraction outside of the range of indices in the ice,
+        returns the bounds of the ice. For example, if given an index of
+        refraction less than the minimum in the valid range, the upper boundary
+        depth will be returned.
+
         """
-        n0 = cls.index(0)
         try:
             depths = np.zeros(len(n))
         except TypeError:
             # n is a scalar, so just return one value
-            if n<=n0:
-                return 0
+            if n<self.index(self.valid_range[1]):
+                return self.valid_range[1]
+            elif n>self.index(self.valid_range[0]):
+                return self.valid_range[0]
             else:
-                return np.log((cls.n0-n)/cls.k) / cls.a
+                return np.log((self.n0-n)/self.k) / self.a
 
-        depths[n>n0] = np.log((cls.n0-n[n>n0])/cls.k) / cls.a
-
+        depths = np.log((self.n0-np.asarray(n))/self.k) / self.a
+        depths[n<self.index(self.valid_range[1])] = self.valid_range[1]
+        depths[n>self.index(self.valid_range[0])] = self.valid_range[0]
         return depths
 
     @staticmethod
@@ -287,9 +325,10 @@ class NewcombIce(AntarcticIce):
     Mostly based on ice characteristics outlined by Matt Newcomb.
 
     """
-    k = 0.438
-    a = 0.0132
-    n0 = 1.32 + 0.438
+    def __init__(self, n0=1.758, k=0.43, a=0.0132, valid_range=(-2850, 0),
+                 index_above=1, index_below=None):
+        super().__init__(n0=n0, k=k, a=a, valid_range=valid_range,
+                         index_above=index_above, index_below=index_below)
 
     @classmethod
     def attenuation_length(cls, z, f):
@@ -352,10 +391,6 @@ class ArasimIce(AntarcticIce):
         `attenuation_length` calculation.
 
     """
-    k = 0.43
-    a = 0.0132
-    n0 = 1.78
-
     atten_depths = [
         72.7412, 76.5697, 80.3982, 91.8836, 95.7121, 107.198, 118.683,
         133.997, 153.139, 179.939, 206.738, 245.023, 298.622, 356.049,
@@ -428,4 +463,4 @@ class ArasimIce(AntarcticIce):
 
 
 # Preferred ice model:
-IceModel = AntarcticIce
+ice = AntarcticIce()

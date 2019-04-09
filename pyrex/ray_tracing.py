@@ -13,7 +13,7 @@ import numpy as np
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
 from pyrex.signals import Signal
-from pyrex.ice_model import AntarcticIce, IceModel
+from pyrex.ice_model import AntarcticIce, ice
 
 logger = logging.getLogger(__name__)
 
@@ -275,12 +275,12 @@ class BasicRayTracePath(LazyMutableClass):
         reach surface). Stores the s and p polarized reflectances, respectively.
 
         """
-        if self.direct or self.z_turn<0:
+        if self.direct or self.z_turn<self.ice.valid_range[1]:
             return 1, 1
         else:
-            n_1 = self.ice.index(0)
-            n_2 = 1 # air
-            theta_1 = self.theta(0)
+            n_1 = self.ice.index(self.ice.valid_range[1])
+            n_2 = self.ice.index_above
+            theta_1 = self.theta(self.ice.valid_range[1])
             cos_1 = np.cos(theta_1)
             sin_2 = n_1/n_2*np.sin(theta_1)
             if sin_2<=1:
@@ -790,13 +790,13 @@ class SpecializedRayTracePath(BasicRayTracePath):
         z_turn = np.log((ice.n0-beta)/ice.k)/ice.a
         # print("z_turn:", z_turn)
         if deep:
-            if z_turn<0:
+            if z_turn<ice.valid_range[1]:
                 return ((np.log((ice.n0-beta)/ice.k)/ice.a - z -
                          beta/(ice.a*(ice.n0-beta))) / np.sqrt(alpha))
             else:
                 return -z / np.sqrt(alpha)
         else:
-            if z_turn<0:
+            if z_turn<ice.valid_range[1]:
                 term_1 = ((1+beta**2/alpha)/np.sqrt(alpha) * 
                           (z + np.log(beta*ice.k/log_1) / ice.a))
                 term_2 = -(beta**2+ice.n0*n_z) / (ice.a*alpha*np.sqrt(gamma))
@@ -805,7 +805,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
                            ice.a)
                 term_2 = -((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
                            (ice.a*alpha*np.sqrt(gamma)*log_1))
-                alpha, n_z, gamma, log_1, log_2 = cls._int_terms(0, beta, ice)
+                alpha, n_z, gamma, log_1, log_2 = cls._int_terms(ice.valid_range[1], beta, ice)
                 term_1 += (1+beta**2/alpha)/np.sqrt(alpha)*(np.log(log_1) /
                            ice.a)
                 term_2 += ((beta*(np.sqrt(alpha)-np.sqrt(gamma)))**2 /
@@ -1058,7 +1058,7 @@ class BasicRayTracer(LazyMutableClass):
     """
     solution_class = BasicRayTracePath
 
-    def __init__(self, from_point, to_point, ice_model=IceModel, dz=1):
+    def __init__(self, from_point, to_point, ice_model=ice, dz=1):
         self.from_point = np.array(from_point)
         self.to_point = np.array(to_point)
         self.ice = ice_model
@@ -1173,7 +1173,8 @@ class BasicRayTracer(LazyMutableClass):
         a launch angle less than the peak angle.
 
         """
-        if self.from_point[2]>0 or self.to_point[2]>0:
+        if not(self.ice.contains(self.from_point) and
+               self.ice.contains(self.to_point)):
             return [False, False, False]
         if self.rho<self.direct_r_max:
             return [True, False, True]

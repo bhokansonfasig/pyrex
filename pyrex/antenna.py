@@ -15,7 +15,7 @@ import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal, ThermalNoise, EmptySignal
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -661,7 +661,7 @@ class DipoleAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         temperature=IceModel.temperature(position[2]),
+                         temperature=ice.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)
