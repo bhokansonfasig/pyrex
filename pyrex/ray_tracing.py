@@ -2,7 +2,7 @@
 Module containing classes for ray tracing through the ice.
 
 Ray tracer classes correspond to ray trace path classes, where the ray
-tracer is responsible for calculating the existance and launch angle of
+tracer is responsible for calculating the existence and launch angle of
 paths between points, and the ray tracer path objects are responsible for
 returning information about propagation along their respective path.
 
@@ -1681,9 +1681,10 @@ class UniformRayTracePath(LazyMutableClass):
     ----------
     parent_tracer : UniformRayTracer
         Ray tracer for which this path is a solution.
-    points : array_like
-        Array of 3-dimensional points representing the start of the path, any
-        relfection points, and the end of the path.
+    launch_angle : float
+        Launch angle (radians) of the ray path.
+    reflections : int
+        Number of reflections made by the ray path at boundaries of the ice.
 
     Attributes
     ----------
@@ -1691,8 +1692,12 @@ class UniformRayTracePath(LazyMutableClass):
         The starting point of the ray path.
     to_point : ndarray
         The ending point of the ray path.
+    theta0 : float
+        The launch angle of the ray path at `from_point`.
     ice
         The ice model used for the ray tracer.
+    direct : boolean
+        Whether the ray path is direct (does not reflect).
     emitted_direction
     received_direction
     path_length
@@ -2122,15 +2127,6 @@ class UniformRayTracer(LazyMutableClass):
             dzs.append(self.z1-self.ice.valid_range[0])
         else:
             dzs.append(self.ice.valid_range[1]-self.z1)
-        # drs = self.rho * np.asarray(dzs)/np.sum(dzs)
-        # rs = np.cumsum(drs)
-        # points[1:, 0] = rs * np.cos(self.phi)
-        # points[1:, 1] = rs * np.sin(self.phi)
-        # for i in range(reflections):
-        #     dirn = ((initial_direction * (-1)**i)+1)//2
-        #     points[i+1, 2] = self.ice.valid_range[dirn]
-        # points[-1] = self.to_point
-        # return self.solution_class(self, points)
         theta = np.arctan2(initial_direction*np.sum(dzs), self.rho)
         return self.solution_class(self, theta, reflections)
 
@@ -2151,8 +2147,6 @@ class UniformRayTracer(LazyMutableClass):
             return []
         # Direct path
         sols = [
-            # self.solution_class(self, np.asarray([self.from_point,
-            #                                       self.to_point]))
             self.solution_class(self, np.arctan2(self.z1-self.z0, self.rho), 0)
         ]
         # Reflected paths

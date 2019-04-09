@@ -1,8 +1,8 @@
 """
 Module containing ice model classes.
 
-The ice model classes contain static and class methods for convenience,
-and parameters of the ice model are set as class attributes.
+Contains models for ice at the South Pole and a model for ice with uniform
+index of refraction.
 
 """
 
@@ -45,6 +45,7 @@ class AntarcticIce:
 
     @property
     def index_above(self):
+        """The index of refraction above the ice's valid range."""
         if self._index_above is None:
             return self.index(self.valid_range[1])
         else:
@@ -56,6 +57,7 @@ class AntarcticIce:
 
     @property
     def index_below(self):
+        """The index of refraction below the ice's valid range."""
         if self._index_below is None:
             return self.index(self.valid_range[0])
         else:
@@ -66,6 +68,20 @@ class AntarcticIce:
         self._index_below = index
 
     def contains(self, point):
+        """
+        Determines if the given point is within the ice's valid range.
+
+        Parameters
+        ----------
+        point : array_like
+            Point to be tested.
+
+        Returns
+        -------
+        bool
+            Whether `point` is cointained within the ice model.
+
+        """
         return self.valid_range[0]<=point[2]<=self.valid_range[1]
 
     def index(self, z):
@@ -343,6 +359,7 @@ class UniformIce:
 
     @property
     def index_above(self):
+        """The index of refraction above the ice's valid range."""
         if self._index_above is None:
             return self.n
         else:
@@ -354,6 +371,7 @@ class UniformIce:
 
     @property
     def index_below(self):
+        """The index of refraction below the ice's valid range."""
         if self._index_below is None:
             return self.n
         else:
@@ -364,6 +382,20 @@ class UniformIce:
         self._index_below = index
 
     def contains(self, point):
+        """
+        Determines if the given point is within the ice's valid range.
+
+        Parameters
+        ----------
+        point : array_like
+            Point to be tested.
+
+        Returns
+        -------
+        bool
+            Whether `point` is cointained within the ice model.
+
+        """
         return self.valid_range[0]<=point[2]<=self.valid_range[1]
 
     def index(self, z):

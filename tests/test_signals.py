@@ -6,7 +6,7 @@ from config import SEED
 
 from pyrex.signals import (Signal, EmptySignal, FunctionSignal,
                            AskaryanSignal, GaussianNoise, ThermalNoise)
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 from pyrex.particle import Particle
 
 import numpy as np
@@ -254,7 +254,7 @@ def arz_pulse():
                         interaction_type="cc")
     particle.interaction.em_frac = 1
     particle.interaction.had_frac = 0
-    n = IceModel.index(particle.vertex[2])
+    n = ice.index(particle.vertex[2])
     cherenkov_angle = np.arcsin(np.sqrt(1 - 1/n**2))
     return AskaryanSignal(times=np.linspace(0, 3e-9, 301),
                           particle=particle,

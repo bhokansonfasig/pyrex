@@ -1,9 +1,8 @@
 """
 Module containing classes for ray tracing through layered ice.
 
-Currently only ice layers with uniform indices of refraction are supported.
-Theoretically it seems possible to eventually support layers of ice where the
-index is monotonic.
+Supports layers of ice where the index is monotonic within the layer's valid
+range.
 
 """
 
@@ -26,9 +25,10 @@ class LayeredRayTracePath(LazyMutableClass):
     Class for representing a single ray solution in layered ice.
 
     Stores parameters of the ray path along the layers of ice traversed.
-    Most properties are lazily evaluated to save on computation time. If any
-    attributes of the class instance are changed, the lazily-evaluated
-    properties will be cleared.
+    Most methods dispatch to the matching methods of the layers and combine the
+    results appropriately. Most properties are lazily evaluated to save on
+    computation time. If any attributes of the class instance are changed, the
+    lazily-evaluated properties will be cleared.
 
     Parameters
     ----------
@@ -194,6 +194,7 @@ class LayeredRayTracePath(LazyMutableClass):
                 f_s *= t_s
                 f_p *= t_p
 
+            # Include any fresnel coefficients from along the path
             path_f_s, path_f_p = path_2.fresnel
             f_s *= path_f_s
             f_p *= path_f_p
@@ -507,6 +508,27 @@ class LayeredRayTracer(LazyMutableClass):
 
 
     def _get_matching_ray_tracer(self, ice_model):
+        """
+        Gets the ray tracer class corresponding to the given ice model.
+
+        Paramters
+        ---------
+        ice_model
+            Ice model object which has a matching ray tracer.
+
+        Returns
+        -------
+        ray_tracer
+            Ray tracer class from `ray_tracer_map` that matches the given
+            `ice_model`.
+
+        Raises
+        ------
+        ValueError
+            If the given `ice_model` doesn't have a matching ray tracer in the
+            `ray_tracer_map`.
+
+        """
         # Check exact class matches first
         for key, val in self.ray_tracer_map.items():
             if key=='default':
@@ -526,6 +548,40 @@ class LayeredRayTracer(LazyMutableClass):
                              +str(ice_model))
 
     def _build_path_at_layer(self, ice_layer, from_point, to_point, theta0, direct):
+        """
+        Creates a path object for given ice layer with starting parameters.
+
+        Parameters
+        ----------
+        ice_layer
+            Ice model object for a single layer of the ice.
+        from_point : array_like
+            Starting point of the path in the ice layer.
+        to_point : array_like
+            Ending point of the path in the ice layer.
+        theta0 : float
+            Launch angle of the path at `from_point`.
+        direct : bool
+            Whether the path goes directly between the points (`False` if a
+            reflection or other directional inversion is made along the path).
+
+        Returns
+        -------
+        path
+            Path object representing the path in the given `ice_layer`.
+
+        Raises
+        ------
+        ValueError
+            If the corresponding ray tracer for `ice_layer` is not supported.
+
+        See Also
+        --------
+        LayeredRayTracer._get_matching_ray_tracer : Gets the ray tracer class
+                                                    corresponding to the given
+                                                    ice model.
+
+        """
         tracer_class = self._get_matching_ray_tracer(ice_layer)
         path_class = tracer_class.solution_class
         if issubclass(tracer_class, UniformRayTracer):
@@ -542,6 +598,37 @@ class LayeredRayTracer(LazyMutableClass):
 
 
     def _get_radial_distance(self, angle, ice_layer, zs):
+        """
+        Calculates the radial distance traveled in an ice layer.
+
+        Parameters
+        ----------
+        angle : float
+            Launch angle of the ray as it enters the `ice_layer`.
+        ice_layer
+            Ice model object for a single layer of the ice.
+        zs : array_like
+            Array of depths for endpoints in the `ice_layer` (length of 2 for
+            direct path, length of 3 for path with a single reflection).
+
+        Returns
+        -------
+        distance : float
+            Radial distance traveled by the path in `ice_layer` launched with
+            `angle` and reaching the depths given by `zs`.
+
+        Raises
+        ------
+        ValueError
+            If the corresponding ray tracer for `ice_layer` is not supported.
+
+        See Also
+        --------
+        LayeredRayTracer._get_matching_ray_tracer : Gets the ray tracer class
+                                                    corresponding to the given
+                                                    ice model.
+
+        """
         tracer_class = self._get_matching_ray_tracer(ice_layer)
         if issubclass(tracer_class, UniformRayTracer):
             if angle==np.pi/2:
@@ -575,6 +662,39 @@ class LayeredRayTracer(LazyMutableClass):
             raise ValueError("Ice model "+str(ice_layer)+" not supported")
 
     def _check_reflection_depth(self, angle, ice_layer, zs):
+        """
+        Calculates the depth at which a reflection takes place in an ice layer.
+
+        Parameters
+        ----------
+        angle : float
+            Launch angle of the ray as it enters the `ice_layer`.
+        ice_layer
+            Ice model object for a single layer of the ice.
+        zs : array_like
+            Array of depths for endpoints in the `ice_layer` (length of 2 for
+            direct path, length of 3 for path with a single reflection).
+
+        Returns
+        -------
+        depth : float
+            (Negative-valued) depth at which the reflection occurs in
+            `ice_layer`. If the depth is not in `zs`, the reflection occurs
+            within the layer rather than at an ice layer boundary.
+
+        Raises
+        ------
+        ValueError
+            If there was no reflection in the ice layer or if the corresponding
+            ray tracer for `ice_layer` is not supported.
+
+        See Also
+        --------
+        LayeredRayTracer._get_matching_ray_tracer : Gets the ray tracer class
+                                                    corresponding to the given
+                                                    ice model.
+
+        """
         tracer_class = self._get_matching_ray_tracer(ice_layer)
         if len(zs)!=3:
             raise ValueError("Invalid number of path portions for reflection")
@@ -589,6 +709,28 @@ class LayeredRayTracer(LazyMutableClass):
             raise ValueError("Ice model "+str(ice_layer)+" not supported")
 
     def _trace_path(self, angle, depths, grouped_path, models):
+        """
+        Traces out a ray path through the ice with a given launch `angle`.
+
+        Parameters
+        ----------
+        angle : float
+            Launch angle of the ray at it's starting point.
+        depths : array_like
+            Depths of ice layer boundaries along the expected path.
+        grouped_path : array_like
+            Array of indices for ice layers through which the path will pass.
+        models : array_like
+            Array of ice models for the ice layers of `grouped_path`.
+
+        Returns
+        -------
+        radial_dists : array_like
+            Array of radial distances traveled at each layer of the path.
+        angles : array_like
+            Array of launch angles at the starting point of each layer.
+
+        """
         radial_dists = []
         angles = []
         start = 0
@@ -758,25 +900,12 @@ class LayeredRayTracer(LazyMutableClass):
                     & (test_diffs[:-1]!=0) & (test_diffs[:-1]!=0)
                     & ~(np.isnan(test_diffs[:-1]) & np.isnan(test_diffs[1:]))
                 )[0]
-                # angle_max_idxs = np.zeros(angle_min_idxs.shape, dtype=np.int_)
-                # for j, idx in enumerate(angle_min_idxs):
-                #     if test_diffs[idx+1]==0:
-                #         angle_max_idxs[j] = idx+2
-                #     else:
-                #         angle_max_idxs[j] = idx+1
-                # angle_mins = test_angles[angle_min_idxs]
-                # angle_maxs = test_angles[angle_max_idxs]
                 angle_mins = []
                 angle_maxs = []
                 for idx in angle_exact_idxs:
                     angle_mins.append(test_angles[idx])
                     angle_maxs.append(test_angles[idx])
                 for j, min_idx in enumerate(angle_min_idxs):
-                    # min_angle = test_angles[min_idx]
-                    # if test_diffs[min_idx+1]==0:
-                    #     max_idx = min_idx+2
-                    # else:
-                    #     max_idx = min_idx+1
                     max_idx = min_idx+1
                     min_angle = test_angles[min_idx]
                     max_angle = test_angles[max_idx]

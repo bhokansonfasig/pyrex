@@ -1,7 +1,7 @@
 """
 Module containing ice model classes.
 
-Includes ice models for uniform ice and layered ice.
+Includes ice models for layered ice.
 
 """
 
@@ -16,9 +16,10 @@ class LayeredIce:
     """
     Class describing ice divided into multiple layers.
 
-    Supports building layers made of any typical ice model. In all methods,
-    the depth z should be given as a negative value if it is below the surface
-    of the ice.
+    Supports building layers made of any typical ice model. Most methods
+    dispatch to the matching methods of the layers and combine the results
+    appropriately. In all methods, the depth z should be given as a negative
+    value if it is below the surface of the ice.
 
     Parameters
     ----------
@@ -51,6 +52,7 @@ class LayeredIce:
 
     @property
     def index_above(self):
+        """The index of refraction above the ice's valid range."""
         if self._index_above is None:
             return self.layers[0].index(self.layers[0].valid_range[1])
         else:
@@ -62,6 +64,7 @@ class LayeredIce:
 
     @property
     def index_below(self):
+        """The index of refraction below the ice's valid range."""
         if self._index_below is None:
             return self.layers[-1].index(self.layers[-1].valid_range[0])
         else:
@@ -72,6 +75,20 @@ class LayeredIce:
         self._index_below = index
 
     def contains(self, point):
+        """
+        Determines if the given point is within the ice's valid range.
+
+        Parameters
+        ----------
+        point : array_like
+            Point to be tested.
+
+        Returns
+        -------
+        bool
+            Whether `point` is cointained within the ice model.
+
+        """
         for layer in self.layers:
             if layer.contains(point):
                 return True
