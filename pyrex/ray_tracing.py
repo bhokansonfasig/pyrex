@@ -13,7 +13,7 @@ import numpy as np
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
 from pyrex.signals import Signal
-from pyrex.ice_model import AntarcticIce, ice
+from pyrex.ice_model import AntarcticIce, UniformIce, ice
 
 logger = logging.getLogger(__name__)
 
@@ -1666,24 +1666,24 @@ class SpecializedRayTracer(BasicRayTracer):
 
 
 
-# Set preferred ray tracer and path to specialized classes
-RayTracer = SpecializedRayTracer
-RayTracePath = SpecializedRayTracePath
 
 
-
-class PathFinder:
+class UniformRayTracePath(LazyMutableClass):
     """
-    Class for pseudo ray tracing. Just uses straight-line paths.
+    Class for representing a single ray solution in uniform ice.
+
+    Stores parameters of the ray path through uniform ice. Most properties are
+    lazily evaluated to save on computation time. If any attributes of the
+    class instance are changed, the lazily-evaluated properties will be
+    cleared.
 
     Parameters
     ----------
-    ice_model
-        The ice model used for the ray tracer.
-    from_point : array_like
-        Vector starting point of the ray path.
-    to_point : array_like
-        Vector ending point of the ray path.
+    parent_tracer : UniformRayTracer
+        Ray tracer for which this path is a solution.
+    points : array_like
+        Array of 3-dimensional points representing the start of the path, any
+        relfection points, and the end of the path.
 
     Attributes
     ----------
@@ -1693,104 +1693,184 @@ class PathFinder:
         The ending point of the ray path.
     ice
         The ice model used for the ray tracer.
-    exists
-    emitted_ray
-    received_ray
+    emitted_direction
+    received_direction
     path_length
     tof
+    coordinates
+
+    See Also
+    --------
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
+    UniformRayTracer : Class for calculating ray solutions in uniform ice.
+
+    Notes
+    -----
+    Even more attributes than those listed are available for the class, but
+    are mainly for internal use. These attributes can be found by exploring
+    the source code.
 
     """
-    def __init__(self, ice_model, from_point, to_point):
-        self.from_point = np.array(from_point)
-        self.to_point = np.array(to_point)
-        self.ice = ice_model
+    def __init__(self, parent_tracer, launch_angle, reflections):
+        self.from_point = parent_tracer.from_point
+        self.to_point = parent_tracer.to_point
+        self.theta0 = launch_angle
+        self.ice = parent_tracer.ice
+        self.direct = reflections==0
+        self._reflections = reflections
+        super().__init__()
+
+    @lazy_property
+    def _points(self):
+        """Relevant points along the path."""
+        if self.direct:
+            return np.asarray([self.from_point, self.to_point])
+        else:
+            points = np.zeros((self._reflections+2, 3))
+            points[0] = self.from_point
+            dzs = []
+            if self.theta0>0:
+                initial_direction = 1
+            elif self.theta0<0:
+                initial_direction = -1
+            else:
+                raise ValueError("Invalid initial direction")
+            if initial_direction==1:
+                dzs.append(self.ice.valid_range[1]-self.z0)
+            else:
+                dzs.append(self.z0-self.ice.valid_range[0])
+            size = self.ice.valid_range[1] - self.ice.valid_range[0]
+            dzs.extend([size]*(self._reflections-1))
+            final_direction = initial_direction * (-1)**self._reflections
+            if final_direction==1:
+                dzs.append(self.z1-self.ice.valid_range[0])
+            else:
+                dzs.append(self.ice.valid_range[1]-self.z1)
+            drs = self.rho * np.asarray(dzs)/np.sum(dzs)
+            rs = np.cumsum(drs)
+            points[1:, 0] = rs * np.cos(self.phi)
+            points[1:, 1] = rs * np.sin(self.phi)
+            for i in range(self._reflections):
+                dirn = ((initial_direction * (-1)**i)+1)//2
+                points[i+1, 2] = self.ice.valid_range[dirn]
+            points[-1] = self.to_point
+            return points
 
     @property
-    def exists(self):
-        """
-        Boolean of whether the path exists between the endpoints.
-
-        Path existance is determined by a total internal refleaciton
-        calculation.
-
-        """
-        ni = self.ice.index(self.from_point[2])
-        nf = self.ice.index(self.to_point[2])
-        nr = nf / ni
-        # If relative index is greater than 1, total internal reflection
-        # is impossible
-        if nr > 1:
-            return True
-        # Check z-component of emitted ray against normalized z-component
-        # of critical ray for total internal reflection
-        tir = np.sqrt(1 - nr**2)
-        return self.emitted_ray[2] > tir
+    def valid_ice_model(self):
+        """Whether the ice model being used is supported."""
+        return isinstance(self.ice, UniformIce)
 
     @property
-    def emitted_ray(self):
-        """Direction in which the ray is emitted."""
-        return normalize(self.to_point - self.from_point)
+    def z0(self):
+        """Depth (m) of the launching point."""
+        return self.from_point[2]
 
     @property
-    def received_ray(self):
-        """Direction from which the ray is received."""
-        return self.emitted_ray
+    def z1(self):
+        """Depth (m) of the receiving point."""
+        return self.to_point[2]
 
-    @property
-    def path_length(self):
-        """Length (m) of the path."""
-        return np.linalg.norm(self.to_point - self.from_point)
+    @lazy_property
+    def n0(self):
+        """Index of refraction of the ice at the launching point."""
+        return self.ice.index(self.z0)
 
-    @property
-    def tof(self):
-        """
-        Time of flight (s) for a particle along the path.
-
-        Calculated using default values of self.time_of_flight()
-
-        """
-        return self.time_of_flight()
-
-    def time_of_flight(self, n_steps=100):
-        """
-        Time of flight (s) for a particle along the path.
-
-        Calculated by integrating the time durations of steps along the path.
-
-        Parameters
-        ----------
-        n_steps : int, optional
-            Number of z-steps to divide the path into.
-
-        Returns
-        -------
-        float
-            The approximate time of flight (s) along the path.
-
-        """
-        z0 = self.from_point[2]
-        z1 = self.to_point[2]
-        zs = np.linspace(z0, z1, n_steps, endpoint=True)
+    @lazy_property
+    def rho(self):
+        """Radial distance (m) between the endpoints."""
         u = self.to_point - self.from_point
-        rho = np.sqrt(u[0]**2 + u[1]**2)
-        integrand = self.ice.index(zs)
-        t = np.trapz(integrand, zs) / 3e8 * np.sqrt(1 + (rho / (z1 - z0))**2)
-        return np.abs(t)
+        return np.sqrt(u[0]**2 + u[1]**2)
 
-    def attenuation(self, f, n_steps=100):
+    @lazy_property
+    def phi(self):
+        """Azimuthal angle (radians) between the endpoints."""
+        u = self.to_point - self.from_point
+        return np.arctan2(u[1], u[0])
+
+    @lazy_property
+    def emitted_direction(self):
+        """Direction in which ray is emitted."""
+        if self.direct and np.array_equal(self.from_point, self.to_point):
+            return np.array([0, 0, 1])
+        return normalize(self._points[1] - self._points[0])
+
+    @lazy_property
+    def received_direction(self):
+        """Direction ray is travelling when it is received."""
+        if self.direct and np.array_equal(self.from_point, self.to_point):
+            return np.array([0, 0, 1])
+        return normalize(self._points[-1] - self._points[-2])
+
+    @lazy_property
+    def path_length(self):
+        """Length (m) of the ray path."""
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must be uniform ice")
+        return np.sum([np.sqrt(np.sum((p2-p1)**2))
+                       for p1, p2 in zip(self._points[:-1], self._points[1:])])
+
+    @lazy_property
+    def tof(self):
+        """Time of flight (s) along the ray path."""
+        return self.n0 * self.path_length / 3e8
+
+    @lazy_property
+    def fresnel(self):
+        """
+        Fresnel factors for reflections off the ice boundaries.
+
+        The fresnel reflectances are calculated as the square root (ratio of
+        amplitudes, not powers). Stores the s and p polarized factors,
+        respectively.
+
+        """
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must be uniform ice")
+        r_s = 1
+        r_p = 1
+        n_1 = self.n0
+        if len(self._points)<3:
+            return r_s, r_p
+        for p1, p2 in zip(self._points[:-2], self._points[1:-1]):
+            if p2[2]==self.ice.valid_range[0]:
+                n_2 = self.ice.index_below
+            elif p2[2]==self.ice.valid_range[1]:
+                n_2 = self.ice.index_above
+            else:
+                raise ValueError("Intermediate points don't reflect off the "+
+                                 "ice boundaries")
+            dr = np.sqrt(np.sum((p2[:2]-p1[:2])**2))
+            dz = np.abs(p2[2]-p1[2])
+            theta_1 = np.arctan(dr/dz)
+            cos_1 = np.cos(theta_1)
+            sin_2 = n_1/n_2*np.sin(theta_1)
+            if sin_2<=1:
+                cos_2 = np.sqrt(1 - (sin_2)**2)
+            else:
+                cos_2 = np.sqrt((sin_2)**2 - 1)*1j
+            # TODO: Confirm sign convention here
+            r_s *= (n_1*cos_1 - n_2*cos_2) / (n_1*cos_1 + n_2*cos_2)
+            r_p *= (n_2*cos_1 - n_1*cos_2) / (n_2*cos_1 + n_1*cos_2)
+        return r_s, r_p
+
+    def attenuation(self, f, dz=1):
         """
         Calculate the attenuation factor for signal frequencies.
 
         Calculates the attenuation factor to be multiplied by the signal
-        amplitude at the given frequencies by mutliplying the attenuation
-        factors of each step along the path.
+        amplitude at the given frequencies.
 
         Parameters
         ----------
         f : array_like
             Frequencies (Hz) at which to calculate signal attenuation.
-        n_steps : int, optional
-            Number of z-steps to divide the path into.
+        dz : float, optional
+            Step size in z to divide the ice. Actual step size will not be
+            exactly this value, but is guaranteed to be less than the given
+            value.
 
         Returns
         -------
@@ -1798,242 +1878,297 @@ class PathFinder:
             Attenuation factors for the signal at the frequencies `f`.
 
         """
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must be uniform ice")
         fa = np.abs(f)
-        z0 = self.from_point[2]
-        z1 = self.to_point[2]
-        zs, dz = np.linspace(z0, z1, n_steps, endpoint=False, retstep=True)
-        u = self.to_point - self.from_point
-        rho = np.sqrt(u[0]**2 + u[1]**2)
-        dr = rho / (z1 - z0) * dz
-        dp = np.sqrt(dz**2 + dr**2)
-        alens = self.ice.attenuation_length(zs, fa)
-        attens = np.exp(-dp/alens)
-        return np.prod(attens, axis=0)
+        attens = np.ones(fa.shape)
+        for p1, p2 in zip(self._points[:-1], self._points[1:]):
+            if p1[2]==p2[2]:
+                dp = np.sqrt(np.sum((p2-p1)**2))
+                zs = np.array([p1[2]])
+            else:
+                dpdz = (p2-p1)/(p2[2]-p1[2])
+                n_steps = int(np.abs(p2[2]-p1[2]) / dz) + 2
+                zs, dz_true = np.linspace(p1[2], p2[2], n_steps,
+                                          endpoint=False, retstep=True)
+                dp = np.sqrt(np.sum((dpdz*dz_true)**2))
+            alens = self.ice.attenuation_length(zs, fa)
+            attens *= np.prod(np.exp(-dp/alens), axis=0)
+        return attens
 
-    def propagate(self, signal):
+    def propagate(self, signal=None, polarization=None):
         """
-        Propagate the signal along the ray path, in-place.
+        Propagate the signal with optional polarization along the ray path.
 
         Applies the frequency-dependent signal attenuation along the ray path
-        and shifts the times according to the ray time of flight.
+        and shifts the times according to the ray time of flight. Additionally
+        rotates the polarization vector appropriately.
 
         Parameters
         ----------
-        signal : Signal
+        signal : Signal, optional
             ``Signal`` object to propagate.
+        polarization : array_like, optional
+            Vector representing the linear polarization of the `signal`.
 
-        Raises
-        ------
-        RuntimeError
-            If the path does not exist.
+        Returns
+        -------
+        Signal
+            ``Signal`` object representing the original `signal` attenuated
+            along the ray path. Only returned if `signal` was not ``None``.
+        array_like
+            Polarization of the `signal` at the end of the ray path. Only
+            returned if `polarization` was not ``None``.
 
         See Also
         --------
         pyrex.Signal : Base class for time-domain signals.
+
+        """
+        if signal is None and polarization is None:
+            return
+
+        if signal is not None:
+            copy = Signal(signal.times+self.tof, signal.values,
+                          value_type=signal.value_type)
+
+        if polarization is None:
+            copy.filter_frequencies(self.attenuation)
+            return copy
+
+        else:
+            # Unit vectors perpendicular and parallel to plane of incidence
+            # at the launching point
+            u_s0 = normalize(np.cross(self.emitted_direction, [0, 0, 1]))
+            u_p0 = normalize(np.cross(u_s0, self.emitted_direction))
+            # Unit vector parallel to plane of incidence at the receiving point
+            # (perpendicular vector stays the same)
+            u_p1 = normalize(np.cross(u_s0, self.received_direction))
+            # Amplitudes of s and p components
+            pol_s = np.dot(polarization, u_s0)
+            pol_p = np.dot(polarization, u_p0)
+            # Fresnel reflectances of s and p components
+            r_s, r_p = self.fresnel
+
+            # Polarization vector at the receiving point
+            receiving_polarization = normalize(pol_s*np.abs(r_s) * u_s0 +
+                                               pol_p*np.abs(r_p) * u_p1)
+
+            if signal is None:
+                return receiving_polarization
+
+            else:
+                # Apply fresnel s and p coefficients in addition to attenuation
+                # (In order to treat the phase delays of total internal
+                # reflection properly, likely need a more robust framework
+                # capable of handling elliptically polarized signals)
+                def attenuation_with_fresnel(freqs):
+                    return (self.attenuation(freqs) *
+                            np.abs(np.sqrt(((r_s*pol_s)**2 + (r_p*pol_p)**2))))
+                copy.filter_frequencies(attenuation_with_fresnel)
+
+                return copy, receiving_polarization
+
+    @lazy_property
+    def coordinates(self):
+        """
+        x, y, and z-coordinates along the path.
+
+        Coordinates are only calculated at ice layer boundaries, as the path
+        is assumed to be straight within an ice layer.
+
+        """
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must be uniform ice")
+        xs = np.array([p[0] for p in self._points])
+        ys = np.array([p[1] for p in self._points])
+        zs = np.array([p[2] for p in self._points])
+        return xs, ys, zs
+
+
+class UniformRayTracer(LazyMutableClass):
+    """
+    Class for calculating ray solutions in uniform ice.
+
+    Calculations performed using straight-line paths. Most properties are
+    lazily evaluated to save on computation time. If any attributes of the
+    class instance are changed, the lazily-evaluated properties will be
+    cleared.
+
+    Parameters
+    ----------
+    from_point : array_like
+        Vector starting point of the ray path.
+    to_point : array_like
+        Vector ending point of the ray path.
+    ice_model
+        The ice model used for the ray tracer.
+
+    Attributes
+    ----------
+    from_point : ndarray
+        The starting point of the ray path.
+    to_point : ndarray
+        The ending point of the ray path.
+    ice
+        The ice model used for the ray tracer.
+    solution_class
+        Class to be used for each ray-trace solution path.
+    exists
+    expected_solutions
+    solutions
+
+    See Also
+    --------
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
+    UniformRayTracePath : Class for representing a single ray solution in
+                          uniform ice.
+
+    Notes
+    -----
+    Even more attributes than those listed are available for the class, but
+    are mainly for internal use. These attributes can be found by exploring
+    the source code.
+
+    """
+    solution_class = UniformRayTracePath
+    max_reflections = 0
+
+    def __init__(self, from_point, to_point, ice_model):
+        self.from_point = np.array(from_point)
+        self.to_point = np.array(to_point)
+        self.ice = ice_model
+        super().__init__()
+
+    @property
+    def valid_ice_model(self):
+        """Whether the ice model being used is supported."""
+        return isinstance(self.ice, UniformIce)
+
+    @property
+    def z0(self):
+        """Depth (m) of the launching point."""
+        return self.from_point[2]
+
+    @property
+    def z1(self):
+        """Depth (m) of the receiving point."""
+        return self.to_point[2]
+
+    @lazy_property
+    def n0(self):
+        """Index of refraction of the ice at the starting endpoint."""
+        return self.ice.index(self.z0)
+
+    @lazy_property
+    def rho(self):
+        """Radial distance (m) between the endpoints."""
+        u = self.to_point - self.from_point
+        return np.sqrt(u[0]**2 + u[1]**2)
+
+    @lazy_property
+    def phi(self):
+        """Azimuthal angle (radians) between the endpoints."""
+        u = self.to_point - self.from_point
+        return np.arctan2(u[1], u[0])
+
+    @lazy_property
+    def exists(self):
+        """
+        Boolean of whether any paths exist between the endpoints.
+
+        Paths are deemed invalid if at least one of the endpoints is outside of
+        the allowed ice range.
+
+        """
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must be uniform ice")
+        return (self.ice.valid_range[0]<=self.z0<=self.ice.valid_range[1] and
+                self.ice.valid_range[0]<=self.z1<=self.ice.valid_range[1])
+
+    def _reflected_path(self, reflections, initial_direction):
+        """
+        Generate reflected path for given parameters.
+
+        Path will have the given number of reflections and the given initial
+        direction (+1 for upward, -1 for downward).
+
+        """
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must be uniform ice")
+        if reflections<1:
+            raise ValueError("Number of reflections must be one or larger")
+        if (self.ice._index_above is None and
+                (reflections>1 or initial_direction==1)):
+            raise TypeError("Reflections not allowed off the upper surface")
+        if (self.ice._index_below is None and
+                (reflections>1 or initial_direction==-1)):
+            raise TypeError("Reflections not allowed off the lower surface")
+        points = np.zeros((reflections+2, 3))
+        points[0] = self.from_point
+        dzs = []
+        if initial_direction==1:
+            dzs.append(self.ice.valid_range[1]-self.z0)
+        elif initial_direction==-1:
+            dzs.append(self.z0-self.ice.valid_range[0])
+        else:
+            raise ValueError("Invalid initial direction")
+        size = self.ice.valid_range[1] - self.ice.valid_range[0]
+        dzs.extend([size]*(reflections-1))
+        final_direction = initial_direction * (-1)**reflections
+        if final_direction==1:
+            dzs.append(self.z1-self.ice.valid_range[0])
+        else:
+            dzs.append(self.ice.valid_range[1]-self.z1)
+        # drs = self.rho * np.asarray(dzs)/np.sum(dzs)
+        # rs = np.cumsum(drs)
+        # points[1:, 0] = rs * np.cos(self.phi)
+        # points[1:, 1] = rs * np.sin(self.phi)
+        # for i in range(reflections):
+        #     dirn = ((initial_direction * (-1)**i)+1)//2
+        #     points[i+1, 2] = self.ice.valid_range[dirn]
+        # points[-1] = self.to_point
+        # return self.solution_class(self, points)
+        theta = np.arctan2(initial_direction*np.sum(dzs), self.rho)
+        return self.solution_class(self, theta, reflections)
+
+
+    @lazy_property
+    def solutions(self):
+        """
+        List of existing rays between the two points.
+
+        This list should have zero elements if there are no possible paths
+        between the endpoints or up to 2N+1 elements otherwise, where N is the
+        number of reflections allowed. If the ice model has no index above or
+        below, the number of solutions may be reduced since reflections off
+        no index will be disallowed.
 
         """
         if not self.exists:
-            raise RuntimeError("Cannot propagate signal along a path that "+
-                               "doesn't exist")
-        signal.filter_frequencies(self.attenuation)
-        signal.times += self.tof
+            return []
+        # Direct path
+        sols = [
+            # self.solution_class(self, np.asarray([self.from_point,
+            #                                       self.to_point]))
+            self.solution_class(self, np.arctan2(self.z1-self.z0, self.rho), 0)
+        ]
+        # Reflected paths
+        for ref in range(1, self.max_reflections+1):
+            for direction in [1, -1]:
+                try:
+                    sols.append(self._reflected_path(ref, direction))
+                except TypeError as e:
+                    logger.info("Reflected path solution skipped due to %s",
+                                str(e).lower())
+        return sols
 
 
-class ReflectedPathFinder:
-    """
-    Class for pseudo ray tracing of a reflected ray. Uses straight-line paths.
 
-    Parameters
-    ----------
-    ice_model
-        The ice model used for the ray tracer.
-    from_point : array_like
-        Vector starting point of the ray path.
-    to_point : array_like
-        Vector ending point of the ray path.
-    reflection_depth : float, optional
-        (Negative-valued) depth (m) at which the ray reflects.
 
-    Attributes
-    ----------
-    from_point : ndarray
-        The starting point of the ray path.
-    to_point : ndarray
-        The ending point of the ray path.
-    ice
-        The ice model used for the ray tracer.
-    bounce_point : ndarray
-        The point at which the ray path is reflected.
-    path_1 : PathFinder
-        The path from `from_point` to `bounce_point`.
-    path_2 : PathFinder
-        The path from `bounce_point` to `to_point`.
-    exists
-    emitted_ray
-    received_ray
-    path_length
-    tof
 
-    """
-    def __init__(self, ice_model, from_point, to_point, reflection_depth=0):
-        self.from_point = np.array(from_point)
-        self.to_point = np.array(to_point)
-        self.ice = ice_model
-
-        self.bounce_point = self.get_bounce_point(reflection_depth)
-
-        self.path_1 = PathFinder(ice_model=self.ice,
-                                 from_point=self.from_point,
-                                 to_point=self.bounce_point)
-        self.path_2 = PathFinder(ice_model=self.ice,
-                                 from_point=self.bounce_point,
-                                 to_point=self.to_point)
-
-    def get_bounce_point(self, reflection_depth=0):
-        """
-        Calculates the point at which the ray is reflected.
-
-        Parameters
-        ----------
-        reflection_depth : float, optional
-            (Negative-valued) depth (m) at which the ray reflects.
-
-        Returns
-        -------
-        ndarray
-            Vector point at the `reflection_depth` where the ray is reflected.
-
-        """
-        z0 = self.from_point[2] - reflection_depth
-        z1 = self.to_point[2] - reflection_depth
-        u = self.to_point - self.from_point
-        # x-y distance between points
-        rho = np.sqrt(u[0]**2 + u[1]**2)
-        # x-y distance to bounce point based on geometric arguments
-        distance = z0*rho / (z0+z1)
-        # x-y direction vector
-        u_xy = np.array([u[0], u[1], 0])
-        direction = normalize(u_xy)
-        bounce_point = self.from_point + distance*direction
-        bounce_point[2] = reflection_depth
-        return bounce_point
-
-    @property
-    def exists(self):
-        """
-        Boolean of whether the path exists between the endpoints.
-
-        Path existance is determined by whether its sub-paths exist and whether
-        it could reflect off the ice surface (or ice layer at the reflection
-        depth).
-
-        """
-        # nr = nf / ni = 1 / ni
-        ni = self.ice.index(self.from_point[2])
-        nf = self.ice.index(self.bounce_point[2]) if self.bounce_point[2]<0 else 1
-        nr = nf / ni
-        # For completeness, check that ice index isn't less than 1
-        if nr>1:
-            surface_reflection = False
-        else:
-            # Check z-component of emitted ray against normalized z-component
-            # of critical ray for total internal reflection
-            tir = np.sqrt(1 - nr**2)
-            surface_reflection = self.emitted_ray[2] <= tir
-        return self.path_1.exists and self.path_2.exists and surface_reflection
-
-    @property
-    def emitted_ray(self):
-        """Direction in which the ray is emitted."""
-        return normalize(self.bounce_point - self.from_point)
-
-    @property
-    def received_ray(self):
-        """Direction from which the ray is received."""
-        return normalize(self.to_point - self.bounce_point)
-
-    @property
-    def path_length(self):
-        """Length of the path (m)."""
-        return self.path_1.path_length + self.path_2.path_length
-
-    @property
-    def tof(self):
-        """
-        Time of flight (s) for a particle along the path.
-
-        Calculated using default values of self.time_of_flight()
-
-        """
-        return self.path_1.tof + self.path_2.tof
-
-    def time_of_flight(self, n_steps=100):
-        """
-        Time of flight (s) for a particle along the path.
-
-        Calculated by integrating the time durations of steps along the path.
-
-        Parameters
-        ----------
-        n_steps : int, optional
-            Number of z-steps to divide the path into. Each sub-path divided
-            into this many steps.
-
-        Returns
-        -------
-        float
-            The approximate time of flight (s) along the path.
-
-        """
-        return (self.path_1.time_of_flight(n_steps) +
-                self.path_2.time_of_flight(n_steps))
-
-    def attenuation(self, f, n_steps=100):
-        """
-        Calculate the attenuation factor for signal frequencies.
-
-        Calculates the attenuation factor to be multiplied by the signal
-        amplitude at the given frequencies by mutliplying the attenuation
-        factors of each step along the path.
-
-        Parameters
-        ----------
-        f : array_like
-            Frequencies (Hz) at which to calculate signal attenuation.
-        n_steps : int, optional
-            Number of z-steps to divide the path into. Each sub-path divided
-            into this many steps.
-
-        Returns
-        -------
-        array_like
-            Attenuation factors for the signal at the frequencies `f`.
-
-        """
-        return (self.path_1.attenuation(f, n_steps) *
-                self.path_2.attenuation(f, n_steps))
-
-    def propagate(self, signal):
-        """
-        Propagate the signal along the ray path, in-place.
-
-        Applies the frequency-dependent signal attenuation along the ray path
-        and shifts the times according to the ray time of flight.
-
-        Parameters
-        ----------
-        signal : Signal
-            ``Signal`` object to propagate.
-
-        Raises
-        ------
-        RuntimeError
-            If the path does not exist.
-
-        See Also
-        --------
-        pyrex.Signal : Base class for time-domain signals.
-
-        """
-        self.path_1.propagate(signal)
-        self.path_2.propagate(signal)
+# Set preferred ray tracer and path to specialized classes
+RayTracer = SpecializedRayTracer
+RayTracePath = SpecializedRayTracePath
