@@ -28,26 +28,65 @@ class UniformIce(AntarcticIce):
         Range of depths over which the uniform index of refraction applies.
         Assumed to have two elements where the first value is lower (deeper,
         more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction.
 
     Attributes
     ----------
     n : float
         Index of refraction of the ice.
-    range : array_like of float
+    valid_range : array_like of float
         Range of depths over which the uniform index of refraction applies.
         Should be two elements where the first value is lower (deeper, more
         negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region.
+    index_below : float or None, optional
+        Index of refraction below the ice region.
 
     """
-    def __init__(self, index, valid_range=(-3000, 0)):
+    def __init__(self, index, valid_range=(-3000, 0), index_above=1,
+                 index_below=None):
         self.n = index
-        self.range = valid_range
+        self.valid_range = tuple(sorted(valid_range))
+        self._index_above = index_above
+        self._index_below = index_below
+
+    @property
+    def index_above(self):
+        if self._index_above is None:
+            return self.n
+        else:
+            return self._index_above
+
+    @index_above.setter
+    def index_above(self, index):
+        self._index_above = index
+
+    @property
+    def index_below(self):
+        if self._index_below is None:
+            return self.n
+        else:
+            return self._index_below
+
+    @index_below.setter
+    def index_below(self, index):
+        self._index_below = index
+
+    def contains(self, point):
+        return self.valid_range[0]<=point[2]<=self.valid_range[1]
 
     def index(self, z):
         """
         Calculates the index of refraction of the ice at a given depth.
 
-        Supports passing an array of depths.
+        Supports passing an array of depths. For depths outside of the ice
+        range, returns `index_below` or `index_above`.
 
         Parameters
         ----------
@@ -63,11 +102,16 @@ class UniformIce(AntarcticIce):
         try:
             indices = np.ones(len(z)) * self.n
         except TypeError:
-            indices = self.n
-        if np.all(self.range[0]<=z) and np.all(z<=self.range[1]):
-            return indices
-        else:
-            raise ValueError("Depth outside of valid range")
+            if z<self.valid_range[0]:
+                return self.index_below
+            elif z>self.valid_range[1]:
+                return self.index_above
+            else:
+                return self.n
+
+        indices[z<self.valid_range[0]] = self.index_below
+        indices[z>self.valid_range[1]] = self.index_above
+        return indices
 
     def gradient(self, z):
         """
@@ -141,14 +185,14 @@ class LayeredIce:
 
     """
     def __init__(self, layers, index_above=1, index_below=None):
-        self.layers = list(sorted(layers, key=lambda x: -x.range[0]))
+        self.layers = list(sorted(layers, key=lambda x: -x.valid_range[0]))
         self._index_above = index_above
         self._index_below = index_below
 
     @property
     def index_above(self):
         if self._index_above is None:
-            return self.layers[0].index(self.layers[0].range[1])
+            return self.layers[0].index(self.layers[0].valid_range[1])
         else:
             return self._index_above
 
@@ -159,13 +203,19 @@ class LayeredIce:
     @property
     def index_below(self):
         if self._index_below is None:
-            return self.layers[-1].index(self.layers[-1].range[0])
+            return self.layers[-1].index(self.layers[-1].valid_range[0])
         else:
             return self._index_below
 
     @index_below.setter
     def index_below(self, index):
         self._index_below = index
+
+    def contains(self, point):
+        for layer in self.layers:
+            if layer.contains(point):
+                return True
+        return False
 
     @property
     def boundaries(self):
@@ -176,11 +226,11 @@ class LayeredIce:
         the lowermost layer.
 
         """
-        strata = [self.layers[0].range[1], self.layers[0].range[0]]
+        strata = [self.layers[0].valid_range[1], self.layers[0].valid_range[0]]
         for layer in self.layers[1:]:
-            if layer.range[1]!=strata[-1]:
+            if layer.valid_range[1]!=strata[-1]:
                 raise ValueError("Adjacent layers do not connect properly")
-            strata.append(layer.range[0])
+            strata.append(layer.valid_range[0])
         return strata
 
     def layer_at_depth(self, z):
@@ -209,11 +259,14 @@ class LayeredIce:
         layers = []
         for depth in z:
             for layer in self.layers:
-                if layer.range[0]<depth<=layer.range[1]:
+                if layer.valid_range[0]<depth<=layer.valid_range[1]:
                     layers.append(layer)
                     break
             else:
-                raise ValueError("No layer at depth "+str(depth))
+                if layer.valid_range[0]==depth:
+                    layers.append(layer)
+                else:
+                    raise ValueError("No layer at depth "+str(depth))
 
         if single_value:
             return layers[0]
@@ -249,9 +302,9 @@ class LayeredIce:
             try:
                 n = self.layer_at_depth(depth).index(depth)
             except ValueError:
-                if depth>self.layers[0].range[1]:
+                if depth>self.layers[0].valid_range[1]:
                     n = self.index_above
-                elif depth<=self.layers[-1].range[0]:
+                elif depth<=self.layers[-1].valid_range[0]:
                     n = self.index_below
                 else:
                     raise ValueError("No index at depth "+str(depth))
