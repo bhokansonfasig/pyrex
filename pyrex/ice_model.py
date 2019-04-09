@@ -182,7 +182,7 @@ class AntarcticIce:
         return c_temp + 273.15
 
     @staticmethod
-    def __atten_coeffs(t, f):
+    def _atten_coeffs(t, f):
         """
         Calculates attenuation coefficients for temperature and frequency.
 
@@ -257,8 +257,7 @@ class AntarcticIce:
 
         return a, b
 
-    @classmethod
-    def attenuation_length(cls, z, f):
+    def attenuation_length(self, z, f):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
@@ -290,9 +289,9 @@ class AntarcticIce:
             w = np.log(f*1e-9)
 
         # Temperature in kelvin
-        t = cls.temperature(z)
+        t = self.temperature(z)
 
-        a, b = cls.__atten_coeffs(t, f)
+        a, b = self._atten_coeffs(t, f)
         # a and b will be scalar, 1-D, or 2-D as necessary based on t and f
 
         return np.exp(-(a + b * w))
@@ -330,8 +329,7 @@ class NewcombIce(AntarcticIce):
         super().__init__(n0=n0, k=k, a=a, valid_range=valid_range,
                          index_above=index_above, index_below=index_below)
 
-    @classmethod
-    def attenuation_length(cls, z, f):
+    def attenuation_length(self, z, f):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
@@ -363,7 +361,7 @@ class NewcombIce(AntarcticIce):
         array.
 
         """
-        temp = cls.temperature(z)
+        temp = self.temperature(z)
         a = 5.03097 * np.exp(0.134806 * temp)
         b = 0.172082 + temp + 10.629
         c = -0.00199175 * temp - 0.703323
@@ -413,8 +411,7 @@ class ArasimIce(AntarcticIce):
         285.333, 264,     242.667, 221.333
     ]
 
-    @classmethod
-    def attenuation_length(cls, z, f):
+    def attenuation_length(self, z, f):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
@@ -443,7 +440,7 @@ class ArasimIce(AntarcticIce):
         corresponds to a single frequency.
 
         """
-        lengths = np.interp(-z, cls.atten_depths, cls.atten_lengths)
+        lengths = np.interp(-z, self.atten_depths, self.atten_lengths)
 
         if isinstance(z, np.ndarray) and isinstance(f, np.ndarray):
             # z and f are both arrays, so return 2-D array where each
