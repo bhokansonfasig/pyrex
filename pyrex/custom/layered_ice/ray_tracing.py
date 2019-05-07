@@ -947,8 +947,8 @@ class LayeredRayTracer(LazyMutableClass):
                     idxs = np.cumsum([len(elements) for elements in grouped_path], dtype=np.int_)
                     points = np.zeros((len(grouped_path)+1, 3))
                     points[0] = self.from_point
-                    points[1:, 0] = rs * np.cos(self.phi)
-                    points[1:, 1] = rs * np.sin(self.phi)
+                    points[1:, 0] = self.from_point[0] + rs * np.cos(self.phi)
+                    points[1:, 1] = self.from_point[1] + rs * np.sin(self.phi)
                     points[1:, 2] = path_zs[idxs]
                     points[-1] = self.to_point
                     sub_paths = [
