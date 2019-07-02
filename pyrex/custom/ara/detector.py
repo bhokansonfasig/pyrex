@@ -9,7 +9,7 @@ types and the detector grid can be made up of stations or strings.
 import numpy as np
 from pyrex.signals import Signal
 from pyrex.detector import Detector
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 from .antenna import HpolAntenna, VpolAntenna
 
 
@@ -416,7 +416,7 @@ class PhasedArrayString(Detector):
             else:
                 # Calculate delays based on elevation angles
                 thetas = np.radians(angles)
-                n = np.mean([IceModel.index(ant.position[2]) for ant in self])
+                n = np.mean([ice.index(ant.position[2]) for ant in self])
                 v = 3e8 / n
                 delays = dz / v * np.sin(thetas)
 

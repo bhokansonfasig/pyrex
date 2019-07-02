@@ -13,7 +13,7 @@ from .signals import (Signal, EmptySignal, FunctionSignal,
                       AskaryanSignal, ThermalNoise)
 from .antenna import Antenna, DipoleAntenna
 from .detector import AntennaSystem, Detector
-from .ice_model import IceModel
+from .ice_model import ice
 from .earth_model import prem_density, slant_depth
 from .particle import Event, Particle, NeutrinoInteraction
 from .generation import (CylindricalGenerator, CylindricalShadowGenerator,
@@ -70,3 +70,19 @@ for user_plugin_directory in user_plugin_locations:
             directory_path = os.path.join(user_plugin_directory, directory)
             if os.path.isdir(directory_path):
                 __path__.append(directory_path)
+
+
+
+# Deprecation for IceModel:
+import warnings
+def __getattr__(name):
+    if name=='IceModel':
+        warnings.warn("The 'IceModel' class has been deprecated and replaced "+
+                      "by an 'ice' instance of 'AntarcticIce'. 'IceModel' "+
+                      "will be removed in a future release, but its true name "+
+                      "'AntarcticIce' is still valid and will not be removed.",
+                      FutureWarning, stacklevel=2)
+        ice.__class__.__call__ = lambda self: self
+        return ice
+    else:
+        raise AttributeError("module '"+__name__+"' has no attribute '"+name+"'")

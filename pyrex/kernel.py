@@ -13,7 +13,7 @@ import numpy as np
 from pyrex.internal_functions import normalize
 from pyrex.signals import AskaryanSignal, EmptySignal
 from pyrex.ray_tracing import RayTracer
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class EventKernel:
     pyrex.Event : Class for storing a tree of `Particle` objects
                   representing an event.
     pyrex.Particle : Class for storing particle attributes.
-    pyrex.IceModel : Class describing the ice at the south pole.
+    pyrex.AntarcticIce : Class describing the ice at the south pole.
     pyrex.RayTracer : Class for calculating the ray-trace solutions between
                       points.
     pyrex.AskaryanSignal : Class for generating Askaryan signals according to
@@ -122,7 +122,7 @@ class EventKernel:
     by the `Particle`.
 
     """
-    def __init__(self, generator, antennas, ice_model=IceModel,
+    def __init__(self, generator, antennas, ice_model=ice,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
                  signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False),
                  event_writer=None, triggers=None):

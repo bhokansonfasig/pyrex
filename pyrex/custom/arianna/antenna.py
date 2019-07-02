@@ -14,7 +14,7 @@ from pyrex.internal_functions import normalize
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 
 
@@ -415,7 +415,7 @@ class ARIANNAAntenna(Antenna):
 
         super().__init__(position=position, z_axis=z_axis, x_axis=x_axis,
                          efficiency=efficiency, freq_range=(f_low, f_high),
-                         temperature=IceModel.temperature(position[2]),
+                         temperature=ice.temperature(position[2]),
                          resistance=resistance, noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms)
 

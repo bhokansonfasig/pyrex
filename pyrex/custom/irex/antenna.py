@@ -11,7 +11,7 @@ import numpy as np
 import scipy.signal
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 from pyrex.custom.ara.antenna import ARAAntennaSystem, HpolBase, VpolBase
 from .frontends import (pyspice, spice_circuits,
@@ -117,7 +117,7 @@ class DipoleTester(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         temperature=IceModel.temperature(position[2]),
+                         temperature=ice.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)

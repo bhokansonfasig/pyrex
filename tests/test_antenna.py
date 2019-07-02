@@ -4,7 +4,7 @@ import pytest
 
 from pyrex.antenna import Antenna, DipoleAntenna
 from pyrex.signals import Signal
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 import numpy as np
 
@@ -210,7 +210,7 @@ class TestDipoleAntenna:
         assert dipole.antenna_factor == 2 * 250e6 / 3e8
         assert dipole.efficiency == 1
         assert np.array_equal(dipole.freq_range, [100e6, 400e6])
-        assert dipole.temperature == pytest.approx(IceModel.temperature(-250))
+        assert dipole.temperature == pytest.approx(ice.temperature(-250))
         assert dipole.resistance == 100
         assert dipole.threshold == 75e-6
         assert dipole.noisy

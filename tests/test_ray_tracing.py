@@ -3,9 +3,8 @@
 import pytest
 
 from pyrex.ray_tracing import (BasicRayTracer, BasicRayTracePath,
-                               SpecializedRayTracer, SpecializedRayTracePath,
-                               PathFinder)
-from pyrex.ice_model import AntarcticIce, IceModel
+                               SpecializedRayTracer, SpecializedRayTracePath)
+from pyrex.ice_model import AntarcticIce, ice
 
 import numpy as np
 
@@ -16,35 +15,35 @@ def ray_tracer():
     """Fixture for forming basic SpecializedRayTracer object"""
     return SpecializedRayTracer(from_point=[100, 200, -500],
                                 to_point=[0, 0, -100],
-                                ice_model=IceModel)
+                                ice_model=ice)
 
 @pytest.fixture
 def ray_tracer2():
     """Fixture for forming basic SpecializedRayTracer object"""
     return SpecializedRayTracer(from_point=[100, 1000, -200],
                                 to_point=[-100, -100, -300],
-                                ice_model=IceModel)
+                                ice_model=ice)
 
 @pytest.fixture
 def ray_tracer3():
     """Fixture for forming basic SpecializedRayTracer object"""
     return SpecializedRayTracer(from_point=[0, 0, -1500],
                                 to_point=[-100, -100, -200],
-                                ice_model=IceModel)
+                                ice_model=ice)
 
 @pytest.fixture
 def bad_tracer():
     """Fixture for forming SpecializedRayTracer object with no solutions"""
     return SpecializedRayTracer(from_point=[500, 500, -100],
                                 to_point=[0, 0, -100],
-                                ice_model=IceModel)
+                                ice_model=ice)
 
 @pytest.fixture
 def out_tracer():
     """Fixture for forming SpecializedRayTracer object with point above ice"""
     return SpecializedRayTracer(from_point=[100, 200, -500],
                                 to_point=[0, 0, 100],
-                                ice_model=IceModel)
+                                ice_model=ice)
 
 
 class TestSpecializedRayTracer:
@@ -54,7 +53,7 @@ class TestSpecializedRayTracer:
         assert isinstance(ray_tracer, BasicRayTracer)
         assert np.array_equal(ray_tracer.from_point, [100, 200, -500])
         assert np.array_equal(ray_tracer.to_point, [0, 0, -100])
-        assert ray_tracer.ice == IceModel
+        assert ray_tracer.ice == ice
         assert ray_tracer.dz == 1
         assert issubclass(ray_tracer.solution_class, BasicRayTracePath)
         assert ray_tracer._static_attrs == ['from_point', 'to_point',
@@ -65,7 +64,7 @@ class TestSpecializedRayTracer:
         assert ray_tracer.z_turn_proximity == 1 / 10
         assert ray_tracer.z0 == -500
         assert ray_tracer.z1 == -100
-        assert ray_tracer.n0 == IceModel.index(-500)
+        assert ray_tracer.n0 == ice.index(-500)
         assert ray_tracer.rho == np.sqrt(100**2 + 200**2)
 
     def test_special_properties(self, ray_tracer):
@@ -77,11 +76,11 @@ class TestSpecializedRayTracer:
 
     def test_max_angle(self, ray_tracer, ray_tracer2, ray_tracer3):
         """Test the maximum launch angle between the ray_tracer points"""
-        expected = np.arcsin(IceModel.index(-100)/IceModel.index(-500))
+        expected = np.arcsin(ice.index(-100)/ice.index(-500))
         assert ray_tracer.max_angle == expected
-        expected2 = np.arcsin(IceModel.index(-200)/IceModel.index(-300))
+        expected2 = np.arcsin(ice.index(-200)/ice.index(-300))
         assert ray_tracer2.max_angle == expected2
-        expected3 = np.arcsin(IceModel.index(-200)/IceModel.index(-1500))
+        expected3 = np.arcsin(ice.index(-200)/ice.index(-1500))
         assert ray_tracer3.max_angle == expected3
 
     def test_peak_angle(self, ray_tracer, ray_tracer2, ray_tracer3,
@@ -187,35 +186,35 @@ def basic_ray_tracer():
     """Fixture for forming basic SpecializedRayTracer object"""
     return BasicRayTracer(from_point=[100, 200, -500],
                           to_point=[0, 0, -100],
-                          ice_model=IceModel)
+                          ice_model=ice)
 
 @pytest.fixture
 def basic_ray_tracer2():
     """Fixture for forming basic SpecializedRayTracer object"""
     return BasicRayTracer(from_point=[100, 1000, -200],
                           to_point=[-100, -100, -300],
-                          ice_model=IceModel)
+                          ice_model=ice)
 
 @pytest.fixture
 def basic_ray_tracer3():
     """Fixture for forming basic SpecializedRayTracer object"""
     return BasicRayTracer(from_point=[0, 0, -1500],
                           to_point=[-100, -100, -200],
-                          ice_model=IceModel)
+                          ice_model=ice)
 
 @pytest.fixture
 def basic_bad_tracer():
     """Fixture for forming SpecializedRayTracer object with no solutions"""
     return BasicRayTracer(from_point=[500, 500, -100],
                           to_point=[0, 0, -100],
-                          ice_model=IceModel)
+                          ice_model=ice)
 
 @pytest.fixture
 def basic_out_tracer():
     """Fixture for forming SpecializedRayTracer object with point above ice"""
     return BasicRayTracer(from_point=[100, 200, -500],
                           to_point=[0, 0, 100],
-                          ice_model=IceModel)
+                          ice_model=ice)
 
 
 class TestBasicRayTracer(TestSpecializedRayTracer):
@@ -320,13 +319,13 @@ class TestSpecializedRayTracePath:
         assert path_1.z_turn_proximity == ray_tracer.z_turn_proximity
         assert path_1.z0 == -500
         assert path_1.z1 == -100
-        assert path_1.n0 == IceModel.index(-500)
+        assert path_1.n0 == ice.index(-500)
         assert path_1.rho == ray_tracer.rho
         assert path_1.phi == np.arctan2(-200, -100)
         assert path_2.z_turn_proximity == ray_tracer.z_turn_proximity
         assert path_2.z0 == -500
         assert path_2.z1 == -100
-        assert path_2.n0 == IceModel.index(-500)
+        assert path_2.n0 == ice.index(-500)
         assert path_2.rho == ray_tracer.rho
         assert path_2.phi == np.arctan2(-200, -100)
 
@@ -508,87 +507,3 @@ class TestBasicRayTracePath(TestSpecializedRayTracePath):
         """Test of attenuation method of paths from ray_tracer"""
         super().test_attenuation(frequency, basic_ray_tracer, basic_ray_tracer2,
                                  basic_ray_tracer3, rel=0.075)
-
-
-
-@pytest.fixture
-def path_finder():
-    """Fixture for forming basic PathFinder object"""
-    return PathFinder(AntarcticIce, [0,0,-100.], [0,0,-200.])
-
-@pytest.fixture
-def bad_path():
-    """Fixture for forming PathFinder object whose path doesn't exist"""
-    return PathFinder(AntarcticIce, [100,0,-200], [0,0,-200])
-
-
-path_attenuations = [
-    (1e3, 0.9993676), (1e4, 0.9985931), (1e5, 0.9968715), (1e6, 0.9930505),
-    (1e7, 0.9845992), (1e8, 0.9660472), (1e9, 0.9260033), # (1e10, 2.625058e-4)
-]
-
-class TestPathFinder:
-    """Tests for PathFinder class"""
-    def test_creation(self, path_finder):
-        """Test that the PathFinder's creation goes as expected"""
-        assert np.array_equal(path_finder.from_point, [0,0,-100])
-        assert np.array_equal(path_finder.to_point,   [0,0,-200])
-        assert (isinstance(path_finder.ice, AntarcticIce) or
-                issubclass(path_finder.ice, AntarcticIce))
-
-    def test_exists(self, path_finder, bad_path):
-        """Test that the exists parameter works as expected"""
-        assert path_finder.exists
-        assert not bad_path.exists
-
-    def test_exists_not_writable(self, path_finder):
-        """Test that the exists parameter is not assignable"""
-        with pytest.raises(AttributeError):
-            path_finder.exists = False
-
-    def test_emitted_ray(self, path_finder):
-        """Test that the emitted_ray property works as expected"""
-        assert np.array_equal(path_finder.emitted_ray, [0,0,-1])
-
-    def test_emitted_ray_not_writable(self, path_finder):
-        """Test that the emitted_ray parameter is not assignable"""
-        with pytest.raises(AttributeError):
-            path_finder.emitted_ray = np.array([0,0,1])
-
-    def test_path_length(self, path_finder):
-        """Test that the path_length property works as expected"""
-        assert path_finder.path_length == pytest.approx(100)
-
-    def test_path_length_not_writable(self, path_finder):
-        """Test that the emitted_ray parameter is not assignable"""
-        with pytest.raises(AttributeError):
-            path_finder.path_length = 0
-
-    def test_time_of_flight(self, path_finder):
-        """Test that the detailed time of flight gives the expected value
-        within 0.01%"""
-        assert (path_finder.time_of_flight(n_steps=10000)
-                == pytest.approx(5.720750e-7, rel=0.0001))
-
-    def test_tof(self, path_finder):
-        """Test that the tof parameter gives the correct time of flight
-        within 1%"""
-        assert path_finder.tof == pytest.approx(5.720750e-7, rel=0.01)
-
-    def test_tof_not_writable(self, path_finder):
-        """Test that the tof parameter is not assignable"""
-        with pytest.raises(AttributeError):
-            path_finder.tof = 0
-
-    @pytest.mark.parametrize("frequency,attenuation", path_attenuations)
-    def test_attenuation(self, path_finder, frequency, attenuation):
-        """Test that detailed attenuation returns the expected values
-        within 0.01%"""
-        assert (path_finder.attenuation(frequency, n_steps=10000)
-                == pytest.approx(attenuation, rel=0.0001))
-
-    @pytest.mark.parametrize("frequency,attenuation", path_attenuations)
-    def test_attenuation(self, path_finder, frequency, attenuation):
-        """Test that attenuation returns the expected values within 1%"""
-        assert (path_finder.attenuation(frequency)
-                == pytest.approx(attenuation, rel=0.01))
