@@ -635,5 +635,147 @@ class ArasimIce(AntarcticIce):
 
 
 
+
+class GreenlandIce(AntarcticIce):
+    """
+    Class describing the ice at Summit Station in Greenland.
+
+    For convenience, consists of static methods and class methods, so creating
+    an instance of the class may not be necessary. In all methods, the depth
+    z should be given as a negative value if it is below the surface of the
+    ice.
+
+    Attributes
+    ----------
+    k, a, n0 : float
+        Parameters of the index of refraction of the ice.
+    thickness : float
+        Thickness of the ice sheet.
+
+    Notes
+    -----
+    Index of refraction parameterization based on a slightly altered version
+    of the density parameterization at Summit Station [1]_. The altered version
+    ignores the break at small depths in order to have a uniform index of
+    refraction parameterization matching the form of the Antarctic index.
+    The temperature and attenuation length parameterizations are also based on
+    parameterizations defined for Summit Station [2]_.
+
+    References
+    ----------
+    .. [1] C. Deaconu et al, "Measurements and modeling of near-surface radio
+        propagation in glacial ice and implications for neutrino experiments."
+        Physical Review D **98**, 043010 (2018).
+    .. [2] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
+        Attenuation in Ice at Summit Station, Greenland." Journal of Glaciology
+        **61**, no. 229, 1005-1011 (2015).
+
+    """
+    def __init__(self, n0=1.775, k=0.448, a=0.0247, valid_range=(-3000, 0),
+                 index_above=1, index_below=None):
+        super().__init__(n0=n0, k=k, a=a,
+                         valid_range=valid_range,
+                         index_above=index_above,
+                         index_below=index_below)
+
+    @staticmethod
+    def temperature(z):
+        """
+        Calculates the temperature of the ice at a given depth.
+
+        Parameters
+        ----------
+        z : array_like
+            (Negative-valued) depths (m) in the ice.
+
+        Returns
+        -------
+        array_like
+            Temperatures (K) at `depth` values.
+
+        Notes
+        -----
+        Based on a polynomial fit of the GRIP borehole data [1]_.
+
+        References
+        ----------
+        .. [1] Greenland Ice Core Project (GRIP) (1994)
+            ftp://ftp.ncdc.noaa.gov/pub/data/paleo/icecore/greenland/summit/grip/physical/griptemp.txt
+
+        """
+        z_km = -0.001 * z
+        c_temp = -31.771 + z_km*(-0.32485 + z_km*(6.7427 + z_km*(-11.471 + z_km*(5.9122 - 0.84945*z_km))))
+        return c_temp + 273.15
+
+    def attenuation_length(self, z, f):
+        """
+        Calculates attenuation lengths for given depths and frequencies.
+
+        Parameters
+        ----------
+        z : array_like
+            (Negative-valued) depths (m) in the ice.
+        f : array_like
+            Frequencies (Hz) of the signal.
+
+        Returns
+        -------
+        array_like
+            Attenuation lengths for the given parameters.
+
+        Notes
+        -----
+        Attenuation length based on the measurement at 75 MHz [1]_, then
+        extrapolated in depth based on the temperature profile of the ice and
+        extrapolated in frequency based on a linear slope (as outlined in the
+        reference paper).
+        The shape of the output array is determined by the shapes of the input
+        arrays. If both inputs are scalar, the output will be scalar. If one
+        input is scalar and the other is a 1D array, the output will be a 1D
+        array. If both inputs are 1D arrays, the output will be a 2D array
+        where each row corresponds to a single depth and each column
+        corresponds to a single frequency.
+
+        References
+        ----------
+        .. [2] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
+            Attenuation in Ice at Summit Station, Greenland." Journal of
+            Glaciology **61**, no. 229, 1005-1011 (2015).
+
+        """
+        # Temperature at the relevant depths
+        t = self.temperature(z)
+        t_C = t - 273.15
+
+        # Parameterization of attenuation length at 75 MHz based on the ice
+        # temperature profile
+        alen_75 = 10**(-1.736e-2*t_C+2.5134)
+
+        # Attenuation lenghts at different frequencies are linearly
+        # extrapolated from the 75 MHz value down to some minimum length
+        min_alen = 1
+
+        if isinstance(z, np.ndarray) and isinstance(f, np.ndarray):
+            # z and f are both arrays, so return 2-D array of lengths
+            # where each row is a single z and each column is a single f
+            # alen = np.zeros((len(t), len(f)))
+            alen = -0.55e-6 * (f - 75e6) + alen_75[:, np.newaxis]
+            alen[alen<min_alen] = min_alen
+
+        else:
+            # If either z and/or f is a scalar, numpy will return an array or
+            # scalar to match the dimensionality
+            alen = -0.55e-6 * (f - 75e6) + alen_75
+
+        # Enforce the minimum attenuation length
+        if isinstance(alen, np.ndarray):
+            alen[alen<min_alen] = min_alen
+        elif alen<min_alen:
+            alen = min_alen
+
+        return alen
+
+
+
 # Preferred ice model:
 ice = AntarcticIce()
