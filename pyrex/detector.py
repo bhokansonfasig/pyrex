@@ -348,7 +348,7 @@ class AntennaSystem:
             Incoming ``Signal`` object to process and store.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal as it reaches
-            the antenna. If ``None`` no directional response will be applied.
+            the antenna. If ``None`` no directional gain will be applied.
         polarization : array_like, optional
             Vector denoting the signal's polarization direction. If ``None``
             no polarization gain will be applied.

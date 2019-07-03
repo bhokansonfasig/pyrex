@@ -127,7 +127,7 @@ class DipoleTester(Antenna):
                                     btype='bandpass', analog=True)
         self.filter_coeffs = (b, a)
 
-    def response(self, frequencies):
+    def frequency_response(self, frequencies):
         """
         Calculate the (complex) frequency response of the antenna.
 
