@@ -1,8 +1,8 @@
 """
 Module containing ice model classes.
 
-Contains models for ice at the South Pole and a model for ice with uniform
-index of refraction.
+Contains models for ice at the South Pole and at Summit Station in Greenland,
+plus a model for ice with uniform index of refraction.
 
 """
 
@@ -21,19 +21,47 @@ class AntarcticIce:
     z should be given as a negative value if it is below the surface of the
     ice.
 
+    Parameters
+    ----------
+    n0 : float, optional
+        Asymptotic index of refraction of the deep ice.
+    k : float, optional
+        Multiplicative factor for the index of refraction parameterization.
+    a : float, optional
+        Exponential factor for the index of refraction parameterization with
+        units of 1/m.
+    valid_range : array_like of float, optional
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction as the top of the ice.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction as the bottom of the ice.
+
     Attributes
     ----------
-    k, a, n0 : float
+    n0, k, a : float
         Parameters of the index of refraction of the ice.
-    thickness : float
-        Thickness of the ice sheet.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     Notes
     -----
-    Mostly based on ice characteristics outlined by Matt Newcomb.
+    Parameterizations mostly based on South Pole ice characteristics outlined
+    by Matt Newcomb [1]_.
+
+    References
+    ----------
+    .. [1] M. Newcomb (2013) http://icecube.wisc.edu/~araproject/radio/
 
     """
-    # Based mostly on sources from http://icecube.wisc.edu/~mnewcomb/radio/
     def __init__(self, n0=1.78, k=0.43, a=0.0132, valid_range=(-2850, 0),
                  index_above=1, index_below=None):
         self.n0 = n0
@@ -99,7 +127,7 @@ class AntarcticIce:
         Returns
         -------
         array_like
-            Indices of refraction at `depth` values.
+            Indices of refraction at `z` values.
 
         """
         try:
@@ -128,8 +156,8 @@ class AntarcticIce:
 
         Returns
         -------
-        float
-            Gradient of the index of refraction at `depth`.
+        ndarray
+            Gradient of the index of refraction at `z`.
 
         """
         return np.array([0, 0, -self.k * self.a * np.exp(self.a * z)])
@@ -190,7 +218,16 @@ class AntarcticIce:
         Returns
         -------
         array_like
-            Temperatures (K) at `depth` values.
+            Temperatures (K) at `z` values.
+
+        Notes
+        -----
+        Based on a polynomial fit by Matt Newcomb [1]_.
+
+        References
+        ----------
+        .. [1] M. Newcomb (2013)
+            https://icecube.wisc.edu/~araproject/radio/temp/
 
         """
         z_km = -0.001 * z
@@ -221,6 +258,7 @@ class AntarcticIce:
 
         Notes
         -----
+        Based on code from Besson et al as reported by Matt Newcomb [1]_.
         The shape of the output arrays is determined by the shapes of the input
         arrays. If both inputs are scalar, the outputs will be scalar. If one
         input is scalar and the other is a 1D array, the outputs will be 1D
@@ -228,9 +266,14 @@ class AntarcticIce:
         where each row corresponds to a single temperature and each column
         corresponds to a single frequency.
 
+        References
+        ----------
+        .. [1] M. Newcomb (2013)
+            http://icecube.wisc.edu/~araproject/radio/atten/
+
+
         """
-        # Based on code from Besson, et.al. referenced at
-        # http://icecube.wisc.edu/~mnewcomb/radio/atten/
+        # Based on the code from Besson, et.al.
         # but simplified significantly since w1=0
 
         t_C = t - 273.15
@@ -291,12 +334,18 @@ class AntarcticIce:
 
         Notes
         -----
+        Based on code from Besson et al as reported by Matt Newcomb [1]_.
         The shape of the output array is determined by the shapes of the input
         arrays. If both inputs are scalar, the output will be scalar. If one
         input is scalar and the other is a 1D array, the output will be a 1D
         array. If both inputs are 1D arrays, the output will be a 2D array
         where each row corresponds to a single depth and each column
         corresponds to a single frequency.
+
+        References
+        ----------
+        .. [1] M. Newcomb (2013)
+            http://icecube.wisc.edu/~araproject/radio/atten/
 
         """
         # Supress RuntimeWarnings when f==0 temporarily
@@ -340,14 +389,12 @@ class UniformIce:
     ----------
     n : float
         Index of refraction of the ice.
-    valid_range : array_like of float
-        Range of depths over which the uniform index of refraction applies.
-        Should be two elements where the first value is lower (deeper, more
-        negative) than the second.
-    index_above : float or None, optional
-        Index of refraction above the ice region.
-    index_below : float or None, optional
-        Index of refraction below the ice region.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     """
     def __init__(self, index, valid_range=(-2850, 0), index_above=1,
@@ -441,7 +488,7 @@ class UniformIce:
 
         Returns
         -------
-        float
+        ndarray
             Gradient of the index of refraction at `z`.
 
         """
@@ -483,12 +530,36 @@ class NewcombIce(AntarcticIce):
     the class may not be necessary. In all methods, the depth z should be given
     as a negative value if it is below the surface of the ice.
 
+    Parameters
+    ----------
+    n0 : float, optional
+        Asymptotic index of refraction of the deep ice.
+    k : float, optional
+        Multiplicative factor for the index of refraction parameterization.
+    a : float, optional
+        Exponential factor for the index of refraction parameterization with
+        units of 1/m.
+    valid_range : array_like of float, optional
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction as the top of the ice.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction as the bottom of the ice.
+
     Attributes
     ----------
-    k, a, n0 : float
+    n0, k, a : float
         Parameters of the index of refraction of the ice.
-    thickness : float
-        Thickness of the ice sheet.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     Warnings
     --------
@@ -554,15 +625,36 @@ class ArasimIce(AntarcticIce):
     not be necessary. In all methods, the depth z should be given as a negative
     value if it is below the surface of the ice.
 
+    Parameters
+    ----------
+    n0 : float, optional
+        Asymptotic index of refraction of the deep ice.
+    k : float, optional
+        Multiplicative factor for the index of refraction parameterization.
+    a : float, optional
+        Exponential factor for the index of refraction parameterization with
+        units of 1/m.
+    valid_range : array_like of float, optional
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction as the top of the ice.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction as the bottom of the ice.
+
     Attributes
     ----------
-    k, a, n0 : float
+    n0, k, a : float
         Parameters of the index of refraction of the ice.
-    thickness : float
-        Thickness of the ice sheet.
-    atten_depths, atten_lengths : list
-        Depths and corresponding attenuation lengths to be interpolated in the
-        `attenuation_length` calculation.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     """
     atten_depths = [
@@ -645,12 +737,36 @@ class GreenlandIce(AntarcticIce):
     z should be given as a negative value if it is below the surface of the
     ice.
 
+    Parameters
+    ----------
+    n0 : float, optional
+        Asymptotic index of refraction of the deep ice.
+    k : float, optional
+        Multiplicative factor for the index of refraction parameterization.
+    a : float, optional
+        Exponential factor for the index of refraction parameterization with
+        units of 1/m.
+    valid_range : array_like of float, optional
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction as the top of the ice.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction as the bottom of the ice.
+
     Attributes
     ----------
-    k, a, n0 : float
+    n0, k, a : float
         Parameters of the index of refraction of the ice.
-    thickness : float
-        Thickness of the ice sheet.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     Notes
     -----
@@ -691,7 +807,7 @@ class GreenlandIce(AntarcticIce):
         Returns
         -------
         array_like
-            Temperatures (K) at `depth` values.
+            Temperatures (K) at `z` values.
 
         Notes
         -----
