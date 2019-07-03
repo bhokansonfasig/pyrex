@@ -521,101 +521,6 @@ class UniformIce:
 
 
 
-class NewcombIce(AntarcticIce):
-    """
-    Class describing the ice at the south pole.
-
-    Uses an attenuation length based on Matt Newcomb's fit. For convenience,
-    consists of static methods and class methods, so creating an instance of
-    the class may not be necessary. In all methods, the depth z should be given
-    as a negative value if it is below the surface of the ice.
-
-    Parameters
-    ----------
-    n0 : float, optional
-        Asymptotic index of refraction of the deep ice.
-    k : float, optional
-        Multiplicative factor for the index of refraction parameterization.
-    a : float, optional
-        Exponential factor for the index of refraction parameterization with
-        units of 1/m.
-    valid_range : array_like of float, optional
-        Range of depths over which the uniform index of refraction applies.
-        Assumed to have two elements where the first value is lower (deeper,
-        more negative) than the second.
-    index_above : float or None, optional
-        Index of refraction above the ice region. If `None`, uses the same
-        index of refraction as the top of the ice.
-    index_below : float or None, optional
-        Index of refraction below the ice region. If `None`, uses the same
-        index of refraction as the bottom of the ice.
-
-    Attributes
-    ----------
-    n0, k, a : float
-        Parameters of the index of refraction of the ice.
-    valid_range : tuple
-        Range of depths over which the ice model is valid. Consists of two
-        elements where the first value is lower (deeper, more negative) than
-        the second.
-    index_above
-    index_below
-
-    Warnings
-    --------
-    The `attenuation_length` method if this class does not currently work
-    properly. This class should not be used until it is fixed.
-
-    Notes
-    -----
-    Mostly based on ice characteristics outlined by Matt Newcomb.
-
-    """
-    def __init__(self, n0=1.758, k=0.43, a=0.0132, valid_range=(-2850, 0),
-                 index_above=1, index_below=None):
-        super().__init__(n0=n0, k=k, a=a, valid_range=valid_range,
-                         index_above=index_above, index_below=index_below)
-
-    def attenuation_length(self, z, f):
-        """
-        Calculates attenuation lengths for given depths and frequencies.
-
-        Parameters
-        ----------
-        z : array_like
-            (Negative-valued) depths (m) in the ice.
-        f : array_like
-            Frequencies (MHz) of the signal.
-
-        Returns
-        -------
-        array_like
-            Attenuation lengths for the given parameters.
-
-        Warnings
-        --------
-        This method does not currently work properly. Instead the Bogorodsky
-        attenuation in the `AntarcticIce` class should be used.
-
-        This method does not currently support passing both inputs as 1D arrays
-        the way `AntarcticIce.attenuation_length` does.
-
-        Notes
-        -----
-        The shape of the output array is determined by the shapes of the input
-        arrays. If both inputs are scalar, the output will be scalar. If one
-        input is scalar and the other is a 1D array, the output will be a 1D
-        array.
-
-        """
-        temp = self.temperature(z)
-        a = 5.03097 * np.exp(0.134806 * temp)
-        b = 0.172082 + temp + 10.629
-        c = -0.00199175 * temp - 0.703323
-        return 1701 / (a + b * (0.001*f)**(c+1))
-
-
-
 class ArasimIce(AntarcticIce):
     """
     Class describing the ice at the south pole.
@@ -724,7 +629,6 @@ class ArasimIce(AntarcticIce):
             # Past this point, f must be a scalar, so an array or
             # single coefficient is returned based on the type of z
             return lengths
-
 
 
 
