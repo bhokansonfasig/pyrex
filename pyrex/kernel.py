@@ -204,12 +204,13 @@ class EventKernel:
                     # This is equivalent to the vector triple product
                     # (particle.direction x path.emitted_direction) x
                     # path.emitted_direction
+                    # In the case when path.emitted_direction and
+                    # particle.direction are equal, just let nu_pol be zeros
                     nu_pol = normalize(np.vdot(path.emitted_direction,
                                                particle.direction)
                                        * path.emitted_direction
                                        - particle.direction)
-                    # In the case when path.emitted_direction and
-                    # particle.direction are equal, just let epol be all zeros
+                    polarizations[i].append(nu_pol)
 
                     psi = np.arccos(np.vdot(particle.direction,
                                             path.emitted_direction))
@@ -219,8 +220,6 @@ class EventKernel:
                     # (low priority since these angles are far from the
                     # cherenkov cone)
                     if psi>np.pi/2:
-                        ant_pol = path.propagate(polarization=nu_pol)
-                        polarizations[i].append(ant_pol)
                         continue
 
                     pulse = self.signal_model(times=self.signal_times,
@@ -229,13 +228,12 @@ class EventKernel:
                                               viewing_distance=path.path_length,
                                               ice_model=self.ice)
 
-                    ant_pulse, ant_pol = path.propagate(signal=pulse,
-                                                        polarization=nu_pol)
+                    ant_pulses, ant_pols = path.propagate(signal=pulse,
+                                                          polarization=nu_pol)
 
-                    polarizations[i].append(ant_pol)
-                    ant.receive(ant_pulse,
+                    ant.receive(ant_pulses,
                                 direction=path.received_direction,
-                                polarization=ant_pol)
+                                polarization=ant_pols)
 
         if self.triggers is None:
             triggered = None
