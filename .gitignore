@@ -9,6 +9,7 @@ __pycache__/
 
 # pytest cache
 .cache/
+.pytest_cache/
 
 # IPython notebook helper files
 .ipynb_checkpoints/
