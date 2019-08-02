@@ -362,7 +362,7 @@ class ARAAntenna(Antenna):
 
         return freqs, gains, phases
 
-    def response(self, frequencies):
+    def frequency_response(self, frequencies):
         """
         Calculate the (complex) frequency response of the antenna.
 
@@ -392,20 +392,22 @@ class ARAAntenna(Antenna):
         return heff
 
 
-    def receive(self, signal, direction=None, polarization=None,
-                force_real=True):
+    def apply_response(self, signal, direction=None, polarization=None,
+                       force_real=True):
         """
-        Process and store an incoming signal.
+        Process the complete antenna response for an incoming signal.
 
         Processes the incoming signal according to the frequency response of
         the antenna, the efficiency, and the antenna factor. May also apply the
         directionality and the polarization gain depending on the provided
-        parameters. Finally stores the processed signal to the signals list.
+        parameters. Subclasses may wish to overwrite this function if the
+        full antenna response cannot be divided nicely into the described
+        pieces.
 
         Parameters
         ----------
         signal : Signal
-            Incoming ``Signal`` object to process and store.
+            Incoming ``Signal`` object to process.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal as it reaches
             the antenna. If ``None`` no directional response will be applied.
@@ -417,15 +419,25 @@ class ARAAntenna(Antenna):
             negative-frequency domain to keep the values of the filtered signal
             real.
 
+        Returns
+        -------
+        Signal
+            Processed ``Signal`` object after the complete antenna response has
+            been applied. Should have a ``value_type`` of ``voltage``.
+
         Raises
         ------
         ValueError
             If the given `signal` does not have a ``value_type`` of ``voltage``
             or ``field``.
 
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
         """
         copy = Signal(signal.times, signal.values, value_type=Signal.Type.voltage)
-        copy.filter_frequencies(self.response, force_real=force_real)
+        copy.filter_frequencies(self.frequency_response, force_real=force_real)
 
         if direction is not None:
             # Calculate theta and phi relative to the orientation
@@ -472,7 +484,52 @@ class ARAAntenna(Antenna):
                              +"voltage or field. Given "+str(signal.value_type))
 
         copy *= signal_factor
-        self.signals.append(copy)
+
+        return copy
+
+    # Redefine receive method to use force_real as True by default
+    def receive(self, signal, direction=None, polarization=None,
+                force_real=True):
+        """
+        Process and store one or more incoming (polarized) signals.
+
+        Processes the incoming signal(s) according to the ``apply_response``
+        method, then stores the total processed signal to the signals list. If
+        more than one signal is given, they should be logically connected as
+        separately polarized portions of the same signal.
+
+        Parameters
+        ----------
+        signal : Signal or array_like
+            Incoming ``Signal`` object(s) to process and store. May be separate
+            polarization representations, but therefore should have the same
+            times.
+        direction : array_like, optional
+            Vector denoting the direction of travel of the signal(s) as they
+            reach the antenna. If ``None`` no directional gain will be applied.
+        polarization : array_like, optional
+            Vector(s) denoting the signal's polarization direction. Number of
+            vectors should match the number of elements in `signal` argument.
+            If ``None`` no polarization gain will be applied.
+        force_real : boolean, optional
+            Whether or not the frequency response should be redefined in the
+            negative-frequency domain to keep the values of the filtered signal
+            real.
+
+        Raises
+        ------
+        ValueError
+            If the number of polarizations does not match the number of signals.
+            Or if the signals do not have the same `times` array.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
+        super().receive(signal=signal, direction=direction,
+                        polarization=polarization,
+                        force_real=force_real)
 
 
 class HpolBase(ARAAntenna):
@@ -1032,26 +1089,30 @@ class ARAAntennaSystem(AntennaSystem):
                        self._power_std*np.abs(self.power_threshold))
         return np.min(power_signal.values)<low_trigger
 
+    # Redefine receive method to use force_real as True by default
     def receive(self, signal, direction=None, polarization=None,
                 force_real=True):
         """
-        Process and store an incoming signal.
+        Process and store one or more incoming (polarized) signals.
 
-        Processes the incoming signal according to the frequency response of
-        the antenna, the efficiency, and the antenna factor. May also apply the
-        directionality and the polarization gain depending on the provided
-        parameters. Finally stores the processed signal to the signals list.
+        Processes the incoming signal(s) according to the ``apply_response``
+        method, then stores the total processed signal to the signals list. If
+        more than one signal is given, they should be logically connected as
+        separately polarized portions of the same signal.
 
         Parameters
         ----------
-        signal : Signal
-            Incoming ``Signal`` object to process and store.
+        signal : Signal or array_like
+            Incoming ``Signal`` object(s) to process and store. May be separate
+            polarization representations, but therefore should have the same
+            times.
         direction : array_like, optional
-            Vector denoting the direction of travel of the signal as it reaches
-            the antenna. If ``None`` no directional response will be applied.
+            Vector denoting the direction of travel of the signal(s) as they
+            reach the antenna. If ``None`` no directional gain will be applied.
         polarization : array_like, optional
-            Vector denoting the signal's polarization direction. If ``None``
-            no polarization gain will be applied.
+            Vector(s) denoting the signal's polarization direction. Number of
+            vectors should match the number of elements in `signal` argument.
+            If ``None`` no polarization gain will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -1060,8 +1121,12 @@ class ARAAntennaSystem(AntennaSystem):
         Raises
         ------
         ValueError
-            If the given `signal` does not have a ``value_type`` of ``voltage``
-            or ``field``.
+            If the number of polarizations does not match the number of signals.
+            Or if the signals do not have the same `times` array.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
 
         """
         super().receive(signal=signal, direction=direction,

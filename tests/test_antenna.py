@@ -84,7 +84,10 @@ class TestAntenna:
 
     def test_default_response(self, antenna):
         """Test that the frequency response is always 1"""
-        assert np.array_equal(antenna.response(np.logspace(0,10)), np.ones(50))
+        assert np.array_equal(
+            antenna.frequency_response(np.logspace(0,10)),
+            np.ones(50)
+        )
 
     def test_default_directional_gain(self, antenna):
         """Test that the directional gain is always 1"""
@@ -219,7 +222,7 @@ class TestDipoleAntenna:
     def test_frequency_response(self, dipole, freq):
         """Test that the frequency response of the dipole antenna is as
         expected"""
-        response = dipole.response(freq)
+        response = dipole.frequency_response(freq)
         db_point = 1/np.sqrt(2)
         if (freq==pytest.approx(dipole.freq_range[0])
                 or freq==pytest.approx(dipole.freq_range[1])):

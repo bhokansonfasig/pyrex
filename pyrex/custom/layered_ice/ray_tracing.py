@@ -235,7 +235,7 @@ class LayeredRayTracePath(LazyMutableClass):
 
         Applies the frequency-dependent signal attenuation along the ray path
         and shifts the times according to the ray time of flight. Additionally
-        rotates the polarization vector appropriately.
+        provides the s and p polarization directions.
 
         Parameters
         ----------
@@ -246,11 +246,13 @@ class LayeredRayTracePath(LazyMutableClass):
 
         Returns
         -------
-        Signal
-            ``Signal`` object representing the original `signal` attenuated
-            along the ray path. Only returned if `signal` was not ``None``.
-        array_like
-            Polarization of the `signal` at the end of the ray path. Only
+        tuple of Signal
+            Tuple of ``Signal`` objects representing the s and p polarizations
+            of the original `signal` attenuated along the ray path. Only
+            returned if `signal` was not ``None``.
+        tuple of ndarray
+            Tuple of polarization vectors representing the s and p polarization
+            directions of the `signal` at the end of the ray path. Only
             returned if `polarization` was not ``None``.
 
         See Also
@@ -258,16 +260,15 @@ class LayeredRayTracePath(LazyMutableClass):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        if signal is None and polarization is None:
-            return
-
-        if signal is not None:
-            copy = Signal(signal.times+self.tof, signal.values,
-                          value_type=signal.value_type)
-
         if polarization is None:
-            copy.filter_frequencies(self.attenuation)
-            return copy
+            if signal is None:
+                return
+
+            else:
+                copy = Signal(signal.times+self.tof, signal.values,
+                              value_type=signal.value_type)
+                copy.filter_frequencies(self.attenuation)
+                return copy
 
         else:
             # Unit vectors perpendicular and parallel to plane of incidence
@@ -277,30 +278,26 @@ class LayeredRayTracePath(LazyMutableClass):
             # Unit vector parallel to plane of incidence at the receiving point
             # (perpendicular vector stays the same)
             u_p1 = normalize(np.cross(u_s0, self.received_direction))
-            # Amplitudes of s and p components
-            pol_s = np.dot(polarization, u_s0)
-            pol_p = np.dot(polarization, u_p0)
-            # Fresnel reflectances of s and p components
-            f_s, f_p = self.fresnel
-
-            # Polarization vector at the receiving point
-            receiving_polarization = normalize(pol_s*np.abs(f_s) * u_s0 +
-                                               pol_p*np.abs(f_p) * u_p1)
 
             if signal is None:
-                return receiving_polarization
+                return (u_s0, u_p1)
 
             else:
+                # Amplitudes of s and p components
+                pol_s = np.dot(polarization, u_s0)
+                pol_p = np.dot(polarization, u_p0)
+                # Fresnel reflectances of s and p components
+                f_s, f_p = self.fresnel
                 # Apply fresnel s and p coefficients in addition to attenuation
-                # (In order to treat the phase delays of total internal
-                # reflection properly, likely need a more robust framework
-                # capable of handling elliptically polarized signals)
-                def attenuation_with_fresnel(freqs):
-                    return (self.attenuation(freqs) *
-                            np.abs(np.sqrt(((f_s*pol_s)**2 + (f_p*pol_p)**2))))
-                copy.filter_frequencies(attenuation_with_fresnel)
-
-                return copy, receiving_polarization
+                attenuation_s = lambda freqs: self.attenuation(freqs) * f_s
+                attenuation_p = lambda freqs: self.attenuation(freqs) * f_p
+                signal_s = Signal(signal.times+self.tof, signal.values*pol_s,
+                                  value_type=signal.value_type)
+                signal_p = Signal(signal.times+self.tof, signal.values*pol_p,
+                                  value_type=signal.value_type)
+                signal_s.filter_frequencies(attenuation_s, force_real=True)
+                signal_p.filter_frequencies(attenuation_p, force_real=True)
+                return (signal_s, signal_p), (u_s0, u_p1)
 
     @lazy_property
     def coordinates(self):
