@@ -4,9 +4,12 @@ import pytest
 
 from config import SEED
 
-from pyrex.internal_functions import (normalize, flatten, mirror_func,
+from pyrex.internal_functions import (normalize, get_from_enum,
+                                      flatten, mirror_func,
                                       lazy_property, LazyMutableClass)
 
+from enum import Enum
+import inspect
 import types
 import numpy as np
 
@@ -31,6 +34,47 @@ class Test_normalize:
         """Test that the zero vector doesn't cause problems"""
         unit = normalize([0, 0, 0])
         assert np.array_equal(unit, [0, 0, 0])
+
+
+
+@pytest.fixture
+def enum():
+    """Fixture for forming basic enum"""
+    class Color(Enum):
+        red = 1
+        rouge = 1
+        green = 2
+        vert = 2
+        blue = 3
+        bleu = 3
+    return Color
+
+
+class Test_get_from_enum:
+    """Tests for get_from_enum function"""
+    def test_get_value(self, enum):
+        """Test that getting value directly from value works"""
+        assert get_from_enum(enum.red, enum) == enum.red
+        assert get_from_enum(enum.green, enum) == enum.green
+        assert get_from_enum(enum.blue, enum) == enum.blue
+
+    def test_get_int(self, enum):
+        """Test that getting vlue from integer works"""
+        assert get_from_enum(1, enum) == enum.red
+        assert get_from_enum(2, enum) == enum.green
+        assert get_from_enum(3, enum) == enum.blue
+
+    def test_get_str(self, enum):
+        """Test that getting value from name works"""
+        assert get_from_enum("red", enum) == enum.red
+        assert get_from_enum("green", enum) == enum.green
+        assert get_from_enum("blue", enum) == enum.blue
+
+    def test_get_ambiguous(self, enum):
+        """Test that getting ambiguous values from any method works"""
+        assert get_from_enum(enum.rouge, enum) == enum.red
+        assert get_from_enum(2, enum) == enum.vert
+        assert get_from_enum("bleu", enum) == enum.blue
 
 
 
@@ -120,7 +164,13 @@ class Test_mirror_func:
         docstring"""
         assert mirror.__doc__ == "Sums two values"
 
-    # TODO: Figure out a way to test for matching arguments
+    def test_matches_arguments(self, mirror):
+        """Test that the mirrored function matches the match function's
+        argument signature and not the run function's argument signature"""
+        signature = inspect.signature(mirror)
+        assert 'a' in signature.parameters
+        assert 'b' in signature.parameters
+        assert 'args' not in signature.parameters
 
 
 
