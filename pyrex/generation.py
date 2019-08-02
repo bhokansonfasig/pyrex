@@ -839,7 +839,7 @@ class ListGenerator:
             if isinstance(event, Particle):
                 self.events[i] = Event(event)
         self.loop = loop
-        self._index = -1
+        self._index = 0
         self._additional_counts = 0
 
     @property
@@ -851,11 +851,11 @@ class ListGenerator:
         or other effects.
 
         """
-        return self._index + 1 + self._additional_counts
+        return self._index + self._additional_counts
 
     @count.setter
     def count(self, custom_count):
-        self._additional_counts = custom_count - self._index - 1
+        self._additional_counts = custom_count - self._index
 
     def create_event(self):
         """
@@ -880,10 +880,10 @@ class ListGenerator:
             If ``loop`` is ``False`` and the end of the list has been exceeded.
 
         """
-        self._index += 1
         if not self.loop and self._index>=len(self.events):
             raise StopIteration("No more events to be generated")
-        return self.events[self._index%len(self.events)]
+        self._index += 1
+        return self.events[(self._index-1)%len(self.events)]
 
 
 class NumpyFileGenerator:
