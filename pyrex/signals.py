@@ -940,7 +940,8 @@ class ARVZAskaryanSignal(Signal):
             **60**, 25-31 (2015).
 
         """
-        N = np.zeros_like(z)
+        z = np.array(z)
+        N = np.zeros(z.shape)
 
         # Below critical energy, no shower
         if energy<=crit_energy:
@@ -1006,7 +1007,8 @@ class ARVZAskaryanSignal(Signal):
             effect." ICRC proceedings, 17-25 (1999).
 
         """
-        N = np.zeros_like(z)
+        z = np.array(z)
+        N = np.zeros(z.shape)
 
         # Below critical energy, no shower
         if energy<=crit_energy:

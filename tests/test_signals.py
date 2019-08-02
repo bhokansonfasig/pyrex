@@ -5,7 +5,8 @@ import pytest
 from config import SEED
 
 from pyrex.signals import (Signal, EmptySignal, FunctionSignal,
-                           AskaryanSignal, GaussianNoise, ThermalNoise)
+                           ZHSAskaryanSignal, ARVZAskaryanSignal,
+                           GaussianNoise, ThermalNoise)
 from pyrex.ice_model import ice
 from pyrex.particle import Particle
 
@@ -38,6 +39,14 @@ class TestSignal:
         assert np.array_equal(signal.times, [0,1,2,3,4])
         assert np.array_equal(signal.values, [1,2,1,2,1])
         assert signal.value_type == Signal.Type.undefined
+
+    def test_uniqueness(self, signals):
+        """Test that a new signal made from the values of the old one are not connected"""
+        new = Signal(signals.times, signals.values)
+        new.times[0] = -10000
+        new.values[0] = 10000
+        assert new.times[0] != signals.times[0]
+        assert new.values[0] != signals.values[0]
 
     def test_addition(self, signals):
         """Test that signal objects can be added"""
@@ -93,17 +102,62 @@ class TestSignal:
         assert signal_sum_1.value_type == signals.value_type
         assert signal_sum_2.value_type == signals.value_type
 
-    def test_uniqueness(self, signals):
-        """Test that a new signal made from the values of the old one are not connected"""
-        new = Signal(signals.times, signals.values)
-        new.times[0] = -10000
-        new.values[0] = 10000
-        assert new.times[0] != signals.times[0]
-        assert new.values[0] != signals.values[0]
+    @pytest.mark.parametrize("factor", [0, 2, np.pi])
+    def test_multiplication(self, signals, factor):
+        """Test that signal types can be multiplied by scalar values"""
+        expected = Signal(signals.times, factor*signals.values, signals.value_type)
+        signal_product_1 = signals * factor
+        assert np.array_equal(signal_product_1.times, expected.times)
+        assert np.array_equal(signal_product_1.values, expected.values)
+        assert signal_product_1.value_type == expected.value_type
+        signal_product_2 = factor * signals
+        assert np.array_equal(signal_product_2.times, expected.times)
+        assert np.array_equal(signal_product_2.values, expected.values)
+        assert signal_product_2.value_type == expected.value_type
+        signals *= factor
+        assert np.array_equal(signals.times, expected.times)
+        assert np.array_equal(signals.values, expected.values)
+        assert signals.value_type == expected.value_type
+
+    def test_multiplication_uniqueness(self, signal):
+        """Test that multiplying a signal doesn't change other signals which
+        used those same values"""
+        signal_product = signal * 2
+        signal *= 2
+        assert np.array_equal(signal_product.values, signal.values)
+
+    @pytest.mark.parametrize("factor", [2, np.pi])
+    def test_division(self, signals, factor):
+        """Test that signal types can be divided by scalar values"""
+        expected = Signal(signals.times, signals.values/factor, signals.value_type)
+        signal_quotient = signals / factor
+        assert np.array_equal(signal_quotient.times, expected.times)
+        assert np.array_equal(signal_quotient.values, expected.values)
+        assert signal_quotient.value_type == expected.value_type
+        signals /= factor
+        assert np.array_equal(signals.times, expected.times)
+        assert np.array_equal(signals.values, expected.values)
+        assert signals.value_type == expected.value_type
+
+    def test_value_type_setter(self, signal):
+        """Test setting of signal value type by various methods"""
+        signal.value_type = Signal.Type.voltage
+        assert signal.value_type == Signal.Type.voltage
+        signal.value_type = 2
+        assert signal.value_type == Signal.Type.field
+        signal.value_type = "power"
+        assert signal.value_type == Signal.Type.power
+
+    def test_value_types_equivalent(self, signal):
+        """Test that value types are equivalent across classes and values"""
+        assert signal.Type.voltage == Signal.Type.voltage
+        assert Signal.Type.voltage == EmptySignal.Type.voltage
+        assert Signal.Type.undefined == Signal.Type.unknown
 
     def test_dt(self, signals):
         """Test the value of dt"""
-        assert signals.dt == pytest.approx(signals.times[-1]-signals.times[-2])
+        for t1, t2 in zip(signals.times[:-1], signals.times[1:]):
+            assert signals.dt == pytest.approx(t2-t1)
 
     def test_dt_is_none(self):
         """Test that dt is None when not enough values are provided"""
@@ -137,11 +191,6 @@ class TestSignal:
         for i in range(3):
             assert signal.times[i] == expected.times[i]
             assert signal.values[i] == pytest.approx(expected.values[i])
-
-    def test_value_types_equivalent(self, signal):
-        """Test that value types are equivalent across classes"""
-        assert signal.Type.voltage == Signal.Type.voltage
-        assert Signal.Type.voltage == EmptySignal.Type.voltage
 
     def test_with_times(self, signal):
         """Test that with_times method works as expected,
@@ -246,6 +295,39 @@ class TestFunctionSignal:
 
 
 @pytest.fixture
+def zhs_pulse():
+    """Example ZHS Askaryan pulse"""
+    # Create particle to ensure shower energy is 3e9 GeV
+    particle = Particle(particle_id=Particle.Type.electron_neutrino,
+                        vertex=(0, 0, -1000), direction=(0, 0, 1), energy=3e9,
+                        interaction_type="cc")
+    particle.interaction.em_frac = 1
+    particle.interaction.had_frac = 0
+    n = ice.index(particle.vertex[2])
+    cherenkov_angle = np.arcsin(np.sqrt(1 - 1/n**2))
+    return ZHSAskaryanSignal(times=np.linspace(0, 3e-9, 301),
+                             particle=particle,
+                             viewing_angle=cherenkov_angle-np.radians(0.3),
+                             viewing_distance=100,
+                             ice_model=ice, t0=1e-9)
+
+
+class TestZHSAskaryanSignal():
+    """Tests for ZHSAskaryanSignal class"""
+    def test_zhs_pulse(self, zhs_pulse):
+        """Test parameters of a sample ZHS signal"""
+        assert zhs_pulse.energy == 3e9
+        assert np.array_equal(zhs_pulse.times, np.linspace(0, 3e-9, 301))
+        assert zhs_pulse.value_type == Signal.Type.field
+        assert np.max(zhs_pulse.values) == pytest.approx(14.085, rel=0.1)
+        assert np.min(zhs_pulse.values) == pytest.approx(-1.392, rel=0.1)
+        peak_to_peak_time = (zhs_pulse.times[np.argmin(zhs_pulse.values)] -
+                             zhs_pulse.times[np.argmax(zhs_pulse.values)])
+        assert np.abs(peak_to_peak_time) == pytest.approx(0.4e-9, abs=0.05e-9)
+
+
+
+@pytest.fixture
 def arz_pulse():
     """Example Askaryan pulse from https://arxiv.org/pdf/1106.6283v3.pdf"""
     # Create particle to ensure shower energy is 3e9 GeV
@@ -256,15 +338,17 @@ def arz_pulse():
     particle.interaction.had_frac = 0
     n = ice.index(particle.vertex[2])
     cherenkov_angle = np.arcsin(np.sqrt(1 - 1/n**2))
-    return AskaryanSignal(times=np.linspace(0, 3e-9, 301),
-                          particle=particle,
-                          viewing_angle=cherenkov_angle-np.radians(0.3),
-                          t0=1e-9)
+    return ARVZAskaryanSignal(times=np.linspace(0, 3e-9, 301),
+                              particle=particle,
+                              viewing_angle=cherenkov_angle-np.radians(0.3),
+                              viewing_distance=1,
+                              ice_model=ice, t0=1e-9)
 
 
-class TestAskaryanSignal:
-    """Tests for AksaryanSignal class"""
+class TestARVZAskaryanSignal:
+    """Tests for ARVZAksaryanSignal class"""
     def test_arz_pulse(self, arz_pulse):
+        """Test parameters of the example ARVZ signal"""
         assert arz_pulse.em_energy == 3e9
         assert arz_pulse.had_energy == 0
         assert np.array_equal(arz_pulse.times, np.linspace(0, 3e-9, 301))
@@ -276,7 +360,67 @@ class TestAskaryanSignal:
                              arz_pulse.times[np.argmax(arz_pulse.values)])
         assert peak_to_peak_time == pytest.approx(0.2e-9, abs=0.05e-9)
 
-    # TODO: Add tests for vector_potential, RAC, charge_profile, and max_length methods
+    def test_vector_potential(self, arz_pulse):
+        """Test vector potential of ARVZ signal sample"""
+        assert np.all(np.isclose(
+            arz_pulse.vector_potential,
+            np.cumsum(np.concatenate(([0], arz_pulse.values)))[:-1] * -arz_pulse.dt,
+            rtol=1e-5, atol=1e-10
+        ))
+
+    @pytest.mark.parametrize("energy", [1e9, 1e10, 1e11])
+    def test_RAC(self, arz_pulse, energy):
+        """Test vector potential at Cherenkov angle (Fig 2 of ARVZ)"""
+        times = np.linspace(-1e-9, 1.5e-9, 6)
+        expectations = [3.4e-8, 1.8e-7, 9.0e-6, 3.1e-7, 7.8e-8, 3.0e-8]
+        factor = 1e11 / energy
+        for time, expected in zip(times, expectations):
+            assert (np.abs(arz_pulse.RAC(time, energy)) * factor
+                    == pytest.approx(expected, rel=0.05))
+
+    def test_em_shower_profile(self, arz_pulse):
+        """Test the electromagnetic shower profile"""
+        lengths = [0.1, 2, 5, 10, 15, 20, 25]
+        expectations_tev = [4.5e5, 5.2e8, 9.3e8, 1.1e7, 1.8e4, 1.3e1, 7.1e-3]
+        expectations_pev = [4.2e2, 1.3e7, 7.2e8, 2.6e8, 3.3e6, 1.0e4, 1.4e1]
+        expectations_eev = [4.0e-1, 1.2e5, 9.7e7, 7.6e8, 7.6e7, 1.0e6, 4.3e3]
+        for i, length in enumerate(lengths):
+            assert (arz_pulse.em_shower_profile(z=length, energy=1e3) * 1e6 / 1.602e-19
+                    == pytest.approx(expectations_tev[i], rel=0.05))
+            assert (arz_pulse.em_shower_profile(z=length, energy=1e6) * 1e3 / 1.602e-19
+                    == pytest.approx(expectations_pev[i], rel=0.05))
+            assert (arz_pulse.em_shower_profile(z=length, energy=1e9) / 1.602e-19
+                    == pytest.approx(expectations_eev[i], rel=0.05))
+        lengths = np.linspace(1, 15, 1000)
+        for energy in [1e3, 1e6, 1e9]:
+            assert (np.max(arz_pulse.em_shower_profile(lengths, energy)) / 1.602e-19
+                    == pytest.approx(energy, rel=0.3))
+
+    def test_had_shower_profile(self, arz_pulse):
+        """Test the hadronic shower profile"""
+        lengths = [0.1, 2, 5, 10, 15, 20, 25]
+        expectations_tev = [1.9e5, 3.6e8, 5.0e8, 7.0e7, 4.1e6, 1.7e5, 5.7e3]
+        expectations_pev = [1.5e1, 4.0e7, 5.1e8, 3.8e8, 6.0e7, 4.9e6, 2.8e5]
+        expectations_eev = [3.7e-4, 1.4e6, 1.6e8, 6.5e8, 2.7e8, 4.4e7, 4.4e6]
+        for i, length in enumerate(lengths):
+            assert (arz_pulse.had_shower_profile(z=length, energy=1e3) * 1e6 / 1.602e-19
+                    == pytest.approx(expectations_tev[i], rel=0.05))
+            assert (arz_pulse.had_shower_profile(z=length, energy=1e6) * 1e3 / 1.602e-19
+                    == pytest.approx(expectations_pev[i], rel=0.05))
+            assert (arz_pulse.had_shower_profile(z=length, energy=1e9) / 1.602e-19
+                    == pytest.approx(expectations_eev[i], rel=0.05))
+        lengths = np.linspace(1, 15, 1000)
+        for energy in [1e3, 1e6, 1e9]:
+            print(np.max(arz_pulse.had_shower_profile(lengths, energy)) / 1.602e-19)
+            assert (np.max(arz_pulse.had_shower_profile(lengths, energy)) / 1.602e-19
+                    == pytest.approx(energy*0.6, rel=0.1))
+
+    def test_max_length(self, arz_pulse):
+        """Test max_length method"""
+        energies = np.logspace(3, 9, 7)
+        expectations = [5.3, 6.7, 8.0, 9.3, 10.6, 11.9, 13.2]
+        for energy, expected in zip(energies, expectations):
+            assert arz_pulse.max_length(energy) == pytest.approx(expected, rel=0.01)
 
 
 
@@ -294,10 +438,12 @@ class TestGaussianNoise:
         assert np.array_equal(gauss_signal.times, np.linspace(0, 100, 10001))
         assert gauss_signal.sigma == 1
         assert gauss_signal.value_type == Signal.Type.voltage
-    
-    def test_sigma(self, gauss_signal):
-        """Test the standard deviation of the gaussian noise signal"""
-        assert np.std(gauss_signal.values) == pytest.approx(gauss_signal.sigma, rel=1e-2)
+
+    def test_mean_rms(self, gauss_signal):
+        """Test the mean and standard deviation of the gaussian noise signal"""
+        assert np.mean(gauss_signal.values) == pytest.approx(0, abs=5e-3)
+        assert (np.std(gauss_signal.values) ==
+                pytest.approx(gauss_signal.sigma, rel=0.05))
 
 
 
@@ -340,8 +486,7 @@ class TestThermalNoise:
         assert noise.rms == 1
 
     def test_mean_rms(self, thermal_signal):
-        """Test the rms value of the thermal noise signal"""
-        mean = np.mean(thermal_signal.values)
-        assert mean == pytest.approx(0, abs=1e-3)
-        assert (np.sqrt(np.mean((thermal_signal.values-mean)**2)) ==
+        """Test the mean and standard deviation of the thermal noise signal"""
+        assert np.mean(thermal_signal.values) == pytest.approx(0, abs=5e-3)
+        assert (np.std(thermal_signal.values) ==
                 pytest.approx(thermal_signal.rms, rel=0.05))
