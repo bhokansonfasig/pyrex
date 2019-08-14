@@ -11,7 +11,8 @@ and handle antenna processing of the signals.
 import logging
 import numpy as np
 from pyrex.internal_functions import normalize
-from pyrex.signals import AskaryanSignal, EmptySignal
+from pyrex.signals import EmptySignal
+from pyrex.askaryan import AskaryanSignal
 from pyrex.ray_tracing import RayTracer
 from pyrex.ice_model import ice
 
