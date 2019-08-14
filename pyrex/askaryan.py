@@ -143,6 +143,176 @@ class ZHSAskaryanSignal(Signal):
 
 
 
+class AVZAskaryanSignal(Signal):
+    """
+    Class for generating Askaryan signals according to ARVZ parameterization.
+
+    Stores the time-domain information for an Askaryan electric field (V/m)
+    produced by the electromagnetic and hadronic showers initiated by a
+    neutrino.
+
+    Parameters
+    ----------
+    times : array_like
+        1D array of times (s) for which the signal is defined.
+    particle : Particle
+        ``Particle`` object responsible for the showers which produce the
+        Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
+        and ``id``, plus an ``interaction`` with an ``em_frac`` and
+        ``had_frac``.
+    viewing_angle : float
+        Observation angle (radians) measured relative to the shower axis.
+    viewing_distance : float, optional
+        Distance (m) between the shower vertex and the observation point (along
+        the ray path).
+    ice_model : optional
+        The ice model to be used for describing the index of refraction of the
+        medium.
+    t0 : float, optional
+        Pulse offset time (s), i.e. time at which the showers take place.
+
+    Attributes
+    ----------
+    times, values : ndarray
+        1D arrays of times (s) and corresponding values which define the signal.
+    value_type : Signal.Type.field
+        Type of signal, representing the units of the values.
+    Type : Enum
+        Different value types available for `value_type` of signal objects.
+    em_energy : float
+        Energy (GeV) of the electromagnetic shower producing the pulse.
+    had_energy : float
+        Energy (GeV) of the hadronic shower producing the pulse.
+    dt
+    frequencies
+    spectrum
+    envelope
+
+    Raises
+    ------
+    ValueError
+        If the `particle` object is not a neutrino or antineutrino with a
+        charged-current or neutral-current interaction.
+
+    See Also
+    --------
+    Signal : Base class for time-domain signals.
+    pyrex.Particle : Class for storing particle attributes.
+
+    Notes
+    -----
+    Calculates the Askaryan signal based on the AVZ parameterization [1]_.
+    Matches the NuRadioMC implementation named 'Alvarez2000', including the
+    LPM effect correction added based on an earlier paper by Alvarez-Muniz and
+    Zas [2]_.
+
+    References
+    ----------
+    .. [1] J. Alvarez-Muniz et al, "Calculation Methods for Radio Pulses from
+        High Energy Showers." Physical Review D **62**, 063001 (2000).
+    .. [3] J. Alvarez-Muniz & E. Zas, "The LPM effect for EeV hadronic showers
+        in ice: implications for radio detection of neutrinos." Physics Letters
+        **B434**, 396-406 (1998).
+
+    """
+    def __init__(self, times, particle, viewing_angle, viewing_distance=1,
+                 ice_model=ice, t0=0):
+        # Theta should represent the angle from the shower axis, and so should
+        # always be positive
+        theta = np.abs(viewing_angle)
+
+        if theta > np.pi:
+            raise ValueError("Angles greater than 180 degrees not supported")
+
+        # Calculate shower energy based on particle's total shower fractions
+        self.em_energy = particle.energy * particle.interaction.em_frac
+        self.had_energy = particle.energy * particle.interaction.had_frac
+
+        # Calculate index of refraction at the shower position for the
+        # Cherenkov angle calculation and others
+        n = ice_model.index(particle.vertex[2])
+
+        # Calculate theta_c = arccos(1/n)
+        theta_c = np.arccos(1/n)
+
+        # Calculate corresponding frequencies, ignoring zero frequency
+        N = len(times)
+        dt = times[1]-times[0]
+        freqs = np.fft.rfftfreq(N, dt)[1:]
+
+        # LPM effect parameters
+        E_lpm = 2e15 # eV
+        dThetaEM = (np.radians(2.7) * 500e6 / freqs
+                    * (E_lpm / (0.14 * self.em_energy*1e9 + E_lpm)) ** 0.3)
+
+        if self.had_energy==0:
+            epsilon = -np.inf
+        else:
+            epsilon = np.log10(self.had_energy / 1e3)
+        dThetaHad = 0
+        if (epsilon >= 0 and epsilon <= 2):
+            dThetaHad = 500e6 / freqs * (2.07 - 0.33 * epsilon
+                                         + 7.5e-2 * epsilon ** 2)
+        elif (epsilon > 2 and epsilon <= 5):
+            dThetaHad = 500e6 / freqs * (1.74 - 1.21e-2 * epsilon)
+        elif (epsilon > 5 and epsilon <= 7):
+            dThetaHad = 500e6 / freqs * (4.23 - 0.785 * epsilon
+                                         + 5.5e-2 * epsilon ** 2)
+        elif epsilon > 7:
+            dThetaHad = (500e6 / freqs * (4.23 - 0.785 * 7 + 5.5e-2 * 7 ** 2)
+                         * (1 + (epsilon - 7) * 0.075))
+        dThetaHad = np.radians(dThetaHad)
+
+
+        f0 = 1.15e9 # Hz
+        em_tmp = np.zeros(len(freqs) + 1)
+        had_tmp = np.zeros(len(freqs) + 1)
+        # Electromagnetic shower handling
+        if particle.interaction.em_frac>0:
+            E = (2.53e-7 * self.em_energy/1e3 * freqs / f0
+                 / (1 + (freqs / f0) ** 1.44)) # V/m/Hz
+            E /= 1e6 # convert to V/m/MHz
+            E *= np.sin(theta) / np.sin(theta_c)
+            em_tmp[1:] += (E / viewing_distance
+                           * np.exp(-np.log(2) *
+                                    ((theta - theta_c) / dThetaEM)**2))
+        # Hadronic shower handling (when hadronic energy is above 1 TeV)
+        if particle.interaction.had_frac>0 and np.any(dThetaHad!=0):
+            E = (2.53e-7 * self.had_energy/1e3 * freqs / f0
+                / (1 + (freqs / f0) ** 1.44)) # V/m/Hz
+            E /= 1e6 # convert to V/m/MHz
+            E *= np.sin(theta) / np.sin(theta_c)
+            had_tmp[1:] += (E / viewing_distance
+                            * np.exp(-np.log(2) *
+                                     ((theta - theta_c) / dThetaHad)**2))
+
+            def missing_energy_factor(E_0):
+                # Missing energy factor for hadronic cascades
+                # Taken from DOI: 10.1016/S0370-2693(98)00905-8
+                epsilon = np.log10(E_0/1e3)
+                f_epsilon  = -1.27e-2 - 4.76e-2*(epsilon+3)
+                f_epsilon += -2.07e-3*(epsilon+3)**2 + 0.52*np.sqrt(epsilon+3)
+                return f_epsilon
+
+            had_tmp[1:] *= missing_energy_factor(self.had_energy)
+
+
+        # Combine showers
+        tmp = em_tmp + had_tmp
+
+        # Factor of 0.5 is introduced to compensate the unusual fourier
+        # transform normalization used in the ZHS code
+        tmp *= 0.5
+
+        # Set phases to 90 degrees
+        trace = np.fft.irfft(tmp * np.exp(0.5j * np.pi)) / dt
+
+        # Shift to proper t0
+        trace = np.roll(trace, int((t0-times[0]) / dt))
+
+        super().__init__(times, trace, value_type=self.Type.field)
+
+
 class ARVZAskaryanSignal(Signal):
     """
     Class for generating Askaryan signals according to ARVZ parameterization.
