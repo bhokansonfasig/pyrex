@@ -660,8 +660,7 @@ class CylindricalShadowGenerator(CylindricalGenerator):
                             energy=E, interaction_model=self.interaction_model)
 
         weights = self.get_weights(particle)
-        rand_exponential = np.random.exponential()
-        if rand_exponential > weights[0]:
+        if np.random.rand() < weights[0]:
             particle.survival_weight = 1
             particle.interaction_weight = weights[1]
             logger.debug("Successfully created %s with interaction weight %d",
@@ -768,8 +767,7 @@ class RectangularShadowGenerator(RectangularGenerator):
                             energy=E, interaction_model=self.interaction_model)
 
         weights = self.get_weights(particle)
-        rand_exponential = np.random.exponential()
-        if rand_exponential > weights[0]:
+        if np.random.rand() < weights[0]:
             particle.survival_weight = 1
             particle.interaction_weight = weights[1]
             logger.debug("Successfully created %s with interaction weight %d",
