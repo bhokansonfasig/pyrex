@@ -16,8 +16,7 @@ from .detector import AntennaSystem, Detector
 from .ice_model import ice
 from .earth_model import prem_density, slant_depth
 from .particle import Event, Particle, NeutrinoInteraction
-from .generation import (CylindricalGenerator, CylindricalShadowGenerator,
-                         RectangularGenerator, RectangularShadowGenerator,
+from .generation import (CylindricalGenerator, RectangularGenerator,
                          ShadowGenerator, ListGenerator, FileGenerator)
 from .ray_tracing import RayTracer, RayTracePath
 from .kernel import EventKernel
