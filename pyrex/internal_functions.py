@@ -141,6 +141,130 @@ def flatten(iterator, dont_flatten=()):
 
 
 
+def complex_interp(x, xp, fp, method='cartesian'):
+    """
+    Perform interpolation on complex values.
+
+    Calculates the linear interpolation of an array of complex values `fp`.
+    Interpolates in real and imaginary parts for the Cartesian method, and
+    interpolates in gain and (unwrapped) phase for the Euler method.
+
+    Parameters
+    ----------
+    x : array_like
+        The x-coordinates at which to evaluate the interpolated values.
+    xp : array_like
+        The x-coordinates of the data points, must be increasing.
+    fp : array_like
+        The (complex-valued) y-coordinates of the data points, same length as
+        `xp`.
+    method : {'cartesian', 'euler'}, optional
+        The interpolation method to use between data points. 'Cartesian' will
+        interpolate linearly in the real/imaginary plane. 'Euler' will
+        interpolate linearly in the gain and (unwrapped) phase values.
+
+    Returns
+    -------
+    y : ndarray
+        The (complex-valued) interpolated values, same shape as `x`.
+
+    Raises
+    ------
+    ValueError
+        If an unspecified interpolation method is given.
+        Or if `xp` and `fp` have different length.
+        Or if `xp` and `fp` are not 1-D sequences.
+
+    """
+    if method.lower()=='cartesian':
+        return np.interp(x, xp, fp)
+    elif method.lower()=='euler':
+        gain = np.interp(x, xp, np.abs(fp))
+        phase = np.interp(x, xp, np.unwrap(np.angle(fp)))
+        return gain * np.exp(1j*phase)
+    else:
+        raise ValueError("Unknown interpolation method '"+str(method)+"'")
+
+
+def complex_bilinear_interp(x, y, xp, yp, fp, method='cartesian',
+                            unwrap_axis=0):
+    """
+    Perform bilinear interpolation on complex values.
+
+    Calculates the bilinear interpolation of an array of complex values `fp`.
+    Interpolates in real and imaginary parts for the Cartesian method, and
+    interpolates in gain and (unwrapped) phase for the Euler method.
+
+    Parameters
+    ----------
+    x : float
+        The x-coordinate at which to evaluate the interpolated values.
+    y : float
+        The y-coordinate at which to evaluate the interpolated values.
+    xp : array_like
+        The x-coordinates of the data points, must be increasing.
+    yp : array_like
+        The y-coordinates of the data points, must be increasing.
+    fp : array_like
+        The (complex-valued) z-coordinates of the data points, with its second
+        dimension the same length as `xp` and its third dimension the same
+        length as `yp`.
+    method : {'cartesian', 'euler'}, optional
+        The interpolation method to use between data points. 'Cartesian' will
+        interpolate linearly in the real/imaginary plane. 'Euler' will
+        interpolate linearly in the gain and (unwrapped) phase values.
+    unwrap_axis : int, optional
+        When used with the 'euler' method, controls which axis of `fp` the
+        phases are unwrapped around.
+
+    Returns
+    -------
+    z : ndarray
+        The (complex-valued) interpolated values.
+
+    Raises
+    ------
+    ValueError
+        If an unspecified interpolation method is given.
+        Or if `x` or `y` lies outside of the range of `xp` or `yp`.
+        Or if the shape of `fp` is incompatible with `xp` and `yp`.
+
+    """
+    if len(xp)!=fp.shape[1] or len(yp)!=fp.shape[2]:
+        raise ValueError("Dimensions of fp "+str(fp.shape)+" are incompatible "
+                         +"with xp ("+len(xp)+") and/or yp ("+len(yp)+")")
+    if not xp[0]<=x<=xp[-1]:
+        raise ValueError("x value "+str(x)+" outside of the range of xp")
+    i = np.searchsorted(xp, x)
+    if i==0:
+        i = 1
+    i_low = i-1
+    i_high = i
+    t = (x - xp[i_low]) / (xp[i_high] - xp[i_low])
+    if not yp[0]<=y<=yp[-1]:
+        raise ValueError("y value "+str(y)+" outside of the range of yp")
+    j = np.searchsorted(yp, y)
+    if j==0:
+        j = 1
+    j_low = j - 1
+    j_high = j
+    u = (y - yp[j_low]) / (yp[j_high] - yp[j_low])
+    def interp(f):
+        return (
+            (1-t)*(1-u) * f[:, i_low,  j_low ] +
+               t *(1-u) * f[:, i_high, j_low ] +
+            (1-t)*   u  * f[:, i_low,  j_high] +
+               t *   u  * f[:, i_high, j_high]
+        )
+    if method.lower()=='cartesian':
+        return interp(fp)
+    elif method.lower()=='euler':
+        gain = interp(np.abs(fp))
+        phase = interp(np.unwrap(np.angle(fp), axis=unwrap_axis))
+        return gain * np.exp(1j*phase)
+
+
+
 def mirror_func(match_func, run_func, self=None):
     """
     Mirror the attributes of one function onto another.
