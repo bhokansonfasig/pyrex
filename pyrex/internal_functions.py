@@ -141,7 +141,7 @@ def flatten(iterator, dont_flatten=()):
 
 
 
-def complex_interp(x, xp, fp, method='cartesian'):
+def complex_interp(x, xp, fp, method='cartesian', outer=None):
     """
     Perform interpolation on complex values.
 
@@ -162,6 +162,11 @@ def complex_interp(x, xp, fp, method='cartesian'):
         The interpolation method to use between data points. 'Cartesian' will
         interpolate linearly in the real/imaginary plane. 'Euler' will
         interpolate linearly in the gain and (unwrapped) phase values.
+    outer : None or float, optional
+        The value to use for values of `x` outside of the range of `xp`. In the
+        'Cartesian' method it will be applied as a complex value. In the
+        'Euler' method it will be applied to the gain, but phases will always
+        retain their value at the closest edge of `xp`.
 
     Returns
     -------
@@ -177,9 +182,9 @@ def complex_interp(x, xp, fp, method='cartesian'):
 
     """
     if method.lower()=='cartesian':
-        return np.interp(x, xp, fp)
+        return np.interp(x, xp, fp, left=outer, right=outer)
     elif method.lower()=='euler':
-        gain = np.interp(x, xp, np.abs(fp))
+        gain = np.interp(x, xp, np.abs(fp), left=outer, right=outer)
         phase = np.interp(x, xp, np.unwrap(np.angle(fp)))
         return gain * np.exp(1j*phase)
     else:
