@@ -5,22 +5,26 @@ Based primarily on the LPDA implementation (and data) in NuRadioReco.
 
 """
 
+import logging
 import os.path
 import pickle
 import tarfile
 import numpy as np
 import scipy.interpolate
-from pyrex.internal_functions import normalize
+from pyrex.internal_functions import (normalize, complex_bilinear_interp,
+                                      complex_interp)
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
 from pyrex.ice_model import ice
 
+logger = logging.getLogger(__name__)
+
 
 
 def _read_response_data(filename):
     """
-    Gather antenna directionality/polarization data from a WIPLD data file.
+    Gather antenna effective height data from a set of WIPLD data files.
 
     Data files should exist with names `filename`.ra1 and `filename`.ad1.
     The ``.ad1`` file should contain frequencies in the first column, real and
@@ -41,13 +45,23 @@ def _read_response_data(filename):
 
     Returns
     -------
-    dict
-        Dictionary containing the data with keys (freq, theta, phi) and values
-        (theta E-field, phi E-field).
-    set
-        Set of unique frequencies appearing in the data keys.
-    ndarray
-        Array of S-parameter values corresponding to the frequencies.
+    theta_response : ndarray
+        3-D array of complex-valued effective heights in the theta polarization
+        as a function of frequency along axis 0, zenith along axis 1, and
+        azimuth along axis 2.
+    phi_response : ndarray
+        3-D array of complex-valued effective heights in the phi polarization
+        as a function of frequency along axis 0, zenith along axis 1, and
+        azimuth along axis 2.
+    frequencies : ndarray
+        Frequencies (Hz) corresponding to axis 0 of `theta_response` and
+        `phi_response`.
+    thetas : ndarray
+        Zenith angles (degrees) corresponding to axis 1 of `theta_response` and
+        `phi_response`.
+    phis : ndarray
+        Azimuth angles (degrees) corresponding to axis 2 of `theta_response`
+        and `phi_response`.
 
     Raises
     ------
@@ -73,7 +87,7 @@ def _read_response_data(filename):
 
     # Get s-parameter data from .ad1 file
     freqs = set()
-    s_params = []
+    s_params = {}
     with open(filename+".ad1") as f:
         for line in f:
             words = line.split()
@@ -93,7 +107,7 @@ def _read_response_data(filename):
                 freqs.add(freq)
                 # z = float(words[5]) + float(words[6])*1j
                 s11 = float(words[7]) + float(words[8])*1j
-                s_params.append(s11)
+                s_params[freq] = s11
 
     # Get directional/polarization gain from .ra1 file
     data = {}
@@ -132,7 +146,25 @@ def _read_response_data(filename):
     if freqs!=freqs_check:
         raise ValueError("Frequency values of input files do not match")
 
-    return data, freqs, np.array(s_params)
+    # Convert data dictionary into a 3-D arrays of responses, including
+    # conversion of electric fields into effective heights
+    theta_response = np.empty((len(freqs), len(thetas), len(phis)),
+                              dtype=np.complex_)
+    phi_response = np.empty((len(freqs), len(thetas), len(phis)),
+                            dtype=np.complex_)
+    for i, freq in enumerate(sorted(freqs)):
+        for j, theta in enumerate(sorted(thetas)):
+            for k, phi in enumerate(sorted(phis)):
+                # gain, phase = data[(freq, theta, phi)]
+                # response[i, j, k] = gain * np.exp(1j*phase)
+                heff_factor = 3e8/freq * (1+s_params[freq]) * 50/377j
+                E_theta, E_phi = data[(freq, theta, phi)]
+                theta_response[i, j, k] = E_theta * heff_factor
+                phi_response[i, j, k] = E_phi * heff_factor
+
+    # WIPLD file defines thetas from -90 to 90 rather than 0 to 180, so add 90
+    return (theta_response, phi_response, np.array(sorted(freqs)),
+            np.array(sorted(thetas))+90, np.array(sorted(phis)))
 
 
 def _read_response_pickle(filename):
@@ -140,9 +172,7 @@ def _read_response_pickle(filename):
     Gather antenna effective height data from a pickled data file.
 
     The data file should be a pickled file containing the effective height
-    data dictionary and frequency set, calculated based on the data dictionary,
-    frequency set, and impedance array typically returned by the
-    `_read_response_data` function.
+    data and axes as returned by the `_read_response_data` function.
 
     Parameters
     ----------
@@ -151,16 +181,28 @@ def _read_response_pickle(filename):
 
     Returns
     -------
-    dict
-        Dictionary containing the effective height data with keys
-        (freq, theta, phi) and values (theta gain, phi gain).
-    set
-        Set of unique frequencies appearing in the data keys.
+    theta_response : ndarray
+        3-D array of complex-valued effective heights in the theta polarization
+        as a function of frequency along axis 0, zenith along axis 1, and
+        azimuth along axis 2.
+    phi_response : ndarray
+        3-D array of complex-valued effective heights in the phi polarization
+        as a function of frequency along axis 0, zenith along axis 1, and
+        azimuth along axis 2.
+    frequencies : ndarray
+        Frequencies (Hz) corresponding to axis 0 of `theta_response` and
+        `phi_response`.
+    thetas : ndarray
+        Zenith angles (degrees) corresponding to axis 1 of `theta_response` and
+        `phi_response`.
+    phis : ndarray
+        Azimuth angles (degrees) corresponding to axis 2 of `theta_response`
+        and `phi_response`.
 
     See Also
     --------
-    _read_response_data : Gather antenna directionality/polarization data from
-                          a WIPLD data file.
+    _read_response_data : Gather antenna effective height data from a set of
+                          WIPLD data files.
 
     """
     # Quick fix for filenames with one of the approved extensions already
@@ -171,19 +213,12 @@ def _read_response_pickle(filename):
     # If there is no pickle file, read the response data using the
     # _read_response_data function, and then make a pickle file
     if not os.path.isfile(filename+".pkl"):
-        data, freqs, s_params = _read_response_data(filename)
-
-        # Calculate effective height from the data
-        heff_data = {}
-        s11s = {f: s for f, s in zip(sorted(freqs), s_params)}
-        for key, e_fields in data.items():
-            freq = key[0]
-            heff_factor = 3e8/freq * (1+s11s[freq]) * 50/377j
-            heff_data[key] = (e_fields[0]*heff_factor, e_fields[1]*heff_factor)
-
+        logger.warn("Antenna model file "+filename+".pkl not found. "+
+                    "Generating a new file now")
+        heff_data = _read_response_data(filename)
         with open(filename+".pkl", 'wb') as f:
-            pickle.dump((heff_data, freqs), f)
-        return heff_data, freqs
+            pickle.dump(heff_data, f)
+        return heff_data
 
     # Otherwise, read from the pickle file
     else:
@@ -210,12 +245,14 @@ def _read_amplifier_data(gain_filename, phase_filename, gain_offset=0):
 
     Returns
     -------
-    dict
-        Dictionary containing the data with keys (freq) and values
-        (gain, phase).
+    gains : ndarray
+        Complex-valued voltage gains as a function of frequency.
+    frequencies : ndarray
+        Frequencies (Hz) corresponding to the values of `gains`.
 
     """
-    data = {}
+    gains = []
+    freqs = []
     with open(gain_filename) as f:
         for line in f:
             words = line.split()
@@ -225,10 +262,11 @@ def _read_amplifier_data(gain_filename, phase_filename, gain_offset=0):
                 f, g, _ = line.split(",")
                 freq = float(f)
                 gain = 10**((float(g)+gain_offset)/20)
-                data[freq] = (gain, 0)
+                freqs.append(freq)
+                gains.append(gain)
 
-    phase_offset = 0
-    prev_phase = 0
+    phases = []
+    freqs2 = []
     with open(phase_filename) as f:
         for line in f:
             words = line.split()
@@ -238,76 +276,13 @@ def _read_amplifier_data(gain_filename, phase_filename, gain_offset=0):
                 f, p, _ = line.split(",")
                 freq = float(f)
                 phase = np.radians(float(p))
-                # In order to smoothly interpolate phases, don't allow the phase
-                # to wrap from -pi to +pi, but instead apply an offset
-                if phase-prev_phase>np.pi:
-                    phase_offset -= 2*np.pi
-                elif prev_phase-phase>np.pi:
-                    phase_offset += 2*np.pi
-                prev_phase = phase
-                if freq not in data:
-                    raise ValueError("Frequency values must match between "
-                                     +"gain and phase files")
-                gain = data[freq][0]
-                data[freq] = (gain, phase+phase_offset)
+                freqs2.append(freq)
+                phases.append(phase)
 
-    return data
+    if not np.array_equal(freqs, freqs2):
+        raise ValueError("Frequency values of input files do not match")
 
-
-def _read_filter_data(filename):
-    """
-    Gather frequency-dependent filtering data from a data file.
-
-    The data file should have columns for frequency, non-dB gain, and phase
-    (in radians).
-
-    Parameters
-    ----------
-    filename : str
-        Name of the data file.
-
-    Returns
-    -------
-    dict
-        Dictionary containing the data with keys (freq) and values
-        (gain, phase).
-
-    """
-    data = {}
-    freq_scale = 0
-    phase_offset = 0
-    prev_phase = 0
-    with open(filename) as f:
-        for line in f:
-            words = line.split()
-            if line.startswith('Freq'):
-                _, scale = words[0].split("(")
-                scale = scale.rstrip(")")
-                if scale=="Hz":
-                    freq_scale = 1
-                elif scale=="kHz":
-                    freq_scale = 1e3
-                elif scale=="MHz":
-                    freq_scale = 1e6
-                elif scale=="GHz":
-                    freq_scale = 1e9
-                else:
-                    raise ValueError("Cannot parse line: '"+line+"'")
-            elif len(words)==3 and words[0]!="Total":
-                f, g, p = line.split(",")
-                freq = float(f) * freq_scale
-                gain = float(g)
-                phase = float(p)
-                # In order to smoothly interpolate phases, don't allow the phase
-                # to wrap from -pi to +pi, but instead apply an offset
-                if phase-prev_phase>np.pi:
-                    phase_offset -= 2*np.pi
-                elif prev_phase-phase>np.pi:
-                    phase_offset += 2*np.pi
-                prev_phase = phase
-                data[freq] = (gain, phase+phase_offset)
-
-    return data
+    return np.array(gains) * np.exp(1j*np.array(phases)), np.array(freqs)
 
 
 ARIANNA_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
@@ -317,14 +292,11 @@ AMP_GAIN_FILE = os.path.join(ARIANNA_DATA_DIR,
                              "amp_300_gain.csv")
 AMP_PHASE_FILE = os.path.join(ARIANNA_DATA_DIR,
                               "amp_300_phase.csv")
-ARA_FILT_DATA_FILE = os.path.join(ARIANNA_DATA_DIR,
-                                  "ARA_Electronics_TotalGain_TwoFilters.txt")
-LPDA_DIRECTIONALITY, LPDA_FREQS = _read_response_pickle(LPDA_DATA_FILE)
-AMPLIFIER_GAIN = _read_amplifier_data(AMP_GAIN_FILE, AMP_PHASE_FILE,
-                                      gain_offset=40)
+LPDA_RESPONSE_DATA = _read_response_pickle(LPDA_DATA_FILE)
+AMPLIFIER_GAIN_DATA = _read_amplifier_data(AMP_GAIN_FILE, AMP_PHASE_FILE,
+                                           gain_offset=40)
 # Series 100 and 200 amps should have gain_offset=60,
 # series 300 should have gain_offset=40
-ARA_FILTERS = _read_filter_data(ARA_FILT_DATA_FILE)
 
 
 
@@ -333,10 +305,18 @@ class ARIANNAAntenna(Antenna):
     Antenna class to be used for ARIANNA antennas.
 
     Stores the attributes of an antenna as well as handling receiving,
-    processing, and storing signals and adding noise.
+    processing, and storing signals and adding noise. Antenna response based on
+    provided models.
 
     Parameters
     ----------
+    response_data : tuple of array_like
+        Tuple containing the response data for the antenna along the theta
+        and phi polarization directions. The first and second elements should
+        contain 3-D arrays of the antenna response model in the theta and phi
+        polarizations, respectively, as a function of frequency (axis 0),
+        zenith (axis 1), and azimuth (axis 2). The remaining elements should be
+        the values of the frequency, zenith, and azimuth axes, respectively.
     position : array_like
         Vector position of the antenna.
     center_frequency : float
@@ -357,12 +337,6 @@ class ARIANNAAntenna(Antenna):
     unique_noise_waveforms : int, optional
         The number of expected noise waveforms needed for each received signal
         to have its own noise.
-    response_data : None or dict, optional
-        Dictionary containing data on the response of the antenna. If ``None``,
-        behavior is undefined.
-    response_freqs : None or set, optional
-        Set of frequencies in the response data ``dict`` keys. If ``None``,
-        calculated automatically from `response_data`.
 
     Attributes
     ----------
@@ -405,10 +379,16 @@ class ARIANNAAntenna(Antenna):
     pyrex.Antenna : Base class for antennas.
 
     """
-    def __init__(self, position, center_frequency, bandwidth, resistance,
-                 z_axis=(0,0,1), x_axis=(1,0,0), efficiency=1, noisy=True,
-                 unique_noise_waveforms=10,
-                 response_data=None, response_freqs=None):
+    def __init__(self, response_data, position, center_frequency, bandwidth,
+                 resistance, z_axis=(0,0,1), x_axis=(1,0,0), efficiency=1,
+                 noisy=True, unique_noise_waveforms=10):
+        # Parse the response data
+        self._theta_response = response_data[0]
+        self._phi_response = response_data[1]
+        self._response_freqs = response_data[2]
+        self._response_zens = response_data[3]
+        self._response_azis = response_data[4]
+
         # Get the critical frequencies in Hz
         f_low = center_frequency - bandwidth/2
         f_high = center_frequency + bandwidth/2
@@ -419,22 +399,24 @@ class ARIANNAAntenna(Antenna):
                          resistance=resistance, noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms)
 
-        self._resp_data = response_data
-        self._resp_freqs = response_freqs
-        # Just in case the frequencies don't get set, set them now
-        if self._resp_freqs is None and self._resp_data is not None:
-            self._resp_freqs = set()
-            for key in self._resp_data:
-                self._resp_freqs.add(key[0])
+    def directional_gain(self, theta, phi):
+        raise NotImplementedError("Directional gain is not defined for "+
+                                  self.__class__.__name__+". Use the "+
+                                  "directional_response method instead.")
 
-    def generate_response_gains(self, theta, phi):
+    def polarization_gain(self, polarization):
+        raise NotImplementedError("Polarization gain is not defined for "+
+                                  self.__class__.__name__+". Use the "+
+                                  "directional_response method instead.")
+
+    def directional_response(self, theta, phi, polarization):
         """
-        Generate the (complex) frequency-dependent response gains.
+        Generate the (complex) frequency-dependent directional response.
 
-        For given angles, calculate arrays of frequencies and their
-        corresponding theta and phi (complex) gains, based on the response data
-        of the antenna. These values are not technically gain in a traditional
-        sense, but for lack of a better word we'll stick with gain for now.
+        For given angles and polarization direction, use the model of the
+        directional and polarization gains of the antenna to generate a
+        function for the interpolated response of the antenna with respect to
+        frequency.
 
         Parameters
         ----------
@@ -442,67 +424,42 @@ class ARIANNAAntenna(Antenna):
             Polar angle (radians) from which a signal is arriving.
         phi : float
             Azimuthal angle (radians) from which a signal is arriving.
+        polarization : array_like
+            Normalized polarization vector in the antenna coordinate system.
 
         Returns
         -------
-        freqs : array_like
-            Frequencies over which the response was defined.
-        theta_gains : array_like
-            Complex theta gains at the corrseponding frequencies.
-        phi_gains : array_like
-            Complex phi gains at the corresponding frequencies.
+        function
+            A function which returns complex-valued voltage gains for given
+            frequencies, using the values of incoming angle and polarization.
 
         """
-        if self._resp_data is None:
-            return np.array([1]), np.array([1]), np.array([0])
-
-        theta = np.degrees(theta)
-        phi = np.degrees(phi)
-
-        # Special case: if given exactly theta=180, don't take the modulus
-        if theta!=180:
-            theta %= 180
-        phi %= 360
-        theta_under = 2*int(theta/2)
-        theta_over = 2*(int(theta/2)+1)
-        phi_under = 5*int(phi/5)
-        phi_over = 5*(int(phi/5)+1)
-        t = (theta - theta_under) / (theta_over - theta_under)
-        u = (phi - phi_under) / (phi_over - phi_under)
-
-        theta_over = min(theta_over, 180)
-        phi_over %= 360
-
-        # WIPLD file defines thetas from -90 to 90 rather than 0 to 180
-        theta_under -= 90
-        theta_over -= 90
-
-        nfreqs = len(self._resp_freqs)
-        theta_gain_ij = np.zeros(nfreqs, dtype=np.complex_)
-        phi_gain_ij = np.zeros(nfreqs, dtype=np.complex_)
-        theta_gain_i1j = np.zeros(nfreqs, dtype=np.complex_)
-        phi_gain_i1j = np.zeros(nfreqs, dtype=np.complex_)
-        theta_gain_ij1 = np.zeros(nfreqs, dtype=np.complex_)
-        phi_gain_ij1 = np.zeros(nfreqs, dtype=np.complex_)
-        theta_gain_i1j1 = np.zeros(nfreqs, dtype=np.complex_)
-        phi_gain_i1j1 = np.zeros(nfreqs, dtype=np.complex_)
-        for f, freq in enumerate(sorted(self._resp_freqs)):
-            theta_gain_ij[f] = self._resp_data[(freq, theta_under, phi_under)][0]
-            phi_gain_ij[f] = self._resp_data[(freq, theta_under, phi_under)][1]
-            theta_gain_i1j[f] = self._resp_data[(freq, theta_over, phi_under)][0]
-            phi_gain_i1j[f] = self._resp_data[(freq, theta_over, phi_under)][1]
-            theta_gain_ij1[f] = self._resp_data[(freq, theta_under, phi_over)][0]
-            phi_gain_ij1[f] = self._resp_data[(freq, theta_under, phi_over)][1]
-            theta_gain_i1j1[f] = self._resp_data[(freq, theta_over, phi_over)][0]
-            phi_gain_i1j1[f] = self._resp_data[(freq, theta_over, phi_over)][1]
-
-        freqs = np.array(sorted(self._resp_freqs))
-        theta_gains = ((1-t)*(1-u)*theta_gain_ij + t*(1-u)*theta_gain_i1j +
-                       (1-t)*u*theta_gain_ij1 + t*u*theta_gain_i1j1)
-        phi_gains = ((1-t)*(1-u)*phi_gain_ij + t*(1-u)*phi_gain_i1j +
-                     (1-t)*u*phi_gain_ij1 + t*u*phi_gain_i1j1)
-
-        return freqs, theta_gains, phi_gains
+        e_theta = [np.cos(theta) * np.cos(phi),
+                   np.cos(theta) * np.sin(phi),
+                   -np.sin(theta)]
+        e_phi = [-np.sin(phi), np.cos(phi), 0]
+        theta_factor = np.dot(polarization, e_theta)
+        phi_factor = np.dot(polarization, e_phi)
+        theta_gains = complex_bilinear_interp(
+            x=np.degrees(theta), y=np.degrees(phi),
+            xp=self._response_zens,
+            yp=self._response_azis,
+            fp=self._theta_response,
+            method='cartesian'
+        )
+        phi_gains = complex_bilinear_interp(
+            x=np.degrees(theta), y=np.degrees(phi),
+            xp=self._response_zens,
+            yp=self._response_azis,
+            fp=self._phi_response,
+            method='cartesian'
+        )
+        freq_interpolator = lambda frequencies: complex_interp(
+            x=frequencies, xp=self._response_freqs,
+            fp=theta_factor*theta_gains + phi_factor*phi_gains,
+            method='euler', outer=0
+        )
+        return freq_interpolator
 
 
     def apply_response(self, signal, direction=None, polarization=None,
@@ -554,57 +511,16 @@ class ARIANNAAntenna(Antenna):
         copy.filter_frequencies(self.frequency_response, force_real=force_real)
 
         if direction is not None and polarization is not None:
-            # Normalize the polarization
-            polarization = normalize(polarization)
             # Calculate theta and phi relative to the orientation
             origin = self.position - normalize(direction)
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
-            # Calculate the e_theta and e_phi direction vectors in the antenna
-            # coordinate system
-            e_theta = [np.cos(theta)*np.cos(phi), np.cos(theta)*np.sin(phi),
-                       -np.sin(theta)]
-            e_phi = [-np.sin(phi), np.cos(phi), 0]
-            # Convert e_theta and e_phi back to the global coordinate system:
-            # Matrix with antenna axes as rows in transformation provides the
-            # forward transform into the antenna coordinate system, so invert
-            # it to move back to global coordinates
+            # Calculate polarization vector in the antenna coordinates
             y_axis = np.cross(self.z_axis, self.x_axis)
             transformation = np.array([self.x_axis, y_axis, self.z_axis])
-            inverse = np.linalg.inv(transformation)
-            e_theta = np.dot(inverse, e_theta)
-            e_phi = np.dot(inverse, e_phi)
-            # The theta and phi gains should then be multiplied by the amount
-            # of polarization in those respective directions
-            theta_factor = np.dot(polarization, e_theta)
-            phi_factor = np.dot(polarization, e_phi)
-            freq_data, theta_gain_data, phi_gain_data = \
-                self.generate_response_gains(theta, phi)
-            def interpolate_response(frequencies):
-                """
-                Generate interpolated response for given frequencies.
-
-                Parameters
-                ----------
-                frequencies : array_like
-                    1D array of frequencies (Hz) at which to calculate gains.
-
-                Returns
-                -------
-                array_like
-                    Complex directional gain and polarization gain in voltage
-                    for the `frequencies`.
-
-                """
-                interp_theta_gains = np.interp(frequencies, freq_data,
-                                               theta_gain_data,
-                                               left=0, right=0)
-                interp_phi_gains = np.interp(frequencies, freq_data,
-                                             phi_gain_data,
-                                             left=0, right=0)
-                return (interp_theta_gains * theta_factor +
-                        interp_phi_gains * phi_factor)
-            copy.filter_frequencies(interpolate_response,
-                                    force_real=force_real)
+            ant_pol = np.dot(transformation, normalize(polarization))
+            # Calculate directional response as a function of frequency
+            directive_response = self.directional_response(theta, phi, ant_pol)
+            copy.filter_frequencies(directive_response, force_real=force_real)
 
         elif (direction is not None and polarization is None
               or direction is None and polarization is not None):
@@ -678,6 +594,13 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
     Parameters
     ----------
+    response_data : tuple of array_like
+        Tuple containing the response data for the antenna along the theta
+        and phi polarization directions. The first and second elements should
+        contain 3-D arrays of the antenna response model in the theta and phi
+        polarizations, respectively, as a function of frequency (axis 0),
+        zenith (axis 1), and azimuth (axis 2). The remaining elements should be
+        the values of the frequency, zenith, and azimuth axes, respectively.
     name : str
         Name of the antenna.
     position : array_like
@@ -700,12 +623,6 @@ class ARIANNAAntennaSystem(AntennaSystem):
     unique_noise_waveforms : int, optional
         The number of expected noise waveforms needed for each received signal
         to have its own noise.
-    response_data : None or dict, optional
-        Dictionary containing data on the response of the antenna. If ``None``,
-        behavior is undefined.
-    response_freqs : None or set, optional
-        Set of frequencies in the response data ``dict`` keys. If ``None``,
-        calculated automatically from `response_data`.
 
     Attributes
     ----------
@@ -742,10 +659,10 @@ class ARIANNAAntennaSystem(AntennaSystem):
     """
     lead_in_time = 25e-9
 
-    def __init__(self, name, position, threshold, trigger_window=5e-9,
-                 z_axis=(0,0,1), x_axis=(1,0,0), amplification=1,
-                 amplifier_clipping=1, noisy=True, unique_noise_waveforms=10,
-                 response_data=None, response_freqs=None, **kwargs):
+    def __init__(self, response_data, name, position, threshold,
+                 trigger_window=5e-9, z_axis=(0,0,1), x_axis=(1,0,0),
+                 amplification=1, amplifier_clipping=1, noisy=True,
+                 unique_noise_waveforms=10, **kwargs):
         super().__init__(ARIANNAAntenna)
 
         self.name = str(name)
@@ -754,10 +671,10 @@ class ARIANNAAntennaSystem(AntennaSystem):
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
 
-        self.setup_antenna(z_axis=z_axis, x_axis=x_axis, noisy=noisy,
+        self.setup_antenna(response_data=response_data,
+                           z_axis=z_axis, x_axis=x_axis, noisy=noisy,
                            unique_noise_waveforms=unique_noise_waveforms,
-                           response_data=response_data,
-                           response_freqs=response_freqs, **kwargs)
+                           **kwargs)
 
         self.threshold = threshold
         self.trigger_window = trigger_window
@@ -765,7 +682,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
         self._noise_mean = None
         self._noise_std = None
 
-        self._filter_data = AMPLIFIER_GAIN
+        self._filter_response = AMPLIFIER_GAIN_DATA[0]
+        self._filter_freqs = AMPLIFIER_GAIN_DATA[1]
 
     @property
     def _metadata(self):
@@ -793,6 +711,14 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         Parameters
         ----------
+        response_data : tuple of array_like
+            Tuple containing the response data for the antenna along the theta
+            and phi polarization directions. The first and second elements
+            should contain 3-D arrays of the antenna response model in the
+            theta and phi polarizations, respectively, as a function of
+            frequency (axis 0), zenith (axis 1), and azimuth (axis 2). The
+            remaining elements should be the values of the frequency, zenith,
+            and azimuth axes, respectively.
         center_frequency : float, optional
             Frequency (Hz) at the center of the antenna's frequency range.
         bandwidth : float, optional
@@ -811,10 +737,6 @@ class ARIANNAAntennaSystem(AntennaSystem):
         unique_noise_waveforms : int, optional
             The number of expected noise waveforms needed for each received
             signal to have its own noise.
-        response_data : None or dict, optional
-            Dictionary containing data on the response of the antenna.
-        response_freqs : None or set, optional
-            Set of frequencies in the response data ``dict`` keys.
 
         """
         # ARIANNA expects a noise rms of about 11 microvolts (before amps).
@@ -823,7 +745,8 @@ class ARIANNAAntennaSystem(AntennaSystem):
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
-        super().setup_antenna(position=self.position,
+        super().setup_antenna(response_data=response_data,
+                              position=self.position,
                               center_frequency=center_frequency,
                               bandwidth=bandwidth,
                               resistance=resistance,
@@ -832,8 +755,6 @@ class ARIANNAAntennaSystem(AntennaSystem):
                               efficiency=efficiency,
                               noisy=noisy,
                               unique_noise_waveforms=unique_noise_waveforms,
-                              response_data=response_data,
-                              response_freqs=response_freqs,
                               **kwargs)
 
     def interpolate_filter(self, frequencies):
@@ -854,12 +775,10 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Complex filter gain in voltage for the given `frequencies`.
 
         """
-        freqs = sorted(self._filter_data.keys())
-        gains = [self._filter_data[f][0] for f in freqs]
-        phases = [self._filter_data[f][1] for f in freqs]
-        interp_gains = np.interp(frequencies, freqs, gains, left=0, right=0)
-        interp_phases = np.interp(frequencies, freqs, phases, left=0, right=0)
-        return interp_gains * np.exp(1j * interp_phases)
+        return complex_interp(
+            x=frequencies, xp=self._filter_freqs, fp=self._filter_response,
+            method='euler', outer=0
+        )
 
     def front_end(self, signal):
         """
@@ -1054,12 +973,11 @@ class LPDA(ARIANNAAntennaSystem):
     def __init__(self, name, position, threshold, trigger_window=5e-9,
                  z_axis=(0,0,1), x_axis=(1,0,0), amplification=1,
                  amplifier_clipping=1, noisy=True, unique_noise_waveforms=10):
-        super().__init__(name=name, position=position, threshold=threshold,
+        super().__init__(response_data=LPDA_RESPONSE_DATA,
+                         name=name, position=position, threshold=threshold,
                          trigger_window=trigger_window,
                          z_axis=z_axis, x_axis=x_axis,
                          amplification=amplification,
                          amplifier_clipping=amplifier_clipping,
                          noisy=noisy,
-                         unique_noise_waveforms=unique_noise_waveforms,
-                         response_data=LPDA_DIRECTIONALITY,
-                         response_freqs=LPDA_FREQS)
+                         unique_noise_waveforms=unique_noise_waveforms)
