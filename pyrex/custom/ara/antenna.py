@@ -539,7 +539,7 @@ class ARAAntenna(Antenna):
               or direction is None and polarization is not None):
             raise ValueError("Direction and polarization must be specified together")
 
-        signal_factor = p_gain * self.efficiency
+        signal_factor = self.efficiency
 
         if signal.value_type==Signal.Type.voltage:
             pass
