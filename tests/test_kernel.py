@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrex.signals import AskaryanSignal
+from pyrex.askaryan import AskaryanSignal
 from pyrex.antenna import Antenna
 from pyrex.ice_model import ice
 from pyrex.ray_tracing import RayTracer
