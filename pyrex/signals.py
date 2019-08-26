@@ -260,7 +260,7 @@ class Signal:
         Parameters
         ----------
         freq_response : function
-            Response function taking a freqeuncy (or array of frequencies) and
+            Response function taking a frequency (or array of frequencies) and
             returning the corresponding complex gain(s).
         force_real : boolean
             If ``True``, complex conjugation is used on the positive-frequency
@@ -364,7 +364,7 @@ class EmptySignal(Signal):
 
         Returns
         -------
-        EmtpySignal
+        EmptySignal
             A representation of the original signal over the `new_times` array.
 
         Notes

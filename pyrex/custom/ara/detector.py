@@ -541,7 +541,7 @@ class RegularStation(Detector):
     Notes
     -----
     This class is designed to have string-like objects (which are subclasses of
-    ``Detector``) as its `subsets`. Then whenver an object of this class is
+    ``Detector``) as its `subsets`. Then whenever an object of this class is
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
@@ -706,7 +706,7 @@ class AlbrechtStation(Detector):
     Notes
     -----
     This class is designed to have string-like objects (which are subclasses of
-    ``Detector``) as its `subsets`. Then whenver an object of this class is
+    ``Detector``) as its `subsets`. Then whenever an object of this class is
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
@@ -926,9 +926,9 @@ class HexagonalGrid(Detector):
     Notes
     -----
     This class is designed to have station-like or string-like objects (which
-    are subclasses of ``Detector``) as its `subsets`. Then whenver an object of
-    this class is iterated, all the antennas of its strings will be yielded as
-    in a 1D list.
+    are subclasses of ``Detector``) as its `subsets`. Then whenever an object
+    of this class is iterated, all the antennas of its strings will be yielded
+    as in a 1D list.
 
     """
     def set_positions(self, stations=1, station_separation=2000,

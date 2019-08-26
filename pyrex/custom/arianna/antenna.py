@@ -29,7 +29,7 @@ def _read_response_data(filename):
     Data files should exist with names `filename`.ra1 and `filename`.ad1.
     The ``.ad1`` file should contain frequencies in the first column, real and
     imaginary parts of the impedance in the sixth and seventh columns, and
-    S-parameter data in the eigth and ninth columns.
+    S-parameter data in the eighth and ninth columns.
     The ``.ra1`` file should contain phi and theta in the first two columns,
     the real and imaginary parts of the phi field in the next two columns,
     and the real and imaginary parts of the theta field in the next two columns.

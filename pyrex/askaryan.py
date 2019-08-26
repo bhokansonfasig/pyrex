@@ -75,7 +75,7 @@ class ZHSAskaryanSignal(Signal):
     -----
     Calculates the Askaryan signal based on the ZHS parameterization [1]_.
     Uses equations 20 and 21 to calculate the electric field close to the
-    Chereknov angle.
+    Cherenkov angle.
 
     References
     ----------
@@ -128,7 +128,7 @@ class ZHSAskaryanSignal(Signal):
         # (from volts per meter per megahertz)
         e_omega *= 1e-6
 
-        # Parameterize away from Chereknov angle using Gaussian peak (eqn 21)
+        # Parameterize away from Cherenkov angle using Gaussian peak (eqn 21)
         e_omega *= np.exp(-0.5*((viewing_angle-theta_c)*ratio
                                 /np.radians(2.4))**2)
 
@@ -429,7 +429,7 @@ class ARVZAskaryanSignal(Signal):
                                       n=n, t0=t0)
 
         # Note that although len(values) = len(times)-1 (because of np.diff),
-        # the Signal class is desinged to handle this by zero-padding the values
+        # the Signal class is designed to handle this by zero-padding the values
         super().__init__(times, em_vals+had_vals, value_type=self.Type.field)
 
 

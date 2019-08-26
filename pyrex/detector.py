@@ -470,7 +470,7 @@ class Detector:
     in a vertical line. Then a station could be set up as a subclass of
     `Detector` which sets up multiple instances of the string class at
     different positions. Then a final overarching detector class can subclass
-    `Detector` and set up mutliple instances of the station class at
+    `Detector` and set up multiple instances of the station class at
     different positions. In this example the ``subsets`` of the overarching
     detector class would be the station objects, the ``subsets`` of the station
     objects would be the string objects, and the ``subsets`` of the string
@@ -587,7 +587,7 @@ class Detector:
                 kwargs.pop("antenna_class")
             else:
                 if len(args)<1:
-                    raise TypeError("build_antennas() missing 1 reqiured "+
+                    raise TypeError("build_antennas() missing 1 required "+
                                     "positional argument: 'antenna_class'")
                 antenna_class = args[0]
                 args = args[1:]
@@ -763,7 +763,7 @@ class CombinedDetector(Detector, mirror_set_positions=False):
 
     Designed to allow addition of ``Detector`` and ``Antenna``-like objects
     which can still build all antennas and trigger by smartly passing down
-    keyword arugments to the subsets. Maintains all other properties of the
+    keyword arguments to the subsets. Maintains all other properties of the
     ``Detector`` objects.
 
     Attributes

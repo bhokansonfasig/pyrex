@@ -49,7 +49,7 @@ The following packages are not required for running PyREx by default, but may be
 
 Recommended version: 2.1+
 
-Used for creating plots in example code and auxilliary scripts.
+Used for creating plots in example code and auxiliary scripts.
 
 `PySpice <https://pyspice.fabrice-salvaire.fr>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

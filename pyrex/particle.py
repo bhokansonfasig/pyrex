@@ -523,7 +523,7 @@ class GQRSInteraction(Interaction):
             Maximal electromagnetic shower fraction from secondary
             interactions.
         had_frac : float
-            Maximal adronic shower fraction form secondary interactions.
+            Maximal hadronic shower fraction form secondary interactions.
 
         """
         em_max = 0

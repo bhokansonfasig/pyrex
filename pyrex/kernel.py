@@ -110,7 +110,7 @@ class EventKernel:
     kernel as the ``ice_model`` keyword argument. The ray tracer must also have
     ``exists`` and ``solutions`` attributes, the first of which denotes whether
     any paths exist between the given points and the second of which is an
-    iterable revelaing each path between the points. These paths must have
+    iterable revealing each path between the points. These paths must have
     ``emitted_direction``, ``received_direction``, and ``path_length``
     attributes, as well as a ``propagate`` method which takes a signal object
     and applies the propagation effects of the path in-place to that object.

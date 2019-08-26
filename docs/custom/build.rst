@@ -1,5 +1,5 @@
 
-In the course of using PyREx you may wish to change some behavior of parts of the code. Due to the modularity of the code, many behavoirs should be customizable by substituting in your own classes inheriting from those already in PyREx. By adding these classes to your own custom module, your code can behave as though it was a native part of the PyREx package. Below the classes which can be easily substituted with your own version are listed, and descriptions of the behavior expected of the classes is outlined.
+In the course of using PyREx you may wish to change some behavior of parts of the code. Due to the modularity of the code, many behaviors should be customizable by substituting in your own classes inheriting from those already in PyREx. By adding these classes to your own custom module, your code can behave as though it was a native part of the PyREx package. Below the classes which can be easily substituted with your own version are listed, and descriptions of the behavior expected of the classes is outlined.
 
 
 .. currentmodule:: pyrex
@@ -56,7 +56,7 @@ Ice Model
 
 Ice model classes are responsible for describing the properties of the ice as functions of depth and frequency. While not explicitly required, all ice model classes in PyREx are defined only with static and class methods, so no :meth:`__init__` method is actually necessary. The necessary methods, however, are as follows:
 
-The :meth:`index` method should take a depth (or numpy array of depths) and return the corresponding index of refraction. Conversely, the :meth:`depth_with_index` method should take an index of refraction (or numpy array of indices) and return othe corresponding depths. In the case of degeneracy here (for example with uniform ice), the recommended behavior is to return the shallowest depth with the given index, though PyREx's behavior in cases of non-monotonic index functions is not well defined.
+The :meth:`index` method should take a depth (or numpy array of depths) and return the corresponding index of refraction. Conversely, the :meth:`depth_with_index` method should take an index of refraction (or numpy array of indices) and return the corresponding depths. In the case of degeneracy here (for example with uniform ice), the recommended behavior is to return the shallowest depth with the given index, though PyREx's behavior in cases of non-monotonic index functions is not well defined.
 
 The :meth:`temperature` method should take a depth (or numpy array of depths) and return the corresponding ice temperature in Kelvin.
 
@@ -66,13 +66,13 @@ Finally, the :meth:`attenuation_length` function should take a depth (or numpy a
 Ray Tracer / Ray Trace Path
 ---------------------------
 
-The :class:`RayTracer` and :class:`RayTracePath` classes are responsible for handling ray tracing through the ice between shower vertices and antenna positions. The :class:`RayTracer` class finds the paths between the two points and the :class:`RayTracePath` calculates values along the path. Due to the potential for high calculation costs, the PyREx :class:`RayTracer` and :class:`RayTracePath` classess inherit from a :class:`LazyMutableClass` which allows the use of a :func:`lazy_property` decorator to cache results of attribute calculations. It is recommended that any other ray tracing classes consider doing this as well.
+The :class:`RayTracer` and :class:`RayTracePath` classes are responsible for handling ray tracing through the ice between shower vertices and antenna positions. The :class:`RayTracer` class finds the paths between the two points and the :class:`RayTracePath` calculates values along the path. Due to the potential for high calculation costs, the PyREx :class:`RayTracer` and :class:`RayTracePath` classes inherit from a :class:`LazyMutableClass` which allows the use of a :func:`lazy_property` decorator to cache results of attribute calculations. It is recommended that any other ray tracing classes consider doing this as well.
 
 The :meth:`__init__` method of a :class:`RayTracer`-like class should take as arguments a 3-vector (list) ``from_point``, a 3-vector (list) ``to_point``, and an :class:`IceModel`-like ``ice_model``. The only required features of the class are a boolean attribute :attr:`exists` recording whether or not paths exist between the given points, and an iterable attribute :attr:`solutions` which iterates over :class:`RayTracePath`-like objects between the points.
 
-A :class:`RayTracePath`-like class will be initialized by a corresponding :class:`RayTracer`-like object, so there are no requirements on its :meth:`__init__` method. The path must have :attr:`emitted_direction` and :attr:`received_direction` attributes which are numpy arrays of the cartesian direction the ray is pointing at the :attr:`from_point` and :attr:`to_point` of the ray tracer, respectively. The path must also have attributes for the :attr:`path_length` and :attr:`tof` (time of flight) alon the path.
+A :class:`RayTracePath`-like class will be initialized by a corresponding :class:`RayTracer`-like object, so there are no requirements on its :meth:`__init__` method. The path must have :attr:`emitted_direction` and :attr:`received_direction` attributes which are numpy arrays of the cartesian direction the ray is pointing at the :attr:`from_point` and :attr:`to_point` of the ray tracer, respectively. The path must also have attributes for the :attr:`path_length` and :attr:`tof` (time of flight) along the path.
 
-The path class must have a :meth:`propagate` method which takes a :class:`Signal` object as its argument and propagates that signal by applying any attenuation and time of flight. This method does not have a return value. Additionally, note that any 1/R factor that the signal could have is not applied in this method, but externally by dividing the singal values by the :attr:`path_length`. If using the default :meth:`propagate` method, an :meth:`attenuation` method is required which takes an array of frequencies ``f`` and returns the attenuation factors for a signal along the path at those frequencies.
+The path class must have a :meth:`propagate` method which takes a :class:`Signal` object as its argument and propagates that signal by applying any attenuation and time of flight. This method does not have a return value. Additionally, note that any 1/R factor that the signal could have is not applied in this method, but externally by dividing the signal values by the :attr:`path_length`. If using the default :meth:`propagate` method, an :meth:`attenuation` method is required which takes an array of frequencies ``f`` and returns the attenuation factors for a signal along the path at those frequencies.
 
 Finally, though not required it is recommended that the path have a :attr:`coordinates` attribute which is a list of lists of the x, y, and z coordinates along the path (with some reasonable step size). This method is used for plotting purposes and does not need to have the accuracy necessary for calculations.
 
@@ -80,7 +80,7 @@ Finally, though not required it is recommended that the path have a :attr:`coord
 Interaction Model
 -----------------
 
-The interaction model used for :class:`Particle` interactions in ice handles the cross sections and interaction lengths of neutrinos, as well as the ratios of their interaction types and the resulting shower fractions. An interaction class should inherit from :class:`Interaction` (preferrably keeping its :meth:`__init__` method) and should implement the following methods:
+The interaction model used for :class:`Particle` interactions in ice handles the cross sections and interaction lengths of neutrinos, as well as the ratios of their interaction types and the resulting shower fractions. An interaction class should inherit from :class:`Interaction` (preferably keeping its :meth:`__init__` method) and should implement the following methods:
 
 The :attr:`cross_section` property method should return the neutrino cross section for the :attr:`Interaction.particle` parent, specific to the :attr:`Interaction.kind`. Similarly the :attr:`total_cross_section` property method should return the neutrino cross section for the :attr:`Interaction.particle` parent, but this should be the total cross section for both charged-current and neutral-current interactions. The :attr:`interaction_length` and :attr:`total_interaction_length` properties will convert these cross sections to interaction lengths automatically.
 
@@ -90,4 +90,4 @@ The :meth:`choose_interaction` method should return a value from :class:`Interac
 Particle Generator
 ------------------
 
-The particle generator classes are quite flexible. The only requirement is that they possess an :meth:`create_event` method which returns a :class:`Event` object consisting of at least one :class:`Particle`. The :class:`BaseGenerator` class provides a solid foundataion for basic uniform generators in a volume, requiring only implementation of the :meth:`get_vertex` and :meth:`get_exit_points` methods for the specific volume at a minimum.
+The particle generator classes are quite flexible. The only requirement is that they possess an :meth:`create_event` method which returns a :class:`Event` object consisting of at least one :class:`Particle`. The :class:`BaseGenerator` class provides a solid foundation for basic uniform generators in a volume, requiring only implementation of the :meth:`get_vertex` and :meth:`get_exit_points` methods for the specific volume at a minimum.

@@ -27,7 +27,7 @@ The most basic simulation can be produced as follows:
 
 First, import the package::
 
-    import pryex
+    import pyrex
 
 Then, create a particle generator object that will produce random particles in a cylinder with radius and depth of 1 km and with a fixed energy of 100 PeV::
 

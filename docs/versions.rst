@@ -282,7 +282,7 @@ Version 1.3.1
 
 .. rubric:: New Features
 
-* Added diode bridge rectifier envelope circuit analytic model to :mod:`irex.frontends` and made it the default analytic envelope model in :classs:`IREXAntennaSystem`.
+* Added diode bridge rectifier envelope circuit analytic model to :mod:`irex.frontends` and made it the default analytic envelope model in :class:`IREXAntennaSystem`.
 
 * Added :attr:`allow_reflection` attribute to :class:`EventKernel` class to determine whether :class:`ReflectedPathFinder` solutions should be allowed.
 
@@ -303,7 +303,7 @@ Version 1.3.0
 
 .. rubric:: Changes
 
-* Change :class:`AksaryanSignal` angle to always be positive and remove < 90 degree restriction (Alvarez-Muniz, Romero-Wolf, & Zas paper suggests the algorithm should work for all angles).
+* Change :class:`AskaryanSignal` angle to always be positive and remove < 90 degree restriction (Alvarez-Muniz, Romero-Wolf, & Zas paper suggests the algorithm should work for all angles).
 
 
 .. rubric:: Performance Improvements

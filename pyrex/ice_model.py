@@ -116,7 +116,7 @@ class AntarcticIce:
         """
         Calculates the index of refraction of the ice at a given depth.
 
-        Index of refraciton goes as n(z)=n0-k*exp(az). Supports passing an
+        Index of refraction goes as n(z)=n0-k*exp(az). Supports passing an
         array of depths.
 
         Parameters
@@ -168,7 +168,7 @@ class AntarcticIce:
         Calculates the corresponding depth for a given index of refraction.
 
         Assumes that the function for the index of refraction is invertible.
-        Index of refraciton goes as n(z)=n0-k*exp(az), so the inversion goes as
+        Index of refraction goes as n(z)=n0-k*exp(az), so the inversion goes as
         z(n)=log((n0-n)/k)/a. Supports passing an array of indices.
 
         Parameters
@@ -348,7 +348,7 @@ class AntarcticIce:
             http://icecube.wisc.edu/~araproject/radio/atten/
 
         """
-        # Supress RuntimeWarnings when f==0 temporarily
+        # Suppress RuntimeWarnings when f==0 temporarily
         with np.errstate(divide='ignore'):
             # w is log of frequency in GHz
             w = np.log(f*1e-9)
@@ -771,7 +771,7 @@ class GreenlandIce(AntarcticIce):
         # temperature profile
         alen_75 = 10**(-1.736e-2*t_C+2.5134)
 
-        # Attenuation lenghts at different frequencies are linearly
+        # Attenuation lengths at different frequencies are linearly
         # extrapolated from the 75 MHz value down to some minimum length
         min_alen = 1
 

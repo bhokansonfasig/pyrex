@@ -1047,7 +1047,7 @@ class EventIterator(HDF5Base):
         """
         Whether the event's initial particle is an anti-neutrino.
 
-        `None` if the inital particle is not a neutrino.
+        `None` if the initial particle is not a neutrino.
 
         """
         if self.is_neutrino:
@@ -1253,7 +1253,7 @@ class HDF5Reader(BaseReader, HDF5Base):
             if loc in self._file:
                 self._num_ant = max(self._num_ant, len(self._file[loc]))
         self._iter_counter = None
-        # assumming that the data indices will have all the list of all events
+        # Assuming that the data indices will have all the list of all events
         self._num_events = 0
         if self._locations["indices"] in self._file:
             self._num_events = len(self._file[self._locations["indices"]])
@@ -1539,7 +1539,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         else:
             self.filename = filename+".h5"
         if mode not in ['w', 'x', 'a', 'r+']:
-            raise ValueError("Uncrecognized file mode '"+str(mode)+"'")
+            raise ValueError("Unrecognized file mode '"+str(mode)+"'")
         self._mode = mode
         self._is_open = False
 
@@ -1582,7 +1582,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         keys : str or list of str
             Key(s) of `dictionary` which should take on the given `value`.
         value
-            Value to store in the `keys` of `dicitonary`.
+            Value to store in the `keys` of `dictionary`.
 
         """
         if isinstance(keys, str):
@@ -1931,7 +1931,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         -------
         group
             The group object corresponding to the created (or existing)
-            metadata group requested (contiaining 'float' and 'str' datasets).
+            metadata group requested (containing 'float' and 'str' datasets).
 
         Raises
         ------
@@ -2148,7 +2148,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
             Must contain the full path to the location and the name of the
             dataset or metadata group.
         start_index : int
-            Starting index in the dataset(s) contiaining information on the
+            Starting index in the dataset(s) containing information on the
             event.
         length : int, optional
             Number of rows in the dataset(s) containing data for the event.
@@ -2242,7 +2242,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         start_index = self._counters['particles_meta']
         self._counters['particles_meta'] += len(event)
         metadata = self._create_metadataset(self._data_locs['particles_meta'])
-        # Reshape metadata datasets to accomodate the event
+        # Reshape metadata datasets to accommodate the event
         str_data = metadata['str']
         float_data = metadata['float']
         str_data.resize(self._counters['particles_meta'], axis=0)
@@ -2416,7 +2416,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         start_index = self._counters['rays_meta']
         self._counters['rays_meta'] += max_waves
         metadata = self._create_metadataset(self._data_locs['rays_meta'])
-        # Reshape metadata datasets to accomodate the ray data of each solution
+        # Reshape metadata datasets to accommodate the ray data of each solution
         str_data = metadata['str']
         float_data = metadata['float']
         str_data.resize(self._counters['rays_meta'], axis=0)
@@ -2660,7 +2660,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         -------
         group
             The group object corresponding to the created (or existing)
-            metadata group requested (contiaining 'float' and 'str' datasets).
+            metadata group requested (containing 'float' and 'str' datasets).
 
         """
         location = self._analysis_location(name)
@@ -2711,7 +2711,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         global_index : int
             Global event index (row of the event indices dataset) to write to.
         start_index : int
-            Starting index in the dataset(s) contiaining information on the
+            Starting index in the dataset(s) containing information on the
             event.
         length : int, optional
             Number of rows in the dataset(s) containing data for the event.

@@ -757,7 +757,7 @@ class NumpyFileGenerator:
     --------
     This generator only supports `Event` objects containing a single `Particle`
     object. There is currently no way to read from files where an `Event`
-    contains mutliple `Particle` objects with some dependencies.
+    contains multiple `Particle` objects with some dependencies.
 
     See Also
     --------

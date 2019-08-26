@@ -780,7 +780,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
         Returns
         -------
         array_like
-            The value of the indefinite integral derivatve at `z`.
+            The value of the indefinite integral derivative at `z`.
 
         """
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
@@ -1081,7 +1081,7 @@ class BasicRayTracer(LazyMutableClass):
 
         Ray tracing performed as if launching from lower point to higher point,
         since the only difference in the paths produced is a time reversal.
-        This is then depth of the assumed launching point.
+        This is the depth of the assumed launching point.
 
         """
         return min([self.from_point[2], self.to_point[2]])
@@ -1093,7 +1093,7 @@ class BasicRayTracer(LazyMutableClass):
 
         Ray tracing performed as if launching from lower point to higher point,
         since the only difference in the paths produced is a time reversal.
-        This is then depth of the assumed receiving point.
+        This is the depth of the assumed receiving point.
 
         """
         return max([self.from_point[2], self.to_point[2]])
