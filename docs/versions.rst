@@ -3,6 +3,41 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.9.0
+=============
+
+.. rubric:: New Features
+
+* Added ray tracing capabilities for ice models with indices of refraction defined in stratified layers in the z-direction, including uniform and exponential index of refraction profiles.
+
+* Added a Greenland ice model based on measurements at Summit Station.
+
+* Added the Askaryan signal model from J. Alvarez-Muniz et al (2000) for comparison across simulation packages.
+
+.. rubric:: Changes
+
+* :class:`IceModel` has been deprecated in favor of the :data:`ice` object, an object of the preferred ice model class (currently :class:`AntarcticIce`).
+
+* Handling of s-polarized and p-polarized signals by the :class:`RayTracer` have now been split. This resulted in different behavior for the :meth:`RayTracePath.propagate` and :meth:`Antenna.receive` methods, as well as a new method :meth:`Antenna.apply_response`.
+
+* ARA antennas have been updated to use the latest XFDTD simulations from the Chiba group.
+
+* The behavior of the :class:`CylindricalShadowGenerator` and :class:`RectangularShadowGenerator` classes have been moved into the :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes, respectively, when the ``shadow`` argument is set to ``True``.
+
+* Removed the :class:`NewcombIce` ice model.
+
+.. rubric:: Bug Fixes
+
+* The handling of phase shifts between s-polarized and p-polarized signals during total internal reflection is now properly implemented.
+
+* Fixed a bug in the antenna response of ARA antennas which resulted in an extra factor of sin(theta) for :class:`VpolAntenna` objects and had an unexplored effect on :class:`HpolAntenna` objects.
+
+* Fixed an off-by-one error in the final event count given by :class:`ListGenerator` objects.
+
+* Fixed a bug in the Earth shadowing effect produced by the generator classes.
+
+
+
 Version 1.8.2
 =============
 
