@@ -22,5 +22,5 @@ Individual Module APIs
 .. toctree::
     :maxdepth: 1
 
-    custom-layered_ice/antenna
-    custom-layered_ice/detector
+    custom-layered_ice/ice_model
+    custom-layered_ice/ray_tracing
