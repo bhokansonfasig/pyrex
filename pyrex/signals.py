@@ -308,14 +308,17 @@ class Signal:
 
         # Issue a warning if there was significant signal in the (discarded)
         # imaginary part of the filtered values
-        if np.any(np.imag(filtered_vals[:len(self.times)]) >
-                  np.max(self.values) * 1e-5):
+        if np.any(np.abs(np.imag(filtered_vals[:len(self.times)])) >
+                  np.max(np.abs(self.values)) * 1e-5):
             msg = ("Significant signal amplitude was lost when forcing the "+
                    "signal values to be real after applying the frequency "+
                    "filter '%s'. This may be avoided by making sure the "+
                    "filter being used is properly defined for negative "+
-                   "frequencies, or by passing force_real=True to the "+
-                   "Signal.filter_frequencies function.")
+                   "frequencies")
+            if not force_real:
+                msg += (", or by passing force_real=True to the "+
+                        "Signal.filter_frequencies function")
+            msg += "."
             logger.warning(msg, freq_response.__name__)
 
 
