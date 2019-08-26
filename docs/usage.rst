@@ -477,14 +477,14 @@ For convenience, objects derived from the :class:`Detector` class can be added i
 Ice and Earth Models
 ====================
 
-PyREx provides a class :class:`IceModel`, which is an alias for whichever south pole ice model class is preferred (currently :class:`pyrex.ice_model.AntarcticIce`). The :class:`IceModel` class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below::
+PyREx provides an ice model object :data:`ice`, which is an instance of whichever ice model class is preferred (currently :class:`pyrex.ice_model.AntarcticIce`). The :data:`ice` object provides methods for calculating characteristics of the ice at different depths and frequencies outlined below::
 
     depth = -1000 # m
-    pyrex.IceModel.temperature(depth)
-    pyrex.IceModel.index(depth)
-    pyrex.IceModel.gradient(depth)
+    pyrex.ice.temperature(depth)
+    pyrex.ice.index(depth)
+    pyrex.ice.gradient(depth)
     frequency = 1e8 # Hz
-    pyrex.IceModel.attenuation_length(depth, frequency)
+    pyrex.ice.attenuation_length(depth, frequency)
 
 PyREx also provides two functions related to its earth model: :func:`prem_density` and :func:`slant_depth`. :func:`prem_density` calculates the density in grams per cubic centimeter of the earth at a given radius::
 
@@ -505,7 +505,7 @@ Ray Tracing
 PyREx provides ray tracing in the :class:`RayTracer` and :class:`RayTracePath` classes. :class:`RayTracer` takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as :class:`RayTracePath` objects). ::
 
     start = (0, 0, -250) # m
-    finish = (100, 0, -100) # m
+    finish = (750, 0, -100) # m
     my_ray_tracer = pyrex.RayTracer(from_point=start, to_point=finish)
 
 The two most useful properties of :class:`RayTracer` are :attr:`exists` and :attr:`solutions`. The :attr:`exists` property is a boolean value of whether or not path solutions exist between the launch and receiving points. :attr:`solutions` is the list of (zero or two) :class:`RayTracePath` objects which exist between the launch and receiving points. There are many other properties available in :class:`RayTracer`, outlined in the :ref:`pyrex-api` section, which are mostly used internally and maybe not interesting otherwise. ::
@@ -523,8 +523,8 @@ The :class:`RayTracePath` class contains the attributes of the paths between poi
 
 :class:`RayTracePath` also provides a :meth:`RayTracePath.attenuation` method which gives the attenuation of the signal at a given frequency (or frequencies), and a :attr:`RayTracePath.coordinates` property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not guaranteed to be accurate for other purposes). ::
 
-    frequency = 500e6 # Hz
-    my_path.attenuation(100e6)
+    frequency = 100e6 # Hz
+    my_path.attenuation(frequency)
     my_path.attenuation(np.linspace(1e8, 1e9, 11))
     plt.plot(my_path.coordinates[0], my_path.coordinates[2])
     plt.show()
@@ -576,7 +576,7 @@ The :attr:`interaction` attribute is an instance of an :class:`Interaction` clas
     particle.interaction.cross_section
     particle.interaction.interaction_length
 
-PyREx also includes a number of classes for generating random neutrinos in various ice volumes. The :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes generate neutrinos uniformly in cylindrical or rectangular volumes respectively. The :class:`CylindricalShadowGenerator` and :class:`RectangularShadowGenerator` classes are similar, but take into account Earth shadowing when generating particles. These generator classes take as arguments the necessary dimensions and an energy (which can be a scalar value or a function returning scalar values). A desired flavor ratio can also be given::
+PyREx also includes a number of classes for generating random neutrinos in various ice volumes. The :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes generate neutrinos uniformly in cylindrical or rectangular volumes respectively. These generator classes take as arguments the necessary dimensions and an energy (which can be a scalar value or a function returning scalar values). Additional arguments include whether to reject events shadowed by the Earth, as well as a desired flavor ratio::
 
     volume_radius = 1000 # m
     volume_depth = 500 # m
@@ -584,6 +584,7 @@ PyREx also includes a number of classes for generating random neutrinos in vario
     my_generator = pyrex.CylindricalGenerator(dr=volume_radius,
                                               dz=volume_depth,
                                               energy=particle_energy,
+                                              shadow=False,
                                               flavor_ratio=flavor_ratio)
     my_generator.create_event()
 
@@ -602,8 +603,7 @@ Full Simulation
 
 PyREx provides the :class:`EventKernel` class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The :class:`EventKernel` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
 
-    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
-                                                          energy=1e8)
+    particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
@@ -614,7 +614,7 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
         )
     kernel = pyrex.EventKernel(generator=particle_generator,
                                antennas=detector,
-                               ice_model=pyrex.IceModel,
+                               ice_model=pyrex.ice,
                                ray_tracer=pyrex.RayTracer,
                                signal_times=np.linspace(-20e-9, 80e-9, 2000,
                                                         endpoint=False))
@@ -658,8 +658,7 @@ If writing an HDF5 file, the optional arguments specify which event data to writ
 
 The most straightforward way to write data files is to pass a :class:`File` object to the :class:`EventKernel` object handling the simulation. In such a case, a global trigger condition should be passed to the :class:`EventKernel` as well, either as a function which acts on a detector object, or as the "global" key in a dictionary of functions representing various trigger conditions::
 
-    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
-                                                          energy=1e8)
+    particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
