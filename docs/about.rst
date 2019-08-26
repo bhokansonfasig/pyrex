@@ -15,7 +15,7 @@ The easiest way to get the PyREx package is using ``pip`` as follows::
 
 PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+, which should be automatically installed when installing via ``pip``.
 
-Alternatively, you can download the code from https://github.com/bhokansonfasig/pyrex and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory.
+Alternatively, you can download the code from https://github.com/bhokansonfasig/pyrex/ and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory.
 PyREx is not currently available on PyPI, so a simple ``pip install pyrex`` will not have the intended effect.
 
 

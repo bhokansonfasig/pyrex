@@ -9,7 +9,7 @@ As such, the package is designed to be highly modular so that it can easily be u
 Useful Links
 ============
 
-* Source (GitHub): https://github.com/bhokansonfasig/pyrex
+* Source (GitHub): https://github.com/bhokansonfasig/pyrex/
 * Documentation: https://bhokansonfasig.github.io/pyrex/
 * Release notes: https://bhokansonfasig.github.io/pyrex/build/html/versions.html
 
