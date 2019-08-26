@@ -11,8 +11,5 @@ Signal Processing (:mod:`pyrex.signals`)
     Signal
     EmptySignal
     FunctionSignal
-    ZHSAskaryanSignal
-    ARVZAskaryanSignal
-    AskaryanSignal
     GaussianNoise
     ThermalNoise

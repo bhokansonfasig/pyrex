@@ -8,11 +8,9 @@ Custom Antennas (:mod:`pyrex.custom.ara.antenna`)
 .. autosummary::
     :toctree: ../docstrings
 
-    _read_directionality_data
+    _read_arasim_antenna_data
     _read_filter_data
     ARAAntenna
-    HpolBase
-    VpolBase
     ARAAntennaSystem
     HpolAntenna
     VpolAntenna

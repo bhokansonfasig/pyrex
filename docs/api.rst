@@ -27,7 +27,7 @@ PyREx Package Imports
     DipoleAntenna
     AntennaSystem
     Detector
-    IceModel
+    ice
     prem_density
     slant_depth
     NeutrinoInteraction
@@ -35,8 +35,6 @@ PyREx Package Imports
     Event
     CylindricalGenerator
     RectangularGenerator
-    CylindricalShadowGenerator
-    RectangularShadowGenerator
     ListGenerator
     FileGenerator
     RayTracer
@@ -55,6 +53,7 @@ Individual Module APIs
 
     api/internal_functions
     api/signals
+    api/askaryan
     api/antenna
     api/detector
     api/earth_model

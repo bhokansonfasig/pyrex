@@ -11,8 +11,6 @@ Event Generators (:mod:`pyrex.generation`)
     BaseGenerator
     CylindricalGenerator
     RectangularGenerator
-    CylindricalShadowGenerator
-    RectangularShadowGenerator
     ShadowGenerator
     ListGenerator
     NumpyFileGenerator

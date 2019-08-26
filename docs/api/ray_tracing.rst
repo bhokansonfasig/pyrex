@@ -12,7 +12,7 @@ Ray Tracers (:mod:`pyrex.ray_tracing`)
     SpecializedRayTracePath
     BasicRayTracer
     SpecializedRayTracer
+    UniformRayTracePath
+    UniformRayTracer
     RayTracer
     RayTracePath
-    PathFinder
-    ReflectedPathFinder
