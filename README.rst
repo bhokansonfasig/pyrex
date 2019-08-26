@@ -52,6 +52,13 @@ Recommended version: 2.1+
 
 Used for creating plots in example code and auxiliary scripts.
 
+`Sphinx <https://www.sphinx-doc.org>`_ and `numpydoc <https://numpydoc.readthedocs.io>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Recommended version: 2.1+, 0.9+
+
+Required for building documentation. Only needed by documentation maintainers and release handlers.
+
 `PySpice <https://pyspice.fabrice-salvaire.fr>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
