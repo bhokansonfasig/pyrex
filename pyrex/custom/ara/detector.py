@@ -6,11 +6,14 @@ types and the detector grid can be made up of stations or strings.
 
 """
 
+import logging
 import numpy as np
 from pyrex.signals import Signal
 from pyrex.detector import Detector
 from pyrex.ice_model import ice
 from .antenna import HpolAntenna, VpolAntenna
+
+logger = logging.getLogger(__name__)
 
 
 def convert_hex_coords(hex_coords, unit=1):

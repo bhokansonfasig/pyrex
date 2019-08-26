@@ -13,7 +13,8 @@ from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.ice_model import ice
 
-from pyrex.custom.ara.antenna import ARAAntennaSystem, HpolBase, VpolBase
+from pyrex.custom.ara.antenna import (ARAAntennaSystem, HPOL_RESPONSE_DATA,
+                                      VPOL_RESPONSE_DATA)
 from .frontends import (pyspice, spice_circuits,
                         basic_envelope_model, bridge_rectifier_envelope_model)
 
@@ -204,8 +205,13 @@ class EnvelopeSystem(ARAAntennaSystem):
 
     Parameters
     ----------
-    base_antenna : Antenna
-        ``Antenna`` class or subclass to be extended with an ARA front end.
+    response_data : tuple of array_like
+        Tuple containing the response data for the antenna along the theta
+        and phi polarization directions. The first and second elements should
+        contain 3-D arrays of the antenna response model in the theta and phi
+        polarizations, respectively, as a function of frequency (axis 0),
+        zenith (axis 1), and azimuth (axis 2). The remaining elements should be
+        the values of the frequency, zenith, and azimuth axes, respectively.
     name : str
         Name of the antenna.
     position : array_like
@@ -280,12 +286,12 @@ class EnvelopeSystem(ARAAntennaSystem):
     """
     lead_in_time = 25e-9
 
-    def __init__(self, base_antenna, name, position, trigger_threshold,
+    def __init__(self, response_data, name, position, trigger_threshold,
                  time_over_threshold=0, orientation=(0,0,1), amplification=1,
                  amplifier_clipping=1, envelope_amplification=1,
                  envelope_method="analytic", noisy=True,
                  unique_noise_waveforms=10):
-        super().__init__(base_antenna=base_antenna, name=name,
+        super().__init__(response_data=response_data, name=name,
                          position=position, power_threshold=0,
                          orientation=orientation,
                          amplification=amplification,
@@ -579,7 +585,7 @@ class EnvelopeHpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(base_antenna=HpolBase,
+        super().__init__(response_data=HPOL_RESPONSE_DATA,
                          name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,
@@ -667,7 +673,7 @@ class EnvelopeVpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(base_antenna=VpolBase,
+        super().__init__(response_data=VPOL_RESPONSE_DATA,
                          name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,

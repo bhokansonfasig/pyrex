@@ -402,7 +402,7 @@ class Antenna:
         if r==0:
             return 0, 0, 0
         theta = np.arccos(z/r)
-        phi = np.arctan2(y, x)
+        phi = np.arctan2(y, x) % (2*np.pi)
         return r, theta, phi
 
     def directional_gain(self, theta, phi):
