@@ -336,6 +336,7 @@ class ARAAntenna(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -660,6 +661,7 @@ class ARAAntennaSystem(AntennaSystem):
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -1021,6 +1023,7 @@ class HpolAntenna(ARAAntennaSystem):
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -1029,7 +1032,6 @@ class HpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    HpolBase : Antenna class to be used for ARA Hpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,
@@ -1094,6 +1096,7 @@ class VpolAntenna(ARAAntennaSystem):
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -1102,7 +1105,6 @@ class VpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    VpolBase : Antenna class to be used for ARA Vpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,

@@ -1017,9 +1017,9 @@ class BasicRayTracer(LazyMutableClass):
         Vector starting point of the ray path.
     to_point : array_like
         Vector ending point of the ray path.
-    ice_model
+    ice_model : optional
         The ice model used for the ray tracer.
-    dz : float
+    dz : float, optional
         The z-step (m) to be used for integration of the ray path attributes.
 
     Attributes
@@ -1438,9 +1438,9 @@ class SpecializedRayTracer(BasicRayTracer):
         Vector starting point of the ray path.
     to_point : array_like
         Vector ending point of the ray path.
-    ice_model
+    ice_model : optional
         The ice model used for the ray tracer.
-    dz : float
+    dz : float, optional
         The z-step (m) to be used for integration of the ray path attributes.
 
     Attributes

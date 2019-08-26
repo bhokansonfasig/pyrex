@@ -92,6 +92,7 @@ class DipoleTester(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -271,6 +272,7 @@ class EnvelopeSystem(ARAAntennaSystem):
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -576,6 +578,7 @@ class EnvelopeHpol(EnvelopeSystem):
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -664,6 +667,7 @@ class EnvelopeVpol(EnvelopeSystem):
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms

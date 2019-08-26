@@ -38,6 +38,7 @@ class AntennaSystem:
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms

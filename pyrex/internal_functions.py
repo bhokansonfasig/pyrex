@@ -430,7 +430,7 @@ class LazyMutableClass:
 
     Parameters
     ----------
-    static_attributes : None or sequence of str
+    static_attributes : None or sequence of str, optional
         Set of attribute names on which the lazy properties depend. If ``None``
         then it will contain all members of ``__dict__`` at the time of the
         call.

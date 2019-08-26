@@ -91,6 +91,7 @@ class Antenna:
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -690,6 +691,7 @@ class DipoleAntenna(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 

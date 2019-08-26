@@ -2767,8 +2767,8 @@ class File:
 
     See Also
     --------
-    HDF5Reader : Class for reading data from an hdf5 file.
-    HDF5Writer : Class for writing data to an hdf5 file.
+    pyrex.io.HDF5Reader : Class for reading data from an hdf5 file.
+    pyrex.io.HDF5Writer : Class for writing data to an hdf5 file.
 
     """
     readers = {

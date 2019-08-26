@@ -32,7 +32,7 @@ class Signal:
         1D array of values of the signal corresponding to the given `times`.
         Will be resized to the size of `times` by zero-padding or truncating
         as necessary.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Values should be
         from the ``Signal.Type`` enum, but integer or string values may
         work if carefully chosen. ``Signal.Type.undefined`` by default.
@@ -262,7 +262,7 @@ class Signal:
         freq_response : function
             Response function taking a frequency (or array of frequencies) and
             returning the corresponding complex gain(s).
-        force_real : boolean
+        force_real : boolean, optional
             If ``True``, complex conjugation is used on the positive-frequency
             response to force the filtered signal to be real-valued. Otherwise
             the frequency response is left alone and any imaginary parts of the
@@ -328,7 +328,7 @@ class EmptySignal(Signal):
     ----------
     times : array_like
         1D array of times (s) for which the signal is defined.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Must be from the
         ``Signal.Type`` Enum.
 
@@ -387,7 +387,7 @@ class FunctionSignal(Signal):
     function : function
         Function which evaluates the corresponding value(s) for a given time or
         array of times.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Must be from the
         ``Signal.Type`` Enum.
 

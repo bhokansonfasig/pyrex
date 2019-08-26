@@ -373,20 +373,25 @@ class ARVZAskaryanSignal(Signal):
     Notes
     -----
     Calculates the Askaryan signal based on the ARVZ parameterization [1]_.
-    Uses a Heitler model for the electromagnetic shower profile [2]_ and a
-    Gaisser-Hillas model for the hadronic shower profile [3]_. Calculates the
-    electric field from the vector potential using the convolution method
-    outlined in section 4 of the ARVZ paper, which results in the most
-    efficient calculation of the parameterization.
+    Uses a Greisen model for the electromagnetic shower profile [2]_, [3]_ and
+    a Gaisser-Hillas model for the hadronic shower profile [4]_, [5]_.
+    Calculates the electric field from the vector potential using the
+    convolution method outlined in section 4 of the ARVZ paper, which results
+    in the most efficient calculation of the parameterization.
 
     References
     ----------
     .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
         of Askaryan radiation." Physical Review D **84**, 103003 (2011).
-    .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
+    .. [2] K. Greisen, "The Extensive Air Showers." Prog. in Cosmic Ray Phys.
+        **III**, 1 (1956).
+    .. [3] K.D. de Vries et al, "On the feasibility of RADAR detection of
         high-energy neutrino-induced showers in ice." Astropart. Phys.
         **60**, 25-31 (2015).
-    .. [3] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
+    .. [4] T.K. Gaisser & A.M. Hillas "Reliability of the Method of Constant
+        Intensity Cuts for Reconstructing the Average Development of Vertical
+        Showers." ICRC proceedings, 353 (1977).
+    .. [5] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
         effect." ICRC proceedings, 17-25 (1999).
 
     """
@@ -665,12 +670,14 @@ class ARVZAskaryanSignal(Signal):
 
         Notes
         -----
-        Profile calculated by a simplified Heitler model based on equations 24
-        and 25 of the radar feasibility paper [1]_.
+        Profile calculated by the Greisen model [1]_, based on equations 24 and
+        25 of the radar feasibility paper [2]_.
 
         References
         ----------
-        .. [1] K.D. de Vries et al, "On the feasibility of RADAR detection of
+        .. [1] K. Greisen, "The Extensive Air Showers." Prog. in Cosmic Ray
+            Phys. **III**, 1 (1956).
+        .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
             high-energy neutrino-induced showers in ice." Astropart. Phys.
             **60**, 25-31 (2015).
 
@@ -732,12 +739,15 @@ class ARVZAskaryanSignal(Signal):
 
         Notes
         -----
-        Profile calculated by a Gaisser-Hillas model based on equation 1 of the
-        Alvarez hadronic shower paper [1]_.
+        Profile calculated by the Gaisser-Hillas model [1]_, based on equation
+        1 of the Alvarez hadronic shower paper [2]_.
 
         References
         ----------
-        .. [1] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
+        .. [1] T.K. Gaisser & A.M. Hillas "Reliability of the Method of
+            Constant Intensity Cuts for Reconstructing the Average Development
+            of Vertical Showers." ICRC proceedings, 353 (1977).
+        .. [2] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
             effect." ICRC proceedings, 17-25 (1999).
 
         """
