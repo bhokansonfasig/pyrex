@@ -34,7 +34,7 @@ In this example we will calculate the effective area of a detector over a range 
     # class as our ice model since it calculates attenuations faster at the loss
     # of some accuracy.
     kernels = [pyrex.EventKernel(generator=gen, antennas=detector,
-                                 ice_model=pryex.ice_model.ArasimIce())
+                                 ice_model=pyrex.ice_model.ArasimIce())
                for gen in generators]
 
     # Now run each kernel and record the number of events from each that triggered
@@ -77,7 +77,7 @@ In this example we will calculate the effective area of a detector over a range 
     plt.ylabel("Effective Volume (km^3)")
     plt.show()
 
-    # Then from the effecitve volumes, we can calculate the effective areas.
+    # Then from the effective volumes, we can calculate the effective areas.
     # The effective area is the probability interaction in the ice volume times the
     # effective volume. The probability of interaction in the ice volume is given by
     # the interaction cross section times the density of the ice. Calculate the
