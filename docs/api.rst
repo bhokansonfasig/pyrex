@@ -77,3 +77,4 @@ Included Custom Sub-Packages
     api/custom-ara
     api/custom-arianna
     api/custom-irex
+    api/custom-layered_ice
