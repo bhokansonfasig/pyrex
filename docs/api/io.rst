@@ -11,3 +11,4 @@ Data File I/O (:mod:`pyrex.io`)
     File
     HDF5Reader
     HDF5Writer
+    EventIterator

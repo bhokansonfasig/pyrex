@@ -1102,6 +1102,11 @@ class HDF5Reader(BaseReader, HDF5Base):
     antenna_info
     file_metadata
 
+    See Also
+    --------
+    pyrex.io.EventIterator : Class for iterating over event data from an hdf5
+                             file.
+
     """
     def __init__(self, filename, slice_range=10):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
