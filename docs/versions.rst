@@ -12,7 +12,9 @@ Version 1.9.0
 
 * Added the Askaryan signal model from J. Alvarez-Muniz et al (2000) for comparison across simulation packages.
 
-* Added ray tracing capabilities for ice models with indices of refraction defined in stratified layers in the z-direction, including uniform and exponential index of refraction profiles.
+* Added :class:`UniformIce` ice model with a constant index of refraction, along with the corresponding ray tracing with :class:`UniformRayTracer` and :class:`UniformRayTracePath`.
+
+* Added :mod:`pyrex.custom.layered_ice` for ice models with indices of refraction defined in stratified layers in the z-direction and the corresponding ray tracing.
 
 .. rubric:: Changes
 
