@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.detector.ARAString.set_positions &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.ara.detector.ARAString.set_positions &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,36 +82,27 @@
 <h1>pyrex.custom.ara.detector.ARAString.set_positions<a class="headerlink" href="#pyrex-custom-ara-detector-arastring-set-positions" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.custom.ara.detector.ARAString.set_positions">
-<code class="descclassname">ARAString.</code><code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>antennas_per_string=4</em>, <em>antenna_separation=10</em>, <em>lowest_antenna=-200</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.detector.ARAString.set_positions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ARAString.</code><code class="sig-name descname">set_positions</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">antennas_per_string=4</em>, <em class="sig-param">antenna_separation=10</em>, <em class="sig-param">lowest_antenna=-200</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.detector.ARAString.set_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates antenna positions along the string.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian x-position (m) of the string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">float</span></dt><dd><p>Cartesian x-position (m) of the string.</p>
 </dd>
-<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian y-position (m) of the string.</p>
+<dt><strong>y</strong><span class="classifier">float</span></dt><dd><p>Cartesian y-position (m) of the string.</p>
 </dd>
-<dt><strong>antennas_per_string</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Total number of antennas to be placed on the string.</p>
+<dt><strong>antennas_per_string</strong><span class="classifier">float, optional</span></dt><dd><p>Total number of antennas to be placed on the string.</p>
 </dd>
-<dt><strong>antenna_separation</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float or list of float, optional</span></dt>
-<dd><p class="first last">The vertical separation (m) of antennas on the string. If <code class="docutils literal notranslate"><span class="pre">float</span></code>,
+<dt><strong>antenna_separation</strong><span class="classifier">float or list of float, optional</span></dt><dd><p>The vertical separation (m) of antennas on the string. If <code class="docutils literal notranslate"><span class="pre">float</span></code>,
 all antennas are separated by the same constant value. If <code class="docutils literal notranslate"><span class="pre">list</span></code>,
 the separations in the list are the separations of neighboring
 antennas starting from the lowest up to the highest.</p>
 </dd>
-<dt><strong>lowest_antenna</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">The Cartesian z-position (m) of the lowest antenna on the string.</p>
+<dt><strong>lowest_antenna</strong><span class="classifier">float, optional</span></dt><dd><p>The Cartesian z-position (m) of the lowest antenna on the string.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -126,7 +118,7 @@ antennas starting from the lowest up to the highest.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -190,10 +182,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

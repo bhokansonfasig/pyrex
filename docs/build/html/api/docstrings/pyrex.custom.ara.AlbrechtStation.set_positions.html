@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.AlbrechtStation.set_positions &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.ara.AlbrechtStation.set_positions &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,66 +82,50 @@
 <h1>pyrex.custom.ara.AlbrechtStation.set_positions<a class="headerlink" href="#pyrex-custom-ara-albrechtstation-set-positions" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.custom.ara.AlbrechtStation.set_positions">
-<code class="descclassname">AlbrechtStation.</code><code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>station_diameter=40</em>, <em>hpol_phased_antennas=10</em>, <em>vpol_phased_antennas=10</em>, <em>hpol_phased_separation=1</em>, <em>vpol_phased_separation=1</em>, <em>hpol_phased_lowest=-49</em>, <em>vpol_phased_lowest=-69</em>, <em>outrigger_strings_per_station=3</em>, <em>outrigger_string_type=&lt;class 'pyrex.custom.ara.detector.ARAString'&gt;</em>, <em>**outrigger_string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.AlbrechtStation.set_positions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">AlbrechtStation.</code><code class="sig-name descname">set_positions</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">station_diameter=40</em>, <em class="sig-param">hpol_phased_antennas=10</em>, <em class="sig-param">vpol_phased_antennas=10</em>, <em class="sig-param">hpol_phased_separation=1</em>, <em class="sig-param">vpol_phased_separation=1</em>, <em class="sig-param">hpol_phased_lowest=-49</em>, <em class="sig-param">vpol_phased_lowest=-69</em>, <em class="sig-param">outrigger_strings_per_station=3</em>, <em class="sig-param">outrigger_string_type=&lt;class 'pyrex.custom.ara.detector.ARAString'&gt;</em>, <em class="sig-param">**outrigger_string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.AlbrechtStation.set_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates antenna positions around the station.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian x-position (m) of the station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">float</span></dt><dd><p>Cartesian x-position (m) of the station.</p>
 </dd>
-<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian y-position (m) of the station.</p>
+<dt><strong>y</strong><span class="classifier">float</span></dt><dd><p>Cartesian y-position (m) of the station.</p>
 </dd>
-<dt><strong>station_diameter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Diameter (m) of the circle around which outrigger strings are
+<dt><strong>station_diameter</strong><span class="classifier">float, optional</span></dt><dd><p>Diameter (m) of the circle around which outrigger strings are
 placed.</p>
 </dd>
-<dt><strong>hpol_phased_antennas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Number of Hpol phased antennas for the center string.</p>
+<dt><strong>hpol_phased_antennas</strong><span class="classifier">float, optional</span></dt><dd><p>Number of Hpol phased antennas for the center string.</p>
 </dd>
-<dt><strong>vpol_phased_antennas</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Number of Vpol phased antennas for the center string.</p>
+<dt><strong>vpol_phased_antennas</strong><span class="classifier">float, optional</span></dt><dd><p>Number of Vpol phased antennas for the center string.</p>
 </dd>
-<dt><strong>hpol_phased_separation</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float or list of float, optional</span></dt>
-<dd><p class="first last">Antenna separation (m) for the phased Hpol antennas.</p>
+<dt><strong>hpol_phased_separation</strong><span class="classifier">float or list of float, optional</span></dt><dd><p>Antenna separation (m) for the phased Hpol antennas.</p>
 </dd>
-<dt><strong>vpol_phased_separation</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float or list of float, optional</span></dt>
-<dd><p class="first last">Antenna separation (m) for the phased Vpol antennas.</p>
+<dt><strong>vpol_phased_separation</strong><span class="classifier">float or list of float, optional</span></dt><dd><p>Antenna separation (m) for the phased Vpol antennas.</p>
 </dd>
-<dt><strong>hpol_phased_lowest</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Cartesian z-position (m) of the lowest phased Hpol antenna.</p>
+<dt><strong>hpol_phased_lowest</strong><span class="classifier">float, optional</span></dt><dd><p>Cartesian z-position (m) of the lowest phased Hpol antenna.</p>
 </dd>
-<dt><strong>vpol_phased_lowest</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Cartesian z-position (m) of the lowest phased Vpol antenna.</p>
+<dt><strong>vpol_phased_lowest</strong><span class="classifier">float, optional</span></dt><dd><p>Cartesian z-position (m) of the lowest phased Vpol antenna.</p>
 </dd>
-<dt><strong>outrigger_strings_per_station</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Number of outrigger strings to be placed evenly around the station.</p>
+<dt><strong>outrigger_strings_per_station</strong><span class="classifier">float, optional</span></dt><dd><p>Number of outrigger strings to be placed evenly around the station.</p>
 </dd>
-<dt><strong>outrigger_string_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
-<dd><p class="first last">Class to be used for creating outrigger string objects for
+<dt><strong>outrigger_string_type</strong><span class="classifier">optional</span></dt><dd><p>Class to be used for creating outrigger string objects for
 <em class="xref py py-obj">subsets</em>.</p>
 </dd>
-<dt><strong>**outrigger_string_kwargs</strong></dt>
-<dd><p class="first last">Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
+<dt><strong>**outrigger_string_kwargs</strong></dt><dd><p>Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
 the <em class="xref py py-obj">outrigger_string_type</em> class. The default values for
 <code class="docutils literal notranslate"><span class="pre">antennas_per_string</span></code>, <code class="docutils literal notranslate"><span class="pre">antenna_separation</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">lowest_antenna</span></code> are altered for this station geometry.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.custom.ara.ARAString.set_positions.html#pyrex.custom.ara.ARAString.set_positions" title="pyrex.custom.ara.ARAString.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAString.set_positions</span></code></a></dt>
-<dd>Generates antenna positions along the string.</dd>
-<dt><a class="reference internal" href="pyrex.custom.ara.PhasedArrayString.set_positions.html#pyrex.custom.ara.PhasedArrayString.set_positions" title="pyrex.custom.ara.PhasedArrayString.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhasedArrayString.set_positions</span></code></a></dt>
-<dd>Generates antenna positions along the string.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.custom.ara.ARAString.set_positions.html#pyrex.custom.ara.ARAString.set_positions" title="pyrex.custom.ara.ARAString.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAString.set_positions</span></code></a></dt><dd><p>Generates antenna positions along the string.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.PhasedArrayString.set_positions.html#pyrex.custom.ara.PhasedArrayString.set_positions" title="pyrex.custom.ara.PhasedArrayString.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhasedArrayString.set_positions</span></code></a></dt><dd><p>Generates antenna positions along the string.</p>
+</dd>
 </dl>
 </div>
 </dd></dl>
@@ -158,7 +143,7 @@ the <em class="xref py py-obj">outrigger_string_type</em> class. The default val
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -222,10 +207,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

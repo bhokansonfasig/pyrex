@@ -11,14 +11,15 @@ pyrex.custom.irex.antenna.DipoleTester
       .. autosummary::
          :toctree:
       
+         DipoleTester.apply_response
          DipoleTester.clear
          DipoleTester.directional_gain
+         DipoleTester.frequency_response
          DipoleTester.full_waveform
          DipoleTester.is_hit_during
          DipoleTester.make_noise
          DipoleTester.polarization_gain
          DipoleTester.receive
-         DipoleTester.response
          DipoleTester.set_orientation
          DipoleTester.trigger
 

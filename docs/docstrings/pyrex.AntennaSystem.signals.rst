@@ -3,4 +3,4 @@ pyrex.AntennaSystem.signals
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: AntennaSystem.signals
+.. autoproperty:: AntennaSystem.signals

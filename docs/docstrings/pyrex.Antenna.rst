@@ -11,14 +11,15 @@ pyrex.Antenna
       .. autosummary::
          :toctree:
       
+         Antenna.apply_response
          Antenna.clear
          Antenna.directional_gain
+         Antenna.frequency_response
          Antenna.full_waveform
          Antenna.is_hit_during
          Antenna.make_noise
          Antenna.polarization_gain
          Antenna.receive
-         Antenna.response
          Antenna.set_orientation
          Antenna.trigger
 

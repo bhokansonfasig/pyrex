@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.mirror_func &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.internal_functions.mirror_func &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,15 +23,16 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="next" title="pyrex.internal_functions.lazy_property" href="pyrex.internal_functions.lazy_property.html" >
-    <link rel="prev" title="pyrex.internal_functions.flatten" href="pyrex.internal_functions.flatten.html" > 
+    <link rel="prev" title="pyrex.internal_functions.complex_bilinear_interp" href="pyrex.internal_functions.complex_bilinear_interp.html" > 
   </head>
   <body>
 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
+          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
     </ul>
               
               
@@ -74,7 +75,7 @@
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="pyrex.internal_functions.flatten.html" title="pyrex.internal_functions.flatten"
+        <a href="pyrex.internal_functions.complex_bilinear_interp.html" title="pyrex.internal_functions.complex_bilinear_interp"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -94,39 +95,31 @@
 <h1>pyrex.internal_functions.mirror_func<a class="headerlink" href="#pyrex-internal-functions-mirror-func" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="pyrex.internal_functions.mirror_func">
-<code class="descclassname">pyrex.internal_functions.</code><code class="descname">mirror_func</code><span class="sig-paren">(</span><em>match_func</em>, <em>run_func</em>, <em>self=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.mirror_func" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pyrex.internal_functions.</code><code class="sig-name descname">mirror_func</code><span class="sig-paren">(</span><em class="sig-param">match_func</em>, <em class="sig-param">run_func</em>, <em class="sig-param">self=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.mirror_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mirror the attributes of one function onto another.</p>
 <p>Creates a function which operates like one function, but has all the
 attributes of another. Works for functions or class methods.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>match_func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
-<dd><p class="first last">Function with the attributes to be mirrored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>match_func</strong><span class="classifier">function</span></dt><dd><p>Function with the attributes to be mirrored.</p>
 </dd>
-<dt><strong>run_func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
-<dd><p class="first last">Function with the desired behavior.</p>
+<dt><strong>run_func</strong><span class="classifier">function</span></dt><dd><p>Function with the desired behavior.</p>
 </dd>
-<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">object or None, optional</span></dt>
-<dd><p class="first last">If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <em class="xref py py-obj">run_func</em> called as a regular function, otherwise
+<dt><strong>self</strong><span class="classifier">object or None, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <em class="xref py py-obj">run_func</em> called as a regular function, otherwise
 <em class="xref py py-obj">run_func</em> is called as a class method (with <em class="xref py py-obj">self</em> as its first
 argument).</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>function</strong></dt>
-<dd><p class="first last">Function with the behavior of <em class="xref py py-obj">run_func</em>, but the attributes of
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>function</strong></dt><dd><p>Function with the behavior of <em class="xref py py-obj">run_func</em>, but the attributes of
 <em class="xref py py-obj">match_func</em>.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">signature</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">descriptive_add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
@@ -184,7 +177,7 @@ argument).</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -253,10 +246,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.antenna._read_filter_data &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.ara.antenna._read_filter_data &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,15 +23,16 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="Custom Antennas (pyrex.custom.ara.antenna)" href="../custom-ara/antenna.html" >
     <link rel="next" title="pyrex.custom.ara.antenna.ARAAntenna" href="pyrex.custom.ara.antenna.ARAAntenna.html" >
-    <link rel="prev" title="pyrex.custom.ara.antenna._read_directionality_data" href="pyrex.custom.ara.antenna._read_directionality_data.html" > 
+    <link rel="prev" title="pyrex.custom.ara.antenna._read_arasim_antenna_data" href="pyrex.custom.ara.antenna._read_arasim_antenna_data.html" > 
   </head>
   <body>
 
@@ -53,11 +54,11 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-ara.html" >Askaryan Radio Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
-          <li class="active"><a href="../custom-ara/antenna.html" accesskey="U">Custom Antennas (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara.antenna</span></code>)</a></li> 
+          <li class="active"><a href="../custom-ara.html" >Askaryan Radio Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
+          <li class="active"><a href="../custom-ara/antenna.html" accesskey="U">Custom Antennas (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara.antenna</span></code>)</a></li> 
     </ul>
               
               
@@ -75,7 +76,7 @@
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="pyrex.custom.ara.antenna._read_directionality_data.html" title="pyrex.custom.ara.antenna._read_directionality_data"
+        <a href="pyrex.custom.ara.antenna._read_arasim_antenna_data.html" title="pyrex.custom.ara.antenna._read_arasim_antenna_data"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -95,31 +96,26 @@
 <h1>pyrex.custom.ara.antenna._read_filter_data<a class="headerlink" href="#pyrex-custom-ara-antenna-read-filter-data" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="pyrex.custom.ara.antenna._read_filter_data">
-<code class="descclassname">pyrex.custom.ara.antenna.</code><code class="descname">_read_filter_data</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.antenna._read_filter_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pyrex.custom.ara.antenna.</code><code class="sig-name descname">_read_filter_data</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.antenna._read_filter_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gather frequency-dependent filtering data from a data file.</p>
 <p>The data file should have columns for frequency, non-dB gain, and phase
 (in radians).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Name of the data file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Name of the data file.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>dict</strong></dt>
-<dd><p class="first last">Dictionary containing the data with keys (freq) and values
-(gain, phase).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>gains</strong><span class="classifier">ndarray</span></dt><dd><p>Complex-valued voltage gains as a function of frequency.</p>
+</dd>
+<dt><strong>frequencies</strong><span class="classifier">ndarray</span></dt><dd><p>Frequencies (Hz) corresponding to the values of <em class="xref py py-obj">gains</em>.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -135,7 +131,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -204,10 +200,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

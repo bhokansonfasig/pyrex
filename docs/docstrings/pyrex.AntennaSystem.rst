@@ -11,6 +11,7 @@ pyrex.AntennaSystem
       .. autosummary::
          :toctree:
       
+         AntennaSystem.apply_response
          AntennaSystem.clear
          AntennaSystem.front_end
          AntennaSystem.full_waveform

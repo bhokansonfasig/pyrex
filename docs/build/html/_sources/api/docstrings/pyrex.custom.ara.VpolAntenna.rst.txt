@@ -11,6 +11,7 @@ pyrex.custom.ara.VpolAntenna
       .. autosummary::
          :toctree:
       
+         VpolAntenna.apply_response
          VpolAntenna.clear
          VpolAntenna.front_end
          VpolAntenna.full_waveform

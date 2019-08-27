@@ -3,4 +3,4 @@ pyrex.AntennaSystem.waveforms
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: AntennaSystem.waveforms
+.. autoproperty:: AntennaSystem.waveforms

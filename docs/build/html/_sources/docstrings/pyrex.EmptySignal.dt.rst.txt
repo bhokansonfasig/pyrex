@@ -3,4 +3,4 @@ pyrex.EmptySignal.dt
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: EmptySignal.dt
+.. autoproperty:: EmptySignal.dt

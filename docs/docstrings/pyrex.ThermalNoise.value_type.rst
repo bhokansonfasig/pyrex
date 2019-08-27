@@ -3,4 +3,4 @@ pyrex.ThermalNoise.value\_type
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: ThermalNoise.value_type
+.. autoproperty:: ThermalNoise.value_type

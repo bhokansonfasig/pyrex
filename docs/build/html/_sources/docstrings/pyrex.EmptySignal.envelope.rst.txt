@@ -3,4 +3,4 @@ pyrex.EmptySignal.envelope
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: EmptySignal.envelope
+.. autoproperty:: EmptySignal.envelope

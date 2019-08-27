@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.EnvelopeVpol &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.irex.EnvelopeVpol &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="IceCube Radio Extension (pyrex.custom.irex)" href="../custom-irex.html" >
     <link rel="next" title="pyrex.custom.irex.IREXString" href="pyrex.custom.irex.IREXString.html" >
     <link rel="prev" title="pyrex.custom.irex.EnvelopeHpol" href="pyrex.custom.irex.EnvelopeHpol.html" > 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-irex.html" accesskey="U">IceCube Radio Extension (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.irex</span></code>)</a></li> 
+          <li class="active"><a href="../custom-irex.html" accesskey="U">IceCube Radio Extension (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.irex</span></code>)</a></li> 
     </ul>
               
               
@@ -94,151 +95,130 @@
 <h1>pyrex.custom.irex.EnvelopeVpol<a class="headerlink" href="#pyrex-custom-irex-envelopevpol" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.custom.irex.EnvelopeVpol">
-<em class="property">class </em><code class="descclassname">pyrex.custom.irex.</code><code class="descname">EnvelopeVpol</code><span class="sig-paren">(</span><em>name</em>, <em>position</em>, <em>trigger_threshold</em>, <em>time_over_threshold=0</em>, <em>orientation=(0</em>, <em>0</em>, <em>1)</em>, <em>amplification=1</em>, <em>amplifier_clipping=1</em>, <em>envelope_amplification=1</em>, <em>envelope_method='analytic'</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.EnvelopeVpol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.custom.irex.</code><code class="sig-name descname">EnvelopeVpol</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">position</em>, <em class="sig-param">trigger_threshold</em>, <em class="sig-param">time_over_threshold=0</em>, <em class="sig-param">orientation=(0</em>, <em class="sig-param">0</em>, <em class="sig-param">1)</em>, <em class="sig-param">amplification=1</em>, <em class="sig-param">amplifier_clipping=1</em>, <em class="sig-param">envelope_amplification=1</em>, <em class="sig-param">envelope_method='analytic'</em>, <em class="sig-param">noisy=True</em>, <em class="sig-param">unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.EnvelopeVpol" title="Permalink to this definition">¶</a></dt>
 <dd><p>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</p>
 <p>Consists of an ARA Vpol antenna with typical responses, front-end
 electronics, and amplifier clipping, but with an additional amplification
 and envelope circuit applied after all other front-end processing.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Name of the antenna.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Name of the antenna.</p>
 </dd>
-<dt><strong>position</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
-<dd><p class="first last">Vector position of the antenna.</p>
+<dt><strong>position</strong><span class="classifier">array_like</span></dt><dd><p>Vector position of the antenna.</p>
 </dd>
-<dt><strong>trigger_threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Threshold (V) for trigger condition. Antenna triggers if the voltage
+<dt><strong>trigger_threshold</strong><span class="classifier">float</span></dt><dd><p>Threshold (V) for trigger condition. Antenna triggers if the voltage
 value of the waveform exceeds this value.</p>
 </dd>
-<dt><strong>time_over_threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Time (s) that the voltage waveform must exceed <em class="xref py py-obj">trigger_threshold</em> for
+<dt><strong>time_over_threshold</strong><span class="classifier">float, optional</span></dt><dd><p>Time (s) that the voltage waveform must exceed <em class="xref py py-obj">trigger_threshold</em> for
 the antenna to trigger.</p>
 </dd>
-<dt><strong>orientation</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like, optional</span></dt>
-<dd><p class="first last">Vector direction of the z-axis of the antenna.</p>
+<dt><strong>orientation</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the z-axis of the antenna.</p>
 </dd>
-<dt><strong>amplification</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Amplification to be applied to the signal pre-clipping. Note that the
+<dt><strong>amplification</strong><span class="classifier">float, optional</span></dt><dd><p>Amplification to be applied to the signal pre-clipping. Note that the
 usual ARA electronics amplification is already applied without this.</p>
 </dd>
-<dt><strong>amplifier_clipping</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Voltage (V) above which the amplified signal is clipped (in positive
+<dt><strong>amplifier_clipping</strong><span class="classifier">float, optional</span></dt><dd><p>Voltage (V) above which the amplified signal is clipped (in positive
 and negative values).</p>
 </dd>
-<dt><strong>envelope_amplification</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Amplification to be applied to the signal after the typical ARA front
+<dt><strong>envelope_amplification</strong><span class="classifier">float, optional</span></dt><dd><p>Amplification to be applied to the signal after the typical ARA front
 end, before the envelope circuit.</p>
 </dd>
-<dt><strong>envelope_method</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{(‘hilbert’, ‘analytic’, ‘spice’) + (‘basic’, ‘biased’,                        ‘doubler’, ‘bridge’, ‘log amp’)}, optional</span></dt>
-<dd><p class="first last">String describing the circuit (and calculation method) to be used for
+<dt><strong>envelope_method</strong><span class="classifier">{(‘hilbert’, ‘analytic’, ‘spice’) + (‘basic’, ‘biased’,                        ‘doubler’, ‘bridge’, ‘log amp’)}, optional</span></dt><dd><p>String describing the circuit (and calculation method) to be used for
 envelope calculation. If the string contains “hilbert”, the hilbert
-envelope is uesd. If the string contains “analytic”, an analytic form
+envelope is used. If the string contains “analytic”, an analytic form
 is used to calculate the circuit output. If the string contains
 “spice”, <code class="docutils literal notranslate"><span class="pre">ngspice</span></code> is used to calculate the circuit output. The
 default value “analytic” uses an analytic diode bridge circuit.</p>
 </dd>
-<dt><strong>noisy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">Whether or not the antenna should add noise to incoming signals.</p>
+<dt><strong>noisy</strong><span class="classifier">boolean, optional</span></dt><dd><p>Whether or not the antenna should add noise to incoming signals.</p>
 </dd>
-<dt><strong>unique_noise_waveforms</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">The number of expected noise waveforms needed for each received signal
+<dt><strong>unique_noise_waveforms</strong><span class="classifier">int, optional</span></dt><dd><p>The number of expected noise waveforms needed for each received signal
 to have its own noise.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>antenna</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Antenna</span></dt>
-<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">Antenna</span></code> object extended by the front end.</p>
 </dd>
-<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Name of the antenna.</p>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>antenna</strong><span class="classifier">Antenna</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Antenna</span></code> object extended by the front end.</p>
 </dd>
-<dt><strong>position</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
-<dd><p class="first last">Vector position of the antenna.</p>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Name of the antenna.</p>
 </dd>
-<dt><strong>trigger_threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Threshold (V) for trigger condition. Antenna triggers if the voltage
+<dt><strong>position</strong><span class="classifier">array_like</span></dt><dd><p>Vector position of the antenna.</p>
+</dd>
+<dt><strong>trigger_threshold</strong><span class="classifier">float</span></dt><dd><p>Threshold (V) for trigger condition. Antenna triggers if the voltage
 value of the waveform exceeds this value.</p>
 </dd>
-<dt><strong>time_over_threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Time (s) that the voltage waveform must exceed <em class="xref py py-obj">trigger_threshold</em> for
+<dt><strong>time_over_threshold</strong><span class="classifier">float</span></dt><dd><p>Time (s) that the voltage waveform must exceed <em class="xref py py-obj">trigger_threshold</em> for
 the antenna to trigger.</p>
 </dd>
-<dt><strong>envelope_amplification</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Amplification to be applied to the signal pre-clipping. Note that the
+<dt><strong>envelope_amplification</strong><span class="classifier">float</span></dt><dd><p>Amplification to be applied to the signal pre-clipping. Note that the
 usual ARA electronics amplification is already applied without this.</p>
 </dd>
-<dt><strong>envelope_method</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">String describing the circuit (and calculation method) to be used for
+<dt><strong>envelope_method</strong><span class="classifier">str</span></dt><dd><p>String describing the circuit (and calculation method) to be used for
 envelope calculation.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.is_hit.html#pyrex.custom.irex.EnvelopeVpol.is_hit" title="pyrex.custom.irex.EnvelopeVpol.is_hit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit</span></code></a></dt>
-<dd><p class="first last">Boolean of whether the antenna system has been triggered.</p>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.is_hit.html#pyrex.custom.irex.EnvelopeVpol.is_hit" title="pyrex.custom.irex.EnvelopeVpol.is_hit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit</span></code></a></dt><dd><p>Boolean of whether the antenna system has been triggered.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.signals.html#pyrex.custom.irex.EnvelopeVpol.signals" title="pyrex.custom.irex.EnvelopeVpol.signals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signals</span></code></a></dt>
-<dd><p class="first last">The signals received by the antenna with front-end processing.</p>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.is_hit_mc_truth.html#pyrex.custom.irex.EnvelopeVpol.is_hit_mc_truth" title="pyrex.custom.irex.EnvelopeVpol.is_hit_mc_truth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit_mc_truth</span></code></a></dt><dd><p>Boolean of whether the antenna has been triggered by signal.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.waveforms.html#pyrex.custom.irex.EnvelopeVpol.waveforms" title="pyrex.custom.irex.EnvelopeVpol.waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waveforms</span></code></a></dt>
-<dd><p class="first last">The antenna system signal + noise for each triggered hit.</p>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.signals.html#pyrex.custom.irex.EnvelopeVpol.signals" title="pyrex.custom.irex.EnvelopeVpol.signals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signals</span></code></a></dt><dd><p>The signals received by the antenna with front-end processing.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.all_waveforms.html#pyrex.custom.irex.EnvelopeVpol.all_waveforms" title="pyrex.custom.irex.EnvelopeVpol.all_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_waveforms</span></code></a></dt>
-<dd><p class="first last">The antenna system signal + noise for all hits.</p>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.waveforms.html#pyrex.custom.irex.EnvelopeVpol.waveforms" title="pyrex.custom.irex.EnvelopeVpol.waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waveforms</span></code></a></dt><dd><p>The antenna system signal + noise for each triggered hit.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.all_waveforms.html#pyrex.custom.irex.EnvelopeVpol.all_waveforms" title="pyrex.custom.irex.EnvelopeVpol.all_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_waveforms</span></code></a></dt><dd><p>The antenna system signal + noise for all hits.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.clear.html#pyrex.custom.irex.EnvelopeVpol.clear" title="pyrex.custom.irex.EnvelopeVpol.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</td>
-<td>Reset the antenna system to an empty state.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.apply_response.html#pyrex.custom.irex.EnvelopeVpol.apply_response" title="pyrex.custom.irex.EnvelopeVpol.apply_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_response</span></code></a>(signal[, direction, …])</p></td>
+<td><p>Process the complete antenna response for an incoming signal.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end.html#pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end" title="pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">envelopeless_front_end</span></code></a>(signal)</td>
-<td>Apply front-end processes to a signal and return the output.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.clear.html#pyrex.custom.irex.EnvelopeVpol.clear" title="pyrex.custom.irex.EnvelopeVpol.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</p></td>
+<td><p>Reset the antenna system to an empty state.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.front_end.html#pyrex.custom.irex.EnvelopeVpol.front_end" title="pyrex.custom.irex.EnvelopeVpol.front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">front_end</span></code></a>(signal)</td>
-<td>Apply front-end processes to a signal and return the output.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end.html#pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end" title="pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">envelopeless_front_end</span></code></a>(signal)</p></td>
+<td><p>Apply front-end processes to a signal and return the output.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.full_waveform.html#pyrex.custom.irex.EnvelopeVpol.full_waveform" title="pyrex.custom.irex.EnvelopeVpol.full_waveform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_waveform</span></code></a>(times)</td>
-<td>Signal + noise for the antenna system for the given times.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.front_end.html#pyrex.custom.irex.EnvelopeVpol.front_end" title="pyrex.custom.irex.EnvelopeVpol.front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">front_end</span></code></a>(signal)</p></td>
+<td><p>Apply front-end processes to a signal and return the output.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.interpolate_filter.html#pyrex.custom.irex.EnvelopeVpol.interpolate_filter" title="pyrex.custom.irex.EnvelopeVpol.interpolate_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_filter</span></code></a>(frequencies)</td>
-<td>Generate interpolated filter values for given frequencies.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.full_waveform.html#pyrex.custom.irex.EnvelopeVpol.full_waveform" title="pyrex.custom.irex.EnvelopeVpol.full_waveform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_waveform</span></code></a>(times)</p></td>
+<td><p>Signal + noise for the antenna system for the given times.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.is_hit_during.html#pyrex.custom.irex.EnvelopeVpol.is_hit_during" title="pyrex.custom.irex.EnvelopeVpol.is_hit_during"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit_during</span></code></a>(times)</td>
-<td>Check if the antenna system is triggered in a time range.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.interpolate_filter.html#pyrex.custom.irex.EnvelopeVpol.interpolate_filter" title="pyrex.custom.irex.EnvelopeVpol.interpolate_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_filter</span></code></a>(frequencies)</p></td>
+<td><p>Generate interpolated filter values for given frequencies.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.make_envelope.html#pyrex.custom.irex.EnvelopeVpol.make_envelope" title="pyrex.custom.irex.EnvelopeVpol.make_envelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_envelope</span></code></a>(signal)</td>
-<td>Return the signal envelope based on the antenna’s <code class="docutils literal notranslate"><span class="pre">envelope_method</span></code>.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.is_hit_during.html#pyrex.custom.irex.EnvelopeVpol.is_hit_during" title="pyrex.custom.irex.EnvelopeVpol.is_hit_during"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit_during</span></code></a>(times)</p></td>
+<td><p>Check if the antenna system is triggered in a time range.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.make_noise.html#pyrex.custom.irex.EnvelopeVpol.make_noise" title="pyrex.custom.irex.EnvelopeVpol.make_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_noise</span></code></a>(times)</td>
-<td>Creates a noise signal over the given times.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.make_envelope.html#pyrex.custom.irex.EnvelopeVpol.make_envelope" title="pyrex.custom.irex.EnvelopeVpol.make_envelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_envelope</span></code></a>(signal)</p></td>
+<td><p>Return the signal envelope based on the antenna’s <code class="docutils literal notranslate"><span class="pre">envelope_method</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.receive.html#pyrex.custom.irex.EnvelopeVpol.receive" title="pyrex.custom.irex.EnvelopeVpol.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(signal[,&nbsp;direction,&nbsp;polarization,&nbsp;…])</td>
-<td>Process and store an incoming signal.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.make_noise.html#pyrex.custom.irex.EnvelopeVpol.make_noise" title="pyrex.custom.irex.EnvelopeVpol.make_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_noise</span></code></a>(times)</p></td>
+<td><p>Creates a noise signal over the given times.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.set_orientation.html#pyrex.custom.irex.EnvelopeVpol.set_orientation" title="pyrex.custom.irex.EnvelopeVpol.set_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientation</span></code></a>([z_axis,&nbsp;x_axis])</td>
-<td>Sets the orientation of the antenna system.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.receive.html#pyrex.custom.irex.EnvelopeVpol.receive" title="pyrex.custom.irex.EnvelopeVpol.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(signal[, direction, polarization, …])</p></td>
+<td><p>Process and store one or more incoming (polarized) signals.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.setup_antenna.html#pyrex.custom.irex.EnvelopeVpol.setup_antenna" title="pyrex.custom.irex.EnvelopeVpol.setup_antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_antenna</span></code></a>([center_frequency,&nbsp;bandwidth,&nbsp;…])</td>
-<td>Setup the antenna by passing along its init arguments.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.set_orientation.html#pyrex.custom.irex.EnvelopeVpol.set_orientation" title="pyrex.custom.irex.EnvelopeVpol.set_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientation</span></code></a>([z_axis, x_axis])</p></td>
+<td><p>Sets the orientation of the antenna system.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.trigger.html#pyrex.custom.irex.EnvelopeVpol.trigger" title="pyrex.custom.irex.EnvelopeVpol.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a>(signal)</td>
-<td>Check if the antenna triggers on a given signal.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.setup_antenna.html#pyrex.custom.irex.EnvelopeVpol.setup_antenna" title="pyrex.custom.irex.EnvelopeVpol.setup_antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_antenna</span></code></a>(response_data[, …])</p></td>
+<td><p>Setup the antenna by passing along its init arguments.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.tunnel_diode.html#pyrex.custom.irex.EnvelopeVpol.tunnel_diode" title="pyrex.custom.irex.EnvelopeVpol.tunnel_diode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tunnel_diode</span></code></a>(signal)</td>
-<td>Calculate a signal as processed by the tunnel diode.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.trigger.html#pyrex.custom.irex.EnvelopeVpol.trigger" title="pyrex.custom.irex.EnvelopeVpol.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a>(signal)</p></td>
+<td><p>Check if the antenna triggers on a given signal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.irex.EnvelopeVpol.tunnel_diode.html#pyrex.custom.irex.EnvelopeVpol.tunnel_diode" title="pyrex.custom.irex.EnvelopeVpol.tunnel_diode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tunnel_diode</span></code></a>(signal)</p></td>
+<td><p>Calculate a signal as processed by the tunnel diode.</p></td>
 </tr>
 </tbody>
 </table>
@@ -257,7 +237,7 @@ envelope calculation.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -326,10 +306,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

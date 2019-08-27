@@ -3,4 +3,4 @@ pyrex.signals.ThermalNoise.dt
 
 .. currentmodule:: pyrex.signals
 
-.. autoattribute:: ThermalNoise.dt
+.. autoproperty:: ThermalNoise.dt

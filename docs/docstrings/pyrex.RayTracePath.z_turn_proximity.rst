@@ -3,4 +3,4 @@ pyrex.RayTracePath.z\_turn\_proximity
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.z_turn_proximity
+.. autoproperty:: RayTracePath.z_turn_proximity

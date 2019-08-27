@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.LazyMutableClass &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.internal_functions.LazyMutableClass &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="next" title="Signal Processing (pyrex.signals)" href="../api/signals.html" >
     <link rel="prev" title="pyrex.internal_functions.lazy_property" href="pyrex.internal_functions.lazy_property.html" > 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
+          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
     </ul>
               
               
@@ -94,7 +95,7 @@
 <h1>pyrex.internal_functions.LazyMutableClass<a class="headerlink" href="#pyrex-internal-functions-lazymutableclass" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.internal_functions.LazyMutableClass">
-<em class="property">class </em><code class="descclassname">pyrex.internal_functions.</code><code class="descname">LazyMutableClass</code><span class="sig-paren">(</span><em>static_attributes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.LazyMutableClass" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.internal_functions.</code><code class="sig-name descname">LazyMutableClass</code><span class="sig-paren">(</span><em class="sig-param">static_attributes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.LazyMutableClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class with lazy properties which may depend on other class attributes.</p>
 <p>This class is intended as a base class for any class which desires lazy
 properties which depend on other attributes and thus may need to be
@@ -104,26 +105,21 @@ attributes changes, at which point all lazy properties will be cleared and
 will be recalculated on their next call. By default the static attributes
 of the class will be set to all attributes present at the time of the
 <code class="docutils literal notranslate"><span class="pre">LazyMutableClass.__init__</span></code> call.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>static_attributes</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None or sequence of str</span></dt>
-<dd><p class="first last">Set of attribute names on which the lazy properties depend. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>static_attributes</strong><span class="classifier">None or sequence of str, optional</span></dt><dd><p>Set of attribute names on which the lazy properties depend. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
 then it will contain all members of <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> at the time of the
 call.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.internal_functions.lazy_property.html#pyrex.internal_functions.lazy_property" title="pyrex.internal_functions.lazy_property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lazy_property</span></code></a></dt>
-<dd>Decorator for lazily-evaluated properties.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.internal_functions.lazy_property.html#pyrex.internal_functions.lazy_property" title="pyrex.internal_functions.lazy_property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lazy_property</span></code></a></dt><dd><p>Decorator for lazily-evaluated properties.</p>
+</dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
@@ -171,7 +167,7 @@ call.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -240,10 +236,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

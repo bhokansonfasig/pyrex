@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.particle.Event.get_from_level &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.particle.Event.get_from_level &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,34 +82,28 @@
 <h1>pyrex.particle.Event.get_from_level<a class="headerlink" href="#pyrex-particle-event-get-from-level" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.particle.Event.get_from_level">
-<code class="descclassname">Event.</code><code class="descname">get_from_level</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.Event.get_from_level" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Event.</code><code class="sig-name descname">get_from_level</code><span class="sig-paren">(</span><em class="sig-param">level</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.particle.Event.get_from_level" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all <a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects some <em class="xref py py-obj">level</em> deep into the event tree.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>level</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Level of the event tree to scan. Root <a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects at level
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>level</strong><span class="classifier">int</span></dt><dd><p>Level of the event tree to scan. Root <a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects at level
 zero.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>list of Particle</strong></dt>
-<dd><p class="first last">All <a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects at the given <em class="xref py py-obj">level</em> in the tree.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>list of Particle</strong></dt><dd><p>All <a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a> objects at the given <em class="xref py py-obj">level</em> in the tree.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a></dt>
-<dd>Class for storing particle attributes.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.particle.Particle.html#pyrex.particle.Particle" title="pyrex.particle.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code></a></dt><dd><p>Class for storing particle attributes.</p>
+</dd>
 </dl>
 </div>
 </dd></dl>
@@ -126,7 +121,7 @@ zero.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -190,10 +185,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

@@ -7,12 +7,10 @@ Signal Processing (:mod:`pyrex.signals`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     Signal
     EmptySignal
     FunctionSignal
-    ZHSAskaryanSignal
-    ARVZAskaryanSignal
-    AskaryanSignal
     GaussianNoise
     ThermalNoise

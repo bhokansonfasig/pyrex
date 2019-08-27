@@ -3,4 +3,4 @@ pyrex.Signal.frequencies
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: Signal.frequencies
+.. autoproperty:: Signal.frequencies

@@ -3,4 +3,4 @@ pyrex.RayTracePath.beta
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.beta
+.. autoproperty:: RayTracePath.beta

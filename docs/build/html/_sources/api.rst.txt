@@ -17,6 +17,7 @@ PyREx Package Imports
 
 .. autosummary::
     :toctree: docstrings
+    :nosignatures:
 
     Signal
     EmptySignal
@@ -27,7 +28,7 @@ PyREx Package Imports
     DipoleAntenna
     AntennaSystem
     Detector
-    IceModel
+    ice
     prem_density
     slant_depth
     NeutrinoInteraction
@@ -35,8 +36,6 @@ PyREx Package Imports
     Event
     CylindricalGenerator
     RectangularGenerator
-    CylindricalShadowGenerator
-    RectangularShadowGenerator
     ListGenerator
     FileGenerator
     RayTracer
@@ -55,6 +54,7 @@ Individual Module APIs
 
     api/internal_functions
     api/signals
+    api/askaryan
     api/antenna
     api/detector
     api/earth_model
@@ -73,7 +73,6 @@ Included Custom Sub-Packages
 
 .. toctree::
     :maxdepth: 1
+    :glob:
 
-    api/custom-ara
-    api/custom-arianna
-    api/custom-irex
+    api/custom-*

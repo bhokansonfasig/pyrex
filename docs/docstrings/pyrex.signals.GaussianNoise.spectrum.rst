@@ -3,4 +3,4 @@ pyrex.signals.GaussianNoise.spectrum
 
 .. currentmodule:: pyrex.signals
 
-.. autoattribute:: GaussianNoise.spectrum
+.. autoproperty:: GaussianNoise.spectrum
