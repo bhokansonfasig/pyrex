@@ -75,7 +75,7 @@ distance                meters (m)
 **material thickness**  **grams per square centimeter (g/cm^2)**
 temperature             kelvin (K)
 **energy**              **gigaelectronvolts (GeV)**
-resistance              ohms (Ω)
+resistance              ohms
 voltage                 volts (V)
 electric field          volts per meter (V/m)
 ======================= ========================================
