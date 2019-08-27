@@ -149,7 +149,8 @@ class BaseGenerator:
         References
         ----------
         .. [1] A. Bhattacharya et al, "The Glashow resonance at IceCube."
-            JCAP **1110**, 017 (2011).
+            JCAP **1110**, 017 (2011). :arxiv:`1108.3163`
+            :doi:`10.1088/1475-7516/2011/10/017`
 
         """
         rand_flavor = np.random.rand()

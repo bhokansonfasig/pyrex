@@ -40,6 +40,7 @@ with open(os.path.join(os.path.join("..", "pyrex"), "__about__.py")) as f:
 extensions = ['sphinx.ext.autodoc',
               'numpydoc',
               'sphinx.ext.autosummary',
+              'sphinx.ext.extlinks',
             #   'fulltoc',
             #   'sphinx.ext.todo',
             #   'sphinx.ext.coverage',
@@ -105,6 +106,13 @@ numpydoc_class_members_toctree = False
 
 # Generate referenced documentation
 autosummary_generate = True
+
+
+# Auto-fill arxiv and doi links in docstrings
+extlinks = {
+    'arxiv': ('https://arxiv.org/abs/%s', 'arXiv:'),
+    'doi': ('https://dx.doi.org/%s', 'DOI:'),
+}
 
 
 # -- Options for HTML output ----------------------------------------------

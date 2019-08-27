@@ -81,7 +81,7 @@ class ZHSAskaryanSignal(Signal):
     ----------
     .. [1] E. Zas, F. Halzen, T. Stanev, "Electromagnetic pulses from
         high-energy showers: implications for neutrino detection", Physical
-        Review D **45**, 362-376 (1992).
+        Review D **45**, 362-376 (1992). :doi:`10.1103/PhysRevD.45.362`
 
     """
     def __init__(self, times, particle, viewing_angle, viewing_distance=1,
@@ -210,9 +210,11 @@ class AVZAskaryanSignal(Signal):
     ----------
     .. [1] J. Alvarez-Muniz et al, "Calculation Methods for Radio Pulses from
         High Energy Showers." Physical Review D **62**, 063001 (2000).
-    .. [3] J. Alvarez-Muniz & E. Zas, "The LPM effect for EeV hadronic showers
+        :arxiv:`astro-ph/0003315` :doi:`10.1103/PhysRevD.62.063001`
+    .. [2] J. Alvarez-Muniz & E. Zas, "The LPM effect for EeV hadronic showers
         in ice: implications for radio detection of neutrinos." Physics Letters
-        **B434**, 396-406 (1998).
+        **B434**, 396-406 (1998). :arxiv:`astro-ph/9806098`
+        :doi:`10.1016/S0370-2693(98)00905-8`
 
     """
     def __init__(self, times, particle, viewing_angle, viewing_distance=1,
@@ -383,16 +385,18 @@ class ARVZAskaryanSignal(Signal):
     ----------
     .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
         of Askaryan radiation." Physical Review D **84**, 103003 (2011).
+        :arxiv:`1106.6283` :doi:`10.1103/PhysRevD.84.103003`
     .. [2] K. Greisen, "The Extensive Air Showers." Prog. in Cosmic Ray Phys.
         **III**, 1 (1956).
     .. [3] K.D. de Vries et al, "On the feasibility of RADAR detection of
-        high-energy neutrino-induced showers in ice." Astropart. Phys.
-        **60**, 25-31 (2015).
+        high-energy neutrino-induced showers in ice." Astropart. Phys. **60**,
+        25-31 (2015). :arxiv:`1312.4331`
+        :doi:`10.1016/j.astropartphys.2014.05.009`
     .. [4] T.K. Gaisser & A.M. Hillas "Reliability of the Method of Constant
         Intensity Cuts for Reconstructing the Average Development of Vertical
         Showers." ICRC proceedings, 353 (1977).
     .. [5] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
-        effect." ICRC proceedings, 17-25 (1999).
+        effect." ICRC proceedings, 17-25 (1999). :arxiv:`astro-ph/9906347`
 
     """
     def __init__(self, times, particle, viewing_angle, viewing_distance=1,
@@ -629,6 +633,7 @@ class ARVZAskaryanSignal(Signal):
         ----------
         .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
             of Askaryan radiation." Physical Review D **84**, 103003 (2011).
+            :arxiv:`1106.6283` :doi:`10.1103/PhysRevD.84.103003`
 
         """
         # Get absolute value of time in nanoseconds
@@ -679,7 +684,8 @@ class ARVZAskaryanSignal(Signal):
             Phys. **III**, 1 (1956).
         .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
             high-energy neutrino-induced showers in ice." Astropart. Phys.
-            **60**, 25-31 (2015).
+            **60**, 25-31 (2015). :arxiv:`1312.4331`
+            :doi:`10.1016/j.astropartphys.2014.05.009`
 
         """
         N = np.zeros_like(z)
@@ -748,7 +754,7 @@ class ARVZAskaryanSignal(Signal):
             Constant Intensity Cuts for Reconstructing the Average Development
             of Vertical Showers." ICRC proceedings, 353 (1977).
         .. [2] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
-            effect." ICRC proceedings, 17-25 (1999).
+            effect." ICRC proceedings, 17-25 (1999). :arxiv:`astro-ph/9906347`
 
         """
         N = np.zeros_like(z)

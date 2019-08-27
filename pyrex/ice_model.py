@@ -685,10 +685,11 @@ class GreenlandIce(AntarcticIce):
     ----------
     .. [1] C. Deaconu et al, "Measurements and modeling of near-surface radio
         propagation in glacial ice and implications for neutrino experiments."
-        Physical Review D **98**, 043010 (2018).
+        Physical Review D **98**, 043010 (2018). :arxiv:`1805.12576`
+        :doi:`10.1103/PhysRevD.98.043010`
     .. [2] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
         Attenuation in Ice at Summit Station, Greenland." Journal of Glaciology
-        **61**, no. 229, 1005-1011 (2015).
+        **61**, no. 229, 1005-1011 (2015). :doi:`10.3189/2015JoG15J057`
 
     """
     def __init__(self, n0=1.775, k=0.448, a=0.0247, valid_range=(-3000, 0),
