@@ -8,13 +8,15 @@ Version 1.9.0
 
 .. rubric:: New Features
 
-* Added a Greenland ice model based on measurements at Summit Station.
+* Added a :class:`GreenlandIce` ice model based on measurements at Summit Station.
 
-* Added the Askaryan signal model from J. Alvarez-Muniz et al (2000) for comparison across simulation packages.
+* Added the :class:`AVZAskaryanSignal` Askaryan model from J. Alvarez-Muniz et al (2000) for comparison across simulation packages.
 
 * Added :class:`UniformIce` ice model with a constant index of refraction, along with the corresponding ray tracing with :class:`UniformRayTracer` and :class:`UniformRayTracePath`.
 
 * Added :mod:`pyrex.custom.layered_ice` for ice models with indices of refraction defined in stratified layers in the z-direction and the corresponding ray tracing.
+
+* Added :func:`complex_interp` and :func:`complex_bilinear_interp` functions for interpolating arrays of complex values using Cartesian or Euler methods.
 
 .. rubric:: Changes
 
@@ -23,6 +25,8 @@ Version 1.9.0
 * Removed the :class:`NewcombIce` ice model.
 
 * Handling of s-polarized and p-polarized signals by the :class:`RayTracer` have now been split. This resulted in different behavior for the :meth:`RayTracePath.propagate` and :meth:`Antenna.receive` methods, as well as a new method :meth:`Antenna.apply_response`.
+
+* Renamed :meth:`Antenna.response` method to :meth:`Antenna.frequency_response`.
 
 * ARA antennas have been updated to use the latest XFDTD simulations from the Chiba group.
 
@@ -36,7 +40,7 @@ Version 1.9.0
 
 * Fixed an off-by-one error in the final event count given by :class:`ListGenerator` objects.
 
-* Fixed a bug in the Earth shadowing effect produced by the generator classes.
+* Fixed a bug in the Earth shadowing effect produced by :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes.
 
 
 
