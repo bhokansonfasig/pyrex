@@ -151,6 +151,10 @@ html_sidebars = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# Add searchtools.js script to make searching work. Looks like it was left out
+# of the search.html page for the scipy theme, but this adds it back.
+html_js_files = ['searchtools.js']
+
 html_domain_indices = True
 
 
