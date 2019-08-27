@@ -32,8 +32,7 @@ First, import the package::
 
 Then, create a particle generator object that will produce random particles in a cylinder with radius and depth of 1 km and with a fixed energy of 100 PeV::
 
-    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
-                                                          energy=1e8)
+    particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
 
 An array of antennas that represent the detector is also needed. The base :class:`Antenna` class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical "string" of four antennas with no noise::
 
