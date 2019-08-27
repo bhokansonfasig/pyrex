@@ -1,3 +1,5 @@
+.. _custom-irex:
+
 IceCube Radio Extension (:mod:`pyrex.custom.irex`)
 ==================================================
 

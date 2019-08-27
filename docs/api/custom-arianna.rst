@@ -1,3 +1,5 @@
+.. _custom-arianna:
+
 Antarctic Ross Ice-Shelf Antenna Neutrino Array (:mod:`pyrex.custom.arianna`)
 =============================================================================
 

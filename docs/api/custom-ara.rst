@@ -1,3 +1,5 @@
+.. _custom-ara:
+
 Askaryan Radio Array (:mod:`pyrex.custom.ara`)
 ==============================================
 

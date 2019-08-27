@@ -1,3 +1,5 @@
+.. _custom-layered_ice:
+
 Layered Ice Models (:mod:`pyrex.custom.layered_ice`)
 ====================================================
 
