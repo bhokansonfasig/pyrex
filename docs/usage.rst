@@ -218,12 +218,12 @@ The basic properties of an :class:`Antenna` object are :attr:`is_hit` and :attr:
     basic_antenna.is_hit == False
     basic_antenna.waveforms == []
 
-The :class:`Antenna` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are :attr:`efficiency` and :attr:`antenna_factor`, and the methods are :meth:`Antenna.response`, :meth:`Antenna.directional_gain`, and :meth:`Antenna.polarization_gain`. The attributes are to be set and the methods overwritten in order to customize the way the antenna responds to incoming signals. :attr:`efficiency` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). :attr:`antenna_factor` is a factor used in converting received electric fields into voltages (:attr:`antenna_factor` = E / V; default value is ``1``). :meth:`Antenna.response` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). :meth:`Antenna.directional_gain` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). :meth:`Antenna.directional_gain` is dependent on the antenna's orientation, which is defined by its :attr:`z_axis` and :attr:`x_axis` attributes. To change the antenna's orientation, use the :meth:`Antenna.set_orientation` method which takes ``z_axis`` and ``x_axis`` arguments. Finally, :meth:`Antenna.polarization_gain` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
+The :class:`Antenna` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are :attr:`efficiency` and :attr:`antenna_factor`, and the methods are :meth:`Antenna.frequency_response`, :meth:`Antenna.directional_gain`, and :meth:`Antenna.polarization_gain`. The attributes are to be set and the methods overwritten in order to customize the way the antenna responds to incoming signals. :attr:`efficiency` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). :attr:`antenna_factor` is a factor used in converting received electric fields into voltages (:attr:`antenna_factor` = E / V; default value is ``1``). :meth:`Antenna.frequency_response` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). :meth:`Antenna.directional_gain` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). :meth:`Antenna.directional_gain` is dependent on the antenna's orientation, which is defined by its :attr:`z_axis` and :attr:`x_axis` attributes. To change the antenna's orientation, use the :meth:`Antenna.set_orientation` method which takes ``z_axis`` and ``x_axis`` arguments. Finally, :meth:`Antenna.polarization_gain` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
 
     basic_antenna.efficiency == 1
     basic_antenna.antenna_factor == 1
     freqs = [1, 2, 3, 4, 5]
-    basic_antenna.response(freqs) == [1, 1, 1, 1, 1]
+    basic_antenna.frequency_response(freqs) == [1, 1, 1, 1, 1]
     basic_antenna.directional_gain(theta=np.pi/2, phi=0) == 1
     basic_antenna.polarization_gain([0,0,1]) == 1
 
@@ -531,7 +531,7 @@ The :class:`RayTracePath` class contains the attributes of the paths between poi
 
 .. image:: _static/example_outputs/ray_tracing_1.png
 
-Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. :meth:`RayTracePath.propagate` can also propagate the polarization vector of the signal, either independently or in the same function call. ::
+Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. :meth:`RayTracePath.propagate` returns the :class:`Signal` objects and polarization vectors of the s-polarized and p-polarized portions of the signal. ::
 
     time_array = np.linspace(0, 5e-9, 1001)
     launch_signal = (
@@ -540,12 +540,16 @@ Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from
     )
     plt.plot(launch_signal.times*1e9, launch_signal.values)
     plt.show()
-    launch_pol = 1/np.sqrt(np.array([3, 3, 3]))
+    # Polarize perpendicular to the path in the x-z plane
+    launch_pol = np.cross(my_path.emitted_direction, (0, 1, 0))
+    print(launch_pol)
 
-    rec_signal, rec_pol = my_path.propagate(launch_signal, polarization=launch_pol)
-    plt.plot(rec_signal.times*1e9, rec_signal.values)
+    rec_signals, rec_pols = my_path.propagate(launch_signal, polarization=launch_pol)
+    plt.plot(rec_signals[0].times*1e9, rec_signals[0].values, label="s-pol signal")
+    plt.plot(rec_signals[1].times*1e9, rec_signals[1].values, label="p-pol signal")
+    plt.legend()
     plt.show()
-    print(rec_pol)
+    print(rec_pols)
 
 .. image:: _static/example_outputs/ray_tracing_2.png
 .. image:: _static/example_outputs/ray_tracing_3.png
@@ -621,6 +625,8 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
 
     triggered = False
     while not triggered:
+        for antenna in detector:
+            antenna.clear()
         event = kernel.event()
         for antenna in detector:
             if antenna.is_hit:
@@ -645,7 +651,6 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
             plt.title(antenna.name + " - waveform "+str(i))
 
 .. image:: _static/example_outputs/full_sim_1.png
-.. image:: _static/example_outputs/full_sim_2.png
 
 
 
@@ -693,6 +698,8 @@ The most straightforward way to write data files is to pass a :class:`File` obje
                                    triggers=trigger_conditions)
 
         for _ in range(10):
+            for antenna in detector:
+                antenna.clear()
             event, triggered = kernel.event()
 
 If you want to manually write the data file, then the :meth:`File.set_detector` and :meth:`File.add` methods are necessary. :meth:`File.set_detector` associates the given antennas with the file object (and writes their data) and :meth:`File.add` adds the data from the given event to the file. Here we also manually open and close the file object with :meth:`File.open` and :meth:`File.close`, and add some metadata to the file with :meth:`File.add_file_metadata`::
@@ -708,6 +715,8 @@ If you want to manually write the data file, then the :meth:`File.set_detector` 
                                antennas=detector)
 
     for _ in range(10):
+        for antenna in detector:
+            antenna.clear()
         event = kernel.event()
         triggered = False
         for antenna in detector:
@@ -722,11 +731,14 @@ The :class:`File` objects also support writing miscellaneous analysis data to th
 
     with pyrex.File('my_data_file.h5', 'a') as f:
         f.create_analysis_metadataset("effective_volume")
-        gen_vol = 1000*1000*500
+        gen_vol = (np.pi*1000**2)*1000
+        # Just set an arbitrary number of triggers for now. We'll get into reading
+        # files in the examples below.
+        n_triggers = 5
         data = {
             "generation_volume": gen_vol,
-            "veff": 5/10*gen_vol,
-            "error": np.sqrt(5)/10*gen_vol,
+            "veff": n_triggers/10*gen_vol,
+            "error": np.sqrt(n_triggers)/10*gen_vol,
             "unit": "m^3"
         }
         f.add_analysis_metadata("effective_volume", data)
@@ -773,15 +785,15 @@ HDF5 files opened in read-only mode can also be iterated over, which allows acce
             print(event.is_neutrino, event.is_nubar, event.flavor)
             print(event.triggered, event.get_triggered_components())
 
-        for event in f[2:6:2]:
+        for event in f[1:5:2]:
             print(event.get_particle_info('particle_name'),
                   event.get_particle_info('vertex'))
             print(np.degrees(event.get_rays_info('receiving_angle')))
 
-        print(f[4].get_rays_info('tof'))
+        print(f[3].get_rays_info('tof'))
 
         # No waveform data was stored above, so this will fail if run
-        # wfs = f[5].get_waveforms(antenna_id=4)
+        # wfs = f[3].get_waveforms(antenna_id=2)
 
 
 
