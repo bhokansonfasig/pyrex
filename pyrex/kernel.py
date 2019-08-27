@@ -77,7 +77,7 @@ class EventKernel:
     pyrex.Event : Class for storing a tree of `Particle` objects
                   representing an event.
     pyrex.Particle : Class for storing particle attributes.
-    pyrex.AntarcticIce : Class describing the ice at the south pole.
+    pyrex.ice_model.AntarcticIce : Class describing the ice at the south pole.
     pyrex.RayTracer : Class for calculating the ray-trace solutions between
                       points.
     pyrex.AskaryanSignal : Class for generating Askaryan signals according to
@@ -110,7 +110,7 @@ class EventKernel:
     kernel as the ``ice_model`` keyword argument. The ray tracer must also have
     ``exists`` and ``solutions`` attributes, the first of which denotes whether
     any paths exist between the given points and the second of which is an
-    iterable revelaing each path between the points. These paths must have
+    iterable revealing each path between the points. These paths must have
     ``emitted_direction``, ``received_direction``, and ``path_length``
     attributes, as well as a ``propagate`` method which takes a signal object
     and applies the propagation effects of the path in-place to that object.

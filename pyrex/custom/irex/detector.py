@@ -138,7 +138,7 @@ class IREXString(Detector):
                             'biased', 'doubler', 'bridge', 'log amp')}, optional
             String describing the circuit (and calculation method) to be used
             for envelope calculation. If the string contains "hilbert", the
-            hilbert envelope is uesd. If the string contains "analytic", an
+            hilbert envelope is used. If the string contains "analytic", an
             analytic form is used to calculate the circuit output. If the
             string contains "spice", ``ngspice`` is used to calculate the
             circuit output. The default value "analytic" uses an analytic diode
@@ -249,7 +249,7 @@ class RegularStation(Detector):
     Notes
     -----
     This class is designed to have string-like objects (which are subclasses of
-    ``Detector``) as its `subsets`. Then whenver an object of this class is
+    ``Detector``) as its `subsets`. Then whenever an object of this class is
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
@@ -395,7 +395,7 @@ class CoxeterStation(Detector):
     Notes
     -----
     This class is designed to have string-like objects (which are subclasses of
-    ``Detector``) as its `subsets`. Then whenver an object of this class is
+    ``Detector``) as its `subsets`. Then whenever an object of this class is
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
@@ -550,9 +550,9 @@ class StationGrid(Detector):
     Notes
     -----
     This class is designed to have station-like or string-like objects (which
-    are subclasses of ``Detector``) as its `subsets`. Then whenver an object of
-    this class is iterated, all the antennas of its strings will be yielded as
-    in a 1D list.
+    are subclasses of ``Detector``) as its `subsets`. Then whenever an object
+    of this class is iterated, all the antennas of its strings will be yielded
+    as in a 1D list.
 
     """
     def set_positions(self, stations=1, station_separation=500,

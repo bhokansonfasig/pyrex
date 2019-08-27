@@ -1,3 +1,5 @@
+.. _custom-ara:
+
 Askaryan Radio Array (:mod:`pyrex.custom.ara`)
 ==============================================
 
@@ -10,6 +12,7 @@ Default Package Imports
 
 .. autosummary::
     :toctree: docstrings
+    :nosignatures:
 
     HpolAntenna
     VpolAntenna

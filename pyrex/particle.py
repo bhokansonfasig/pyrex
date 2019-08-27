@@ -374,6 +374,7 @@ class GQRSInteraction(Interaction):
     ----------
     .. [1] R. Gandhi et al, "Ultrahigh-Energy Neutrino Interactions."
         Physical Review D **58**, 093009 (1998).
+        :doi:`10.1103/PhysRevD.58.093009`
 
     """
     def choose_interaction(self):
@@ -523,7 +524,7 @@ class GQRSInteraction(Interaction):
             Maximal electromagnetic shower fraction from secondary
             interactions.
         had_frac : float
-            Maximal adronic shower fraction form secondary interactions.
+            Maximal hadronic shower fraction form secondary interactions.
 
         """
         em_max = 0
@@ -732,7 +733,8 @@ class CTWInteraction(GQRSInteraction):
     .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
         Cross Sections and Uncertainties Using the MSTW Parton Distribution
         Functions and Implications for Future Experiments." Physical Review D
-        **83**, 113009 (2011).
+        **83**, 113009 (2011). :arxiv:`1102.0691`
+        :doi:`10.1103/PhysRevD.83.113009`
 
     """
     def choose_interaction(self):
@@ -757,7 +759,8 @@ class CTWInteraction(GQRSInteraction):
         .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
             Cross Sections and Uncertainties Using the MSTW Parton Distribution
             Functions and Implications for Future Experiments." Physical Review
-            D **83**, 113009 (2011).
+            D **83**, 113009 (2011). :arxiv:`1102.0691`
+            :doi:`10.1103/PhysRevD.83.113009`
 
         """
         d_0 = 1.76
@@ -792,7 +795,8 @@ class CTWInteraction(GQRSInteraction):
         .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
             Cross Sections and Uncertainties Using the MSTW Parton Distribution
             Functions and Implications for Future Experiments." Physical Review
-            D **83**, 113009 (2011).
+            D **83**, 113009 (2011). :arxiv:`1102.0691`
+            :doi:`10.1103/PhysRevD.83.113009`
 
         """
         eps = np.log10(self.particle.energy)

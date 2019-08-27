@@ -149,7 +149,8 @@ class BaseGenerator:
         References
         ----------
         .. [1] A. Bhattacharya et al, "The Glashow resonance at IceCube."
-            JCAP **1110**, 017 (2011).
+            JCAP **1110**, 017 (2011). :arxiv:`1108.3163`
+            :doi:`10.1088/1475-7516/2011/10/017`
 
         """
         rand_flavor = np.random.rand()
@@ -613,6 +614,71 @@ class RectangularGenerator(BaseGenerator):
 
 
 class ShadowGenerator(RectangularGenerator):
+    """
+    Class to generate neutrino vertices with Earth shadowing.
+
+    .. deprecated:: 1.8.2
+        `ShadowGenerator` has been replaced by `RectangularGenerator`. The same
+        shadowing behavior can be achieved by providing the `shadow` argument.
+
+    Generates neutrinos in a box with given width, length, and height. Accounts
+    for Earth shadowing by comparing the neutrino interaction length to the
+    material thickness of the Earth along the neutrino path, and rejecting
+    particles which would interact before reaching the vertex. Note the subtle
+    difference in x and y ranges compared to the z range.
+
+    Parameters
+    ----------
+    dx : float
+        Width of the ice volume in the x-direction. Neutrinos generated within
+        (-`dx` / 2, `dx` / 2).
+    dy : float
+        Length of the ice volume in the y-direction. Neutrinos generated within
+        (-`dy` / 2, `dy` / 2).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    energy : float or function
+        Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
+        same constant energy. If ``function``, neutrinos are generated with the
+        energy returned by successive function calls.
+    flavor_ratio : array_like, optional
+        Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
+        tau] neutrino fractions.
+    interaction_model : optional
+        Class to use to describe interactions of the generated particles.
+        Should inherit from (or behave like) the base ``Interaction`` class.
+
+    Attributes
+    ----------
+    count : int
+        Number of neutrinos produced by the generator, including those not
+        returned due to Earth shadowing or other effects.
+    dx : float
+        Width of the ice volume in the x-direction. Neutrinos generated within
+        (-`dx` / 2, `dx` / 2).
+    dy : float
+        Length of the ice volume in the y-direction. Neutrinos generated within
+        (-`dy` / 2, `dy` / 2).
+    dz : float
+        Height of the ice volume in the z-direction. Neutrinos generated within
+        (-`dz`, 0).
+    get_energy : function
+        Function returning energy (GeV) of the neutrinos by successive function
+        calls.
+    shadow : bool
+        Whether Earth shadowing effects will be used to reject events.
+    ratio : ndarary
+        (Normalized) flavor ratio of neutrinos to be generated. Of the form
+        [electron, muon, tau] neutrino fractions.
+    interaction_model : Interaction
+        Class to use to describe interactions of the generated particles.
+
+    See Also
+    --------
+    pyrex.particle.Interaction : Base class for describing neutrino interaction
+                                 attributes.
+    """
     def __init__(self, dx, dy, dz, energy, flavor_ratio=(1,1,1),
                  interaction_model=NeutrinoInteraction):
         warnings.warn("The 'ShadowGenerator' class functionality has been "+
@@ -757,7 +823,7 @@ class NumpyFileGenerator:
     --------
     This generator only supports `Event` objects containing a single `Particle`
     object. There is currently no way to read from files where an `Event`
-    contains mutliple `Particle` objects with some dependencies.
+    contains multiple `Particle` objects with some dependencies.
 
     See Also
     --------

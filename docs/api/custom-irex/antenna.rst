@@ -7,6 +7,7 @@ Custom Antennas (:mod:`pyrex.custom.irex.antenna`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     DipoleTester
     EnvelopeSystem

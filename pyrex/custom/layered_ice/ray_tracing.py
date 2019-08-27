@@ -213,7 +213,7 @@ class LayeredRayTracePath(LazyMutableClass):
         f : array_like
             Frequencies (Hz) at which to calculate signal attenuation.
         *args, **kwargs
-            Arguments passed down to individual path attentuation methods.
+            Arguments passed down to individual path attenuation methods.
 
         Returns
         -------
@@ -444,7 +444,7 @@ class LayeredRayTracer(LazyMutableClass):
         path : list of int
             The current index path so far.
         direction : int
-            The direciton of travel. +1 for moving up in indices, -1 for moving
+            The direction of travel. +1 for moving up in indices, -1 for moving
             down in indices.
         reflections : int
             Number of reflections remaining for the path.

@@ -29,7 +29,7 @@ def _read_response_data(filename):
     Data files should exist with names `filename`.ra1 and `filename`.ad1.
     The ``.ad1`` file should contain frequencies in the first column, real and
     imaginary parts of the impedance in the sixth and seventh columns, and
-    S-parameter data in the eigth and ninth columns.
+    S-parameter data in the eighth and ninth columns.
     The ``.ra1`` file should contain phi and theta in the first two columns,
     the real and imaginary parts of the phi field in the next two columns,
     and the real and imaginary parts of the theta field in the next two columns.
@@ -240,7 +240,7 @@ def _read_amplifier_data(gain_filename, phase_filename, gain_offset=0):
         Name of the data file containing gains (in dB).
     phase_filename : str
         Name of the data file containing phases (in degrees).
-    gain_offset : float
+    gain_offset : float, optional
         Offset to apply to the gain values (in dB).
 
     Returns
@@ -371,6 +371,7 @@ class ARIANNAAntenna(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -646,6 +647,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -959,6 +961,7 @@ class LPDA(ARIANNAAntennaSystem):
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms

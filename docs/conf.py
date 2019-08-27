@@ -40,6 +40,7 @@ with open(os.path.join(os.path.join("..", "pyrex"), "__about__.py")) as f:
 extensions = ['sphinx.ext.autodoc',
               'numpydoc',
               'sphinx.ext.autosummary',
+              'sphinx.ext.extlinks',
             #   'fulltoc',
             #   'sphinx.ext.todo',
             #   'sphinx.ext.coverage',
@@ -107,6 +108,13 @@ numpydoc_class_members_toctree = False
 autosummary_generate = True
 
 
+# Auto-fill arxiv and doi links in docstrings
+extlinks = {
+    'arxiv': ('https://arxiv.org/abs/%s', 'arXiv:'),
+    'doi': ('https://dx.doi.org/%s', 'DOI:'),
+}
+
+
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages. See the documentation for
@@ -150,6 +158,10 @@ html_sidebars = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# Add searchtools.js script to make searching work. Looks like it was left out
+# of the search.html page for the scipy theme, but this adds it back.
+html_js_files = ['searchtools.js']
 
 html_domain_indices = True
 

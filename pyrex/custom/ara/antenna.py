@@ -336,6 +336,7 @@ class ARAAntenna(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -660,6 +661,7 @@ class ARAAntennaSystem(AntennaSystem):
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -817,6 +819,17 @@ class ARAAntennaSystem(AntennaSystem):
         ------
         ValueError
             If the input `signal` doesn't have a ``value_type`` of ``voltage``.
+
+        Notes
+        -----
+        The tunnel diode response is based on the response parameterized in
+        AraSim, as developed by ANITA [1]_.
+
+        References
+        ----------
+        .. [1] A. Connolly & R. Nichol, ANITA Note #411, "A Power-Based Time
+            Domain Trigger Simulation."
+            https://elog.phys.hawaii.edu/elog/anita_notes/080827_041639/powertrigger.pdf
 
         """
         if signal.value_type!=Signal.Type.voltage:
@@ -1021,6 +1034,7 @@ class HpolAntenna(ARAAntennaSystem):
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -1029,7 +1043,6 @@ class HpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    HpolBase : Antenna class to be used for ARA Hpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,
@@ -1094,6 +1107,7 @@ class VpolAntenna(ARAAntennaSystem):
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -1102,7 +1116,6 @@ class VpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    VpolBase : Antenna class to be used for ARA Vpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,

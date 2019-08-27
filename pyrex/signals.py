@@ -32,7 +32,7 @@ class Signal:
         1D array of values of the signal corresponding to the given `times`.
         Will be resized to the size of `times` by zero-padding or truncating
         as necessary.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Values should be
         from the ``Signal.Type`` enum, but integer or string values may
         work if carefully chosen. ``Signal.Type.undefined`` by default.
@@ -260,9 +260,9 @@ class Signal:
         Parameters
         ----------
         freq_response : function
-            Response function taking a freqeuncy (or array of frequencies) and
+            Response function taking a frequency (or array of frequencies) and
             returning the corresponding complex gain(s).
-        force_real : boolean
+        force_real : boolean, optional
             If ``True``, complex conjugation is used on the positive-frequency
             response to force the filtered signal to be real-valued. Otherwise
             the frequency response is left alone and any imaginary parts of the
@@ -308,14 +308,17 @@ class Signal:
 
         # Issue a warning if there was significant signal in the (discarded)
         # imaginary part of the filtered values
-        if np.any(np.imag(filtered_vals[:len(self.times)]) >
-                  np.max(self.values) * 1e-5):
+        if np.any(np.abs(np.imag(filtered_vals[:len(self.times)])) >
+                  np.max(np.abs(self.values)) * 1e-5):
             msg = ("Significant signal amplitude was lost when forcing the "+
                    "signal values to be real after applying the frequency "+
                    "filter '%s'. This may be avoided by making sure the "+
                    "filter being used is properly defined for negative "+
-                   "frequencies, or by passing force_real=True to the "+
-                   "Signal.filter_frequencies function.")
+                   "frequencies")
+            if not force_real:
+                msg += (", or by passing force_real=True to the "+
+                        "Signal.filter_frequencies function")
+            msg += "."
             logger.warning(msg, freq_response.__name__)
 
 
@@ -328,7 +331,7 @@ class EmptySignal(Signal):
     ----------
     times : array_like
         1D array of times (s) for which the signal is defined.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Must be from the
         ``Signal.Type`` Enum.
 
@@ -364,7 +367,7 @@ class EmptySignal(Signal):
 
         Returns
         -------
-        EmtpySignal
+        EmptySignal
             A representation of the original signal over the `new_times` array.
 
         Notes
@@ -387,7 +390,7 @@ class FunctionSignal(Signal):
     function : function
         Function which evaluates the corresponding value(s) for a given time or
         array of times.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Must be from the
         ``Signal.Type`` Enum.
 

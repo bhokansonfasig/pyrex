@@ -7,6 +7,7 @@ Custom Detectors (:mod:`pyrex.custom.irex.detector`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     IREXString
     RegularStation

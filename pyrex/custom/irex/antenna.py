@@ -92,6 +92,7 @@ class DipoleTester(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -237,7 +238,7 @@ class EnvelopeSystem(ARAAntennaSystem):
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
-        envelope is uesd. If the string contains "analytic", an analytic form
+        envelope is used. If the string contains "analytic", an analytic form
         is used to calculate the circuit output. If the string contains
         "spice", ``ngspice`` is used to calculate the circuit output. The
         default value "analytic" uses an analytic diode bridge circuit.
@@ -271,6 +272,7 @@ class EnvelopeSystem(ARAAntennaSystem):
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -545,7 +547,7 @@ class EnvelopeHpol(EnvelopeSystem):
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
-        envelope is uesd. If the string contains "analytic", an analytic form
+        envelope is used. If the string contains "analytic", an analytic form
         is used to calculate the circuit output. If the string contains
         "spice", ``ngspice`` is used to calculate the circuit output. The
         default value "analytic" uses an analytic diode bridge circuit.
@@ -576,6 +578,7 @@ class EnvelopeHpol(EnvelopeSystem):
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -633,7 +636,7 @@ class EnvelopeVpol(EnvelopeSystem):
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
-        envelope is uesd. If the string contains "analytic", an analytic form
+        envelope is used. If the string contains "analytic", an analytic form
         is used to calculate the circuit output. If the string contains
         "spice", ``ngspice`` is used to calculate the circuit output. The
         default value "analytic" uses an analytic diode bridge circuit.
@@ -664,6 +667,7 @@ class EnvelopeVpol(EnvelopeSystem):
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms

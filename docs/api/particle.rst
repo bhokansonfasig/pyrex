@@ -7,6 +7,7 @@ Particles and Interaction Models (:mod:`pyrex.particle`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     Event
     Particle
