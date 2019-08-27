@@ -14,7 +14,7 @@ A Python package for simulation of neutrinos and radio antennas in ice.
 
 PyREx (\ **Py**\ thon package for **R**\ adio **Ex**\ periments)
 is a Python package designed to simulate the measurement of Askaryan pulses
-via a in-ice radio antenna arrays. The code was written for the ARA
+via in-ice radio antenna arrays. The code was written for the ARA
 collaboration with considerations for future radio arrays. As such, the
 package is designed to be highly modular so that it can easily be used for
 other radio projects (e.g. ARIANNA, RNO, and IceCube Gen2).

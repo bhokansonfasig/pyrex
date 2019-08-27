@@ -1,7 +1,7 @@
 PyREx - (\ **Py**\ thon package for **R**\ adio **Ex**\ periments)
 ***************************************************************************
 
-PyREx (\ **Py**\ thon package for **R**\ adio **Ex**\ periments) is a Python package designed to simulate the measurement of Askaryan pulses via a in-ice radio antenna arrays.
+PyREx (\ **Py**\ thon package for **R**\ adio **Ex**\ periments) is a Python package designed to simulate the measurement of Askaryan pulses via in-ice radio antenna arrays.
 The code was written for the ARA collaboration with considerations for future radio arrays.
 As such, the package is designed to be highly modular so that it can easily be used for other radio projects (e.g. ARIANNA, RNO, and IceCube Gen2).
 
@@ -32,7 +32,7 @@ After installing python from https://www.python.org/downloads/, the required pac
 Installing
 ----------
 
-The easiest way to get the PyREx package is using ``pip`` as follows
+The easiest way to get the PyREx package is using ``pip`` as follows:
 
 .. code-block:: shell
 
@@ -52,7 +52,7 @@ Recommended version: 2.1+
 
 Used for creating plots in example code and auxiliary scripts.
 
-`Sphinx <https://www.sphinx-doc.org>`_ and `numpydoc <https://numpydoc.readthedocs.io>`_
+`sphinx <https://www.sphinx-doc.org>`_ and `numpydoc <https://numpydoc.readthedocs.io>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Recommended version: 2.1+, 0.9+
@@ -76,7 +76,7 @@ For examples of how to use PyREx, see the `usage page <https://bhokansonfasig.gi
 Contributing
 ============
 
-Contributions to the code base are mostly handled through pull requests. Before contributing, for more information please read the `contribution page <https://bhokansonfasig.github.io/pyrex/build/html/contributing.html>`_ in the documentation.
+Contributions to the code base are mostly handled through pull requests on GitHub. Before contributing, please read the `contribution page <https://bhokansonfasig.github.io/pyrex/build/html/contributing.html>`_ in the documentation for more information.
 
 
 Authors
@@ -90,4 +90,4 @@ License
 
 `MIT License <https://github.com/bhokansonfasig/pyrex/blob/master/LICENSE>`_
 
-Copyright (c) 2018 Ben Hokanson-Fasig
+Copyright (c) 2019 Ben Hokanson-Fasig

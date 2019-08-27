@@ -1,7 +1,7 @@
 About PyREx
 ***********
 
-PyREx (\ **Py**\ thon package for **R**\ adio **Ex**\ periments) is a Python package designed to simulate the measurement of Askaryan pulses via a in-ice radio antenna arrays.
+PyREx (\ **Py**\ thon package for **R**\ adio **Ex**\ periments) is a Python package designed to simulate the measurement of Askaryan pulses via in-ice radio antenna arrays.
 The code was written for the ARA collaboration with considerations for future radio arrays.
 As such, the package is designed to be highly modular so that it can easily be used for other radio projects (e.g. ARIANNA, RNO, and IceCube Gen2).
 
@@ -9,7 +9,9 @@ As such, the package is designed to be highly modular so that it can easily be u
 Installation
 ============
 
-The easiest way to get the PyREx package is using ``pip`` as follows::
+The easiest way to get the PyREx package is using ``pip`` as follows:
+
+.. code-block:: shell
 
     pip install git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
 

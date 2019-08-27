@@ -77,7 +77,7 @@ class EventKernel:
     pyrex.Event : Class for storing a tree of `Particle` objects
                   representing an event.
     pyrex.Particle : Class for storing particle attributes.
-    pyrex.AntarcticIce : Class describing the ice at the south pole.
+    pyrex.ice_model.AntarcticIce : Class describing the ice at the south pole.
     pyrex.RayTracer : Class for calculating the ray-trace solutions between
                       points.
     pyrex.AskaryanSignal : Class for generating Askaryan signals according to
