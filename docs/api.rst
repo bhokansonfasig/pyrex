@@ -73,8 +73,6 @@ Included Custom Sub-Packages
 
 .. toctree::
     :maxdepth: 1
+    :glob:
 
-    api/custom-ara
-    api/custom-arianna
-    api/custom-irex
-    api/custom-layered_ice
+    api/custom-*
