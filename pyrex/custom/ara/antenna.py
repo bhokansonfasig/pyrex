@@ -820,6 +820,17 @@ class ARAAntennaSystem(AntennaSystem):
         ValueError
             If the input `signal` doesn't have a ``value_type`` of ``voltage``.
 
+        Notes
+        -----
+        The tunnel diode response is based on the response parameterized in
+        AraSim, as developed by ANITA [1]_.
+
+        References
+        ----------
+        .. [1] A. Connolly & R. Nichol, ANITA Note #411, "A Power-Based Time
+            Domain Trigger Simulation."
+            https://elog.phys.hawaii.edu/elog/anita_notes/080827_041639/powertrigger.pdf
+
         """
         if signal.value_type!=Signal.Type.voltage:
             raise ValueError("Tunnel diode only accepts voltage signals")
