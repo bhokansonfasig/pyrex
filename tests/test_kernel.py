@@ -2,9 +2,9 @@
 
 import pytest
 
-from pyrex.signals import AskaryanSignal
+from pyrex.askaryan import AskaryanSignal
 from pyrex.antenna import Antenna
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 from pyrex.ray_tracing import RayTracer
 from pyrex.particle import Particle, Event
 from pyrex.generation import ListGenerator
@@ -32,7 +32,7 @@ class TestEventKernel:
         assert isinstance(kernel.gen, ListGenerator)
         assert len(kernel.antennas) == 1
         assert isinstance(kernel.antennas[0], Antenna)
-        assert kernel.ice == IceModel
+        assert kernel.ice == ice
         assert kernel.ray_tracer == RayTracer
         assert kernel.signal_model == AskaryanSignal
         assert np.array_equal(kernel.signal_times,

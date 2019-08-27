@@ -39,9 +39,8 @@ def prem_density(r):
 
     References
     ----------
-    .. [1] Dziewonski, Adam M.; Anderson, Don L. (June 1981), "Preliminary
-        reference Earth model." Physics of the Earth and Planetary Interiors.
-        **25** (4), 297–356 (1981).
+    .. [1] A. Dziewonski & D. Anderson, "Preliminary reference Earth model."
+        Physics of the Earth and Planetary Interiors **25**, 297–356 (1981). :doi:`10.1016/0031-9201(81)90046-7`
 
     """
     r = np.array(r)

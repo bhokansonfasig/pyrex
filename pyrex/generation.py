@@ -30,6 +30,11 @@ class BaseGenerator:
         Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
         same constant energy. If ``function``, neutrinos are generated with the
         energy returned by successive function calls.
+    shadow : bool, optional
+        Whether Earth shadowing effects should be used to reject events. If
+        ``True`` then neutrinos which don't survive transit through the Earth
+        will be skipped when creating events. If ``False`` then all events are
+        allowed and assigned a weight to scale their probability of occurrence.
     flavor_ratio : array_like, optional
         Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
         tau] neutrino fractions.
@@ -45,6 +50,8 @@ class BaseGenerator:
     get_energy : function
         Function returning energy (GeV) of the neutrinos by successive function
         calls.
+    shadow : bool
+        Whether Earth shadowing effects will be used to reject events.
     ratio : ndarary
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
@@ -57,7 +64,7 @@ class BaseGenerator:
                                  attributes.
 
     """
-    def __init__(self, energy, flavor_ratio=(1,1,1),
+    def __init__(self, energy, shadow=False, flavor_ratio=(1,1,1),
                  interaction_model=NeutrinoInteraction):
         if not callable(energy):
             try:
@@ -68,6 +75,7 @@ class BaseGenerator:
             else:
                 energy = lambda: e
         self.get_energy = energy
+        self.shadow = shadow
         self.ratio = np.array(flavor_ratio)/np.sum(flavor_ratio)
         self.interaction_model = interaction_model
         self.count = 0
@@ -141,7 +149,8 @@ class BaseGenerator:
         References
         ----------
         .. [1] A. Bhattacharya et al, "The Glashow resonance at IceCube."
-            JCAP **1110**, 017 (2011).
+            JCAP **1110**, 017 (2011). :arxiv:`1108.3163`
+            :doi:`10.1088/1475-7516/2011/10/017`
 
         """
         rand_flavor = np.random.rand()
@@ -248,8 +257,10 @@ class BaseGenerator:
         randomly chosen, and its interaction type is also randomly chosen based
         on the branching ratio. Weights the particles according to their
         survival probability through the Earth and their probability of
-        interacting in the ice at their vertex. Currently each `Event` returned
-        consists of only a single `Particle`.
+        interacting in the ice at their vertex. If Earth shadowing has been
+        turned on then particles which don't survive transit through the Earth
+        are skipped, and surviving particles are given a survival weight of 1.
+        Currently each `Event` returned consists of only a single `Particle`.
 
         Returns
         -------
@@ -272,11 +283,24 @@ class BaseGenerator:
                             energy=E, interaction_model=self.interaction_model)
 
         weights = self.get_weights(particle)
-        particle.survival_weight = weights[0]
-        particle.interaction_weight = weights[1]
-        logger.debug("Successfully created %s with survival weight %d and "
-                     +"interaction weight %d", particle, weights[0], weights[1])
-        return Event(particle)
+        if not self.shadow:
+            particle.survival_weight = weights[0]
+            particle.interaction_weight = weights[1]
+            logger.debug("Successfully created %s with survival weight %d and "
+                         +"interaction weight %d", particle, weights[0],
+                         weights[1])
+            return Event(particle)
+        elif np.random.rand() < weights[0]:
+            particle.survival_weight = 1
+            particle.interaction_weight = weights[1]
+            logger.debug("Successfully created %s with survival weight %d and "
+                         +"interaction weight %d", particle, weights[0],
+                         weights[1])
+            return Event(particle)
+        else:
+            # Particle was shadowed by the earth. Try again
+            logger.debug("Particle creation shadowed by the Earth")
+            return self.create_event()
 
 
 class CylindricalGenerator(BaseGenerator):
@@ -296,6 +320,11 @@ class CylindricalGenerator(BaseGenerator):
         Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
         same constant energy. If ``function``, neutrinos are generated with the
         energy returned by successive function calls.
+    shadow : bool, optional
+        Whether Earth shadowing effects should be used to reject events. If
+        ``True`` then neutrinos which don't survive transit through the Earth
+        will be skipped when creating events. If ``False`` then all events are
+        allowed and assigned a weight to scale their probability of occurrence.
     flavor_ratio : array_like, optional
         Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
         tau] neutrino fractions.
@@ -316,6 +345,8 @@ class CylindricalGenerator(BaseGenerator):
     get_energy : function
         Function returning energy (GeV) of the neutrinos by successive function
         calls.
+    shadow : bool
+        Whether Earth shadowing effects will be used to reject events.
     ratio : ndarary
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
@@ -328,11 +359,12 @@ class CylindricalGenerator(BaseGenerator):
                                  attributes.
 
     """
-    def __init__(self, dr, dz, energy, flavor_ratio=(1,1,1),
+    def __init__(self, dr, dz, energy, shadow=False, flavor_ratio=(1,1,1),
                  interaction_model=NeutrinoInteraction):
         self.dr = dr
         self.dz = dz
-        super().__init__(energy=energy, flavor_ratio=flavor_ratio,
+        super().__init__(energy=energy, shadow=shadow,
+                         flavor_ratio=flavor_ratio,
                          interaction_model=interaction_model)
 
     def get_vertex(self):
@@ -460,6 +492,11 @@ class RectangularGenerator(BaseGenerator):
         Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
         same constant energy. If ``function``, neutrinos are generated with the
         energy returned by successive function calls.
+    shadow : bool, optional
+        Whether Earth shadowing effects should be used to reject events. If
+        ``True`` then neutrinos which don't survive transit through the Earth
+        will be skipped when creating events. If ``False`` then all events are
+        allowed and assigned a weight to scale their probability of occurrence.
     flavor_ratio : array_like, optional
         Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
         tau] neutrino fractions.
@@ -484,6 +521,8 @@ class RectangularGenerator(BaseGenerator):
     get_energy : function
         Function returning energy (GeV) of the neutrinos by successive function
         calls.
+    shadow : bool
+        Whether Earth shadowing effects will be used to reject events.
     ratio : ndarary
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
@@ -496,12 +535,13 @@ class RectangularGenerator(BaseGenerator):
                                  attributes.
 
     """
-    def __init__(self, dx, dy, dz, energy, flavor_ratio=(1,1,1),
+    def __init__(self, dx, dy, dz, energy, shadow=False, flavor_ratio=(1,1,1),
                  interaction_model=NeutrinoInteraction):
         self.dx = dx
         self.dy = dy
         self.dz = dz
-        super().__init__(energy=energy, flavor_ratio=flavor_ratio,
+        super().__init__(energy=energy, shadow=shadow,
+                         flavor_ratio=flavor_ratio,
                          interaction_model=interaction_model)
 
     def get_vertex(self):
@@ -573,109 +613,13 @@ class RectangularGenerator(BaseGenerator):
         raise ValueError("Could not determine exit points")
 
 
-
-class CylindricalShadowGenerator(CylindricalGenerator):
+class ShadowGenerator(RectangularGenerator):
     """
-    Class to generate neutrino vertices in a cylindrical ice volume.
+    Class to generate neutrino vertices with Earth shadowing.
 
-    Generates neutrinos in a cylinder with given radius and height. Accounts
-    for Earth shadowing by comparing the neutrino interaction length to the
-    material thickness of the Earth along the neutrino path, and rejecting
-    particles which would interact before reaching the vertex.
-
-    Parameters
-    ----------
-    dr : float
-        Radius of the ice volume. Neutrinos generated within (0, `dr`).
-    dz : float
-        Height of the ice volume in the z-direction. Neutrinos generated within
-        (-`dz`, 0).
-    energy : float or function
-        Energy (GeV) of the neutrinos. If ``float``, all neutrinos have the
-        same constant energy. If ``function``, neutrinos are generated with the
-        energy returned by successive function calls.
-    flavor_ratio : array_like, optional
-        Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
-        tau] neutrino fractions.
-    interaction_model : optional
-        Class to use to describe interactions of the generated particles.
-        Should inherit from (or behave like) the base ``Interaction`` class.
-
-    Attributes
-    ----------
-    count : int
-        Number of neutrinos produced by the generator, including those not
-        returned due to Earth shadowing or other effects.
-    dr : float
-        Radius of the ice volume. Neutrinos generated within (0, `dr`).
-    dz : float
-        Height of the ice volume in the z-direction. Neutrinos generated within
-        (-`dz`, 0).
-    get_energy : function
-        Function returning energy (GeV) of the neutrinos by successive function
-        calls.
-    ratio : ndarary
-        (Normalized) flavor ratio of neutrinos to be generated. Of the form
-        [electron, muon, tau] neutrino fractions.
-    interaction_model : Interaction
-        Class to use to describe interactions of the generated particles.
-
-    See Also
-    --------
-    pyrex.particle.Interaction : Base class for describing neutrino interaction
-                                 attributes.
-
-    """
-    def create_event(self):
-        """
-        Generate a neutrino event in the ice volume.
-
-        Creates a neutrino with a random vertex in the volume, a random
-        direction, and an energy based on ``get_energy``. Particle type is
-        randomly chosen, and its interaction type is also randomly chosen based
-        on the branching ratio. Accounts for Earth shadowing by discarding
-        particles that wouldn't make it to their vertex based on the Earth's
-        thickness along their path. Weights the particles according to their
-        probability of interacting in the ice at their vertex. Currently each
-        `Event` returned consists of only a single `Particle`.
-
-        Returns
-        -------
-        Event
-            Random neutrino event not shadowed by the Earth.
-
-        See Also
-        --------
-        pyrex.Event : Class for storing a tree of `Particle` objects
-                      representing an event.
-        pyrex.Particle : Class for storing particle attributes.
-
-        """
-        self.count += 1
-        vtx = self.get_vertex()
-        u = self.get_direction()
-        E = self.get_energy()
-        particle_id = self.get_particle_type()
-        particle = Particle(particle_id=particle_id, vertex=vtx, direction=u,
-                            energy=E, interaction_model=self.interaction_model)
-
-        weights = self.get_weights(particle)
-        rand_exponential = np.random.exponential()
-        if rand_exponential > weights[0]:
-            particle.survival_weight = 1
-            particle.interaction_weight = weights[1]
-            logger.debug("Successfully created %s with interaction weight %d",
-                         particle, weights[1])
-            return Event(particle)
-        else:
-            # Particle was shadowed by the earth. Try again
-            logger.debug("Particle creation shadowed by the Earth")
-            return self.create_event()
-
-
-class RectangularShadowGenerator(RectangularGenerator):
-    """
-    Class to generate neutrino vertices in a rectangular ice volume.
+    .. deprecated:: 1.8.2
+        `ShadowGenerator` has been replaced by `RectangularGenerator`. The same
+        shadowing behavior can be achieved by providing the `shadow` argument.
 
     Generates neutrinos in a box with given width, length, and height. Accounts
     for Earth shadowing by comparing the neutrino interaction length to the
@@ -722,6 +666,8 @@ class RectangularShadowGenerator(RectangularGenerator):
     get_energy : function
         Function returning energy (GeV) of the neutrinos by successive function
         calls.
+    shadow : bool
+        Whether Earth shadowing effects will be used to reject events.
     ratio : ndarary
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
@@ -732,63 +678,13 @@ class RectangularShadowGenerator(RectangularGenerator):
     --------
     pyrex.particle.Interaction : Base class for describing neutrino interaction
                                  attributes.
-
     """
-    def create_event(self):
-        """
-        Generate a neutrino event in the ice volume.
-
-        Creates a neutrino with a random vertex in the volume, a random
-        direction, and an energy based on ``get_energy``. Particle type is
-        randomly chosen, and its interaction type is also randomly chosen based
-        on the branching ratio. Accounts for Earth shadowing by discarding
-        particles that wouldn't make it to their vertex based on the Earth's
-        thickness along their path. Weights the particles according to their
-        probability of interacting in the ice at their vertex. Currently each
-        `Event` returned consists of only a single `Particle`.
-
-        Returns
-        -------
-        Event
-            Random neutrino event not shadowed by the Earth.
-
-        See Also
-        --------
-        pyrex.Event : Class for storing a tree of `Particle` objects
-                      representing an event.
-        pyrex.Particle : Class for storing particle attributes.
-
-        """
-        self.count += 1
-        vtx = self.get_vertex()
-        u = self.get_direction()
-        E = self.get_energy()
-        particle_id = self.get_particle_type()
-        particle = Particle(particle_id=particle_id, vertex=vtx, direction=u,
-                            energy=E, interaction_model=self.interaction_model)
-
-        weights = self.get_weights(particle)
-        rand_exponential = np.random.exponential()
-        if rand_exponential > weights[0]:
-            particle.survival_weight = 1
-            particle.interaction_weight = weights[1]
-            logger.debug("Successfully created %s with interaction weight %d",
-                         particle, weights[1])
-            return Event(particle)
-        else:
-            # Particle was shadowed by the earth. Try again
-            logger.debug("Particle creation shadowed by the Earth")
-            return self.create_event()
-
-
-
-class ShadowGenerator(RectangularShadowGenerator):
     def __init__(self, dx, dy, dz, energy, flavor_ratio=(1,1,1),
                  interaction_model=NeutrinoInteraction):
-        warnings.warn("The 'ShadowGenerator' class has been renamed to "+
-                      "'RectangularShadowGenerator' and will be removed in "+
+        warnings.warn("The 'ShadowGenerator' class functionality has been "+
+                      "moved to 'RectangularGenerator' and will be removed in "+
                       "a future release", FutureWarning, stacklevel=2)
-        super().__init__(dx=dx, dy=dy, dz=dz, energy=energy,
+        super().__init__(dx=dx, dy=dy, dz=dz, energy=energy, shadow=True,
                          flavor_ratio=flavor_ratio,
                          interaction_model=interaction_model)
 
@@ -839,7 +735,7 @@ class ListGenerator:
             if isinstance(event, Particle):
                 self.events[i] = Event(event)
         self.loop = loop
-        self._index = -1
+        self._index = 0
         self._additional_counts = 0
 
     @property
@@ -851,11 +747,11 @@ class ListGenerator:
         or other effects.
 
         """
-        return self._index + 1 + self._additional_counts
+        return self._index + self._additional_counts
 
     @count.setter
     def count(self, custom_count):
-        self._additional_counts = custom_count - self._index - 1
+        self._additional_counts = custom_count - self._index
 
     def create_event(self):
         """
@@ -880,10 +776,10 @@ class ListGenerator:
             If ``loop`` is ``False`` and the end of the list has been exceeded.
 
         """
-        self._index += 1
         if not self.loop and self._index>=len(self.events):
             raise StopIteration("No more events to be generated")
-        return self.events[self._index%len(self.events)]
+        self._index += 1
+        return self.events[(self._index-1)%len(self.events)]
 
 
 class NumpyFileGenerator:
@@ -927,7 +823,7 @@ class NumpyFileGenerator:
     --------
     This generator only supports `Event` objects containing a single `Particle`
     object. There is currently no way to read from files where an `Event`
-    contains mutliple `Particle` objects with some dependencies.
+    contains multiple `Particle` objects with some dependencies.
 
     See Also
     --------

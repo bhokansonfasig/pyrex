@@ -11,9 +11,10 @@ import numpy as np
 import scipy.signal
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
-from pyrex.custom.ara.antenna import ARAAntennaSystem, HpolBase, VpolBase
+from pyrex.custom.ara.antenna import (ARAAntennaSystem, HPOL_RESPONSE_DATA,
+                                      VPOL_RESPONSE_DATA)
 from .frontends import (pyspice, spice_circuits,
                         basic_envelope_model, bridge_rectifier_envelope_model)
 
@@ -91,6 +92,7 @@ class DipoleTester(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -117,7 +119,7 @@ class DipoleTester(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         temperature=IceModel.temperature(position[2]),
+                         temperature=ice.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)
@@ -127,7 +129,7 @@ class DipoleTester(Antenna):
                                     btype='bandpass', analog=True)
         self.filter_coeffs = (b, a)
 
-    def response(self, frequencies):
+    def frequency_response(self, frequencies):
         """
         Calculate the (complex) frequency response of the antenna.
 
@@ -204,8 +206,13 @@ class EnvelopeSystem(ARAAntennaSystem):
 
     Parameters
     ----------
-    base_antenna : Antenna
-        ``Antenna`` class or subclass to be extended with an ARA front end.
+    response_data : tuple of array_like
+        Tuple containing the response data for the antenna along the theta
+        and phi polarization directions. The first and second elements should
+        contain 3-D arrays of the antenna response model in the theta and phi
+        polarizations, respectively, as a function of frequency (axis 0),
+        zenith (axis 1), and azimuth (axis 2). The remaining elements should be
+        the values of the frequency, zenith, and azimuth axes, respectively.
     name : str
         Name of the antenna.
     position : array_like
@@ -231,7 +238,7 @@ class EnvelopeSystem(ARAAntennaSystem):
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
-        envelope is uesd. If the string contains "analytic", an analytic form
+        envelope is used. If the string contains "analytic", an analytic form
         is used to calculate the circuit output. If the string contains
         "spice", ``ngspice`` is used to calculate the circuit output. The
         default value "analytic" uses an analytic diode bridge circuit.
@@ -265,6 +272,7 @@ class EnvelopeSystem(ARAAntennaSystem):
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -280,12 +288,12 @@ class EnvelopeSystem(ARAAntennaSystem):
     """
     lead_in_time = 25e-9
 
-    def __init__(self, base_antenna, name, position, trigger_threshold,
+    def __init__(self, response_data, name, position, trigger_threshold,
                  time_over_threshold=0, orientation=(0,0,1), amplification=1,
                  amplifier_clipping=1, envelope_amplification=1,
                  envelope_method="analytic", noisy=True,
                  unique_noise_waveforms=10):
-        super().__init__(base_antenna=base_antenna, name=name,
+        super().__init__(response_data=response_data, name=name,
                          position=position, power_threshold=0,
                          orientation=orientation,
                          amplification=amplification,
@@ -539,7 +547,7 @@ class EnvelopeHpol(EnvelopeSystem):
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
-        envelope is uesd. If the string contains "analytic", an analytic form
+        envelope is used. If the string contains "analytic", an analytic form
         is used to calculate the circuit output. If the string contains
         "spice", ``ngspice`` is used to calculate the circuit output. The
         default value "analytic" uses an analytic diode bridge circuit.
@@ -570,6 +578,7 @@ class EnvelopeHpol(EnvelopeSystem):
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -579,7 +588,7 @@ class EnvelopeHpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(base_antenna=HpolBase,
+        super().__init__(response_data=HPOL_RESPONSE_DATA,
                          name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,
@@ -627,7 +636,7 @@ class EnvelopeVpol(EnvelopeSystem):
                         'doubler', 'bridge', 'log amp')}, optional
         String describing the circuit (and calculation method) to be used for
         envelope calculation. If the string contains "hilbert", the hilbert
-        envelope is uesd. If the string contains "analytic", an analytic form
+        envelope is used. If the string contains "analytic", an analytic form
         is used to calculate the circuit output. If the string contains
         "spice", ``ngspice`` is used to calculate the circuit output. The
         default value "analytic" uses an analytic diode bridge circuit.
@@ -658,6 +667,7 @@ class EnvelopeVpol(EnvelopeSystem):
         String describing the circuit (and calculation method) to be used for
         envelope calculation.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -667,7 +677,7 @@ class EnvelopeVpol(EnvelopeSystem):
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
                  envelope_amplification=1, envelope_method="analytic",
                  noisy=True, unique_noise_waveforms=10):
-        super().__init__(base_antenna=VpolBase,
+        super().__init__(response_data=VPOL_RESPONSE_DATA,
                          name=name, position=position,
                          trigger_threshold=trigger_threshold,
                          time_over_threshold=time_over_threshold,

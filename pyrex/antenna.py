@@ -15,7 +15,7 @@ import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal, ThermalNoise, EmptySignal
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +91,7 @@ class Antenna:
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -402,7 +403,7 @@ class Antenna:
         if r==0:
             return 0, 0, 0
         theta = np.arccos(z/r)
-        phi = np.arctan2(y, x)
+        phi = np.arctan2(y, x) % (2*np.pi)
         return r, theta, phi
 
     def directional_gain(self, theta, phi):
@@ -455,7 +456,7 @@ class Antenna:
                      "pyrex.antenna.Antenna")
         return 1
 
-    def response(self, frequencies):
+    def frequency_response(self, frequencies):
         """
         Calculate the (complex) frequency response of the antenna.
 
@@ -479,23 +480,22 @@ class Antenna:
                      "pyrex.antenna.Antenna")
         return np.ones(len(frequencies))
 
-    def receive(self, signal, direction=None, polarization=None,
-                force_real=False):
+    def apply_response(self, signal, direction=None, polarization=None,
+                       force_real=False):
         """
-        Process and store an incoming signal.
+        Process the complete antenna response for an incoming signal.
 
         Processes the incoming signal according to the frequency response of
         the antenna, the efficiency, and the antenna factor. May also apply the
         directionality and the polarization gain depending on the provided
-        parameters. Finally stores the processed signal to the signals list.
-        Subclasses may extend this function, but likely should end with
-        ``super().receive(signal)`` unless planning to fully reimplement the
-        function.
+        parameters. Subclasses may wish to overwrite this function if the
+        full antenna response cannot be divided nicely into the described
+        pieces.
 
         Parameters
         ----------
         signal : Signal
-            Incoming ``Signal`` object to process and store.
+            Incoming ``Signal`` object to process.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal as it reaches
             the antenna. If ``None`` no directional response will be applied.
@@ -506,6 +506,12 @@ class Antenna:
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
             real.
+
+        Returns
+        -------
+        Signal
+            Processed ``Signal`` object after the complete antenna response has
+            been applied. Should have a ``value_type`` of ``voltage``.
 
         Raises
         ------
@@ -520,7 +526,7 @@ class Antenna:
         """
         copy = Signal(signal.times, signal.values,
                       value_type=Signal.Type.voltage)
-        copy.filter_frequencies(self.response, force_real=force_real)
+        copy.filter_frequencies(self.frequency_response, force_real=force_real)
 
         if direction is None:
             d_gain = 1
@@ -546,7 +552,64 @@ class Antenna:
                              +"voltage or field. Given "+str(signal.value_type))
 
         copy *= signal_factor
-        self.signals.append(copy)
+
+        return copy
+
+    def receive(self, signal, direction=None, polarization=None,
+                force_real=False):
+        """
+        Process and store one or more incoming (polarized) signals.
+
+        Processes the incoming signal(s) according to the ``apply_response``
+        method, then stores the total processed signal to the signals list. If
+        more than one signal is given, they should be logically connected as
+        separately polarized portions of the same signal.
+
+        Parameters
+        ----------
+        signal : Signal or array_like
+            Incoming ``Signal`` object(s) to process and store. May be separate
+            polarization representations, but therefore should have the same
+            times.
+        direction : array_like, optional
+            Vector denoting the direction of travel of the signal(s) as they
+            reach the antenna. If ``None`` no directional gain will be applied.
+        polarization : array_like, optional
+            Vector(s) denoting the signal's polarization direction. Number of
+            vectors should match the number of elements in `signal` argument.
+            If ``None`` no polarization gain will be applied.
+        force_real : boolean, optional
+            Whether or not the frequency response should be redefined in the
+            negative-frequency domain to keep the values of the filtered signal
+            real.
+
+        Raises
+        ------
+        ValueError
+            If the number of polarizations does not match the number of signals.
+            Or if the signals do not have the same `times` array.
+
+        See Also
+        --------
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
+        if hasattr(signal, '__len__'):
+            if (not hasattr(polarization, '__len__') or
+                    len(signal)!=len(polarization)):
+                raise ValueError("Must provide the same number of "+
+                                 "polarizations as the number of signals")
+        else:
+            signal = [signal]
+            polarization = [polarization]
+
+        total_signal = sum([
+            self.apply_response(signal=sig, direction=direction,
+                                polarization=pol, force_real=force_real)
+            for sig, pol in zip(signal, polarization)
+        ])
+
+        self.signals.append(total_signal)
 
 
 
@@ -628,6 +691,7 @@ class DipoleAntenna(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -661,7 +725,7 @@ class DipoleAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         temperature=IceModel.temperature(position[2]),
+                         temperature=ice.temperature(position[2]),
                          freq_range=(f_low, f_high), resistance=resistance,
                          unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)
@@ -707,7 +771,7 @@ class DipoleAntenna(Antenna):
         """
         return max(np.abs(signal.values)) > self.threshold
 
-    def response(self, frequencies):
+    def frequency_response(self, frequencies):
         """
         Calculate the (complex) frequency response of the antenna.
 

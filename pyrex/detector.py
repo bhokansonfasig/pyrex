@@ -38,6 +38,7 @@ class AntennaSystem:
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -334,10 +335,10 @@ class AntennaSystem:
         """
         return self.antenna.trigger(signal)
 
-    def receive(self, signal, direction=None, polarization=None,
-                force_real=False):
+    def apply_response(self, signal, direction=None, polarization=None,
+                       force_real=False):
         """
-        Process and store an incoming signal.
+        Process the complete antenna response for an incoming signal.
 
         Processes the incoming signal by passing the call along to the
         ``antenna`` object.
@@ -345,7 +346,7 @@ class AntennaSystem:
         Parameters
         ----------
         signal : Signal
-            Incoming ``Signal`` object to process and store.
+            Incoming ``Signal`` object to process.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal as it reaches
             the antenna. If ``None`` no directional response will be applied.
@@ -357,6 +358,12 @@ class AntennaSystem:
             negative-frequency domain to keep the values of the filtered signal
             real.
 
+        Returns
+        -------
+        Signal
+            Processed ``Signal`` object after the complete antenna response has
+            been applied. Should have a ``value_type`` of ``voltage``.
+
         Raises
         ------
         ValueError
@@ -365,7 +372,49 @@ class AntennaSystem:
 
         See Also
         --------
-        pyrex.Antenna.receive : Process and store an incoming signal.
+        pyrex.Signal : Base class for time-domain signals.
+
+        """
+        return self.antenna.apply_response(signal, direction=direction,
+                                           polarization=polarization,
+                                           force_real=force_real)
+
+    def receive(self, signal, direction=None, polarization=None,
+                force_real=False):
+        """
+        Process and store one or more incoming (polarized) signals.
+
+        Processes the incoming signal(s) by passing the call along to the
+        ``antenna`` object.
+
+        Parameters
+        ----------
+        signal : Signal or array_like
+            Incoming ``Signal`` object(s) to process and store. May be separate
+            polarization representations, but therefore should have the same
+            times.
+        direction : array_like, optional
+            Vector denoting the direction of travel of the signal(s) as they
+            reach the antenna. If ``None`` no directional gain will be applied.
+        polarization : array_like, optional
+            Vector(s) denoting the signal's polarization direction. Number of
+            vectors should match the number of elements in `signal` argument.
+            If ``None`` no polarization gain will be applied.
+        force_real : boolean, optional
+            Whether or not the frequency response should be redefined in the
+            negative-frequency domain to keep the values of the filtered signal
+            real.
+
+        Raises
+        ------
+        ValueError
+            If the number of polarizations does not match the number of signals.
+            Or if the signals do not have the same `times` array.
+
+        See Also
+        --------
+        pyrex.Antenna.receive : Process and store one or more incoming
+                                (polarized) signals.
         pyrex.Signal : Base class for time-domain signals.
 
         """
@@ -422,7 +471,7 @@ class Detector:
     in a vertical line. Then a station could be set up as a subclass of
     `Detector` which sets up multiple instances of the string class at
     different positions. Then a final overarching detector class can subclass
-    `Detector` and set up mutliple instances of the station class at
+    `Detector` and set up multiple instances of the station class at
     different positions. In this example the ``subsets`` of the overarching
     detector class would be the station objects, the ``subsets`` of the station
     objects would be the string objects, and the ``subsets`` of the string
@@ -539,7 +588,7 @@ class Detector:
                 kwargs.pop("antenna_class")
             else:
                 if len(args)<1:
-                    raise TypeError("build_antennas() missing 1 reqiured "+
+                    raise TypeError("build_antennas() missing 1 required "+
                                     "positional argument: 'antenna_class'")
                 antenna_class = args[0]
                 args = args[1:]
@@ -715,7 +764,7 @@ class CombinedDetector(Detector, mirror_set_positions=False):
 
     Designed to allow addition of ``Detector`` and ``Antenna``-like objects
     which can still build all antennas and trigger by smartly passing down
-    keyword arugments to the subsets. Maintains all other properties of the
+    keyword arguments to the subsets. Maintains all other properties of the
     ``Detector`` objects.
 
     Attributes

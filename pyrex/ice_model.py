@@ -1,8 +1,8 @@
 """
 Module containing ice model classes.
 
-The ice model classes contain static and class methods for convenience,
-and parameters of the ice model are set as class attributes.
+Contains models for ice at the South Pole and at Summit Station in Greenland,
+plus a model for ice with uniform index of refraction.
 
 """
 
@@ -21,48 +21,102 @@ class AntarcticIce:
     z should be given as a negative value if it is below the surface of the
     ice.
 
+    Parameters
+    ----------
+    n0 : float, optional
+        Asymptotic index of refraction of the deep ice.
+    k : float, optional
+        Multiplicative factor for the index of refraction parameterization.
+    a : float, optional
+        Exponential factor for the index of refraction parameterization with
+        units of 1/m.
+    valid_range : array_like of float, optional
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction as the top of the ice.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction as the bottom of the ice.
+
     Attributes
     ----------
-    k, a, n0 : float
+    n0, k, a : float
         Parameters of the index of refraction of the ice.
-    thickness : float
-        Thickness of the ice sheet.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     Notes
     -----
-    Mostly based on ice characteristics outlined by Matt Newcomb.
+    Parameterizations mostly based on South Pole ice characteristics outlined
+    by Matt Newcomb [1]_.
+
+    References
+    ----------
+    .. [1] M. Newcomb (2013) http://icecube.wisc.edu/~araproject/radio/
 
     """
-    # Based mostly on sources from http://icecube.wisc.edu/~mnewcomb/radio/
-    k = 0.43
-    a = 0.0132
-    n0 = 1.78
-    thickness = 2850
+    def __init__(self, n0=1.78, k=0.43, a=0.0132, valid_range=(-2850, 0),
+                 index_above=1, index_below=None):
+        self.n0 = n0
+        self.k = k
+        self.a = a
+        self.valid_range = tuple(sorted(valid_range))
+        self._index_above = index_above
+        self._index_below = index_below
 
-    @classmethod
-    def gradient(cls, z):
+    @property
+    def index_above(self):
+        """The index of refraction above the ice's valid range."""
+        if self._index_above is None:
+            return self.index(self.valid_range[1])
+        else:
+            return self._index_above
+
+    @index_above.setter
+    def index_above(self, index):
+        self._index_above = index
+
+    @property
+    def index_below(self):
+        """The index of refraction below the ice's valid range."""
+        if self._index_below is None:
+            return self.index(self.valid_range[0])
+        else:
+            return self._index_below
+
+    @index_below.setter
+    def index_below(self, index):
+        self._index_below = index
+
+    def contains(self, point):
         """
-        Calculates the gradient of the index of refraction at a given depth.
+        Determines if the given point is within the ice's valid range.
 
         Parameters
         ----------
-        z : float
-            (Negative-valued) depth (m) in the ice.
+        point : array_like
+            Point to be tested.
 
         Returns
         -------
-        float
-            Gradient of the index of refraction at `depth`.
+        bool
+            Whether `point` is cointained within the ice model.
 
         """
-        return np.array([0, 0, -cls.k * cls.a * np.exp(cls.a * z)])
+        return self.valid_range[0]<=point[2]<=self.valid_range[1]
 
-    @classmethod
-    def index(cls, z):
+    def index(self, z):
         """
         Calculates the index of refraction of the ice at a given depth.
 
-        Index of refraciton goes as n(z)=n0-k*exp(az). Supports passing an
+        Index of refraction goes as n(z)=n0-k*exp(az). Supports passing an
         array of depths.
 
         Parameters
@@ -73,29 +127,48 @@ class AntarcticIce:
         Returns
         -------
         array_like
-            Indices of refraction at `depth` values.
+            Indices of refraction at `z` values.
 
         """
         try:
             indices = np.ones(len(z))
         except TypeError:
-            # z is a scalar, so just return one value
-            if z>0:
-                return 1
+            if z<self.valid_range[0]:
+                return self.index_below
+            elif z>self.valid_range[1]:
+                return self.index_above
             else:
-                return cls.n0 - cls.k * np.exp(cls.a * z)
+                return self.n0 - self.k * np.exp(self.a * z)
 
-        indices[z<=0] = cls.n0 - cls.k * np.exp(cls.a * z[z<=0])
-
+        indices = self.n0 - self.k * np.exp(self.a * np.asarray(z))
+        indices[z<self.valid_range[0]] = self.index_below
+        indices[z>self.valid_range[1]] = self.index_above
         return indices
 
-    @classmethod
-    def depth_with_index(cls, n):
+    def gradient(self, z):
+        """
+        Calculates the gradient of the index of refraction at a given depth.
+
+        Parameters
+        ----------
+        z : float
+            (Negative-valued) depth (m) in the ice.
+
+        Returns
+        -------
+        ndarray
+            Gradient of the index of refraction at `z`.
+
+        """
+        return np.array([0, 0, -self.k * self.a * np.exp(self.a * z)])
+
+
+    def depth_with_index(self, n):
         """
         Calculates the corresponding depth for a given index of refraction.
 
         Assumes that the function for the index of refraction is invertible.
-        Index of refraciton goes as n(z)=n0-k*exp(az), so the inversion goes as
+        Index of refraction goes as n(z)=n0-k*exp(az), so the inversion goes as
         z(n)=log((n0-n)/k)/a. Supports passing an array of indices.
 
         Parameters
@@ -108,19 +181,28 @@ class AntarcticIce:
         array_like
             (Negative-valued) depths corresponding to the given `n` values.
 
+        Notes
+        -----
+        For indices of refraction outside of the range of indices in the ice,
+        returns the bounds of the ice. For example, if given an index of
+        refraction less than the minimum in the valid range, the upper boundary
+        depth will be returned.
+
         """
-        n0 = cls.index(0)
         try:
             depths = np.zeros(len(n))
         except TypeError:
             # n is a scalar, so just return one value
-            if n<=n0:
-                return 0
+            if n<self.index(self.valid_range[1]):
+                return self.valid_range[1]
+            elif n>self.index(self.valid_range[0]):
+                return self.valid_range[0]
             else:
-                return np.log((cls.n0-n)/cls.k) / cls.a
+                return np.log((self.n0-n)/self.k) / self.a
 
-        depths[n>n0] = np.log((cls.n0-n[n>n0])/cls.k) / cls.a
-
+        depths = np.log((self.n0-np.asarray(n))/self.k) / self.a
+        depths[n<self.index(self.valid_range[1])] = self.valid_range[1]
+        depths[n>self.index(self.valid_range[0])] = self.valid_range[0]
         return depths
 
     @staticmethod
@@ -136,7 +218,16 @@ class AntarcticIce:
         Returns
         -------
         array_like
-            Temperatures (K) at `depth` values.
+            Temperatures (K) at `z` values.
+
+        Notes
+        -----
+        Based on a polynomial fit by Matt Newcomb [1]_.
+
+        References
+        ----------
+        .. [1] M. Newcomb (2013)
+            https://icecube.wisc.edu/~araproject/radio/temp/
 
         """
         z_km = -0.001 * z
@@ -144,7 +235,7 @@ class AntarcticIce:
         return c_temp + 273.15
 
     @staticmethod
-    def __atten_coeffs(t, f):
+    def _atten_coeffs(t, f):
         """
         Calculates attenuation coefficients for temperature and frequency.
 
@@ -167,6 +258,7 @@ class AntarcticIce:
 
         Notes
         -----
+        Based on code from Besson et al as reported by Matt Newcomb [1]_.
         The shape of the output arrays is determined by the shapes of the input
         arrays. If both inputs are scalar, the outputs will be scalar. If one
         input is scalar and the other is a 1D array, the outputs will be 1D
@@ -174,9 +266,14 @@ class AntarcticIce:
         where each row corresponds to a single temperature and each column
         corresponds to a single frequency.
 
+        References
+        ----------
+        .. [1] M. Newcomb (2013)
+            http://icecube.wisc.edu/~araproject/radio/atten/
+
+
         """
-        # Based on code from Besson, et.al. referenced at
-        # http://icecube.wisc.edu/~mnewcomb/radio/atten/
+        # Based on the code from Besson, et.al.
         # but simplified significantly since w1=0
 
         t_C = t - 273.15
@@ -219,8 +316,7 @@ class AntarcticIce:
 
         return a, b
 
-    @classmethod
-    def attenuation_length(cls, z, f):
+    def attenuation_length(self, z, f):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
@@ -238,6 +334,7 @@ class AntarcticIce:
 
         Notes
         -----
+        Based on code from Besson et al as reported by Matt Newcomb [1]_.
         The shape of the output array is determined by the shapes of the input
         arrays. If both inputs are scalar, the output will be scalar. If one
         input is scalar and the other is a 1D array, the output will be a 1D
@@ -245,90 +342,182 @@ class AntarcticIce:
         where each row corresponds to a single depth and each column
         corresponds to a single frequency.
 
+        References
+        ----------
+        .. [1] M. Newcomb (2013)
+            http://icecube.wisc.edu/~araproject/radio/atten/
+
         """
-        # Supress RuntimeWarnings when f==0 temporarily
+        # Suppress RuntimeWarnings when f==0 temporarily
         with np.errstate(divide='ignore'):
             # w is log of frequency in GHz
             w = np.log(f*1e-9)
 
         # Temperature in kelvin
-        t = cls.temperature(z)
+        t = self.temperature(z)
 
-        a, b = cls.__atten_coeffs(t, f)
+        a, b = self._atten_coeffs(t, f)
         # a and b will be scalar, 1-D, or 2-D as necessary based on t and f
 
         return np.exp(-(a + b * w))
 
 
 
-class NewcombIce(AntarcticIce):
+class UniformIce:
     """
-    Class describing the ice at the south pole.
+    Class describing ice with a uniform index of refraction.
 
-    Uses an attenuation length based on Matt Newcomb's fit. For convenience,
-    consists of static methods and class methods, so creating an instance of
-    the class may not be necessary. In all methods, the depth z should be given
-    as a negative value if it is below the surface of the ice.
+    In all methods, the depth z should be given as a negative value if it is
+    below the surface of the ice.
+
+    Parameters
+    ----------
+    index : float
+        Index of refraction of the ice.
+    valid_range : array_like of float
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction.
 
     Attributes
     ----------
-    k, a, n0 : float
-        Parameters of the index of refraction of the ice.
-    thickness : float
-        Thickness of the ice sheet.
-
-    Warnings
-    --------
-    The `attenuation_length` method if this class does not currently work
-    properly. This class should not be used until it is fixed.
-
-    Notes
-    -----
-    Mostly based on ice characteristics outlined by Matt Newcomb.
+    n : float
+        Index of refraction of the ice.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     """
-    k = 0.438
-    a = 0.0132
-    n0 = 1.32 + 0.438
+    def __init__(self, index, valid_range=(-2850, 0), index_above=1,
+                 index_below=None):
+        self.n = index
+        self.valid_range = tuple(sorted(valid_range))
+        self._index_above = index_above
+        self._index_below = index_below
 
-    @classmethod
-    def attenuation_length(cls, z, f):
+    @property
+    def index_above(self):
+        """The index of refraction above the ice's valid range."""
+        if self._index_above is None:
+            return self.n
+        else:
+            return self._index_above
+
+    @index_above.setter
+    def index_above(self, index):
+        self._index_above = index
+
+    @property
+    def index_below(self):
+        """The index of refraction below the ice's valid range."""
+        if self._index_below is None:
+            return self.n
+        else:
+            return self._index_below
+
+    @index_below.setter
+    def index_below(self, index):
+        self._index_below = index
+
+    def contains(self, point):
         """
-        Calculates attenuation lengths for given depths and frequencies.
+        Determines if the given point is within the ice's valid range.
+
+        Parameters
+        ----------
+        point : array_like
+            Point to be tested.
+
+        Returns
+        -------
+        bool
+            Whether `point` is cointained within the ice model.
+
+        """
+        return self.valid_range[0]<=point[2]<=self.valid_range[1]
+
+    def index(self, z):
+        """
+        Calculates the index of refraction of the ice at a given depth.
+
+        Supports passing an array of depths. For depths outside of the ice
+        range, returns `index_below` or `index_above`.
 
         Parameters
         ----------
         z : array_like
             (Negative-valued) depths (m) in the ice.
-        f : array_like
-            Frequencies (MHz) of the signal.
 
         Returns
         -------
         array_like
-            Attenuation lengths for the given parameters.
-
-        Warnings
-        --------
-        This method does not currently work properly. Instead the Bogorodsky
-        attenuation in the `AntarcticIce` class should be used.
-
-        This method does not currently support passing both inputs as 1D arrays
-        the way `AntarcticIce.attenuation_length` does.
-
-        Notes
-        -----
-        The shape of the output array is determined by the shapes of the input
-        arrays. If both inputs are scalar, the output will be scalar. If one
-        input is scalar and the other is a 1D array, the output will be a 1D
-        array.
+            Indices of refraction at `z` values.
 
         """
-        temp = cls.temperature(z)
-        a = 5.03097 * np.exp(0.134806 * temp)
-        b = 0.172082 + temp + 10.629
-        c = -0.00199175 * temp - 0.703323
-        return 1701 / (a + b * (0.001*f)**(c+1))
+        try:
+            indices = np.ones(len(z)) * self.n
+        except TypeError:
+            if z<self.valid_range[0]:
+                return self.index_below
+            elif z>self.valid_range[1]:
+                return self.index_above
+            else:
+                return self.n
+
+        indices[z<self.valid_range[0]] = self.index_below
+        indices[z>self.valid_range[1]] = self.index_above
+        return indices
+
+    def gradient(self, z):
+        """
+        Calculates the gradient of the index of refraction at a given depth.
+
+        Parameters
+        ----------
+        z : float
+            (Negative-valued) depth (m) in the ice.
+
+        Returns
+        -------
+        ndarray
+            Gradient of the index of refraction at `z`.
+
+        """
+        return np.array([0, 0, 0])
+
+    def depth_with_index(self, n):
+        """
+        Calculates the corresponding depth for a given index of refraction.
+
+        Invalid for uniform ice as all depths have the same index.
+
+        Parameters
+        ----------
+        n : array_like
+            Indices of refraction.
+
+        Returns
+        -------
+        array_like
+            (Negative-valued) depths corresponding to the given `n` values.
+
+        """
+        raise NotImplementedError("depth_with_index is invalid for "+
+                                  self.__class__.__name__)
+
+    # Use some of the same methods from AntarcticIce without being a subclass
+    temperature = staticmethod(AntarcticIce.temperature)
+    _atten_coeffs = staticmethod(AntarcticIce._atten_coeffs)
+    attenuation_length = AntarcticIce.attenuation_length
 
 
 
@@ -341,21 +530,38 @@ class ArasimIce(AntarcticIce):
     not be necessary. In all methods, the depth z should be given as a negative
     value if it is below the surface of the ice.
 
+    Parameters
+    ----------
+    n0 : float, optional
+        Asymptotic index of refraction of the deep ice.
+    k : float, optional
+        Multiplicative factor for the index of refraction parameterization.
+    a : float, optional
+        Exponential factor for the index of refraction parameterization with
+        units of 1/m.
+    valid_range : array_like of float, optional
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction as the top of the ice.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction as the bottom of the ice.
+
     Attributes
     ----------
-    k, a, n0 : float
+    n0, k, a : float
         Parameters of the index of refraction of the ice.
-    thickness : float
-        Thickness of the ice sheet.
-    atten_depths, atten_lengths : list
-        Depths and corresponding attenuation lengths to be interpolated in the
-        `attenuation_length` calculation.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
 
     """
-    k = 0.43
-    a = 0.0132
-    n0 = 1.78
-
     atten_depths = [
         72.7412, 76.5697, 80.3982, 91.8836, 95.7121, 107.198, 118.683,
         133.997, 153.139, 179.939, 206.738, 245.023, 298.622, 356.049,
@@ -378,8 +584,7 @@ class ArasimIce(AntarcticIce):
         285.333, 264,     242.667, 221.333
     ]
 
-    @classmethod
-    def attenuation_length(cls, z, f):
+    def attenuation_length(self, z, f):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
@@ -408,7 +613,7 @@ class ArasimIce(AntarcticIce):
         corresponds to a single frequency.
 
         """
-        lengths = np.interp(-z, cls.atten_depths, cls.atten_lengths)
+        lengths = np.interp(-z, self.atten_depths, self.atten_lengths)
 
         if isinstance(z, np.ndarray) and isinstance(f, np.ndarray):
             # z and f are both arrays, so return 2-D array where each
@@ -427,5 +632,171 @@ class ArasimIce(AntarcticIce):
 
 
 
+class GreenlandIce(AntarcticIce):
+    """
+    Class describing the ice at Summit Station in Greenland.
+
+    For convenience, consists of static methods and class methods, so creating
+    an instance of the class may not be necessary. In all methods, the depth
+    z should be given as a negative value if it is below the surface of the
+    ice.
+
+    Parameters
+    ----------
+    n0 : float, optional
+        Asymptotic index of refraction of the deep ice.
+    k : float, optional
+        Multiplicative factor for the index of refraction parameterization.
+    a : float, optional
+        Exponential factor for the index of refraction parameterization with
+        units of 1/m.
+    valid_range : array_like of float, optional
+        Range of depths over which the uniform index of refraction applies.
+        Assumed to have two elements where the first value is lower (deeper,
+        more negative) than the second.
+    index_above : float or None, optional
+        Index of refraction above the ice region. If `None`, uses the same
+        index of refraction as the top of the ice.
+    index_below : float or None, optional
+        Index of refraction below the ice region. If `None`, uses the same
+        index of refraction as the bottom of the ice.
+
+    Attributes
+    ----------
+    n0, k, a : float
+        Parameters of the index of refraction of the ice.
+    valid_range : tuple
+        Range of depths over which the ice model is valid. Consists of two
+        elements where the first value is lower (deeper, more negative) than
+        the second.
+    index_above
+    index_below
+
+    Notes
+    -----
+    Index of refraction parameterization based on a slightly altered version
+    of the density parameterization at Summit Station [1]_. The altered version
+    ignores the break at small depths in order to have a uniform index of
+    refraction parameterization matching the form of the Antarctic index.
+    The temperature and attenuation length parameterizations are also based on
+    parameterizations defined for Summit Station [2]_.
+
+    References
+    ----------
+    .. [1] C. Deaconu et al, "Measurements and modeling of near-surface radio
+        propagation in glacial ice and implications for neutrino experiments."
+        Physical Review D **98**, 043010 (2018). :arxiv:`1805.12576`
+        :doi:`10.1103/PhysRevD.98.043010`
+    .. [2] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
+        Attenuation in Ice at Summit Station, Greenland." Journal of Glaciology
+        **61**, no. 229, 1005-1011 (2015). :doi:`10.3189/2015JoG15J057`
+
+    """
+    def __init__(self, n0=1.775, k=0.448, a=0.0247, valid_range=(-3000, 0),
+                 index_above=1, index_below=None):
+        super().__init__(n0=n0, k=k, a=a,
+                         valid_range=valid_range,
+                         index_above=index_above,
+                         index_below=index_below)
+
+    @staticmethod
+    def temperature(z):
+        """
+        Calculates the temperature of the ice at a given depth.
+
+        Parameters
+        ----------
+        z : array_like
+            (Negative-valued) depths (m) in the ice.
+
+        Returns
+        -------
+        array_like
+            Temperatures (K) at `z` values.
+
+        Notes
+        -----
+        Based on a polynomial fit of the GRIP borehole data [1]_.
+
+        References
+        ----------
+        .. [1] Greenland Ice Core Project (GRIP) (1994)
+            ftp://ftp.ncdc.noaa.gov/pub/data/paleo/icecore/greenland/summit/grip/physical/griptemp.txt
+
+        """
+        z_km = -0.001 * z
+        c_temp = -31.771 + z_km*(-0.32485 + z_km*(6.7427 + z_km*(-11.471 + z_km*(5.9122 - 0.84945*z_km))))
+        return c_temp + 273.15
+
+    def attenuation_length(self, z, f):
+        """
+        Calculates attenuation lengths for given depths and frequencies.
+
+        Parameters
+        ----------
+        z : array_like
+            (Negative-valued) depths (m) in the ice.
+        f : array_like
+            Frequencies (Hz) of the signal.
+
+        Returns
+        -------
+        array_like
+            Attenuation lengths for the given parameters.
+
+        Notes
+        -----
+        Attenuation length based on the measurement at 75 MHz [1]_, then
+        extrapolated in depth based on the temperature profile of the ice and
+        extrapolated in frequency based on a linear slope (as outlined in the
+        reference paper).
+        The shape of the output array is determined by the shapes of the input
+        arrays. If both inputs are scalar, the output will be scalar. If one
+        input is scalar and the other is a 1D array, the output will be a 1D
+        array. If both inputs are 1D arrays, the output will be a 2D array
+        where each row corresponds to a single depth and each column
+        corresponds to a single frequency.
+
+        References
+        ----------
+        .. [2] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
+            Attenuation in Ice at Summit Station, Greenland." Journal of
+            Glaciology **61**, no. 229, 1005-1011 (2015).
+
+        """
+        # Temperature at the relevant depths
+        t = self.temperature(z)
+        t_C = t - 273.15
+
+        # Parameterization of attenuation length at 75 MHz based on the ice
+        # temperature profile
+        alen_75 = 10**(-1.736e-2*t_C+2.5134)
+
+        # Attenuation lengths at different frequencies are linearly
+        # extrapolated from the 75 MHz value down to some minimum length
+        min_alen = 1
+
+        if isinstance(z, np.ndarray) and isinstance(f, np.ndarray):
+            # z and f are both arrays, so return 2-D array of lengths
+            # where each row is a single z and each column is a single f
+            # alen = np.zeros((len(t), len(f)))
+            alen = -0.55e-6 * (f - 75e6) + alen_75[:, np.newaxis]
+            alen[alen<min_alen] = min_alen
+
+        else:
+            # If either z and/or f is a scalar, numpy will return an array or
+            # scalar to match the dimensionality
+            alen = -0.55e-6 * (f - 75e6) + alen_75
+
+        # Enforce the minimum attenuation length
+        if isinstance(alen, np.ndarray):
+            alen[alen<min_alen] = min_alen
+        elif alen<min_alen:
+            alen = min_alen
+
+        return alen
+
+
+
 # Preferred ice model:
-IceModel = AntarcticIce
+ice = AntarcticIce()

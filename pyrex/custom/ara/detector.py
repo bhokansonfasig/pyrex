@@ -6,11 +6,14 @@ types and the detector grid can be made up of stations or strings.
 
 """
 
+import logging
 import numpy as np
 from pyrex.signals import Signal
 from pyrex.detector import Detector
-from pyrex.ice_model import IceModel
+from pyrex.ice_model import ice
 from .antenna import HpolAntenna, VpolAntenna
+
+logger = logging.getLogger(__name__)
 
 
 def convert_hex_coords(hex_coords, unit=1):
@@ -416,7 +419,7 @@ class PhasedArrayString(Detector):
             else:
                 # Calculate delays based on elevation angles
                 thetas = np.radians(angles)
-                n = np.mean([IceModel.index(ant.position[2]) for ant in self])
+                n = np.mean([ice.index(ant.position[2]) for ant in self])
                 v = 3e8 / n
                 delays = dz / v * np.sin(thetas)
 
@@ -538,7 +541,7 @@ class RegularStation(Detector):
     Notes
     -----
     This class is designed to have string-like objects (which are subclasses of
-    ``Detector``) as its `subsets`. Then whenver an object of this class is
+    ``Detector``) as its `subsets`. Then whenever an object of this class is
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
@@ -703,7 +706,7 @@ class AlbrechtStation(Detector):
     Notes
     -----
     This class is designed to have string-like objects (which are subclasses of
-    ``Detector``) as its `subsets`. Then whenver an object of this class is
+    ``Detector``) as its `subsets`. Then whenever an object of this class is
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
@@ -923,9 +926,9 @@ class HexagonalGrid(Detector):
     Notes
     -----
     This class is designed to have station-like or string-like objects (which
-    are subclasses of ``Detector``) as its `subsets`. Then whenver an object of
-    this class is iterated, all the antennas of its strings will be yielded as
-    in a 1D list.
+    are subclasses of ``Detector``) as its `subsets`. Then whenever an object
+    of this class is iterated, all the antennas of its strings will be yielded
+    as in a 1D list.
 
     """
     def set_positions(self, stations=1, station_separation=2000,

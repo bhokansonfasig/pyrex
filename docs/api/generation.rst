@@ -7,12 +7,11 @@ Event Generators (:mod:`pyrex.generation`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     BaseGenerator
     CylindricalGenerator
     RectangularGenerator
-    CylindricalShadowGenerator
-    RectangularShadowGenerator
     ShadowGenerator
     ListGenerator
     NumpyFileGenerator
