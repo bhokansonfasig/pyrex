@@ -11,15 +11,16 @@ pyrex.custom.ara.antenna.ARAAntenna
       .. autosummary::
          :toctree:
       
+         ARAAntenna.apply_response
          ARAAntenna.clear
          ARAAntenna.directional_gain
+         ARAAntenna.directional_response
+         ARAAntenna.frequency_response
          ARAAntenna.full_waveform
-         ARAAntenna.generate_directionality_gains
          ARAAntenna.is_hit_during
          ARAAntenna.make_noise
          ARAAntenna.polarization_gain
          ARAAntenna.receive
-         ARAAntenna.response
          ARAAntenna.set_orientation
          ARAAntenna.trigger
 

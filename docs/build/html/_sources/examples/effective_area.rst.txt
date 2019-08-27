@@ -27,14 +27,14 @@ In this example we will calculate the effective area of a detector over a range 
 
     # Now set up a neutrino generator for each energy. We'll use unrealistically
     # small volumes to increase the chance of triggering.
-    generators = [pyrex.CylindricalShadowGenerator(dr=1000, dz=1000, energy=energy)
+    generators = [pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=energy)
                   for energy in energies]
 
     # And then set up the event kernels for each energy. Let's use the ArasimIce
     # class as our ice model since it calculates attenuations faster at the loss
     # of some accuracy.
     kernels = [pyrex.EventKernel(generator=gen, antennas=detector,
-                                 ice_model=pryex.ice_model.ArasimIce)
+                                 ice_model=pyrex.ice_model.ArasimIce())
                for gen in generators]
 
     # Now run each kernel and record the number of events from each that triggered
@@ -63,7 +63,7 @@ In this example we will calculate the effective area of a detector over a range 
     # Now that we have the trigger counts for each energy, we can calculate the
     # effective volumes by scaling the trigger probability by the generation volume.
     # Errors are calculated assuming poisson counting statistics.
-    generation_volumes = np.ones(4)*1000*1000*1000
+    generation_volumes = np.ones(4)*(np.pi*1000**2)*1000
     effective_volumes = triggers / n_events * generation_volumes
     volume_errors = np.sqrt(triggers) / n_events * generation_volumes
 
@@ -77,7 +77,7 @@ In this example we will calculate the effective area of a detector over a range 
     plt.ylabel("Effective Volume (km^3)")
     plt.show()
 
-    # Then from the effecitve volumes, we can calculate the effective areas.
+    # Then from the effective volumes, we can calculate the effective areas.
     # The effective area is the probability interaction in the ice volume times the
     # effective volume. The probability of interaction in the ice volume is given by
     # the interaction cross section times the density of the ice. Calculate the

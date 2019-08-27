@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.flatten &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.internal_functions.flatten &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,15 +23,16 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
-    <link rel="next" title="pyrex.internal_functions.mirror_func" href="pyrex.internal_functions.mirror_func.html" >
-    <link rel="prev" title="pyrex.internal_functions.normalize" href="pyrex.internal_functions.normalize.html" > 
+    <link rel="next" title="pyrex.internal_functions.complex_interp" href="pyrex.internal_functions.complex_interp.html" >
+    <link rel="prev" title="pyrex.internal_functions.get_from_enum" href="pyrex.internal_functions.get_from_enum.html" > 
   </head>
   <body>
 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
+          <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
     </ul>
               
               
@@ -70,11 +71,11 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="pyrex.internal_functions.mirror_func.html" title="pyrex.internal_functions.mirror_func"
+        <a href="pyrex.internal_functions.complex_interp.html" title="pyrex.internal_functions.complex_interp"
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="pyrex.internal_functions.normalize.html" title="pyrex.internal_functions.normalize"
+        <a href="pyrex.internal_functions.get_from_enum.html" title="pyrex.internal_functions.get_from_enum"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -94,34 +95,27 @@
 <h1>pyrex.internal_functions.flatten<a class="headerlink" href="#pyrex-internal-functions-flatten" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="pyrex.internal_functions.flatten">
-<code class="descclassname">pyrex.internal_functions.</code><code class="descname">flatten</code><span class="sig-paren">(</span><em>iterator</em>, <em>dont_flatten=()</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.flatten" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pyrex.internal_functions.</code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">iterator</em>, <em class="sig-param">dont_flatten=()</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.flatten" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flattens an iterator to iterate over all elements individually.</p>
 <p>Flattens all iterable elements in the given iterator recursively and
 yields the resulting flat iterator. Can optionally not flatten certain
 classes. Will not flatten strings or bytes to avoid recursion errors.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>iterator</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iterable object</span></dt>
-<dd><p class="first last">Iterable object to flatten.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>iterator</strong><span class="classifier">iterable object</span></dt><dd><p>Iterable object to flatten.</p>
 </dd>
-<dt><strong>dont_flatten</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple_like, optional</span></dt>
-<dd><p class="first last">Tuple (or similar) of classes which should not be flattened.</p>
+<dt><strong>dont_flatten</strong><span class="classifier">tuple_like, optional</span></dt><dd><p>Tuple (or similar) of classes which should not be flattened.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>element</strong> <span class="classifier-delimiter">:</span> <span class="classifier">any</span></dt>
-<dd><p class="first last">Each element of <em class="xref py py-obj">iterator</em> with sub-iterators expanded out.</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>element</strong><span class="classifier">any</span></dt><dd><p>Each element of <em class="xref py py-obj">iterator</em> with sub-iterators expanded out.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Since <code class="docutils literal notranslate"><span class="pre">str</span></code> and <code class="docutils literal notranslate"><span class="pre">bytes</span></code> objects are always considered iterable despite
 their length, these objects will not be flattened and will remain intact.</p>
@@ -155,7 +149,7 @@ iterator of that class will not be flattened either (see examples).</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -224,10 +218,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

@@ -3,4 +3,4 @@ pyrex.Particle.weight
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: Particle.weight
+.. autoproperty:: Particle.weight

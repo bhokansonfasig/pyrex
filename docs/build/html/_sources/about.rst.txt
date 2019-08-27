@@ -1,20 +1,23 @@
 About PyREx
 ***********
 
-PyREx (\ **Py**\ thon package for an IceCube **R**\ adio **Ex**\ tension) is, as its name suggests, a Python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
-The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANNA collaborations).
+PyREx (\ **Py**\ thon package for **R**\ adio **Ex**\ periments) is a Python package designed to simulate the measurement of Askaryan pulses via in-ice radio antenna arrays.
+The code was written for the ARA collaboration with considerations for future radio arrays.
+As such, the package is designed to be highly modular so that it can easily be used for other radio projects (e.g. ARIANNA, RNO, and IceCube Gen2).
 
 
 Installation
 ============
 
-The easiest way to get the PyREx package is using ``pip`` as follows::
+The easiest way to get the PyREx package is using ``pip`` as follows:
+
+.. code-block:: shell
 
     pip install git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
 
 PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+, which should be automatically installed when installing via ``pip``.
 
-Alternatively, you can download the code from https://github.com/bhokansonfasig/pyrex and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory.
+Alternatively, you can download the code from https://github.com/bhokansonfasig/pyrex/ and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory.
 PyREx is not currently available on PyPI, so a simple ``pip install pyrex`` will not have the intended effect.
 
 
@@ -27,12 +30,11 @@ The most basic simulation can be produced as follows:
 
 First, import the package::
 
-    import pryex
+    import pyrex
 
 Then, create a particle generator object that will produce random particles in a cylinder with radius and depth of 1 km and with a fixed energy of 100 PeV::
 
-    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
-                                                          energy=1e8)
+    particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
 
 An array of antennas that represent the detector is also needed. The base :class:`Antenna` class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical "string" of four antennas with no noise::
 
@@ -73,7 +75,7 @@ distance                meters (m)
 **material thickness**  **grams per square centimeter (g/cm^2)**
 temperature             kelvin (K)
 **energy**              **gigaelectronvolts (GeV)**
-resistance              ohms (Ω)
+resistance              ohms
 voltage                 volts (V)
 electric field          volts per meter (V/m)
 ======================= ========================================

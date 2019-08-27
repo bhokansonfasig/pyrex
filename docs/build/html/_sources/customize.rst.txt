@@ -1,11 +1,21 @@
 .. _custom-package:
 
+.. currentmodule:: pyrex
+
 Custom Sub-Package
 ******************
 
 While the PyREx package provides a basis for simulation, the real benefits come in customizing the analysis for different purposes. To this end the custom sub-package allows for plug-in style modules to be distributed for different collaborations.
 
-By default PyREx comes with custom modules for IREX (IceCube Radio Extension) and ARA (Askaryan Radio Array) accessible at :mod:`pyrex.custom.irex` and :mod:`pyrex.custom.ara`, respectively. More information about these modules can be found in their respective sections below.
+By default PyREx comes with a few custom modules included, listed below. More information about each of these modules can be found in their respective API sections:
+
+* :ref:`custom-ara`
+
+* :ref:`custom-arianna`
+
+* :ref:`custom-irex`
+
+* :ref:`custom-layered_ice`
 
 Other institutions and research groups are encouraged to create their own custom modules to integrate with PyREx. These modules have full access to PyREx as if they were a native part of the package. When PyREx is loaded it automatically scans for these custom modules in certain parts of the filesystem and includes any modules that it can find.
 The first place searched is the ``custom`` directory in the PyREx package itself. Next, if a ``.pyrex-custom`` directory exists in the user's home directory (note the leading ``.``), its subdirectories are searched for ``custom`` directories and any modules in these directories are included. Finally, if a ``pyrex-custom`` directory exists in the current working directory (this time without the leading ``.``), its subdirectories are similarly scanned for modules inside ``custom`` directories. Note that if any name-clashing occurs, the first result found takes precedence (without warning). Additionally, none of these ``custom`` directories should contain an ``__init__.py`` file, or else the plug-in system may not work (For more information on the implementation, see PEP 420 and/or David Beazley's 2015 PyCon talk on Modules and Packages at https://youtu.be/0oTh1CXRaQ0?t=1h25m45s).
@@ -53,21 +63,6 @@ As an example, in the following filesystem layout (which is not meant to reflect
     |   |-- custom/
     |   |   |-- my_analysis.py
 
-
-ARA Custom Module
-=================
-
-.. include:: custom/ara.rst
-
-ARIANNA Custom Module
-=================
-
-.. include:: custom/arianna.rst
-
-IREX Custom Module
-==================
-
-.. include:: custom/irex.rst
 
 Build Your Own Custom Module
 ============================

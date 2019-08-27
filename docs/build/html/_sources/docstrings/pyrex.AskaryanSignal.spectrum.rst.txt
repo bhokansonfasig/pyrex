@@ -3,4 +3,4 @@ pyrex.AskaryanSignal.spectrum
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: AskaryanSignal.spectrum
+.. autoproperty:: AskaryanSignal.spectrum

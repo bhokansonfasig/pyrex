@@ -3,4 +3,4 @@ pyrex.NeutrinoInteraction.kind
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: NeutrinoInteraction.kind
+.. autoproperty:: NeutrinoInteraction.kind

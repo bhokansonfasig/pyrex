@@ -3,4 +3,4 @@ pyrex.AskaryanSignal.frequencies
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: AskaryanSignal.frequencies
+.. autoproperty:: AskaryanSignal.frequencies

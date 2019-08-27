@@ -7,8 +7,9 @@ Ice Models (:mod:`pyrex.ice_model`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     AntarcticIce
-    NewcombIce
+    UniformIce
     ArasimIce
-    IceModel
+    GreenlandIce

@@ -11,6 +11,7 @@ pyrex.custom.irex.EnvelopeVpol
       .. autosummary::
          :toctree:
       
+         EnvelopeVpol.apply_response
          EnvelopeVpol.clear
          EnvelopeVpol.envelopeless_front_end
          EnvelopeVpol.front_end

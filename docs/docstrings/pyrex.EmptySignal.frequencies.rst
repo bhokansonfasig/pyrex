@@ -3,4 +3,4 @@ pyrex.EmptySignal.frequencies
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: EmptySignal.frequencies
+.. autoproperty:: EmptySignal.frequencies

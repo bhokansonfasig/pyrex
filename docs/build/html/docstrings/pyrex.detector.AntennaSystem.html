@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.detector.AntennaSystem &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.detector.AntennaSystem &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="High-level Detectors (pyrex.detector)" href="../api/detector.html" >
     <link rel="next" title="pyrex.detector.Detector" href="pyrex.detector.Detector.html" >
     <link rel="prev" title="High-level Detectors (pyrex.detector)" href="../api/detector.html" > 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/detector.html" accesskey="U">High-level Detectors (<code class="docutils literal notranslate"><span class="pre">pyrex.detector</span></code>)</a></li> 
+          <li class="active"><a href="../api/detector.html" accesskey="U">High-level Detectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.detector</span></code>)</a></li> 
     </ul>
               
               
@@ -94,94 +95,84 @@
 <h1>pyrex.detector.AntennaSystem<a class="headerlink" href="#pyrex-detector-antennasystem" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.detector.AntennaSystem">
-<em class="property">class </em><code class="descclassname">pyrex.detector.</code><code class="descname">AntennaSystem</code><span class="sig-paren">(</span><em>antenna</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.detector.</code><code class="sig-name descname">AntennaSystem</code><span class="sig-paren">(</span><em class="sig-param">antenna</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.detector.AntennaSystem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for antenna system with front-end processing.</p>
 <p>Behaves similarly to an antenna by passing some functionality downward to
 an antenna class, but additionally applies some front-end processing (e.g.
 an electronics chain) to the signals received.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>antenna</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Antenna</span></dt>
-<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">Antenna</span></code> class or subclass to be extended with a front end. Can also
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>antenna</strong><span class="classifier">Antenna</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Antenna</span></code> class or subclass to be extended with a front end. Can also
 accept an <code class="docutils literal notranslate"><span class="pre">Antenna</span></code> object directly.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Antenna</span></code></a></dt>
-<dd>Base class for antennas.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Antenna</span></code></a></dt><dd><p>Base class for antennas.</p>
+</dd>
 </dl>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>antenna</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Antenna</span></dt>
-<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">Antenna</span></code> object extended by the front end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>antenna</strong><span class="classifier">Antenna</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Antenna</span></code> object extended by the front end.</p>
 </dd>
-<dt><strong>lead_in_time</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Lead-in time (s) required for the front end to equilibrate.
+<dt><strong>lead_in_time</strong><span class="classifier">float</span></dt><dd><p>Lead-in time (s) required for the front end to equilibrate.
 Automatically added in before calculation of signals and waveforms.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.is_hit.html#pyrex.detector.AntennaSystem.is_hit" title="pyrex.detector.AntennaSystem.is_hit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit</span></code></a></dt>
-<dd><p class="first last">Boolean of whether the antenna system has been triggered.</p>
+<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.is_hit.html#pyrex.detector.AntennaSystem.is_hit" title="pyrex.detector.AntennaSystem.is_hit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit</span></code></a></dt><dd><p>Boolean of whether the antenna system has been triggered.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.signals.html#pyrex.detector.AntennaSystem.signals" title="pyrex.detector.AntennaSystem.signals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signals</span></code></a></dt>
-<dd><p class="first last">The signals received by the antenna with front-end processing.</p>
+<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.is_hit_mc_truth.html#pyrex.detector.AntennaSystem.is_hit_mc_truth" title="pyrex.detector.AntennaSystem.is_hit_mc_truth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit_mc_truth</span></code></a></dt><dd><p>Boolean of whether the antenna has been triggered by signal.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.waveforms.html#pyrex.detector.AntennaSystem.waveforms" title="pyrex.detector.AntennaSystem.waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waveforms</span></code></a></dt>
-<dd><p class="first last">The antenna system signal + noise for each triggered hit.</p>
+<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.signals.html#pyrex.detector.AntennaSystem.signals" title="pyrex.detector.AntennaSystem.signals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signals</span></code></a></dt><dd><p>The signals received by the antenna with front-end processing.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.all_waveforms.html#pyrex.detector.AntennaSystem.all_waveforms" title="pyrex.detector.AntennaSystem.all_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_waveforms</span></code></a></dt>
-<dd><p class="first last">The antenna system signal + noise for all hits.</p>
+<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.waveforms.html#pyrex.detector.AntennaSystem.waveforms" title="pyrex.detector.AntennaSystem.waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waveforms</span></code></a></dt><dd><p>The antenna system signal + noise for each triggered hit.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.detector.AntennaSystem.all_waveforms.html#pyrex.detector.AntennaSystem.all_waveforms" title="pyrex.detector.AntennaSystem.all_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_waveforms</span></code></a></dt><dd><p>The antenna system signal + noise for all hits.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.clear.html#pyrex.detector.AntennaSystem.clear" title="pyrex.detector.AntennaSystem.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</td>
-<td>Reset the antenna system to an empty state.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.apply_response.html#pyrex.detector.AntennaSystem.apply_response" title="pyrex.detector.AntennaSystem.apply_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_response</span></code></a>(signal[, direction, …])</p></td>
+<td><p>Process the complete antenna response for an incoming signal.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.front_end.html#pyrex.detector.AntennaSystem.front_end" title="pyrex.detector.AntennaSystem.front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">front_end</span></code></a>(signal)</td>
-<td>Apply front-end processes to a signal and return the output.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.clear.html#pyrex.detector.AntennaSystem.clear" title="pyrex.detector.AntennaSystem.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</p></td>
+<td><p>Reset the antenna system to an empty state.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.full_waveform.html#pyrex.detector.AntennaSystem.full_waveform" title="pyrex.detector.AntennaSystem.full_waveform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_waveform</span></code></a>(times)</td>
-<td>Signal + noise for the antenna system for the given times.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.front_end.html#pyrex.detector.AntennaSystem.front_end" title="pyrex.detector.AntennaSystem.front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">front_end</span></code></a>(signal)</p></td>
+<td><p>Apply front-end processes to a signal and return the output.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.is_hit_during.html#pyrex.detector.AntennaSystem.is_hit_during" title="pyrex.detector.AntennaSystem.is_hit_during"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit_during</span></code></a>(times)</td>
-<td>Check if the antenna system is triggered in a time range.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.full_waveform.html#pyrex.detector.AntennaSystem.full_waveform" title="pyrex.detector.AntennaSystem.full_waveform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_waveform</span></code></a>(times)</p></td>
+<td><p>Signal + noise for the antenna system for the given times.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.make_noise.html#pyrex.detector.AntennaSystem.make_noise" title="pyrex.detector.AntennaSystem.make_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_noise</span></code></a>(times)</td>
-<td>Creates a noise signal over the given times.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.is_hit_during.html#pyrex.detector.AntennaSystem.is_hit_during" title="pyrex.detector.AntennaSystem.is_hit_during"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hit_during</span></code></a>(times)</p></td>
+<td><p>Check if the antenna system is triggered in a time range.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.receive.html#pyrex.detector.AntennaSystem.receive" title="pyrex.detector.AntennaSystem.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(signal[,&nbsp;direction,&nbsp;polarization,&nbsp;…])</td>
-<td>Process and store an incoming signal.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.make_noise.html#pyrex.detector.AntennaSystem.make_noise" title="pyrex.detector.AntennaSystem.make_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_noise</span></code></a>(times)</p></td>
+<td><p>Creates a noise signal over the given times.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.set_orientation.html#pyrex.detector.AntennaSystem.set_orientation" title="pyrex.detector.AntennaSystem.set_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientation</span></code></a>([z_axis,&nbsp;x_axis])</td>
-<td>Sets the orientation of the antenna system.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.receive.html#pyrex.detector.AntennaSystem.receive" title="pyrex.detector.AntennaSystem.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(signal[, direction, polarization, …])</p></td>
+<td><p>Process and store one or more incoming (polarized) signals.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.setup_antenna.html#pyrex.detector.AntennaSystem.setup_antenna" title="pyrex.detector.AntennaSystem.setup_antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_antenna</span></code></a>(*args,&nbsp;**kwargs)</td>
-<td>Setup the antenna by passing along its init arguments.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.set_orientation.html#pyrex.detector.AntennaSystem.set_orientation" title="pyrex.detector.AntennaSystem.set_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientation</span></code></a>([z_axis, x_axis])</p></td>
+<td><p>Sets the orientation of the antenna system.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.detector.AntennaSystem.trigger.html#pyrex.detector.AntennaSystem.trigger" title="pyrex.detector.AntennaSystem.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a>(signal)</td>
-<td>Check if the antenna system triggers on a given signal.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.setup_antenna.html#pyrex.detector.AntennaSystem.setup_antenna" title="pyrex.detector.AntennaSystem.setup_antenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_antenna</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Setup the antenna by passing along its init arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.detector.AntennaSystem.trigger.html#pyrex.detector.AntennaSystem.trigger" title="pyrex.detector.AntennaSystem.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a>(signal)</p></td>
+<td><p>Check if the antenna system triggers on a given signal.</p></td>
 </tr>
 </tbody>
 </table>
@@ -200,7 +191,7 @@ Automatically added in before calculation of signals and waveforms.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -269,10 +260,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

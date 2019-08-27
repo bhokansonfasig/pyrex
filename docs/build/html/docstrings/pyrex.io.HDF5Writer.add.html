@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.io.HDF5Writer.add &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.io.HDF5Writer.add &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,51 +82,41 @@
 <h1>pyrex.io.HDF5Writer.add<a class="headerlink" href="#pyrex-io-hdf5writer-add" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.io.HDF5Writer.add">
-<code class="descclassname">HDF5Writer.</code><code class="descname">add</code><span class="sig-paren">(</span><em>event</em>, <em>triggered=None</em>, <em>ray_paths=None</em>, <em>polarizations=None</em>, <em>events_thrown=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Writer.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">HDF5Writer.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">event</em>, <em class="sig-param">triggered=None</em>, <em class="sig-param">ray_paths=None</em>, <em class="sig-param">polarizations=None</em>, <em class="sig-param">events_thrown=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Writer.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the data from an event to the file.</p>
 <p>Increments the global event counter and writes data to the file based
 on the specifications given on initialization.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>event</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Event</span></dt>
-<dd><p class="first last"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> object responsible for the signals currently on the
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>event</strong><span class="classifier">Event</span></dt><dd><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> object responsible for the signals currently on the
 linked detector.</p>
 </dd>
-<dt><strong>triggered</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or dict, optional</span></dt>
-<dd><p class="first last">If <code class="docutils literal notranslate"><span class="pre">bool</span></code>, represents the global trigger status. If <code class="docutils literal notranslate"><span class="pre">dict</span></code>,
+<dt><strong>triggered</strong><span class="classifier">bool or dict, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">bool</span></code>, represents the global trigger status. If <code class="docutils literal notranslate"><span class="pre">dict</span></code>,
 ‘global’ key’s value should represent the global trigger status and
 other keys may represent other triggers to be recorded. The other
 keys may be a single boolean for the event, or a list of booleans
 per waveform.</p>
 </dd>
-<dt><strong>ray_paths</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of list of RayPath, optional</span></dt>
-<dd><p class="first last"><em class="xref py py-obj">RayPath</em> objects for each antenna, for each ray solution from the
+<dt><strong>ray_paths</strong><span class="classifier">list of list of RayPath, optional</span></dt><dd><p><em class="xref py py-obj">RayPath</em> objects for each antenna, for each ray solution from the
 event.</p>
 </dd>
-<dt><strong>polarizations</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of list of array_like, optional</span></dt>
-<dd><p class="first last">Vector polarizations for each antenna, for each ray solution from
+<dt><strong>polarizations</strong><span class="classifier">list of list of array_like, optional</span></dt><dd><p>Vector polarizations for each antenna, for each ray solution from
 the event.</p>
 </dd>
-<dt><strong>events_thrown</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Number of events thrown to reach this event, i.e. how much to
+<dt><strong>events_thrown</strong><span class="classifier">int, optional</span></dt><dd><p>Number of events thrown to reach this event, i.e. how much to
 increase the total throw count of the file by.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>ValueError</strong></dt>
-<dd><p class="first last">If not enough keyword arguments have been specified to write the
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>ValueError</strong></dt><dd><p>If not enough keyword arguments have been specified to write the
 necessary data.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -141,7 +132,7 @@ necessary data.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -205,10 +196,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

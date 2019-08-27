@@ -3,4 +3,4 @@ pyrex.Signal.dt
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: Signal.dt
+.. autoproperty:: Signal.dt

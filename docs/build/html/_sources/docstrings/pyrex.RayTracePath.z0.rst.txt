@@ -3,4 +3,4 @@ pyrex.RayTracePath.z0
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.z0
+.. autoproperty:: RayTracePath.z0

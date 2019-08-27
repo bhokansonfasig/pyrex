@@ -3,4 +3,4 @@ pyrex.RayTracer.exists
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracer.exists
+.. autoproperty:: RayTracer.exists

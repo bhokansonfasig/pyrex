@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.RegularStation &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.ara.RegularStation &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="Askaryan Radio Array (pyrex.custom.ara)" href="../custom-ara.html" >
     <link rel="next" title="pyrex.custom.ara.AlbrechtStation" href="pyrex.custom.ara.AlbrechtStation.html" >
     <link rel="prev" title="pyrex.custom.ara.PhasedArrayString" href="pyrex.custom.ara.PhasedArrayString.html" > 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
+          <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
     </ul>
               
               
@@ -94,105 +95,87 @@
 <h1>pyrex.custom.ara.RegularStation<a class="headerlink" href="#pyrex-custom-ara-regularstation" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.custom.ara.RegularStation">
-<em class="property">class </em><code class="descclassname">pyrex.custom.ara.</code><code class="descname">RegularStation</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=20</em>, <em>string_type=&lt;class 'pyrex.custom.ara.detector.ARAString'&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.RegularStation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.custom.ara.</code><code class="sig-name descname">RegularStation</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">strings_per_station=4</em>, <em class="sig-param">station_diameter=20</em>, <em class="sig-param">string_type=&lt;class 'pyrex.custom.ara.detector.ARAString'&gt;</em>, <em class="sig-param">**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.RegularStation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Station geometry with strings evenly spaced radially around the center.</p>
 <p>Sets the positions of strings around the station based on the parameters.
 Supports any string type and passes extra keyword arguments on to the
 string class. Once the antennas have been built with <a class="reference internal" href="pyrex.custom.ara.RegularStation.build_antennas.html#pyrex.custom.ara.RegularStation.build_antennas" title="pyrex.custom.ara.RegularStation.build_antennas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_antennas</span></code></a>,
 the object can be directly iterated over to iterate over the antennas (as
 if the object were just a list of the antennas).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian x-position (m) of the station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">float</span></dt><dd><p>Cartesian x-position (m) of the station.</p>
 </dd>
-<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian y-position (m) of the station.</p>
+<dt><strong>y</strong><span class="classifier">float</span></dt><dd><p>Cartesian y-position (m) of the station.</p>
 </dd>
-<dt><strong>strings_per_station</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Number of strings to be placed evenly around the station.</p>
+<dt><strong>strings_per_station</strong><span class="classifier">float, optional</span></dt><dd><p>Number of strings to be placed evenly around the station.</p>
 </dd>
-<dt><strong>station_diameter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Diameter (m) of the circle around which strings are placed.</p>
+<dt><strong>station_diameter</strong><span class="classifier">float, optional</span></dt><dd><p>Diameter (m) of the circle around which strings are placed.</p>
 </dd>
-<dt><strong>string_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
-<dd><p class="first last">Class to be used for creating string objects for <em class="xref py py-obj">subsets</em>.</p>
+<dt><strong>string_type</strong><span class="classifier">optional</span></dt><dd><p>Class to be used for creating string objects for <em class="xref py py-obj">subsets</em>.</p>
 </dd>
-<dt><strong>**string_kwargs</strong></dt>
-<dd><p class="first last">Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
+<dt><strong>**string_kwargs</strong></dt><dd><p>Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
 the <em class="xref py py-obj">string_type</em> class.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>ValueError</strong></dt>
-<dd><p class="first last">If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>ValueError</strong></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
 above the ice surface.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.HpolAntenna</span></code></a></dt>
-<dd>ARA Hpol (“quad-slot”) antenna system with front-end processing.</dd>
-<dt><a class="reference internal" href="pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.VpolAntenna</span></code></a></dt>
-<dd>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</dd>
-<dt><a class="reference internal" href="pyrex.custom.ara.ARAString.html#pyrex.custom.ara.ARAString" title="pyrex.custom.ara.ARAString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAString</span></code></a></dt>
-<dd>String of ARA Hpol and Vpol antennas.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.HpolAntenna</span></code></a></dt><dd><p>ARA Hpol (“quad-slot”) antenna system with front-end processing.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.VpolAntenna</span></code></a></dt><dd><p>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.ARAString.html#pyrex.custom.ara.ARAString" title="pyrex.custom.ara.ARAString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAString</span></code></a></dt><dd><p>String of ARA Hpol and Vpol antennas.</p>
+</dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
 <p>This class is designed to have string-like objects (which are subclasses of
-<code class="docutils literal notranslate"><span class="pre">Detector</span></code>) as its <em class="xref py py-obj">subsets</em>. Then whenver an object of this class is
+<code class="docutils literal notranslate"><span class="pre">Detector</span></code>) as its <em class="xref py py-obj">subsets</em>. Then whenever an object of this class is
 iterated, all the antennas of its strings will be yielded as in a 1D list.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>antenna_positions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
-<dd><p class="first last">List (potentially with sub-lists) of the positions of the antennas
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>antenna_positions</strong><span class="classifier">list</span></dt><dd><p>List (potentially with sub-lists) of the positions of the antennas
 generated by the <a class="reference internal" href="pyrex.custom.ara.RegularStation.set_positions.html#pyrex.custom.ara.RegularStation.set_positions" title="pyrex.custom.ara.RegularStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_positions</span></code></a> method.</p>
 </dd>
-<dt><strong>subsets</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
-<dd><p class="first last">List of the antenna or detector objects which make up the detector.</p>
+<dt><strong>subsets</strong><span class="classifier">list</span></dt><dd><p>List of the antenna or detector objects which make up the detector.</p>
 </dd>
-<dt><strong>test_antenna_positions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
-<dd><p class="first last">Class attribute for whether or not an error should be raised if antenna
+<dt><strong>test_antenna_positions</strong><span class="classifier">boolean</span></dt><dd><p>Class attribute for whether or not an error should be raised if antenna
 positions are found above the surface of the ice (where simulation
 behavior is ill-defined). Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.build_antennas.html#pyrex.custom.ara.RegularStation.build_antennas" title="pyrex.custom.ara.RegularStation.build_antennas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_antennas</span></code></a>(*args,&nbsp;**kwargs)</td>
-<td>Creates antenna objects at the set antenna positions.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.ara.RegularStation.build_antennas.html#pyrex.custom.ara.RegularStation.build_antennas" title="pyrex.custom.ara.RegularStation.build_antennas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_antennas</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Creates antenna objects at the set antenna positions.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.clear.html#pyrex.custom.ara.RegularStation.clear" title="pyrex.custom.ara.RegularStation.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</td>
-<td>Reset the detector to an empty state.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.ara.RegularStation.clear.html#pyrex.custom.ara.RegularStation.clear" title="pyrex.custom.ara.RegularStation.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</p></td>
+<td><p>Reset the detector to an empty state.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.set_positions.html#pyrex.custom.ara.RegularStation.set_positions" title="pyrex.custom.ara.RegularStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_positions</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
-<td>Generates antenna positions around the station.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.ara.RegularStation.set_positions.html#pyrex.custom.ara.RegularStation.set_positions" title="pyrex.custom.ara.RegularStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_positions</span></code></a>(x, y[, strings_per_station, …])</p></td>
+<td><p>Generates antenna positions around the station.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.custom.ara.RegularStation.triggered.html#pyrex.custom.ara.RegularStation.triggered" title="pyrex.custom.ara.RegularStation.triggered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triggered</span></code></a>([polarized_antenna_requirement,&nbsp;…])</td>
-<td>Check if the station is triggered based on its current state.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.ara.RegularStation.triggered.html#pyrex.custom.ara.RegularStation.triggered" title="pyrex.custom.ara.RegularStation.triggered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triggered</span></code></a>([polarized_antenna_requirement, …])</p></td>
+<td><p>Check if the station is triggered based on its current state.</p></td>
 </tr>
 </tbody>
 </table>
@@ -211,7 +194,7 @@ behavior is ill-defined). Defaults to <code class="docutils literal notranslate"
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -280,10 +263,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

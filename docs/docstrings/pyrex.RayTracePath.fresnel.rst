@@ -3,4 +3,4 @@ pyrex.RayTracePath.fresnel
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.fresnel
+.. autoproperty:: RayTracePath.fresnel

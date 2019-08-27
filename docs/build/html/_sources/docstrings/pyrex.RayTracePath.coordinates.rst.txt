@@ -3,4 +3,4 @@ pyrex.RayTracePath.coordinates
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.coordinates
+.. autoproperty:: RayTracePath.coordinates

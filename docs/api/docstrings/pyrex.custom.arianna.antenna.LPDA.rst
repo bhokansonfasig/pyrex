@@ -11,6 +11,7 @@ pyrex.custom.arianna.antenna.LPDA
       .. autosummary::
          :toctree:
       
+         LPDA.apply_response
          LPDA.clear
          LPDA.front_end
          LPDA.full_waveform

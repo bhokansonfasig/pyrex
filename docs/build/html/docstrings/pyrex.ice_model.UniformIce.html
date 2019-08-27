@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.ice_model.UniformIce &mdash; PyREx 1.9.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.9.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="up" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" >
+    <link rel="next" title="pyrex.ice_model.ArasimIce" href="pyrex.ice_model.ArasimIce.html" >
+    <link rel="prev" title="pyrex.ice_model.AntarcticIce" href="pyrex.ice_model.AntarcticIce.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.ice_model.ArasimIce.html" title="pyrex.ice_model.ArasimIce"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.ice_model.AntarcticIce.html" title="pyrex.ice_model.AntarcticIce"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-ice-model-uniformice">
+<h1>pyrex.ice_model.UniformIce<a class="headerlink" href="#pyrex-ice-model-uniformice" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyrex.ice_model.UniformIce">
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.ice_model.</code><code class="sig-name descname">UniformIce</code><span class="sig-paren">(</span><em class="sig-param">index</em>, <em class="sig-param">valid_range=(-2850</em>, <em class="sig-param">0)</em>, <em class="sig-param">index_above=1</em>, <em class="sig-param">index_below=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.UniformIce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class describing ice with a uniform index of refraction.</p>
+<p>In all methods, the depth z should be given as a negative value if it is
+below the surface of the ice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Index of refraction of the ice.</p>
+</dd>
+<dt><strong>valid_range</strong><span class="classifier">array_like of float</span></dt><dd><p>Range of depths over which the uniform index of refraction applies.
+Assumed to have two elements where the first value is lower (deeper,
+more negative) than the second.</p>
+</dd>
+<dt><strong>index_above</strong><span class="classifier">float or None, optional</span></dt><dd><p>Index of refraction above the ice region. If <em class="xref py py-obj">None</em>, uses the same
+index of refraction.</p>
+</dd>
+<dt><strong>index_below</strong><span class="classifier">float or None, optional</span></dt><dd><p>Index of refraction below the ice region. If <em class="xref py py-obj">None</em>, uses the same
+index of refraction.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>n</strong><span class="classifier">float</span></dt><dd><p>Index of refraction of the ice.</p>
+</dd>
+<dt><strong>valid_range</strong><span class="classifier">tuple</span></dt><dd><p>Range of depths over which the ice model is valid. Consists of two
+elements where the first value is lower (deeper, more negative) than
+the second.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ice_model.UniformIce.index_above.html#pyrex.ice_model.UniformIce.index_above" title="pyrex.ice_model.UniformIce.index_above"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index_above</span></code></a></dt><dd><p>The index of refraction above the ice’s valid range.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ice_model.UniformIce.index_below.html#pyrex.ice_model.UniformIce.index_below" title="pyrex.ice_model.UniformIce.index_below"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index_below</span></code></a></dt><dd><p>The index of refraction below the ice’s valid range.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.UniformIce.attenuation_length.html#pyrex.ice_model.UniformIce.attenuation_length" title="pyrex.ice_model.UniformIce.attenuation_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation_length</span></code></a>(z, f)</p></td>
+<td><p>Calculates attenuation lengths for given depths and frequencies.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.UniformIce.contains.html#pyrex.ice_model.UniformIce.contains" title="pyrex.ice_model.UniformIce.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains</span></code></a>(point)</p></td>
+<td><p>Determines if the given point is within the ice’s valid range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.UniformIce.depth_with_index.html#pyrex.ice_model.UniformIce.depth_with_index" title="pyrex.ice_model.UniformIce.depth_with_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">depth_with_index</span></code></a>(n)</p></td>
+<td><p>Calculates the corresponding depth for a given index of refraction.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.UniformIce.gradient.html#pyrex.ice_model.UniformIce.gradient" title="pyrex.ice_model.UniformIce.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a>(z)</p></td>
+<td><p>Calculates the gradient of the index of refraction at a given depth.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.UniformIce.index.html#pyrex.ice_model.UniformIce.index" title="pyrex.ice_model.UniformIce.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(z)</p></td>
+<td><p>Calculates the index of refraction of the ice at a given depth.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.UniformIce.temperature.html#pyrex.ice_model.UniformIce.temperature" title="pyrex.ice_model.UniformIce.temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temperature</span></code></a>(z)</p></td>
+<td><p>Calculates the temperature of the ice at a given depth.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.9.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
