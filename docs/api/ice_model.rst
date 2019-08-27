@@ -7,6 +7,7 @@ Ice Models (:mod:`pyrex.ice_model`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     AntarcticIce
     UniformIce

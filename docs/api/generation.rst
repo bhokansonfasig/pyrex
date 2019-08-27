@@ -7,6 +7,7 @@ Event Generators (:mod:`pyrex.generation`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     BaseGenerator
     CylindricalGenerator

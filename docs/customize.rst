@@ -60,7 +60,7 @@ ARA Custom Module
 .. include:: custom/ara.rst
 
 ARIANNA Custom Module
-=================
+=====================
 
 .. include:: custom/arianna.rst
 

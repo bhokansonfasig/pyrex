@@ -7,6 +7,7 @@ Askaryan Models (:mod:`pyrex.askaryan`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     ZHSAskaryanSignal
     AVZAskaryanSignal

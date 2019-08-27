@@ -7,6 +7,7 @@ Antennas (:mod:`pyrex.antenna`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     Antenna
     DipoleAntenna

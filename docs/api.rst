@@ -17,6 +17,7 @@ PyREx Package Imports
 
 .. autosummary::
     :toctree: docstrings
+    :nosignatures:
 
     Signal
     EmptySignal

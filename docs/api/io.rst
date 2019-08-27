@@ -7,6 +7,7 @@ Data File I/O (:mod:`pyrex.io`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     File
     HDF5Reader

@@ -7,6 +7,7 @@ Helper Functions (:mod:`pyrex.internal_functions`)
 
 .. autosummary:: 
     :toctree: ../docstrings
+    :nosignatures:
 
     normalize
     get_from_enum

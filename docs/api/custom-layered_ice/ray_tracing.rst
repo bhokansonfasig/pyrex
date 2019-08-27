@@ -7,6 +7,7 @@ Custom Ray Tracing (:mod:`pyrex.custom.layered_ice.ray_tracing`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     LayeredRayTracePath
     LayeredRayTracer

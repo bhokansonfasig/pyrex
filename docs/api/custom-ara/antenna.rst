@@ -7,6 +7,7 @@ Custom Antennas (:mod:`pyrex.custom.ara.antenna`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     _read_arasim_antenna_data
     _read_filter_data
