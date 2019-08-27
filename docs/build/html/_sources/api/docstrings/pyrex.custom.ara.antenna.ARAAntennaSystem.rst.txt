@@ -11,6 +11,7 @@ pyrex.custom.ara.antenna.ARAAntennaSystem
       .. autosummary::
          :toctree:
       
+         ARAAntennaSystem.apply_response
          ARAAntennaSystem.clear
          ARAAntennaSystem.front_end
          ARAAntennaSystem.full_waveform

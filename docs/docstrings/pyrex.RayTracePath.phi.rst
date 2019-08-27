@@ -3,4 +3,4 @@ pyrex.RayTracePath.phi
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.phi
+.. autoproperty:: RayTracePath.phi

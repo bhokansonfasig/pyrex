@@ -12,6 +12,7 @@ pyrex.ice\_model.ArasimIce
          :toctree:
       
          ArasimIce.attenuation_length
+         ArasimIce.contains
          ArasimIce.depth_with_index
          ArasimIce.gradient
          ArasimIce.index
@@ -25,10 +26,8 @@ pyrex.ice\_model.ArasimIce
       .. autosummary::
          :toctree:
       
-         ArasimIce.a
          ArasimIce.atten_depths
          ArasimIce.atten_lengths
-         ArasimIce.k
-         ArasimIce.n0
-         ArasimIce.thickness
+         ArasimIce.index_above
+         ArasimIce.index_below
 

@@ -3,4 +3,4 @@ pyrex.ListGenerator.count
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: ListGenerator.count
+.. autoproperty:: ListGenerator.count

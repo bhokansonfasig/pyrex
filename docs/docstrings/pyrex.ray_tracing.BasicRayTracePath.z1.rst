@@ -3,4 +3,4 @@ pyrex.ray\_tracing.BasicRayTracePath.z1
 
 .. currentmodule:: pyrex.ray_tracing
 
-.. autoattribute:: BasicRayTracePath.z1
+.. autoproperty:: BasicRayTracePath.z1

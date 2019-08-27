@@ -11,6 +11,7 @@ pyrex.custom.irex.antenna.EnvelopeSystem
       .. autosummary::
          :toctree:
       
+         EnvelopeSystem.apply_response
          EnvelopeSystem.clear
          EnvelopeSystem.envelopeless_front_end
          EnvelopeSystem.front_end

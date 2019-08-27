@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Askaryan Signal &mdash; PyREx 1.8.2 documentation</title>
+    <title>Askaryan Signal &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -77,38 +78,38 @@
         <div class="bodywrapper">
           <div class="body" id="spc-section-body">
             
-  <p>In the course of using PyREx you may wish to change some behavior of parts of the code. Due to the modularity of the code, many behavoirs should be customizable by substituting in your own classes inheriting from those already in PyREx. By adding these classes to your own custom module, your code can behave as though it was a native part of the PyREx package. Below the classes which can be easily substituted with your own version are listed, and descriptions of the behavior expected of the classes is outlined.</p>
+  <p>In the course of using PyREx you may wish to change some behavior of parts of the code. Due to the modularity of the code, many behaviors should be customizable by substituting in your own classes inheriting from those already in PyREx. By adding these classes to your own custom module, your code can behave as though it was a native part of the PyREx package. Below the classes which can be easily substituted with your own version are listed, and descriptions of the behavior expected of the classes is outlined.</p>
 <div class="section" id="askaryan-signal">
 <h1>Askaryan Signal<a class="headerlink" href="#askaryan-signal" title="Permalink to this headline">¶</a></h1>
 <p>The <a class="reference internal" href="../docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">AskaryanSignal</span></code></a> class is responsible for storing the time-domain signal of the Askaryan signal produced by a particle shower. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method of an <a class="reference internal" href="../docstrings/pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">AskaryanSignal</span></code></a>-like class must accept the arguments listed below:</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Attribute</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">times</span></code></td>
-<td>A list-type (usually a numpy array) of time values at which to calculate the amplitude of the Askaryan pulse.</td>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">times</span></code></p></td>
+<td><p>A list-type (usually a numpy array) of time values at which to calculate the amplitude of the Askaryan pulse.</p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">particle</span></code></td>
-<td>A <code class="docutils literal notranslate"><span class="pre">Particle</span></code> object representing the neutrino that causes the event. Should have an <code class="docutils literal notranslate"><span class="pre">energy</span></code>, <code class="docutils literal notranslate"><span class="pre">vertex</span></code>, <code class="docutils literal notranslate"><span class="pre">id</span></code>, and an <code class="docutils literal notranslate"><span class="pre">interaction</span></code> with an <code class="docutils literal notranslate"><span class="pre">em_frac</span></code> and <code class="docutils literal notranslate"><span class="pre">had_frac</span></code>.</td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">particle</span></code></p></td>
+<td><p>A <code class="docutils literal notranslate"><span class="pre">Particle</span></code> object representing the neutrino that causes the event. Should have an <code class="docutils literal notranslate"><span class="pre">energy</span></code>, <code class="docutils literal notranslate"><span class="pre">vertex</span></code>, <code class="docutils literal notranslate"><span class="pre">id</span></code>, and an <code class="docutils literal notranslate"><span class="pre">interaction</span></code> with an <code class="docutils literal notranslate"><span class="pre">em_frac</span></code> and <code class="docutils literal notranslate"><span class="pre">had_frac</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">viewing_angle</span></code></td>
-<td>The viewing angle in radians measured from the shower axis.</td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">viewing_angle</span></code></p></td>
+<td><p>The viewing angle in radians measured from the shower axis.</p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">viewing_distance</span></code></td>
-<td>The distance of the observation point from the shower vertex.</td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">viewing_distance</span></code></p></td>
+<td><p>The distance of the observation point from the shower vertex.</p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">ice</span></code></td>
-<td>The ice model to be used for describing the medium’s index of refraction.</td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ice</span></code></p></td>
+<td><p>The ice model to be used for describing the medium’s index of refraction.</p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">t0</span></code></td>
-<td>The starting time of the Askaryan pulse / showers (default 0).</td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t0</span></code></p></td>
+<td><p>The starting time of the Askaryan pulse / showers (default 0).</p></td>
 </tr>
 </tbody>
 </table>
@@ -133,27 +134,27 @@
 <div class="section" id="ice-model">
 <h1>Ice Model<a class="headerlink" href="#ice-model" title="Permalink to this headline">¶</a></h1>
 <p>Ice model classes are responsible for describing the properties of the ice as functions of depth and frequency. While not explicitly required, all ice model classes in PyREx are defined only with static and class methods, so no <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method is actually necessary. The necessary methods, however, are as follows:</p>
-<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">index()</span></code> method should take a depth (or numpy array of depths) and return the corresponding index of refraction. Conversely, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">depth_with_index()</span></code> method should take an index of refraction (or numpy array of indices) and return othe corresponding depths. In the case of degeneracy here (for example with uniform ice), the recommended behavior is to return the shallowest depth with the given index, though PyREx’s behavior in cases of non-monotonic index functions is not well defined.</p>
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">index()</span></code> method should take a depth (or numpy array of depths) and return the corresponding index of refraction. Conversely, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">depth_with_index()</span></code> method should take an index of refraction (or numpy array of indices) and return the corresponding depths. In the case of degeneracy here (for example with uniform ice), the recommended behavior is to return the shallowest depth with the given index, though PyREx’s behavior in cases of non-monotonic index functions is not well defined.</p>
 <p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">temperature()</span></code> method should take a depth (or numpy array of depths) and return the corresponding ice temperature in Kelvin.</p>
 <p>Finally, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">attenuation_length()</span></code> function should take a depth (or numpy array of depths) and a frequency (or numpy array of frequencies) and return the corresponding attenuation length. In the case of one scalar and one array argument, a simple 1D array should be returned. In the case of both arguments being arrays, the return value should be a 2D array where each row represents different frequencies at a single depth and each column represents different depths at a single frequency.</p>
 </div>
 <div class="section" id="ray-tracer-ray-trace-path">
 <h1>Ray Tracer / Ray Trace Path<a class="headerlink" href="#ray-tracer-ray-trace-path" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a> classes are responsible for handling ray tracing through the ice between shower vertices and antenna positions. The <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> class finds the paths between the two points and the <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a> calculates values along the path. Due to the potential for high calculation costs, the PyREx <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a> classess inherit from a <code class="xref py py-class docutils literal notranslate"><span class="pre">LazyMutableClass</span></code> which allows the use of a <code class="xref py py-func docutils literal notranslate"><span class="pre">lazy_property()</span></code> decorator to cache results of attribute calculations. It is recommended that any other ray tracing classes consider doing this as well.</p>
-<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method of a <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a>-like class should take as arguments a 3-vector (list) <code class="docutils literal notranslate"><span class="pre">from_point</span></code>, a 3-vector (list) <code class="docutils literal notranslate"><span class="pre">to_point</span></code>, and an <a class="reference internal" href="../docstrings/pyrex.IceModel.html#pyrex.IceModel" title="pyrex.IceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">IceModel</span></code></a>-like <code class="docutils literal notranslate"><span class="pre">ice_model</span></code>. The only required features of the class are a boolean attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">exists</span></code> recording whether or not paths exist between the given points, and an iterable attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">solutions</span></code> which iterates over <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a>-like objects between the points.</p>
-<p>A <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a>-like class will be initialized by a corresponding <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a>-like object, so there are no requirements on its <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method. The path must have <code class="xref py py-attr docutils literal notranslate"><span class="pre">emitted_direction</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">received_direction</span></code> attributes which are numpy arrays of the cartesian direction the ray is pointing at the <code class="xref py py-attr docutils literal notranslate"><span class="pre">from_point</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">to_point</span></code> of the ray tracer, respectively. The path must also have attributes for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">path_length</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">tof</span></code> (time of flight) alon the path.</p>
-<p>The path class must have a <code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate()</span></code> method which takes a <a class="reference internal" href="../docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> object as its argument and propagates that signal by applying any attenuation and time of flight. This method does not have a return value. Additionally, note that any 1/R factor that the signal could have is not applied in this method, but externally by dividing the singal values by the <code class="xref py py-attr docutils literal notranslate"><span class="pre">path_length</span></code>. If using the default <code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate()</span></code> method, an <code class="xref py py-meth docutils literal notranslate"><span class="pre">attenuation()</span></code> method is required which takes an array of frequencies <code class="docutils literal notranslate"><span class="pre">f</span></code> and returns the attenuation factors for a signal along the path at those frequencies.</p>
+<p>The <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a> classes are responsible for handling ray tracing through the ice between shower vertices and antenna positions. The <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> class finds the paths between the two points and the <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a> calculates values along the path. Due to the potential for high calculation costs, the PyREx <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a> and <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a> classes inherit from a <code class="xref py py-class docutils literal notranslate"><span class="pre">LazyMutableClass</span></code> which allows the use of a <code class="xref py py-func docutils literal notranslate"><span class="pre">lazy_property()</span></code> decorator to cache results of attribute calculations. It is recommended that any other ray tracing classes consider doing this as well.</p>
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method of a <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a>-like class should take as arguments a 3-vector (list) <code class="docutils literal notranslate"><span class="pre">from_point</span></code>, a 3-vector (list) <code class="docutils literal notranslate"><span class="pre">to_point</span></code>, and an <code class="xref py py-class docutils literal notranslate"><span class="pre">IceModel</span></code>-like <code class="docutils literal notranslate"><span class="pre">ice_model</span></code>. The only required features of the class are a boolean attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">exists</span></code> recording whether or not paths exist between the given points, and an iterable attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">solutions</span></code> which iterates over <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a>-like objects between the points.</p>
+<p>A <a class="reference internal" href="../docstrings/pyrex.RayTracePath.html#pyrex.RayTracePath" title="pyrex.RayTracePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracePath</span></code></a>-like class will be initialized by a corresponding <a class="reference internal" href="../docstrings/pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RayTracer</span></code></a>-like object, so there are no requirements on its <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method. The path must have <code class="xref py py-attr docutils literal notranslate"><span class="pre">emitted_direction</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">received_direction</span></code> attributes which are numpy arrays of the cartesian direction the ray is pointing at the <code class="xref py py-attr docutils literal notranslate"><span class="pre">from_point</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">to_point</span></code> of the ray tracer, respectively. The path must also have attributes for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">path_length</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">tof</span></code> (time of flight) along the path.</p>
+<p>The path class must have a <code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate()</span></code> method which takes a <a class="reference internal" href="../docstrings/pyrex.Signal.html#pyrex.Signal" title="pyrex.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> object as its argument and propagates that signal by applying any attenuation and time of flight. This method does not have a return value. Additionally, note that any 1/R factor that the signal could have is not applied in this method, but externally by dividing the signal values by the <code class="xref py py-attr docutils literal notranslate"><span class="pre">path_length</span></code>. If using the default <code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate()</span></code> method, an <code class="xref py py-meth docutils literal notranslate"><span class="pre">attenuation()</span></code> method is required which takes an array of frequencies <code class="docutils literal notranslate"><span class="pre">f</span></code> and returns the attenuation factors for a signal along the path at those frequencies.</p>
 <p>Finally, though not required it is recommended that the path have a <code class="xref py py-attr docutils literal notranslate"><span class="pre">coordinates</span></code> attribute which is a list of lists of the x, y, and z coordinates along the path (with some reasonable step size). This method is used for plotting purposes and does not need to have the accuracy necessary for calculations.</p>
 </div>
 <div class="section" id="interaction-model">
 <h1>Interaction Model<a class="headerlink" href="#interaction-model" title="Permalink to this headline">¶</a></h1>
-<p>The interaction model used for <a class="reference internal" href="../docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a> interactions in ice handles the cross sections and interaction lengths of neutrinos, as well as the ratios of their interaction types and the resulting shower fractions. An interaction class should inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code> (preferrably keeping its <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method) and should implement the following methods:</p>
+<p>The interaction model used for <a class="reference internal" href="../docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a> interactions in ice handles the cross sections and interaction lengths of neutrinos, as well as the ratios of their interaction types and the resulting shower fractions. An interaction class should inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code> (preferably keeping its <code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code> method) and should implement the following methods:</p>
 <p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">cross_section</span></code> property method should return the neutrino cross section for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Interaction.particle</span></code> parent, specific to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Interaction.kind</span></code>. Similarly the <code class="xref py py-attr docutils literal notranslate"><span class="pre">total_cross_section</span></code> property method should return the neutrino cross section for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Interaction.particle</span></code> parent, but this should be the total cross section for both charged-current and neutral-current interactions. The <code class="xref py py-attr docutils literal notranslate"><span class="pre">interaction_length</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">total_interaction_length</span></code> properties will convert these cross sections to interaction lengths automatically.</p>
 <p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_interaction()</span></code> method should return a value from <code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction.Type</span></code> representing the interaction type based on a random choice. Similarly the <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_inelasticity()</span></code> method should return an inelasticity value based on a random choice, and the <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_shower_fractions()</span></code> method return calculate electromagnetic and hadronic fractions based on the <code class="xref py py-attr docutils literal notranslate"><span class="pre">inelasticity</span></code> attribute storing the inelasticity value from <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_inelasticity()</span></code>. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_shower_fractions()</span></code> can be either chosen based on random processes like secondary generation or deterministic.</p>
 </div>
 <div class="section" id="particle-generator">
 <h1>Particle Generator<a class="headerlink" href="#particle-generator" title="Permalink to this headline">¶</a></h1>
-<p>The particle generator classes are quite flexible. The only requirement is that they possess an <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_event()</span></code> method which returns a <a class="reference internal" href="../docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> object consisting of at least one <a class="reference internal" href="../docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a>. The <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGenerator</span></code> class provides a solid foundataion for basic uniform generators in a volume, requiring only implementation of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_vertex()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_exit_points()</span></code> methods for the specific volume at a minimum.</p>
+<p>The particle generator classes are quite flexible. The only requirement is that they possess an <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_event()</span></code> method which returns a <a class="reference internal" href="../docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> object consisting of at least one <a class="reference internal" href="../docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a>. The <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGenerator</span></code> class provides a solid foundation for basic uniform generators in a volume, requiring only implementation of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_vertex()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_exit_points()</span></code> methods for the specific volume at a minimum.</p>
 </div>
 
 
@@ -167,7 +168,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -231,10 +232,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

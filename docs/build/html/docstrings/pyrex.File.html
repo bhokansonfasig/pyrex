@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.File &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.File &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="prev" title="pyrex.EventKernel" href="pyrex.EventKernel.html" > 
@@ -53,7 +54,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -93,57 +94,44 @@
 <h1>pyrex.File<a class="headerlink" href="#pyrex-file" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.File">
-<em class="property">class </em><code class="descclassname">pyrex.</code><code class="descname">File</code><a class="headerlink" href="#pyrex.File" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.</code><code class="sig-name descname">File</code><a class="headerlink" href="#pyrex.File" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for reading or writing data files.</p>
 <p>Works as a context manager and allows for reading or writing
 simulation/real data or analysis-level data to the given file. Chooses
 the appropriate class for handling the given file type.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">File name to open in the given write mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>File name to open in the given write mode.</p>
 </dd>
-<dt><strong>mode</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">Mode with which to open the file.</p>
+<dt><strong>mode</strong><span class="classifier">str, optional</span></dt><dd><p>Mode with which to open the file.</p>
 </dd>
-<dt><strong>**kwargs</strong></dt>
-<dd><p class="first last">Keyword arguments passed on to the appropriate file handler.</p>
+<dt><strong>**kwargs</strong></dt><dd><p>Keyword arguments passed on to the appropriate file handler.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5Reader</span></code></dt>
-<dd>Class for reading data from an hdf5 file.</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5Writer</span></code></dt>
-<dd>Class for writing data to an hdf5 file.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.io.HDF5Reader.html#pyrex.io.HDF5Reader" title="pyrex.io.HDF5Reader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.io.HDF5Reader</span></code></a></dt><dd><p>Class for reading data from an hdf5 file.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.io.HDF5Writer.html#pyrex.io.HDF5Writer" title="pyrex.io.HDF5Writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.io.HDF5Writer</span></code></a></dt><dd><p>Class for writing data to an hdf5 file.</p>
+</dd>
 </dl>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>readers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
-<dd><p class="first last">Dictionary with file extensions as keys and values with the
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>readers</strong><span class="classifier">dict</span></dt><dd><p>Dictionary with file extensions as keys and values with the
 corresponding classes used to handle reading of those file types.</p>
 </dd>
-<dt><strong>writers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
-<dd><p class="first last">Dictionary with file extensions as keys and values with the
+<dt><strong>writers</strong><span class="classifier">dict</span></dt><dd><p>Dictionary with file extensions as keys and values with the
 corresponding classes used to handle writing of those file types.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -159,7 +147,7 @@ corresponding classes used to handle writing of those file types.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -228,10 +216,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

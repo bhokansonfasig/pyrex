@@ -92,7 +92,7 @@ The :meth:`Signal.with_times` method will interpolate/extrapolate the signal's v
 
 .. image:: _static/example_outputs/signal_4.png
 
-The :meth:`Signal.filter_frequencies` method will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive freqeuncies (as below) the filtered frequency may exhibit strange behavior, including potentially having an imaginary part. To resolve that issue, pass ``force_real=True`` to the :meth:`Signal.filter_frequencies` method which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal. ::
+The :meth:`Signal.filter_frequencies` method will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive frequencies (as below) the filtered frequency may exhibit strange behavior, including potentially having an imaginary part. To resolve that issue, pass ``force_real=True`` to the :meth:`Signal.filter_frequencies` method which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal. ::
 
     def lowpass_filter(frequency):
         if frequency < 1:
@@ -218,12 +218,12 @@ The basic properties of an :class:`Antenna` object are :attr:`is_hit` and :attr:
     basic_antenna.is_hit == False
     basic_antenna.waveforms == []
 
-The :class:`Antenna` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are :attr:`efficiency` and :attr:`antenna_factor`, and the methods are :meth:`Antenna.response`, :meth:`Antenna.directional_gain`, and :meth:`Antenna.polarization_gain`. The attributes are to be set and the methods overwritten in order to custmoize the way the antenna responds to incoming signals. :attr:`efficiency` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). :attr:`antenna_factor` is a factor used in converting received electric fields into voltages (:attr:`antenna_factor` = E / V; default value is ``1``). :meth:`Antenna.response` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). :meth:`Antenna.directional_gain` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). :meth:`Antenna.directional_gain` is dependent on the antenna's orientation, which is defined by its :attr:`z_axis` and :attr:`x_axis` attributes. To change the antenna's orientation, use the :meth:`Antenna.set_orientation` method which takes ``z_axis`` and ``x_axis`` arguments. Finally, :meth:`Antenna.polarization_gain` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
+The :class:`Antenna` class contains two attributes and three methods which represent characteristics of the antenna as they relate to signal processing. The attributes are :attr:`efficiency` and :attr:`antenna_factor`, and the methods are :meth:`Antenna.frequency_response`, :meth:`Antenna.directional_gain`, and :meth:`Antenna.polarization_gain`. The attributes are to be set and the methods overwritten in order to customize the way the antenna responds to incoming signals. :attr:`efficiency` is simply a scalar which multiplies the signal the antenna receives (default value is ``1``). :attr:`antenna_factor` is a factor used in converting received electric fields into voltages (:attr:`antenna_factor` = E / V; default value is ``1``). :meth:`Antenna.frequency_response` takes a frequency or list of frequencies (in Hz) and returns the frequency response of the antenna at each frequency given (default always returns ``1``). :meth:`Antenna.directional_gain` takes angles theta and phi in the antenna's coordinates and returns the antenna's gain for a signal coming from that direction (default always returns ``1``). :meth:`Antenna.directional_gain` is dependent on the antenna's orientation, which is defined by its :attr:`z_axis` and :attr:`x_axis` attributes. To change the antenna's orientation, use the :meth:`Antenna.set_orientation` method which takes ``z_axis`` and ``x_axis`` arguments. Finally, :meth:`Antenna.polarization_gain` takes a polarization vector and returns the antenna's gain for a signal with that polarization (default always returns ``1``). ::
 
     basic_antenna.efficiency == 1
     basic_antenna.antenna_factor == 1
     freqs = [1, 2, 3, 4, 5]
-    basic_antenna.response(freqs) == [1, 1, 1, 1, 1]
+    basic_antenna.frequency_response(freqs) == [1, 1, 1, 1, 1]
     basic_antenna.directional_gain(theta=np.pi/2, phi=0) == 1
     basic_antenna.polarization_gain([0,0,1]) == 1
 
@@ -477,16 +477,16 @@ For convenience, objects derived from the :class:`Detector` class can be added i
 Ice and Earth Models
 ====================
 
-PyREx provides a class :class:`IceModel`, which is an alias for whichever south pole ice model class is preferred (currently :class:`pyrex.ice_model.AntarcticIce`). The :class:`IceModel` class provides class methods for calculating characteristics of the ice at different depths and frequencies outlined below::
+PyREx provides an ice model object :data:`ice`, which is an instance of whichever ice model class is preferred (currently :class:`pyrex.ice_model.AntarcticIce`). The :data:`ice` object provides methods for calculating characteristics of the ice at different depths and frequencies outlined below::
 
     depth = -1000 # m
-    pyrex.IceModel.temperature(depth)
-    pyrex.IceModel.index(depth)
-    pyrex.IceModel.gradient(depth)
+    pyrex.ice.temperature(depth)
+    pyrex.ice.index(depth)
+    pyrex.ice.gradient(depth)
     frequency = 1e8 # Hz
-    pyrex.IceModel.attenuation_length(depth, frequency)
+    pyrex.ice.attenuation_length(depth, frequency)
 
-PyREx also provides two functions realted to its earth model: :func:`prem_density` and :func:`slant_depth`. :func:`prem_density` calculates the density in grams per cubic centimeter of the earth at a given radius::
+PyREx also provides two functions related to its earth model: :func:`prem_density` and :func:`slant_depth`. :func:`prem_density` calculates the density in grams per cubic centimeter of the earth at a given radius::
 
     radius = 6360000 # m
     pyrex.prem_density(radius)
@@ -505,7 +505,7 @@ Ray Tracing
 PyREx provides ray tracing in the :class:`RayTracer` and :class:`RayTracePath` classes. :class:`RayTracer` takes a launch point and receiving point as arguments (and optionally an ice model and z-step), and will solve for the paths between the points (as :class:`RayTracePath` objects). ::
 
     start = (0, 0, -250) # m
-    finish = (100, 0, -100) # m
+    finish = (750, 0, -100) # m
     my_ray_tracer = pyrex.RayTracer(from_point=start, to_point=finish)
 
 The two most useful properties of :class:`RayTracer` are :attr:`exists` and :attr:`solutions`. The :attr:`exists` property is a boolean value of whether or not path solutions exist between the launch and receiving points. :attr:`solutions` is the list of (zero or two) :class:`RayTracePath` objects which exist between the launch and receiving points. There are many other properties available in :class:`RayTracer`, outlined in the :ref:`pyrex-api` section, which are mostly used internally and maybe not interesting otherwise. ::
@@ -523,15 +523,15 @@ The :class:`RayTracePath` class contains the attributes of the paths between poi
 
 :class:`RayTracePath` also provides a :meth:`RayTracePath.attenuation` method which gives the attenuation of the signal at a given frequency (or frequencies), and a :attr:`RayTracePath.coordinates` property which gives the x, y, and z coordinates of the path (useful mostly for plotting, and are not guaranteed to be accurate for other purposes). ::
 
-    frequency = 500e6 # Hz
-    my_path.attenuation(100e6)
+    frequency = 100e6 # Hz
+    my_path.attenuation(frequency)
     my_path.attenuation(np.linspace(1e8, 1e9, 11))
     plt.plot(my_path.coordinates[0], my_path.coordinates[2])
     plt.show()
 
 .. image:: _static/example_outputs/ray_tracing_1.png
 
-Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. :meth:`RayTracePath.propagate` can also propagate the polarization vector of the signal, either independently or in the same function call. ::
+Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from the launch point to the receiving point of the path by applying the frequency-dependent attenuation from :meth:`RayTracePath.attenuation`, and shifting the signal times by :attr:`RayTracePath.tof`. Note that it does not apply a 1/R effect based on the path length. If needed, this effect should be added in manually. :meth:`RayTracePath.propagate` returns the :class:`Signal` objects and polarization vectors of the s-polarized and p-polarized portions of the signal. ::
 
     time_array = np.linspace(0, 5e-9, 1001)
     launch_signal = (
@@ -540,12 +540,16 @@ Finally, :meth:`RayTracePath.propagate` propagates a :class:`Signal` object from
     )
     plt.plot(launch_signal.times*1e9, launch_signal.values)
     plt.show()
-    launch_pol = 1/np.sqrt(np.array([3, 3, 3]))
+    # Polarize perpendicular to the path in the x-z plane
+    launch_pol = np.cross(my_path.emitted_direction, (0, 1, 0))
+    print(launch_pol)
 
-    rec_signal, rec_pol = my_path.propagate(launch_signal, polarization=launch_pol)
-    plt.plot(rec_signal.times*1e9, rec_signal.values)
+    rec_signals, rec_pols = my_path.propagate(launch_signal, polarization=launch_pol)
+    plt.plot(rec_signals[0].times*1e9, rec_signals[0].values, label="s-pol signal")
+    plt.plot(rec_signals[1].times*1e9, rec_signals[1].values, label="p-pol signal")
+    plt.legend()
     plt.show()
-    print(rec_pol)
+    print(rec_pols)
 
 .. image:: _static/example_outputs/ray_tracing_2.png
 .. image:: _static/example_outputs/ray_tracing_3.png
@@ -576,7 +580,7 @@ The :attr:`interaction` attribute is an instance of an :class:`Interaction` clas
     particle.interaction.cross_section
     particle.interaction.interaction_length
 
-PyREx also includes a number of classes for generating random neutrinos in various ice volumes. The :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes generate neutrinos uniformly in cylindrical or rectangular volumes respectively. The :class:`CylindricalShadowGenerator` and :class:`RectangularShadowGenerator` classes are similar, but take into account Earth shadowing when generating particles. These generator classes take as arguments the necessary dimensions and an energy (which can be a scalar value or a function returning scalar values). A desired flavor ratio can also be given::
+PyREx also includes a number of classes for generating random neutrinos in various ice volumes. The :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes generate neutrinos uniformly in cylindrical or rectangular volumes respectively. These generator classes take as arguments the necessary dimensions and an energy (which can be a scalar value or a function returning scalar values). Additional arguments include whether to reject events shadowed by the Earth, as well as a desired flavor ratio::
 
     volume_radius = 1000 # m
     volume_depth = 500 # m
@@ -584,6 +588,7 @@ PyREx also includes a number of classes for generating random neutrinos in vario
     my_generator = pyrex.CylindricalGenerator(dr=volume_radius,
                                               dz=volume_depth,
                                               energy=particle_energy,
+                                              shadow=False,
                                               flavor_ratio=flavor_ratio)
     my_generator.create_event()
 
@@ -602,8 +607,7 @@ Full Simulation
 
 PyREx provides the :class:`EventKernel` class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The :class:`EventKernel` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
 
-    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
-                                                          energy=1e8)
+    particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
@@ -614,13 +618,15 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
         )
     kernel = pyrex.EventKernel(generator=particle_generator,
                                antennas=detector,
-                               ice_model=pyrex.IceModel,
+                               ice_model=pyrex.ice,
                                ray_tracer=pyrex.RayTracer,
                                signal_times=np.linspace(-20e-9, 80e-9, 2000,
                                                         endpoint=False))
 
     triggered = False
     while not triggered:
+        for antenna in detector:
+            antenna.clear()
         event = kernel.event()
         for antenna in detector:
             if antenna.is_hit:
@@ -645,21 +651,19 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
             plt.title(antenna.name + " - waveform "+str(i))
 
 .. image:: _static/example_outputs/full_sim_1.png
-.. image:: _static/example_outputs/full_sim_2.png
 
 
 
 Data File I/O
 =============
 
-The :class:`File` class controls the reading and writing of data files for simulation. At the most basic it takes a filename and mode in which to open the file, and if the file type is supported the object will be the appropriate file handler. Like python's :func:`open` function, the :class:`File` class works as a context manager and should preferrably be used in :const:`with` statements. Currently the only data file type supported by PyREx is HDF5. Depending on whether an HDF5 file is being read or written there are additional keyword arguments that may be provided to :class:`File`. HDF5 files support the following modes: 'r' for read-only, 'w' for write (overwrites existing file), 'a'/'r+' for append (doesn't overwrite existing file), and 'x' for write (fails if file exists already).
+The :class:`File` class controls the reading and writing of data files for simulation. At the most basic it takes a filename and mode in which to open the file, and if the file type is supported the object will be the appropriate file handler. Like python's :func:`open` function, the :class:`File` class works as a context manager and should preferably be used in :const:`with` statements. Currently the only data file type supported by PyREx is HDF5. Depending on whether an HDF5 file is being read or written there are additional keyword arguments that may be provided to :class:`File`. HDF5 files support the following modes: 'r' for read-only, 'w' for write (overwrites existing file), 'a'/'r+' for append (doesn't overwrite existing file), and 'x' for write (fails if file exists already).
 
 If writing an HDF5 file, the optional arguments specify which event data to write. The available write options are ``write_particles``, ``write_triggers``, ``write_antenna_triggers``, ``write_rays``, ``write_noise``, and ``write_waveforms``. Most of these are self-explanatory, but ``write_antenna_triggers`` will write triggering information for each antenna in the detector and ``write_noise`` will write the frequency data required to replicate noise waveforms. The last optional argument is ``require_trigger`` which specifies which data should only be written when the detector is triggered. If a boolean value, requires trigger or not for all data with the exception of particle and trigger data, which is always written. If a list of strings, the listed data will require triggers and any other data will always be written.
 
 The most straightforward way to write data files is to pass a :class:`File` object to the :class:`EventKernel` object handling the simulation. In such a case, a global trigger condition should be passed to the :class:`EventKernel` as well, either as a function which acts on a detector object, or as the "global" key in a dictionary of functions representing various trigger conditions::
 
-    particle_generator = pyrex.CylindricalShadowGenerator(dr=1000, dz=1000,
-                                                          energy=1e8)
+    particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
     detector = []
     for i, z in enumerate([-100, -150, -200, -250]):
         detector.append(
@@ -694,6 +698,8 @@ The most straightforward way to write data files is to pass a :class:`File` obje
                                    triggers=trigger_conditions)
 
         for _ in range(10):
+            for antenna in detector:
+                antenna.clear()
             event, triggered = kernel.event()
 
 If you want to manually write the data file, then the :meth:`File.set_detector` and :meth:`File.add` methods are necessary. :meth:`File.set_detector` associates the given antennas with the file object (and writes their data) and :meth:`File.add` adds the data from the given event to the file. Here we also manually open and close the file object with :meth:`File.open` and :meth:`File.close`, and add some metadata to the file with :meth:`File.add_file_metadata`::
@@ -709,6 +715,8 @@ If you want to manually write the data file, then the :meth:`File.set_detector` 
                                antennas=detector)
 
     for _ in range(10):
+        for antenna in detector:
+            antenna.clear()
         event = kernel.event()
         triggered = False
         for antenna in detector:
@@ -723,11 +731,14 @@ The :class:`File` objects also support writing miscellaneous analysis data to th
 
     with pyrex.File('my_data_file.h5', 'a') as f:
         f.create_analysis_metadataset("effective_volume")
-        gen_vol = 1000*1000*500
+        gen_vol = (np.pi*1000**2)*1000
+        # Just set an arbitrary number of triggers for now. We'll get into reading
+        # files in the examples below.
+        n_triggers = 5
         data = {
             "generation_volume": gen_vol,
-            "veff": 5/10*gen_vol,
-            "error": np.sqrt(5)/10*gen_vol,
+            "veff": n_triggers/10*gen_vol,
+            "error": np.sqrt(n_triggers)/10*gen_vol,
             "unit": "m^3"
         }
         f.add_analysis_metadata("effective_volume", data)
@@ -774,15 +785,15 @@ HDF5 files opened in read-only mode can also be iterated over, which allows acce
             print(event.is_neutrino, event.is_nubar, event.flavor)
             print(event.triggered, event.get_triggered_components())
 
-        for event in f[2:6:2]:
+        for event in f[1:5:2]:
             print(event.get_particle_info('particle_name'),
                   event.get_particle_info('vertex'))
             print(np.degrees(event.get_rays_info('receiving_angle')))
 
-        print(f[4].get_rays_info('tof'))
+        print(f[3].get_rays_info('tof'))
 
         # No waveform data was stored above, so this will fail if run
-        # wfs = f[5].get_waveforms(antenna_id=4)
+        # wfs = f[3].get_waveforms(antenna_id=2)
 
 
 

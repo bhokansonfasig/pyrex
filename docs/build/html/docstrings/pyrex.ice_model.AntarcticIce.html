@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ice_model.AntarcticIce &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.ice_model.AntarcticIce &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,14 +23,15 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" >
-    <link rel="next" title="pyrex.ice_model.NewcombIce" href="pyrex.ice_model.NewcombIce.html" >
+    <link rel="next" title="pyrex.ice_model.UniformIce" href="pyrex.ice_model.UniformIce.html" >
     <link rel="prev" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" > 
   </head>
   <body>
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="docutils literal notranslate"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
+          <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
     </ul>
               
               
@@ -70,7 +71,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="pyrex.ice_model.NewcombIce.html" title="pyrex.ice_model.NewcombIce"
+        <a href="pyrex.ice_model.UniformIce.html" title="pyrex.ice_model.UniformIce"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -94,51 +95,86 @@
 <h1>pyrex.ice_model.AntarcticIce<a class="headerlink" href="#pyrex-ice-model-antarcticice" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.ice_model.AntarcticIce">
-<em class="property">class </em><code class="descclassname">pyrex.ice_model.</code><code class="descname">AntarcticIce</code><a class="headerlink" href="#pyrex.ice_model.AntarcticIce" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.ice_model.</code><code class="sig-name descname">AntarcticIce</code><span class="sig-paren">(</span><em class="sig-param">n0=1.78</em>, <em class="sig-param">k=0.43</em>, <em class="sig-param">a=0.0132</em>, <em class="sig-param">valid_range=(-2850</em>, <em class="sig-param">0)</em>, <em class="sig-param">index_above=1</em>, <em class="sig-param">index_below=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.AntarcticIce" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class describing the ice at the south pole.</p>
 <p>For convenience, consists of static methods and class methods, so creating
 an instance of the class may not be necessary. In all methods, the depth
 z should be given as a negative value if it is below the surface of the
 ice.</p>
-<p class="rubric">Notes</p>
-<p>Mostly based on ice characteristics outlined by Matt Newcomb.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>k, a, n0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Parameters of the index of refraction of the ice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n0</strong><span class="classifier">float, optional</span></dt><dd><p>Asymptotic index of refraction of the deep ice.</p>
 </dd>
-<dt><strong>thickness</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Thickness of the ice sheet.</p>
+<dt><strong>k</strong><span class="classifier">float, optional</span></dt><dd><p>Multiplicative factor for the index of refraction parameterization.</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float, optional</span></dt><dd><p>Exponential factor for the index of refraction parameterization with
+units of 1/m.</p>
+</dd>
+<dt><strong>valid_range</strong><span class="classifier">array_like of float, optional</span></dt><dd><p>Range of depths over which the uniform index of refraction applies.
+Assumed to have two elements where the first value is lower (deeper,
+more negative) than the second.</p>
+</dd>
+<dt><strong>index_above</strong><span class="classifier">float or None, optional</span></dt><dd><p>Index of refraction above the ice region. If <em class="xref py py-obj">None</em>, uses the same
+index of refraction as the top of the ice.</p>
+</dd>
+<dt><strong>index_below</strong><span class="classifier">float or None, optional</span></dt><dd><p>Index of refraction below the ice region. If <em class="xref py py-obj">None</em>, uses the same
+index of refraction as the bottom of the ice.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Parameterizations mostly based on South Pole ice characteristics outlined
+by Matt Newcomb <a class="reference internal" href="#rb0a68e7cd003-1" id="id1">[1]</a>.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rb0a68e7cd003-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>)</span></dt>
+<dd><ol class="upperalpha simple" start="13">
+<li><p>Newcomb (2013) <a class="reference external" href="http://icecube.wisc.edu/~araproject/radio/">http://icecube.wisc.edu/~araproject/radio/</a></p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n0, k, a</strong><span class="classifier">float</span></dt><dd><p>Parameters of the index of refraction of the ice.</p>
+</dd>
+<dt><strong>valid_range</strong><span class="classifier">tuple</span></dt><dd><p>Range of depths over which the ice model is valid. Consists of two
+elements where the first value is lower (deeper, more negative) than
+the second.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ice_model.AntarcticIce.index_above.html#pyrex.ice_model.AntarcticIce.index_above" title="pyrex.ice_model.AntarcticIce.index_above"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index_above</span></code></a></dt><dd><p>The index of refraction above the ice’s valid range.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ice_model.AntarcticIce.index_below.html#pyrex.ice_model.AntarcticIce.index_below" title="pyrex.ice_model.AntarcticIce.index_below"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index_below</span></code></a></dt><dd><p>The index of refraction below the ice’s valid range.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.attenuation_length.html#pyrex.ice_model.AntarcticIce.attenuation_length" title="pyrex.ice_model.AntarcticIce.attenuation_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation_length</span></code></a>(z,&nbsp;f)</td>
-<td>Calculates attenuation lengths for given depths and frequencies.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.AntarcticIce.attenuation_length.html#pyrex.ice_model.AntarcticIce.attenuation_length" title="pyrex.ice_model.AntarcticIce.attenuation_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation_length</span></code></a>(z, f)</p></td>
+<td><p>Calculates attenuation lengths for given depths and frequencies.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.depth_with_index.html#pyrex.ice_model.AntarcticIce.depth_with_index" title="pyrex.ice_model.AntarcticIce.depth_with_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">depth_with_index</span></code></a>(n)</td>
-<td>Calculates the corresponding depth for a given index of refraction.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.AntarcticIce.contains.html#pyrex.ice_model.AntarcticIce.contains" title="pyrex.ice_model.AntarcticIce.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains</span></code></a>(point)</p></td>
+<td><p>Determines if the given point is within the ice’s valid range.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.gradient.html#pyrex.ice_model.AntarcticIce.gradient" title="pyrex.ice_model.AntarcticIce.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a>(z)</td>
-<td>Calculates the gradient of the index of refraction at a given depth.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.AntarcticIce.depth_with_index.html#pyrex.ice_model.AntarcticIce.depth_with_index" title="pyrex.ice_model.AntarcticIce.depth_with_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">depth_with_index</span></code></a>(n)</p></td>
+<td><p>Calculates the corresponding depth for a given index of refraction.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.index.html#pyrex.ice_model.AntarcticIce.index" title="pyrex.ice_model.AntarcticIce.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(z)</td>
-<td>Calculates the index of refraction of the ice at a given depth.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.AntarcticIce.gradient.html#pyrex.ice_model.AntarcticIce.gradient" title="pyrex.ice_model.AntarcticIce.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a>(z)</p></td>
+<td><p>Calculates the gradient of the index of refraction at a given depth.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.ice_model.AntarcticIce.temperature.html#pyrex.ice_model.AntarcticIce.temperature" title="pyrex.ice_model.AntarcticIce.temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temperature</span></code></a>(z)</td>
-<td>Calculates the temperature of the ice at a given depth.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.AntarcticIce.index.html#pyrex.ice_model.AntarcticIce.index" title="pyrex.ice_model.AntarcticIce.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(z)</p></td>
+<td><p>Calculates the index of refraction of the ice at a given depth.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.AntarcticIce.temperature.html#pyrex.ice_model.AntarcticIce.temperature" title="pyrex.ice_model.AntarcticIce.temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temperature</span></code></a>(z)</p></td>
+<td><p>Calculates the temperature of the ice at a given depth.</p></td>
 </tr>
 </tbody>
 </table>
@@ -157,7 +193,7 @@ ice.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -226,10 +262,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

@@ -3,4 +3,4 @@ pyrex.EmptySignal.value\_type
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: EmptySignal.value_type
+.. autoproperty:: EmptySignal.value_type

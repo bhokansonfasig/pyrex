@@ -3,4 +3,4 @@ pyrex.RayTracer.solutions
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracer.solutions
+.. autoproperty:: RayTracer.solutions

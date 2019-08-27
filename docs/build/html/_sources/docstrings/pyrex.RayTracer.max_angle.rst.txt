@@ -3,4 +3,4 @@ pyrex.RayTracer.max\_angle
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracer.max_angle
+.. autoproperty:: RayTracer.max_angle

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Custom Antennas (pyrex.custom.ara.antenna) &mdash; PyREx 1.8.2 documentation</title>
+    <title>Custom Antennas (pyrex.custom.ara.antenna) &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,14 +23,15 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="Askaryan Radio Array (pyrex.custom.ara)" href="../custom-ara.html" >
-    <link rel="next" title="pyrex.custom.ara.antenna._read_directionality_data" href="../docstrings/pyrex.custom.ara.antenna._read_directionality_data.html" >
+    <link rel="next" title="pyrex.custom.ara.antenna._read_arasim_antenna_data" href="../docstrings/pyrex.custom.ara.antenna._read_arasim_antenna_data.html" >
     <link rel="prev" title="pyrex.custom.ara.HexagonalGrid" href="../docstrings/pyrex.custom.ara.HexagonalGrid.html" > 
   </head>
   <body>
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
+          <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
     </ul>
               
               
@@ -70,7 +71,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="../docstrings/pyrex.custom.ara.antenna._read_directionality_data.html" title="pyrex.custom.ara.antenna._read_directionality_data"
+        <a href="../docstrings/pyrex.custom.ara.antenna._read_arasim_antenna_data.html" title="pyrex.custom.ara.antenna._read_arasim_antenna_data"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -95,35 +96,29 @@
 <p>Module containing customized antenna classes for ARA.</p>
 <p>Many of the methods here mirror methods used in the antennas in AraSim, to
 ensure that AraSim results can be matched.</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna._read_directionality_data.html#pyrex.custom.ara.antenna._read_directionality_data" title="pyrex.custom.ara.antenna._read_directionality_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_directionality_data</span></code></a>(filename)</td>
-<td>Gather antenna directionality data from a data file.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna._read_arasim_antenna_data.html#pyrex.custom.ara.antenna._read_arasim_antenna_data" title="pyrex.custom.ara.antenna._read_arasim_antenna_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_arasim_antenna_data</span></code></a></p></td>
+<td><p>Gather antenna directionality data from an AraSim-formatted data file.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna._read_filter_data.html#pyrex.custom.ara.antenna._read_filter_data" title="pyrex.custom.ara.antenna._read_filter_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_filter_data</span></code></a>(filename)</td>
-<td>Gather frequency-dependent filtering data from a data file.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna._read_filter_data.html#pyrex.custom.ara.antenna._read_filter_data" title="pyrex.custom.ara.antenna._read_filter_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_filter_data</span></code></a></p></td>
+<td><p>Gather frequency-dependent filtering data from a data file.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.ARAAntenna.html#pyrex.custom.ara.antenna.ARAAntenna" title="pyrex.custom.ara.antenna.ARAAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAAntenna</span></code></a>(position,&nbsp;center_frequency,&nbsp;…)</td>
-<td>Antenna class to be used for ARA antennas.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.ARAAntenna.html#pyrex.custom.ara.antenna.ARAAntenna" title="pyrex.custom.ara.antenna.ARAAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAAntenna</span></code></a></p></td>
+<td><p>Antenna class to be used for ARA antennas.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.HpolBase.html#pyrex.custom.ara.antenna.HpolBase" title="pyrex.custom.ara.antenna.HpolBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HpolBase</span></code></a>(position,&nbsp;center_frequency,&nbsp;…[,&nbsp;…])</td>
-<td>Antenna class to be used for ARA Hpol antennas.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.ARAAntennaSystem.html#pyrex.custom.ara.antenna.ARAAntennaSystem" title="pyrex.custom.ara.antenna.ARAAntennaSystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAAntennaSystem</span></code></a></p></td>
+<td><p>Antenna system extending base ARA antenna with front-end processing.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.VpolBase.html#pyrex.custom.ara.antenna.VpolBase" title="pyrex.custom.ara.antenna.VpolBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VpolBase</span></code></a>(position,&nbsp;center_frequency,&nbsp;…[,&nbsp;…])</td>
-<td>Antenna class to be used for ARA Vpol antennas.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.HpolAntenna.html#pyrex.custom.ara.antenna.HpolAntenna" title="pyrex.custom.ara.antenna.HpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HpolAntenna</span></code></a></p></td>
+<td><p>ARA Hpol (“quad-slot”) antenna system with front-end processing.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.ARAAntennaSystem.html#pyrex.custom.ara.antenna.ARAAntennaSystem" title="pyrex.custom.ara.antenna.ARAAntennaSystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAAntennaSystem</span></code></a>(base_antenna,&nbsp;name,&nbsp;…[,&nbsp;…])</td>
-<td>Antenna system extending base ARA antenna with front-end processing.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.HpolAntenna.html#pyrex.custom.ara.antenna.HpolAntenna" title="pyrex.custom.ara.antenna.HpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HpolAntenna</span></code></a>(name,&nbsp;position,&nbsp;power_threshold)</td>
-<td>ARA Hpol (“quad-slot”) antenna system with front-end processing.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.VpolAntenna.html#pyrex.custom.ara.antenna.VpolAntenna" title="pyrex.custom.ara.antenna.VpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VpolAntenna</span></code></a>(name,&nbsp;position,&nbsp;power_threshold)</td>
-<td>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.ara.antenna.VpolAntenna.html#pyrex.custom.ara.antenna.VpolAntenna" title="pyrex.custom.ara.antenna.VpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VpolAntenna</span></code></a></p></td>
+<td><p>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</p></td>
 </tr>
 </tbody>
 </table>
@@ -140,7 +135,7 @@ ensure that AraSim results can be matched.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -209,10 +204,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

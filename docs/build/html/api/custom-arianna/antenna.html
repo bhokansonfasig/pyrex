@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Custom Antennas (pyrex.custom.arianna.antenna) &mdash; PyREx 1.8.2 documentation</title>
+    <title>Custom Antennas (pyrex.custom.arianna.antenna) &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="Antarctic Ross Ice-Shelf Antenna Neutrino Array (pyrex.custom.arianna)" href="../custom-arianna.html" >
     <link rel="next" title="pyrex.custom.arianna.antenna._read_response_data" href="../docstrings/pyrex.custom.arianna.antenna._read_response_data.html" >
     <link rel="prev" title="pyrex.custom.arianna.LPDA" href="../docstrings/pyrex.custom.arianna.LPDA.html" > 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-arianna.html" accesskey="U">Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.arianna</span></code>)</a></li> 
+          <li class="active"><a href="../custom-arianna.html" accesskey="U">Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.arianna</span></code>)</a></li> 
     </ul>
               
               
@@ -94,26 +95,26 @@
 <span id="custom-antennas-pyrex-custom-arianna-antenna"></span><h1>Custom Antennas (<a class="reference internal" href="#module-pyrex.custom.arianna.antenna" title="pyrex.custom.arianna.antenna"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.arianna.antenna</span></code></a>)<a class="headerlink" href="#module-pyrex.custom.arianna.antenna" title="Permalink to this headline">¶</a></h1>
 <p>Module containing customized antenna classes for ARIANNA.</p>
 <p>Based primarily on the LPDA implementation (and data) in NuRadioReco.</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna._read_response_data.html#pyrex.custom.arianna.antenna._read_response_data" title="pyrex.custom.arianna.antenna._read_response_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_response_data</span></code></a>(filename)</td>
-<td>Gather antenna directionality/polarization data from a WIPLD data file.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna._read_response_data.html#pyrex.custom.arianna.antenna._read_response_data" title="pyrex.custom.arianna.antenna._read_response_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_response_data</span></code></a></p></td>
+<td><p>Gather antenna effective height data from a set of WIPLD data files.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna._read_amplifier_data.html#pyrex.custom.arianna.antenna._read_amplifier_data" title="pyrex.custom.arianna.antenna._read_amplifier_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_amplifier_data</span></code></a>(gain_filename,&nbsp;…[,&nbsp;…])</td>
-<td>Gather frequency-dependent amplifier data from data files.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna._read_amplifier_data.html#pyrex.custom.arianna.antenna._read_amplifier_data" title="pyrex.custom.arianna.antenna._read_amplifier_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_amplifier_data</span></code></a></p></td>
+<td><p>Gather frequency-dependent amplifier data from data files.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna.ARIANNAAntenna.html#pyrex.custom.arianna.antenna.ARIANNAAntenna" title="pyrex.custom.arianna.antenna.ARIANNAAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARIANNAAntenna</span></code></a>(position,&nbsp;center_frequency,&nbsp;…)</td>
-<td>Antenna class to be used for ARIANNA antennas.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna.ARIANNAAntenna.html#pyrex.custom.arianna.antenna.ARIANNAAntenna" title="pyrex.custom.arianna.antenna.ARIANNAAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARIANNAAntenna</span></code></a></p></td>
+<td><p>Antenna class to be used for ARIANNA antennas.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.html#pyrex.custom.arianna.antenna.ARIANNAAntennaSystem" title="pyrex.custom.arianna.antenna.ARIANNAAntennaSystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARIANNAAntennaSystem</span></code></a>(name,&nbsp;position,&nbsp;threshold)</td>
-<td>Antenna system extending base ARIANNA antenna with front-end processing.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.html#pyrex.custom.arianna.antenna.ARIANNAAntennaSystem" title="pyrex.custom.arianna.antenna.ARIANNAAntennaSystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARIANNAAntennaSystem</span></code></a></p></td>
+<td><p>Antenna system extending base ARIANNA antenna with front-end processing.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna.LPDA.html#pyrex.custom.arianna.antenna.LPDA" title="pyrex.custom.arianna.antenna.LPDA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LPDA</span></code></a>(name,&nbsp;position,&nbsp;threshold[,&nbsp;…])</td>
-<td>ARIANNA LPDA antenna system.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.arianna.antenna.LPDA.html#pyrex.custom.arianna.antenna.LPDA" title="pyrex.custom.arianna.antenna.LPDA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LPDA</span></code></a></p></td>
+<td><p>ARIANNA LPDA antenna system.</p></td>
 </tr>
 </tbody>
 </table>
@@ -130,7 +131,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -199,10 +200,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

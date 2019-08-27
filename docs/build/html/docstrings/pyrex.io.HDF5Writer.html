@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.io.HDF5Writer &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.io.HDF5Writer &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,14 +23,15 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="Data File I/O (pyrex.io)" href="../api/io.html" >
-    <link rel="next" title="Askaryan Radio Array (pyrex.custom.ara)" href="../api/custom-ara.html" >
+    <link rel="next" title="pyrex.io.EventIterator" href="pyrex.io.EventIterator.html" >
     <link rel="prev" title="pyrex.io.HDF5Reader" href="pyrex.io.HDF5Reader.html" > 
   </head>
   <body>
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/io.html" accesskey="U">Data File I/O (<code class="docutils literal notranslate"><span class="pre">pyrex.io</span></code>)</a></li> 
+          <li class="active"><a href="../api/io.html" accesskey="U">Data File I/O (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.io</span></code>)</a></li> 
     </ul>
               
               
@@ -70,7 +71,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="../api/custom-ara.html" title="Askaryan Radio Array (pyrex.custom.ara)"
+        <a href="pyrex.io.EventIterator.html" title="pyrex.io.EventIterator"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -94,35 +95,27 @@
 <h1>pyrex.io.HDF5Writer<a class="headerlink" href="#pyrex-io-hdf5writer" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.io.HDF5Writer">
-<em class="property">class </em><code class="descclassname">pyrex.io.</code><code class="descname">HDF5Writer</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='x'</em>, <em>write_particles=True</em>, <em>write_triggers=True</em>, <em>write_antenna_triggers=False</em>, <em>write_rays=True</em>, <em>write_noise=False</em>, <em>write_waveforms=False</em>, <em>require_trigger=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Writer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.io.</code><code class="sig-name descname">HDF5Writer</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">mode='x'</em>, <em class="sig-param">write_particles=True</em>, <em class="sig-param">write_triggers=True</em>, <em class="sig-param">write_antenna_triggers=False</em>, <em class="sig-param">write_rays=True</em>, <em class="sig-param">write_noise=False</em>, <em class="sig-param">write_waveforms=False</em>, <em class="sig-param">require_trigger=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Writer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for writing data to an hdf5 file.</p>
 <p>Works as a context manager and allows for writing simulation/real data or
 analysis-level data to the given file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">File name to open in the given write mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>File name to open in the given write mode.</p>
 </dd>
-<dt><strong>mode</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">Mode with which to open the file. ‘w’ writes to the file, overwriting
+<dt><strong>mode</strong><span class="classifier">str, optional</span></dt><dd><p>Mode with which to open the file. ‘w’ writes to the file, overwriting
 any existing data. ‘x’ writes to the file, failing if the file exists.
 ‘a’ appends to the file, creating if the file doesn’t exist. ‘r+’
 appends to the file, failing if the file doesn’t exist.</p>
 </dd>
-<dt><strong>write_particles</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Whether to write particle metadata when adding event data to the file.</p>
+<dt><strong>write_particles</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to write particle metadata when adding event data to the file.</p>
 </dd>
-<dt><strong>write_waveforms</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Whether to write waveform data when adding event data to the file.</p>
+<dt><strong>write_waveforms</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to write waveform data when adding event data to the file.</p>
 </dd>
-<dt><strong>write_triggers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Whether to write trigger data when adding event data to the file.</p>
+<dt><strong>write_triggers</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to write trigger data when adding event data to the file.</p>
 </dd>
-<dt><strong>require_trigger</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool or list of str, optional</span></dt>
-<dd><p class="first last">Whether to write data only when the detector is triggered. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
+<dt><strong>require_trigger</strong><span class="classifier">bool or list of str, optional</span></dt><dd><p>Whether to write data only when the detector is triggered. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
 all data will be written for every event. If <code class="docutils literal notranslate"><span class="pre">True</span></code> most data will
 be written only on a detector trigger (particle metadata and trigger
 data will still be written for every event). If a list of strings is
@@ -131,75 +124,66 @@ detector trigger and all other data types will be written for every
 event.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Other Parameters:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><dl class="first docutils">
-<dt><strong>write_antenna_triggers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Whether to write trigger data of individual antennas when adding event
+</dd>
+<dt class="field-even">Other Parameters</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>write_antenna_triggers</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to write trigger data of individual antennas when adding event
 data to the file.</p>
 </dd>
-<dt><strong>write_rays</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Whether to write ray metadata when adding event data to the file.</p>
+<dt><strong>write_rays</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to write ray metadata when adding event data to the file.</p>
 </dd>
-<dt><strong>write_noise</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Whether to write noise-generation metadata when adding event data to
+<dt><strong>write_noise</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to write noise-generation metadata when adding event data to
 the file.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Name of the file (to be) opened.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.io.HDF5Writer.is_open.html#pyrex.io.HDF5Writer.is_open" title="pyrex.io.HDF5Writer.is_open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_open</span></code></a></dt>
-<dd><p class="first last">Boolean of whether the file is currently open.</p>
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Name of the file (to be) opened.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.io.HDF5Writer.has_detector.html#pyrex.io.HDF5Writer.has_detector" title="pyrex.io.HDF5Writer.has_detector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_detector</span></code></a></dt>
-<dd><p class="first last">Boolean of whether the file has a linked detector.</p>
+<dt><a class="reference internal" href="pyrex.io.HDF5Writer.is_open.html#pyrex.io.HDF5Writer.is_open" title="pyrex.io.HDF5Writer.is_open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_open</span></code></a></dt><dd><p>Boolean of whether the file is currently open.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.io.HDF5Writer.has_detector.html#pyrex.io.HDF5Writer.has_detector" title="pyrex.io.HDF5Writer.has_detector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_detector</span></code></a></dt><dd><p>Boolean of whether the file has a linked detector.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Writer.add.html#pyrex.io.HDF5Writer.add" title="pyrex.io.HDF5Writer.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(event[,&nbsp;triggered,&nbsp;ray_paths,&nbsp;…])</td>
-<td>Add the data from an event to the file.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.add.html#pyrex.io.HDF5Writer.add" title="pyrex.io.HDF5Writer.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(event[, triggered, ray_paths, …])</p></td>
+<td><p>Add the data from an event to the file.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.io.HDF5Writer.add_analysis_indices.html#pyrex.io.HDF5Writer.add_analysis_indices" title="pyrex.io.HDF5Writer.add_analysis_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_analysis_indices</span></code></a>(name,&nbsp;global_index,&nbsp;…)</td>
-<td>Write the given start and length indices to the event indices dataset.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.add_analysis_indices.html#pyrex.io.HDF5Writer.add_analysis_indices" title="pyrex.io.HDF5Writer.add_analysis_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_analysis_indices</span></code></a>(name, global_index, …)</p></td>
+<td><p>Write the given start and length indices to the event indices dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Writer.add_analysis_metadata.html#pyrex.io.HDF5Writer.add_analysis_metadata" title="pyrex.io.HDF5Writer.add_analysis_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_analysis_metadata</span></code></a>(name,&nbsp;metadata[,&nbsp;index])</td>
-<td>Writes the given <em class="xref py py-obj">metadata</em> to the analysis metadata group at <em class="xref py py-obj">name</em>.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.add_analysis_metadata.html#pyrex.io.HDF5Writer.add_analysis_metadata" title="pyrex.io.HDF5Writer.add_analysis_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_analysis_metadata</span></code></a>(name, metadata[, index])</p></td>
+<td><p>Writes the given <em class="xref py py-obj">metadata</em> to the analysis metadata group at <em class="xref py py-obj">name</em>.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.io.HDF5Writer.add_file_metadata.html#pyrex.io.HDF5Writer.add_file_metadata" title="pyrex.io.HDF5Writer.add_file_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_file_metadata</span></code></a>(metadata)</td>
-<td>Writes the given <em class="xref py py-obj">metadata</em> to the general file metadata group.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.add_file_metadata.html#pyrex.io.HDF5Writer.add_file_metadata" title="pyrex.io.HDF5Writer.add_file_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_file_metadata</span></code></a>(metadata)</p></td>
+<td><p>Writes the given <em class="xref py py-obj">metadata</em> to the general file metadata group.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Writer.close.html#pyrex.io.HDF5Writer.close" title="pyrex.io.HDF5Writer.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</td>
-<td>Close the hdf5 file.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.close.html#pyrex.io.HDF5Writer.close" title="pyrex.io.HDF5Writer.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p>Close the hdf5 file.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.io.HDF5Writer.create_analysis_dataset.html#pyrex.io.HDF5Writer.create_analysis_dataset" title="pyrex.io.HDF5Writer.create_analysis_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_analysis_dataset</span></code></a>(name,&nbsp;*args,&nbsp;**kwargs)</td>
-<td>Create the given analysis dataset in the file.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.create_analysis_dataset.html#pyrex.io.HDF5Writer.create_analysis_dataset" title="pyrex.io.HDF5Writer.create_analysis_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_analysis_dataset</span></code></a>(name, *args, **kwargs)</p></td>
+<td><p>Create the given analysis dataset in the file.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Writer.create_analysis_group.html#pyrex.io.HDF5Writer.create_analysis_group" title="pyrex.io.HDF5Writer.create_analysis_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_analysis_group</span></code></a>(name,&nbsp;*args,&nbsp;**kwargs)</td>
-<td>Create the given analysis group in the file.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.create_analysis_group.html#pyrex.io.HDF5Writer.create_analysis_group" title="pyrex.io.HDF5Writer.create_analysis_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_analysis_group</span></code></a>(name, *args, **kwargs)</p></td>
+<td><p>Create the given analysis group in the file.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.io.HDF5Writer.create_analysis_metadataset.html#pyrex.io.HDF5Writer.create_analysis_metadataset" title="pyrex.io.HDF5Writer.create_analysis_metadataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_analysis_metadataset</span></code></a>(name,&nbsp;*args,&nbsp;…)</td>
-<td>Create the given analysis metadata group in the file.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.create_analysis_metadataset.html#pyrex.io.HDF5Writer.create_analysis_metadataset" title="pyrex.io.HDF5Writer.create_analysis_metadataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_analysis_metadataset</span></code></a>(name, *args, …)</p></td>
+<td><p>Create the given analysis metadata group in the file.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.io.HDF5Writer.open.html#pyrex.io.HDF5Writer.open" title="pyrex.io.HDF5Writer.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>()</td>
-<td>Open the hdf5 file for writing.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.open.html#pyrex.io.HDF5Writer.open" title="pyrex.io.HDF5Writer.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>()</p></td>
+<td><p>Open the hdf5 file for writing.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pyrex.io.HDF5Writer.set_detector.html#pyrex.io.HDF5Writer.set_detector" title="pyrex.io.HDF5Writer.set_detector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_detector</span></code></a>(detector)</td>
-<td>Link the given <em class="xref py py-obj">detector</em> to the file.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.HDF5Writer.set_detector.html#pyrex.io.HDF5Writer.set_detector" title="pyrex.io.HDF5Writer.set_detector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_detector</span></code></a>(detector)</p></td>
+<td><p>Link the given <em class="xref py py-obj">detector</em> to the file.</p></td>
 </tr>
 </tbody>
 </table>
@@ -218,7 +202,7 @@ the file.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -287,10 +271,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

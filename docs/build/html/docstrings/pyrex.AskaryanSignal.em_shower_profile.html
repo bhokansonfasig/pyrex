@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.AskaryanSignal.em_shower_profile &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.AskaryanSignal.em_shower_profile &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -79,57 +80,51 @@
             
   <div class="section" id="pyrex-askaryansignal-em-shower-profile">
 <h1>pyrex.AskaryanSignal.em_shower_profile<a class="headerlink" href="#pyrex-askaryansignal-em-shower-profile" title="Permalink to this headline">¶</a></h1>
-<dl class="staticmethod">
+<dl class="method">
 <dt id="pyrex.AskaryanSignal.em_shower_profile">
-<em class="property">static </em><code class="descclassname">AskaryanSignal.</code><code class="descname">em_shower_profile</code><span class="sig-paren">(</span><em>z</em>, <em>energy</em>, <em>density=0.92</em>, <em>crit_energy=0.0786</em>, <em>rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AskaryanSignal.em_shower_profile" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-prename descclassname">AskaryanSignal.</code><code class="sig-name descname">em_shower_profile</code><span class="sig-paren">(</span><em class="sig-param">z</em>, <em class="sig-param">energy</em>, <em class="sig-param">density=0.92</em>, <em class="sig-param">crit_energy=0.0786</em>, <em class="sig-param">rad_length=36.08</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.AskaryanSignal.em_shower_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the electromagnetic shower longitudinal charge profile.</p>
 <p>The longitudinal charge profile is calculated for a given distance,
 shower energy, density, critical energy, and electron radiation length
 in ice.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>z</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
-<dd><p class="first last">Distance (m) along the shower at which to calculate the charge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>z</strong><span class="classifier">array_like</span></dt><dd><p>Distance (m) along the shower at which to calculate the charge.</p>
 </dd>
-<dt><strong>energy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Energy (GeV) of the shower.</p>
+<dt><strong>energy</strong><span class="classifier">float</span></dt><dd><p>Energy (GeV) of the shower.</p>
 </dd>
-<dt><strong>density</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Density (g/cm^3) of ice.</p>
+<dt><strong>density</strong><span class="classifier">float, optional</span></dt><dd><p>Density (g/cm^3) of ice.</p>
 </dd>
-<dt><strong>crit_energy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Critical energy (GeV) for shower formation.</p>
+<dt><strong>crit_energy</strong><span class="classifier">float, optional</span></dt><dd><p>Critical energy (GeV) for shower formation.</p>
 </dd>
-<dt><strong>rad_length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Electron radiation length (g/cm^2) in ice.</p>
+<dt><strong>rad_length</strong><span class="classifier">float, optional</span></dt><dd><p>Electron radiation length (g/cm^2) in ice.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>array_like</strong></dt>
-<dd><p class="first last">The charge (C) at the given distance along the shower.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>array_like</strong></dt><dd><p>The charge (C) at the given distance along the shower.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
-<p>Profile calculated by a simplified Heitler model based on equations 24
-and 25 of the radar feasibility paper <a class="reference internal" href="#r4b0f6afd3355-1" id="id1">[1]</a>.</p>
+<p>Profile calculated by the Greisen model <a class="reference internal" href="#r4b0f6afd3355-1" id="id1">[1]</a>, based on equations 24 and
+25 of the radar feasibility paper <a class="reference internal" href="#r4b0f6afd3355-2" id="id2">[2]</a>.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r4b0f6afd3355-1" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> K.D. de Vries et al, “On the feasibility of RADAR detection of
+<dl class="citation">
+<dt class="label" id="r4b0f6afd3355-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id3">2</a>)</span></dt>
+<dd><p>K. Greisen, “The Extensive Air Showers.” Prog. in Cosmic Ray
+Phys. <strong>III</strong>, 1 (1956).</p>
+</dd>
+<dt class="label" id="r4b0f6afd3355-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id4">2</a>)</span></dt>
+<dd><p>K.D. de Vries et al, “On the feasibility of RADAR detection of
 high-energy neutrino-induced showers in ice.” Astropart. Phys.
-<strong>60</strong>, 25-31 (2015).</td></tr>
-</tbody>
-</table>
+<strong>60</strong>, 25-31 (2015). <a class="reference external" href="https://arxiv.org/abs/1312.4331">arXiv:1312.4331</a>
+<a class="reference external" href="https://dx.doi.org/10.1016/j.astropartphys.2014.05.009">DOI:10.1016/j.astropartphys.2014.05.009</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -145,7 +140,7 @@ high-energy neutrino-induced showers in ice.” Astropart. Phys.
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -209,10 +204,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>
