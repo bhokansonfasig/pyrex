@@ -27,7 +27,8 @@ setup(
     license = about["__license__"],
     # Not using find_packages since it clashes with PEP 420 use
     packages = ['pyrex', 'pyrex.custom', 'pyrex.custom.irex',
-                'pyrex.custom.ara', 'pyrex.custom.arianna'],
+                'pyrex.custom.ara', 'pyrex.custom.arianna',
+                'pyrex.custom.layered_ice',],
     python_requires = '>= 3.6',
     install_requires = [
         'numpy>=1.13',
