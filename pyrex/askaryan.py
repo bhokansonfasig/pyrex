@@ -502,16 +502,22 @@ class ARVZAskaryanSignal(Signal):
         # Calculate the corresponding z-step (dz = dt / z_to_t)
         # If the z-step is too large compared to the expected shower maximum
         # length, then the result will be bad. Set dt_divider so that
-        # dz / max_length <= 0.1 (with dz=dt/z_to_t)
-        dt_divider = int(np.abs(10*dt/self.max_length(energy)/z_to_t)) + 1
+        # dz / max_length <= 0.01 (with dz=dt/z_to_t)
+        # Additionally if the z-step is too large compared to the RAC width,
+        # the result will be bad. So set dt_divider so that
+        # dz <= 10 ps / z_to_t
+        dt_divider_Q = int(np.abs(100*dt/self.max_length(energy)/z_to_t)) + 1
+        dt_divider_RAC = int(np.abs(dt/1e-11)) + 1
+        dt_divider = max(dt_divider_Q, dt_divider_RAC)
         dz = dt / dt_divider / z_to_t
         if dt_divider!=1:
             logger.debug("z-step of %g too large; dt_divider changed to %g",
                          dt / z_to_t, dt_divider)
 
-        # Create the charge-profile array up to 2.5 times the nominal
-        # shower maximum length (to reduce errors).
-        z_max = 2.5*self.max_length(energy)
+        # Create the charge-profile array up to 5 times the nominal shower
+        # maximum length (to reduce errors). Combined with the above, this
+        # guarantees that n_Q >= 500
+        z_max = 5*self.max_length(energy)
         n_Q = int(np.abs(z_max/dz))
         z_Q_vals = np.arange(n_Q) * np.abs(dz)
         Q = profile_function(z_Q_vals, energy)
@@ -541,7 +547,7 @@ class ARVZAskaryanSignal(Signal):
         RA_C = self.RAC(t_RAC_vals, energy)
 
         # Convolve Q and RAC to get unnormalized vector potential
-        if n_Q*n_RAC>1e6:
+        if dt_divider!=1:
             logger.debug("convolving %i Q points with %i RA_C points",
                          n_Q, n_RAC)
         convolution = scipy.signal.convolve(Q, RA_C, mode='full')
