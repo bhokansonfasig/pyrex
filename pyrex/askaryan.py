@@ -499,6 +499,16 @@ class ARVZAskaryanSignal(Signal):
         # Calculate the time step and the corresponding z-step
         dt = times[1] - times[0]
 
+        # For signals very close to the Cherenkov angle, simply use the
+        # RAC function at the Cherenkov angle. This saves time in the
+        # convolution, and the numerical accuracy of calculations involving
+        # z_to_t at this point is questionable anyway
+        if np.abs(z_to_t)<=10*np.finfo(z_to_t.dtype).eps:
+            logger.debug("Using RAC parameterization directly for theta=%f "+
+                         "(z_to_t=%e)", theta, z_to_t)
+            A = self.RAC(times, energy) / viewing_distance
+            return -np.diff(A) / dt
+
         # Calculate the corresponding z-step (dz = dt / z_to_t)
         # If the z-step is too large compared to the expected shower maximum
         # length, then the result will be bad. Set dt_divider so that
