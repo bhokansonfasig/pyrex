@@ -481,10 +481,8 @@ class ARVZAskaryanSignal(Signal):
         """
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
-        #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
-        #                            RAC(z(1-n*cos(theta))/c))
-        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
-        #                * c / (1-n*cos(theta))
+        #   A(theta, t) = convolution(Q(z), RAC(z*(1-n*cos(theta))/c))
+        #                 * sin(theta) / sin(theta_c) / R / integral(Q(z))
 
         # Fail gracefully if there is no shower (the energy is zero)
         if energy==0:
@@ -545,6 +543,8 @@ class ARVZAskaryanSignal(Signal):
         # extra points are added at the beginning and/or end of RAC.
         # If n_RAC is too large, the convolution can take a very long time.
         # In that case, points are removed from the beginning and/or end of RAC.
+        # The predetermined reasonable range based on the RAC function is
+        # +/- 10 ns around the peak
         t_tolerance = 10e-9
         t_start = times[0] - t0
         n_extra_beginning = int((t_start+t_tolerance)/dz/z_to_t) + 1
@@ -588,19 +588,13 @@ class ARVZAskaryanSignal(Signal):
         sin_theta_c = np.sqrt(1 - 1/n**2)
 
         # Scale the convolution by the necessary factors to get the true
-        # vector potential A
-        # z_to_t and dt_divider are divided based on trial and error to correct
-        # the normalization. They are not proven nicely like the other factors
+        # vector potential A.
+        # Since the numerical convolution performs a sum rather than an
+        # integral it needs to be scaled by dz = dt/dt_divider/z_to_t for the
+        # proper normalization. The dt factor will be canceled by the 1/dt in
+        # the conversion to electric field however, so it can be left out.
         A = (convolution * -1 * np.sin(theta) / sin_theta_c / LQ_tot
              / z_to_t / dt_divider)
-
-        # Not sure why, but multiplying A by -dt is necessary to fix
-        # normalization and dependence of amplitude on time spacing.
-        # Since E = -dA/dt = np.diff(A) / -dt, we can skip multiplying
-        # and later dividing by dt to save a little computational effort
-        # (at the risk of more cognitive effort when deciphering the code)
-        # So, to clarify, the above statement should have "* -dt" at the end
-        # to be the true value of A, and the below would then have "/ -dt"
 
         # Calculate electric field by taking derivative of vector potential,
         # and divide by the viewing distance (R)
