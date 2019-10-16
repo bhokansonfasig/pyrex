@@ -681,7 +681,6 @@ class EventIterator(HDF5Base):
         slc = slice(self._slice_start_event,
                     self._slice_end_event,
                     self._slice_step)
-        self._data['indices'] = self._object[self._locations['indices']]
         for key, val in self._locations.items():
             if key=="indices":
                 continue
@@ -693,10 +692,14 @@ class EventIterator(HDF5Base):
             index = self._get_index_from_list(val_org, self._index_keys)
             if index>=0:
                 self._data[key] = []
-                # TODO: Could probably optimize this to only read once
-                # from each dataset rather than N times
-                for start, length in self._data['indices'][slc, index]:
-                    self._data[key].append(self._object[val][start:start+length])
+                tmp_indices = self._object[self._locations['indices']][slc, index]
+                tmp_start = tmp_indices[0][0]
+                tmp_end = tmp_indices[-1][0] + tmp_indices[-1][1]
+                tmp = self._object[val][tmp_start:tmp_end]
+                start = 0
+                for length in tmp_indices[:, 1]:
+                    self._data[key].append(tmp[start:start+length])
+                    start = start+length
 
 
     def _confirm_iterating(self):
@@ -1090,9 +1093,9 @@ class HDF5Reader(BaseReader, HDF5Base):
         File name to open in read mode.
     slice_range : int, optional
         Number of events to include in each slice when iterating the file.
-        Increasing this value should result in an improvement in speed, while
-        decreasing this value should result in an improvement in memory
-        consumption.
+        Loads the entire file at once by default. For large files specifying
+        a value will result in the file being read in chunks, allowing for
+        reduced memory consumption at the cost of some speed.
 
     Attributes
     ----------
@@ -1108,7 +1111,7 @@ class HDF5Reader(BaseReader, HDF5Base):
                              file.
 
     """
-    def __init__(self, filename, slice_range=10):
+    def __init__(self, filename, slice_range=None):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
             self.filename = filename
             self._slice_range = slice_range
@@ -1263,6 +1266,9 @@ class HDF5Reader(BaseReader, HDF5Base):
         if self._locations["indices"] in self._file:
             self._num_events = len(self._file[self._locations["indices"]])
 
+        if self._slice_range is None:
+            self._slice_range = self._num_events
+
         self._bool_dict = self._get_bool_dict(self._file, self._locations)
 
         self._event_indices_key = self._get_keys_dict(self._file,
@@ -1337,9 +1343,9 @@ class HDF5Reader(BaseReader, HDF5Base):
             Array of all waveforms of the given type in the file.
 
         """
-        logger.warn("Getting all waveforms of a single type requires "+
-                    "iteration over the entire dataset. Consider iterating "+
-                    "the file manually instead.")
+        logger.warning("Getting all waveforms of a single type requires "+
+                       "iteration over the entire dataset. Consider iterating "+
+                       "the file manually instead.")
         return np.asarray(
             [event.get_waveforms(waveform_type=wf_type) for event in self]
         )
