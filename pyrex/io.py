@@ -262,6 +262,71 @@ class HDF5Base:
         locations['noise'] = "/monte_carlo_data/noise"
         return locations
 
+    @staticmethod
+    def _generate_location_names(file, existing_locations):
+        """
+        Generate unique keys based on dataset locations in a file.
+
+        Parameters
+        ----------
+        file
+            hdf5 file object to be read.
+        existing_locations : dict
+            Existing dictionary of location names with values corresponding to
+            their actual location in the file. These names will be avoided when
+            creating keys for the other datasets in the file.
+
+        Returns
+        -------
+        dict
+            Dictionary of file locations as values with corresponding keys.
+
+        """
+        locations = {}
+        locations.update(existing_locations)
+        unregistered = []
+        def get_unregistered_locations(name):
+            if not name.startswith('/'):
+                name = '/'+name
+            final_name = name.split('/')[-1]
+            is_dataset = (isinstance(file[name], h5py.Dataset)
+                          and final_name!='str' and final_name!='float')
+            is_metagroup = (name+'/str' in file and
+                             isinstance(file[name+'/str'], h5py.Dataset) and
+                             name+'/float' in file and
+                             isinstance(file[name+'/float'], h5py.Dataset))
+            if (is_dataset or is_metagroup) and name not in locations.values():
+                unregistered.append(name)
+        file.visit(get_unregistered_locations)
+
+        def get_level_key(name, level):
+            return "_".join(name.split('/')[-level-1:])
+
+        def get_unique_key(name):
+            for level in range(name.count('/')):
+                key = get_level_key(name, level)
+                unique = True
+                if key in locations.keys():
+                    continue
+                unique = True
+                for other in unregistered:
+                    if other!=name and get_level_key(other, level)==key:
+                        unique = False
+                        break
+                if unique:
+                    return key
+            raise ValueError("Couldn't generate a unique key for "+str(name))
+
+        for value in unregistered:
+            try:
+                key = get_unique_key(value)
+            except ValueError:
+                logger.info("Unable to set unique location name for %s", value)
+            else:
+                locations[key] = value
+
+        return locations
+
     def _analysis_location(self, name):
         """
         Transform the given name into a valid analysis location.
@@ -570,10 +635,14 @@ class EventIterator(HDF5Base):
         HDF5Base.__init__(self, self._object.attrs["version_major"],
                           self._object.attrs["version_minor"])
 
-        self._locations_original = self._dataset_locations()
+        # Set locations including non-default locations present in the file
+        self._locations_original = self._generate_location_names(
+            self._object, self._dataset_locations()
+        )
         self._locations = {}
+        # Map metadata group datasets
         for key, value in self._locations_original.items():
-            if key.endswith("meta"):
+            if value+"/str" in self._object and value+"/float" in self._object:
                 self._locations[key+"_str"] = value+"/str"
                 self._locations[key+"_float"] = value+"/float"
             else:
@@ -713,32 +782,131 @@ class EventIterator(HDF5Base):
                              "next(<iterator>)")
 
 
-    def _get_event_data(self, group):
+    def _get_event_data(self, name):
         """
         Get data from the given dataset or metadata group.
 
         Parameters
         ----------
-        group : str
-            Short name of the dataset of metadata group (not the full path).
+        name : str
+            Short name of the dataset or metadata group (not the full path).
 
         Returns
         -------
         ndarray
-            If the `group` is a dataset, returns a single array of data.
-            If the `group` is a metadata group, returns a tuple of two
+            If the `name` is a dataset, returns a single array of data.
+            If the `name` is a metadata group, returns a tuple of two
             arrays representing the float data and string data, respectively.
 
+        Raises
+        ------
+        ValueError
+            If the dataset is not known by the `EventIterator`.
+
         """
-        if group.endswith("meta"):
-            float_data = (np.array([]) if not self._bool_dict[group+"_float"]
-                          else self._data[group+"_float"][self._iter_counter])
-            str_data = (np.array([]) if not self._bool_dict[group+"_str"]
-                        else self._data[group+"_str"][self._iter_counter])
+        if name in self._bool_dict:
+            return (np.array([]) if not self._bool_dict[name]
+                    else self._data[name][self._iter_counter])
+        elif (name+"_float" in self._bool_dict and
+              name+"_str" in self._bool_dict):
+            float_data = (np.array([]) if not self._bool_dict[name+"_float"]
+                          else self._data[name+"_float"][self._iter_counter])
+            str_data = (np.array([]) if not self._bool_dict[name+"_str"]
+                        else self._data[name+"_str"][self._iter_counter])
             return float_data, str_data
         else:
-            return (np.array([]) if not self._bool_dict[group]
-                    else self._data[group][self._iter_counter])
+            raise ValueError("Dataset "+str(name)+" not found")
+
+
+    def get_data(self, dataset, attribute=None):
+        """
+        Get data from a given dataset.
+
+        Parameters
+        ----------
+        dataset : str
+            Name or location of the dataset.
+        attribute : str
+            Attribute of the data to retreive.
+
+        Returns
+        -------
+        tuple or ndarray
+            Event data stored in the `dataset`, optionally narrowed by the
+            `attribute`. If `dataset` is actually a group containing float and
+            string datasets, and no `attribute` is specified, a tuple of
+            ndarray will be returned. Otherwise the return value will be an
+            ndarray.
+
+        Raises
+        ------
+        ValueError
+            If the dataset or attribute is unknown or if the dataset has no
+            event-specific data.
+
+        """
+        if dataset.endswith("_str") or dataset.endswith("_float"):
+            name = "_".join(dataset.split("_")[:-1])
+        else:
+            name = dataset
+
+        if name in self._locations_original:
+            location = self._locations_original[name]
+        else:
+            for key, val in self._locations_original.items():
+                if name==val:
+                    name = key
+                    location = val
+                    break
+            else:
+                analysis_name = self._analysis_location(name)
+                for key, val in self._locations_original.items():
+                    if analysis_name==val:
+                        name = key
+                        location = val
+                        break
+                else:
+                    raise ValueError("Dataset "+str(dataset)+" not found")
+
+        if location not in self._index_keys:
+            raise ValueError("No event-specific data is available in "+
+                             str(dataset))
+
+        data = self._get_event_data(name)
+
+        if isinstance(data, tuple):
+            if len(data[0])==0 and len(data[1])==0:
+                logger.debug("No relevant data was stored for event %s",
+                             self._iter_counter * self._slice_step
+                             + self._slice_start_event)
+                return data[0]
+        else:
+            if len(data)==0:
+                logger.debug("No relevant data was stored for event %s",
+                             self._iter_counter * self._slice_step
+                             + self._slice_start_event)
+                return data
+
+        if attribute is None:
+            return data
+        elif isinstance(attribute, str):
+            if isinstance(data, tuple):
+                if attribute in self._keys[name+"_float"]:
+                    index = self._keys[name+"_float"][attribute]
+                    return data[0][:, index]
+                elif attribute in self._keys[name+"_str"]:
+                    index = self._keys[name+"_str"][attribute]
+                    return data[1][:, index]
+                else:
+                    raise ValueError("Unrecognized attribute '"+attribute+"'")
+            else:
+                if attribute in self._keys[name]:
+                    index = self._keys[name][attribute]
+                    return data[:, index]
+                else:
+                    raise ValueError("Unrecognized attribute '"+attribute+"'")
+        else:
+            raise ValueError("Only string values supported as argument")
 
 
     def get_waveforms(self, antenna_id=None, waveform_type=None):
@@ -1246,10 +1414,14 @@ class HDF5Reader(BaseReader, HDF5Base):
         self._is_open = True
         HDF5Base.__init__(self, self._file.attrs["version_major"],
                           self._file.attrs["version_minor"] )
-        self._locations_original = self._dataset_locations()
+        # Set locations including non-default locations present in the file
+        self._locations_original = self._generate_location_names(
+            self._file, self._dataset_locations()
+        )
         self._locations = {}
+        # Map metadata group datasets
         for key, value in self._locations_original.items():
-            if key.endswith("meta"):
+            if value+"/str" in self._file and value+"/float" in self._file:
                 self._locations[key+"_str"] = value+"/str"
                 self._locations[key+"_float"] = value+"/float"
             else:
