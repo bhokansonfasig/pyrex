@@ -428,11 +428,13 @@ class ARVZAskaryanSignal(Signal):
         # and a hadronic shower, then add them
         em_vals = self.shower_signal(times=times, energy=self.em_energy,
                                      profile_function=self.em_shower_profile,
+                                     potential_function=self.em_shower_RAC,
                                      viewing_angle=theta,
                                      viewing_distance=viewing_distance,
                                      n=n, t0=t0)
         had_vals = self.shower_signal(times=times, energy=self.had_energy,
                                       profile_function=self.had_shower_profile,
+                                      potential_function=self.had_shower_RAC,
                                       viewing_angle=theta,
                                       viewing_distance=viewing_distance,
                                       n=n, t0=t0)
@@ -442,8 +444,8 @@ class ARVZAskaryanSignal(Signal):
         super().__init__(times, em_vals+had_vals, value_type=self.Type.field)
 
 
-    def shower_signal(self, times, energy, profile_function, viewing_angle,
-                      viewing_distance, n, t0):
+    def shower_signal(self, times, energy, profile_function, potential_function,
+                      viewing_angle, viewing_distance, n, t0):
         """
         Calculate the signal values for some shower type.
 
@@ -460,6 +462,11 @@ class ARVZAskaryanSignal(Signal):
             Function to be used for calculating the longitudinal shower
             profile. Should take a distance (m) and energy (GeV) and return the
             profile value at that depth for a shower of that energy.
+        potential_function : function
+            Function to be used for calculating the vector potential at the
+            Cherenkov angle. Should take a time (s) and energy (GeV) and return
+            the vector potential at the Cherenkov angle for a shower of that
+            energy at that time.
         viewing_angle : float
             Observation angle (radians) measured relative to the shower axis.
             Should be positive-valued.
@@ -481,8 +488,9 @@ class ARVZAskaryanSignal(Signal):
         """
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
         # Vector potential is given by:
-        #   A(theta, t) = convolution(Q(z), RAC(z*(1-n*cos(theta))/c))
-        #                 * sin(theta) / sin(theta_c) / R / integral(Q(z))
+        #   A(theta,t) = convolution(Q(z), RAC(z*(1-n*cos(theta))/c))
+        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
+        #                * c / (1-n*cos(theta))
 
         # Fail gracefully if there is no shower (the energy is zero)
         if energy==0:
@@ -498,13 +506,13 @@ class ARVZAskaryanSignal(Signal):
         dt = times[1] - times[0]
 
         # For signals very close to the Cherenkov angle, simply use the
-        # RAC function at the Cherenkov angle. This saves time in the
+        # potential_function at the Cherenkov angle. This saves time in the
         # convolution, and the numerical accuracy of calculations involving
         # z_to_t at this point is questionable anyway
         if np.abs(z_to_t)<=10*np.finfo(z_to_t.dtype).eps:
             logger.debug("Using RAC parameterization directly for theta=%f "+
                          "(z_to_t=%e)", theta, z_to_t)
-            A = self.RAC(times, energy) / viewing_distance
+            A = potential_function(times, energy) / viewing_distance
             return -np.diff(A) / dt
 
         # Calculate the corresponding z-step (dz = dt / z_to_t)
@@ -554,11 +562,11 @@ class ARVZAskaryanSignal(Signal):
                  + n_extra_beginning + n_extra_end)
         t_RAC_vals = (np.arange(n_RAC) * dz * z_to_t
                       + t_start - n_extra_beginning * dz * z_to_t)
-        RA_C = self.RAC(t_RAC_vals, energy)
+        RA_C = potential_function(t_RAC_vals, energy)
 
         # Convolve Q and RAC to get unnormalized vector potential
         if dt_divider!=1:
-            logger.debug("convolving %i Q points with %i RA_C points",
+            logger.debug("Convolving %i Q points with %i RA_C points",
                          n_Q, n_RAC)
         convolution = scipy.signal.convolve(Q, RA_C, mode='full')
 
@@ -613,12 +621,13 @@ class ARVZAskaryanSignal(Signal):
 
 
     @staticmethod
-    def RAC(time, energy):
+    def em_shower_RAC(time, energy):
         """
         Calculates R*A_C at the given time and energy.
 
         The R*A_C value is the observation distance R (m) times the vector
-        potential (V*s/m) at the Cherenkov angle.
+        potential (V*s/m) at the Cherenkov angle. This function calculates the
+        R*A_C values for an electromagnetic shower.
 
         Parameters
         ----------
@@ -635,15 +644,19 @@ class ARVZAskaryanSignal(Signal):
         Notes
         -----
         Based on equation 16 of the ARVZ paper [1]_. This parameterization
-        is only described for electromagnetic showers, but in the absence of
-        a different parameterization for hadronic showers this one is used for
-        both cases.
+        is only described for electromagnetic showers in the paper. For the
+        hadronic shower parameterization see the equivalent hadronic function.
 
         References
         ----------
         .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
             of Askaryan radiation." Physical Review D **84**, 103003 (2011).
             :arxiv:`1106.6283` :doi:`10.1103/PhysRevD.84.103003`
+
+        See Also
+        --------
+        pyrex.ARVZAskaryanSignal.had_shower_RAC : Calculates R*A_C at the given
+                                                  time and energy.
 
         """
         # Get absolute value of time in nanoseconds
@@ -653,6 +666,54 @@ class ARVZAskaryanSignal(Signal):
                         (np.exp(-ta[time>=0]/0.057) + (1+2.87*ta[time>=0])**-3))
         rac[time<0] = (-4.5e-17 * energy *
                        (np.exp(-ta[time<0]/0.030) + (1+3.05*ta[time<0])**-3.5))
+        return rac
+
+    @staticmethod
+    def had_shower_RAC(time, energy):
+        """
+        Calculates R*A_C at the given time and energy.
+
+        The R*A_C value is the observation distance R (m) times the vector
+        potential (V*s/m) at the Cherenkov angle. This function calculates the
+        R*A_C values for an hadronic shower.
+
+        Parameters
+        ----------
+        time : array_like
+            Time (s) at which to calculate the R*A_C value.
+        energy : float
+            Energy (GeV) of the shower.
+
+        Returns
+        -------
+        array_like
+            The R*A_C value (V*s) at the given time.
+
+        Notes
+        -----
+        Based on equation 16 of the ARVZ paper [1]_, using parameters provided
+        by private correspondence with Jaime Alvarez-Muniz, as implemented in
+        NuRadioMC and AraSim.
+
+        References
+        ----------
+        .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
+            of Askaryan radiation." Physical Review D **84**, 103003 (2011).
+            :arxiv:`1106.6283` :doi:`10.1103/PhysRevD.84.103003`
+
+        See Also
+        --------
+        pyrex.ARVZAskaryanSignal.em_shower_RAC : Calculates R*A_C at the given
+                                                 time and energy.
+
+        """
+        # Get absolute value of time in nanoseconds
+        ta = np.abs(time) * 1e9
+        rac = np.zeros_like(time)
+        rac[time>=0] = (-3.2e-17 * energy *
+                        (np.exp(-ta[time>=0]/0.065) + (1+3.00*ta[time>=0])**-2.65))
+        rac[time<0] = (-3.2e-17 * energy *
+                       (np.exp(-ta[time<0]/0.043) + (1+2.92*ta[time<0])**-3.21))
         return rac
 
     @staticmethod
