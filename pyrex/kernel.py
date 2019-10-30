@@ -125,7 +125,7 @@ class EventKernel:
     """
     def __init__(self, generator, antennas, ice_model=ice,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
-                 signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False),
+                 signal_times=np.linspace(-50e-9, 50e-9, 2000, endpoint=False),
                  event_writer=None, triggers=None):
         self.gen = generator
         self.antennas = antennas
