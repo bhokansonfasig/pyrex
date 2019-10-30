@@ -439,8 +439,6 @@ class ARVZAskaryanSignal(Signal):
                                       viewing_distance=viewing_distance,
                                       n=n, t0=t0)
 
-        # Note that although len(values) = len(times)-1 (because of np.diff),
-        # the Signal class is designed to handle this by zero-padding the values
         super().__init__(times, em_vals+had_vals, value_type=self.Type.field)
 
 
@@ -494,7 +492,7 @@ class ARVZAskaryanSignal(Signal):
 
         # Fail gracefully if there is no shower (the energy is zero)
         if energy==0:
-            return np.zeros(len(times)-1)
+            return np.zeros(len(times))
 
         theta = viewing_angle
 
@@ -502,8 +500,9 @@ class ARVZAskaryanSignal(Signal):
         # (1-n*cos(theta)) / c
         z_to_t = (1 - n*np.cos(theta))/3e8
 
-        # Calculate the time step and the corresponding z-step
+        # Calculate the time step and number of points for vector potential
         dt = times[1] - times[0]
+        N = len(times) + 1
 
         # For signals very close to the Cherenkov angle, simply use the
         # potential_function at the Cherenkov angle. This saves time in the
@@ -512,6 +511,7 @@ class ARVZAskaryanSignal(Signal):
         if np.abs(z_to_t)<=10*np.finfo(z_to_t.dtype).eps:
             logger.debug("Using RAC parameterization directly for theta=%f "+
                          "(z_to_t=%e)", theta, z_to_t)
+            times = np.concatenate((times, [times[-1]+dt]))
             A = potential_function(times, energy) / viewing_distance
             return -np.diff(A) / dt
 
@@ -542,7 +542,7 @@ class ARVZAskaryanSignal(Signal):
         # Fail gracefully if the energy is less than the critical energy for
         # shower formation (i.e. all Q values are zero)
         if np.all(Q==0) and len(Q)>0:
-            return np.zeros(len(times)-1)
+            return np.zeros(len(times))
 
         # Calculate RAC at a specific number of t values (n_RAC) determined so
         # that the full convolution will have the same size as the times array,
@@ -558,8 +558,8 @@ class ARVZAskaryanSignal(Signal):
         t_start = times[0] - t0
         n_extra_beginning = int((t_start+t_tolerance)/dz/z_to_t) + 1
         n_extra_end = (int((t_tolerance-t_start)/dz/z_to_t) + 1
-                       + n_Q - len(times)*dt_divider)
-        n_RAC = (len(times)*dt_divider + 1 - n_Q + n_Q_negative
+                       + n_Q - N*dt_divider)
+        n_RAC = (N*dt_divider + 1 - n_Q + n_Q_negative
                  + n_extra_beginning + n_extra_end)
         t_RAC_vals = (np.arange(n_RAC) * dz * z_to_t
                       + t_start - n_extra_beginning * dz * z_to_t)
@@ -588,7 +588,7 @@ class ARVZAskaryanSignal(Signal):
         # Reduce the number of values in the convolution based on the dt_divider
         # so that the number of values matches the length of the times array.
         if dt_divider!=1:
-            convolution = scipy.signal.resample(convolution, len(times))
+            convolution = scipy.signal.resample(convolution, N)
 
         # Calculate LQ_tot (the excess longitudinal charge along the showers)
         LQ_tot = np.trapz(Q, dx=dz)
