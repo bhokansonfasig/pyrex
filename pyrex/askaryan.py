@@ -531,12 +531,13 @@ class ARVZAskaryanSignal(Signal):
                          dt / z_to_t, dt_divider)
 
         # Create the charge-profile array up to 5 times the nominal shower
-        # maximum length (to reduce errors). Combined with the above, this
-        # guarantees that n_Q >= 500
+        # maximum length (to reduce errors) in the positive and negative
+        # directions. Combined with the above, this guarantees that n_Q >= 1000
         z_max = 5*self.max_length(energy)
-        n_Q = int(np.abs(z_max/dz))
-        z_Q_vals = np.arange(n_Q) * np.abs(dz)
-        Q = profile_function(z_Q_vals, energy)
+        n_Q = int(np.abs(z_max/dz)) * 2
+        n_Q_negative = int(n_Q/2)
+        z_Q_vals = (np.arange(n_Q) - n_Q_negative) * np.abs(dz)
+        Q = profile_function(np.sign(z_to_t)*z_Q_vals, energy)
 
         # Fail gracefully if the energy is less than the critical energy for
         # shower formation (i.e. all Q values are zero)
@@ -558,7 +559,7 @@ class ARVZAskaryanSignal(Signal):
         n_extra_beginning = int((t_start+t_tolerance)/dz/z_to_t) + 1
         n_extra_end = (int((t_tolerance-t_start)/dz/z_to_t) + 1
                        + n_Q - len(times)*dt_divider)
-        n_RAC = (len(times)*dt_divider + 1 - n_Q
+        n_RAC = (len(times)*dt_divider + 1 - n_Q + n_Q_negative
                  + n_extra_beginning + n_extra_end)
         t_RAC_vals = (np.arange(n_RAC) * dz * z_to_t
                       + t_start - n_extra_beginning * dz * z_to_t)
@@ -572,6 +573,7 @@ class ARVZAskaryanSignal(Signal):
 
         # Adjust convolution by zero-padding or removing values according to
         # the values added/removed at the beginning and end of RA_C
+        n_extra_beginning += n_Q_negative
         if n_extra_beginning<0:
             convolution = np.concatenate((np.zeros(-n_extra_beginning),
                                           convolution))
@@ -585,9 +587,8 @@ class ARVZAskaryanSignal(Signal):
 
         # Reduce the number of values in the convolution based on the dt_divider
         # so that the number of values matches the length of the times array.
-        # It's possible that this should be using scipy.signal.resample instead
-        # TODO: Figure that out
-        convolution = convolution[::dt_divider]
+        if dt_divider!=1:
+            convolution = scipy.signal.resample(convolution, len(times))
 
         # Calculate LQ_tot (the excess longitudinal charge along the showers)
         LQ_tot = np.trapz(Q, dx=dz)
