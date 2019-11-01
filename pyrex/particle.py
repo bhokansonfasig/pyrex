@@ -355,6 +355,9 @@ class GQRSInteraction(Interaction):
         Fraction of `particle` energy deposited into an electromagnetic shower.
     had_frac : float
         Fraction of `particle` energy deposited into a hadronic shower.
+    include_secondaries : bool
+        If true, secondary interactions will be considered when calculating
+        the shower fractions.
     total_cross_section
     total_interaction_length
     cross_section
@@ -377,6 +380,8 @@ class GQRSInteraction(Interaction):
         :doi:`10.1103/PhysRevD.58.093009`
 
     """
+    include_secondaries = True
+
     def choose_interaction(self):
         """
         Choose an interaction type for the ``particle`` attribute.
@@ -465,6 +470,10 @@ class GQRSInteraction(Interaction):
                 raise ValueError("Particle type not supported")
         else:
             raise ValueError("Interaction type not supported")
+
+        # Stop here if no secondary interactions should be considered
+        if not self.include_secondaries:
+            return em_frac, had_frac
 
         # Calculate lepton energy for inelasticity distributions
         if self.kind==self.Type.charged_current:
@@ -712,6 +721,9 @@ class CTWInteraction(GQRSInteraction):
         Fraction of `particle` energy deposited into an electromagnetic shower.
     had_frac : float
         Fraction of `particle` energy deposited into a hadronic shower.
+    include_secondaries : bool
+        If true, secondary interactions will be considered when calculating
+        the shower fractions.
     total_cross_section
     total_interaction_length
     cross_section
