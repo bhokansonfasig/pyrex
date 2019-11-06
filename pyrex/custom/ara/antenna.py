@@ -522,7 +522,7 @@ class ARAAntenna(Antenna):
 
         """
         copy = Signal(signal.times, signal.values, value_type=Signal.Type.voltage)
-        copy.filter_frequencies(self.frequency_response, force_real=force_real)
+        freq_response = self.frequency_response
 
         if direction is not None and polarization is not None:
             # Calculate theta and phi relative to the orientation
@@ -534,11 +534,15 @@ class ARAAntenna(Antenna):
             ant_pol = np.dot(transformation, normalize(polarization))
             # Calculate directional response as a function of frequency
             directive_response = self.directional_response(theta, phi, ant_pol)
-            copy.filter_frequencies(directive_response, force_real=force_real)
+            freq_response = lambda f: (self.frequency_response(f)
+                                       * directive_response(f))
 
         elif (direction is not None and polarization is None
               or direction is None and polarization is not None):
             raise ValueError("Direction and polarization must be specified together")
+
+        # Apply (combined) frequency response
+        copy.filter_frequencies(freq_response, force_real=force_real)
 
         signal_factor = self.efficiency
 
