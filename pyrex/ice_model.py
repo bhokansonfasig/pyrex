@@ -8,6 +8,7 @@ plus a model for ice with uniform index of refraction.
 
 import logging
 import numpy as np
+import scipy.interpolate
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +17,8 @@ class AntarcticIce:
     """
     Class describing the ice at the south pole.
 
-    For convenience, consists of static methods and class methods, so creating
-    an instance of the class may not be necessary. In all methods, the depth
-    z should be given as a negative value if it is below the surface of the
-    ice.
+    In all methods, the depth z should be given as a negative value if it is
+    below the surface of the ice.
 
     Parameters
     ----------
@@ -525,10 +524,8 @@ class ArasimIce(AntarcticIce):
     """
     Class describing the ice at the south pole.
 
-    Designed to match ice model used in AraSim. For convenience, consists of
-    static methods and class methods, so creating an instance of the class may
-    not be necessary. In all methods, the depth z should be given as a negative
-    value if it is below the surface of the ice.
+    Designed to match the ice model used in AraSim. In all methods, the depth z
+    should be given as a negative value if it is below the surface of the ice.
 
     Parameters
     ----------
@@ -588,7 +585,7 @@ class ArasimIce(AntarcticIce):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
-        Attenuation length not actually frequency dependent. According to
+        Attenuation lengths not actually frequency dependent. According to
         AraSim the attenuation lengths are for 300 MHz.
 
         Parameters
@@ -613,7 +610,11 @@ class ArasimIce(AntarcticIce):
         corresponds to a single frequency.
 
         """
-        lengths = np.interp(-z, self.atten_depths, self.atten_lengths)
+        interp = scipy.interpolate.interp1d(self.atten_depths,
+                                            self.atten_lengths,
+                                            fill_value="extrapolate",
+                                            assume_sorted=True)
+        lengths = interp(-z)
 
         if isinstance(z, np.ndarray) and isinstance(f, np.ndarray):
             # z and f are both arrays, so return 2-D array where each
@@ -636,10 +637,8 @@ class GreenlandIce(AntarcticIce):
     """
     Class describing the ice at Summit Station in Greenland.
 
-    For convenience, consists of static methods and class methods, so creating
-    an instance of the class may not be necessary. In all methods, the depth
-    z should be given as a negative value if it is below the surface of the
-    ice.
+    In all methods, the depth z should be given as a negative value if it is
+    below the surface of the ice.
 
     Parameters
     ----------
