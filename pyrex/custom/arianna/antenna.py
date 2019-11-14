@@ -5,6 +5,7 @@ Based primarily on the LPDA implementation (and data) in NuRadioReco.
 
 """
 
+import copy
 import logging
 import os.path
 import pickle
@@ -508,7 +509,8 @@ class ARIANNAAntenna(Antenna):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        copy = Signal(signal.times, signal.values, value_type=Signal.Type.voltage)
+        new_signal = copy.deepcopy(signal)
+        new_signal.value_type = Signal.Type.voltage
         freq_response = self.frequency_response
 
         if direction is not None and polarization is not None:
@@ -529,7 +531,7 @@ class ARIANNAAntenna(Antenna):
             raise ValueError("Direction and polarization must be specified together")
 
         # Apply (combined) frequency response
-        copy.filter_frequencies(freq_response, force_real=force_real)
+        new_signal.filter_frequencies(freq_response, force_real=force_real)
 
         signal_factor = self.efficiency
 
@@ -541,9 +543,9 @@ class ARIANNAAntenna(Antenna):
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy *= signal_factor
+        new_signal *= signal_factor
 
-        return copy
+        return new_signal
 
     # Redefine receive method to use force_real as True by default
     def receive(self, signal, direction=None, polarization=None,
@@ -804,10 +806,10 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        copy = Signal(signal.times, signal.values)
-        copy.filter_frequencies(self.interpolate_filter,
-                                force_real=True)
-        clipped_values = np.clip(copy.values * self.amplification,
+        new_signal = copy.deepcopy(signal)
+        new_signal.filter_frequencies(self.interpolate_filter,
+                                      force_real=True)
+        clipped_values = np.clip(new_signal.values * self.amplification,
                                  a_min=-self.amplifier_clipping,
                                  a_max=self.amplifier_clipping)
         return Signal(signal.times, clipped_values,

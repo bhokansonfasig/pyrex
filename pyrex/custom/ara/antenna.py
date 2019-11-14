@@ -6,6 +6,7 @@ ensure that AraSim results can be matched.
 
 """
 
+import copy
 import logging
 import os.path
 import pickle
@@ -13,7 +14,7 @@ import numpy as np
 import scipy.signal
 from pyrex.internal_functions import (normalize, complex_bilinear_interp,
                                       complex_interp)
-from pyrex.signals import Signal
+from pyrex.signals import Signal, FunctionSignal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
 from pyrex.ice_model import ice
@@ -521,7 +522,8 @@ class ARAAntenna(Antenna):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        copy = Signal(signal.times, signal.values, value_type=Signal.Type.voltage)
+        new_signal = copy.deepcopy(signal)
+        new_signal.value_type = Signal.Type.voltage
         freq_response = self.frequency_response
 
         if direction is not None and polarization is not None:
@@ -542,7 +544,7 @@ class ARAAntenna(Antenna):
             raise ValueError("Direction and polarization must be specified together")
 
         # Apply (combined) frequency response
-        copy.filter_frequencies(freq_response, force_real=force_real)
+        new_signal.filter_frequencies(freq_response, force_real=force_real)
 
         signal_factor = self.efficiency
 
@@ -554,9 +556,9 @@ class ARAAntenna(Antenna):
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy *= signal_factor
+        new_signal *= signal_factor
 
-        return copy
+        return new_signal
 
     # Redefine receive method to use force_real as True by default
     def receive(self, signal, direction=None, polarization=None,
@@ -895,15 +897,24 @@ class ARAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        copy = Signal(signal.times, signal.values)
-        copy.filter_frequencies(self.interpolate_filter,
-                                force_real=True)
-        # sqrt(2) for 3dB splitter for TURF, SURF
-        clipped_values = np.clip(copy.values / np.sqrt(2) * self.amplification,
-                                 a_min=-self.amplifier_clipping,
-                                 a_max=self.amplifier_clipping)
-        return Signal(signal.times, clipped_values,
-                      value_type=signal.value_type)
+        base_signal = copy.deepcopy(signal)
+        base_signal.filter_frequencies(self.interpolate_filter,
+                                       force_real=True)
+        # Apply sqrt(2) for 3dB splitter for TURF, SURF
+        base_signal *= self.amplification / np.sqrt(2)
+        clip_values = lambda times: np.clip(
+            base_signal.with_times(times).values,
+            a_min=-self.amplifier_clipping,
+            a_max=self.amplifier_clipping
+        )
+        return FunctionSignal(signal.times, clip_values,
+                              value_type=signal.value_type)
+        # clipped_values = np.clip(new_signal.values / np.sqrt(2)
+        #                          * self.amplification,
+        #                          a_min=-self.amplifier_clipping,
+        #                          a_max=self.amplifier_clipping)
+        # return Signal(signal.times, clipped_values,
+        #               value_type=signal.value_type)
 
     def trigger(self, signal):
         """

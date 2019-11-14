@@ -8,11 +8,11 @@ returning information about propagation along their respective path.
 
 """
 
+import copy
 import logging
 import numpy as np
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
-from pyrex.signals import Signal
 from pyrex.ice_model import AntarcticIce, UniformIce, ice
 
 logger = logging.getLogger(__name__)
@@ -360,10 +360,10 @@ class BasicRayTracePath(LazyMutableClass):
                 return
 
             else:
-                copy = Signal(signal.times+self.tof, signal.values,
-                              value_type=signal.value_type)
-                copy.filter_frequencies(self.attenuation)
-                return copy
+                new_signal = copy.deepcopy(signal)
+                new_signal.shift(self.tof)
+                new_signal.filter_frequencies(self.attenuation)
+                return new_signal
 
         else:
             # Unit vectors perpendicular and parallel to plane of incidence
@@ -386,10 +386,10 @@ class BasicRayTracePath(LazyMutableClass):
                 # Apply fresnel s and p coefficients in addition to attenuation
                 attenuation_s = lambda freqs: self.attenuation(freqs) * r_s
                 attenuation_p = lambda freqs: self.attenuation(freqs) * r_p
-                signal_s = Signal(signal.times+self.tof, signal.values*pol_s,
-                                  value_type=signal.value_type)
-                signal_p = Signal(signal.times+self.tof, signal.values*pol_p,
-                                  value_type=signal.value_type)
+                signal_s = signal * pol_s
+                signal_p = signal * pol_p
+                signal_s.shift(self.tof)
+                signal_p.shift(self.tof)
                 signal_s.filter_frequencies(attenuation_s, force_real=True)
                 signal_p.filter_frequencies(attenuation_p, force_real=True)
                 return (signal_s, signal_p), (u_s0, u_p1)
@@ -822,7 +822,6 @@ class SpecializedRayTracePath(BasicRayTracePath):
         """
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         z_turn = np.log((ice.n0-beta)/ice.k)/ice.a
-        # print("z_turn:", z_turn)
         if deep:
             if z_turn<ice.valid_range[1]:
                 return ((np.log((ice.n0-beta)/ice.k)/ice.a - z -
@@ -1996,10 +1995,10 @@ class UniformRayTracePath(LazyMutableClass):
                 return
 
             else:
-                copy = Signal(signal.times+self.tof, signal.values,
-                              value_type=signal.value_type)
-                copy.filter_frequencies(self.attenuation)
-                return copy
+                new_signal = copy.deepcopy(signal)
+                new_signal.shift(self.tof)
+                new_signal.filter_frequencies(self.attenuation)
+                return new_signal
 
         else:
             # Unit vectors perpendicular and parallel to plane of incidence
@@ -2022,10 +2021,10 @@ class UniformRayTracePath(LazyMutableClass):
                 # Apply fresnel s and p coefficients in addition to attenuation
                 attenuation_s = lambda freqs: self.attenuation(freqs) * r_s
                 attenuation_p = lambda freqs: self.attenuation(freqs) * r_p
-                signal_s = Signal(signal.times+self.tof, signal.values*pol_s,
-                                  value_type=signal.value_type)
-                signal_p = Signal(signal.times+self.tof, signal.values*pol_p,
-                                  value_type=signal.value_type)
+                signal_s = signal * pol_s
+                signal_p = signal * pol_p
+                signal_s.shift(self.tof)
+                signal_p.shift(self.tof)
                 signal_s.filter_frequencies(attenuation_s, force_real=True)
                 signal_p.filter_frequencies(attenuation_p, force_real=True)
                 return (signal_s, signal_p), (u_s0, u_p1)

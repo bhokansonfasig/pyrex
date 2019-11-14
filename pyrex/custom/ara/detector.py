@@ -6,9 +6,9 @@ types and the detector grid can be made up of stations or strings.
 
 """
 
+import copy
 import logging
 import numpy as np
-from pyrex.signals import Signal
 from pyrex.detector import Detector
 from pyrex.ice_model import ice
 from .antenna import HpolAntenna, VpolAntenna
@@ -471,7 +471,7 @@ class PhasedArrayString(Detector):
 
             # Check each delay for trigger
             for delay in delays:
-                total = Signal(center_wave.times, center_wave.values)
+                total = copy.deepcopy(center_wave)
                 for i, wave in enumerate(waveforms):
                     if i==center_i:
                         continue
