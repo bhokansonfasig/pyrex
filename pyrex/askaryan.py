@@ -11,13 +11,13 @@ import logging
 import numpy as np
 import scipy.signal
 import scipy.fftpack
-from pyrex.signals import Signal
+from pyrex.signals import FunctionSignal
 from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
 
-class ZHSAskaryanSignal(Signal):
+class ZHSAskaryanSignal(FunctionSignal):
     """
     Class for generating Askaryan signals according to ZHS parameterization.
 
@@ -97,7 +97,7 @@ class ZHSAskaryanSignal(Signal):
         self.energy = particle.energy * (particle.interaction.em_frac +
                                          particle.interaction.had_frac)
 
-        # Fail gracefully if there is no EM shower (the energy is zero)
+        # Fail gracefully if there is no shower (the energy is zero)
         if self.energy==0:
             super().__init__(times, np.zeros(len(times)),
                              value_type=self.Type.field)
@@ -113,37 +113,40 @@ class ZHSAskaryanSignal(Signal):
         # Parameterization relative frequency value
         nu_0 = 500e6
 
-        # Calculate dt of times array
-        dt = times[1] - times[0]
+        def get_signal(times):
+            # Calculate dt of times array
+            dt = times[1] - times[0]
 
-        # Calculate frequencies for frequency-domain calculations
-        freqs = scipy.fftpack.fftfreq(len(times), d=dt)
+            # Calculate frequencies for frequency-domain calculations
+            freqs = scipy.fftpack.fftfreq(len(times), d=dt)
 
-        # Field as a function of frequency at Cherenkov angle (ZHS equation 20)
-        ratio = np.abs(freqs)/nu_0
-        e_omega = 1.1e-7 * self.energy/1000 * ratio * 1/(1 + 0.4*ratio**2)
-        e_omega /= viewing_distance
+            # Field as a function of frequency at Cherenkov angle
+            # (ZHS equation 20)
+            ratio = np.abs(freqs)/nu_0
+            e_omega = 1.1e-7 * self.energy/1000 * ratio * 1/(1 + 0.4*ratio**2)
+            e_omega /= viewing_distance
 
-        # Convert to volts per meter per hertz
-        # (from volts per meter per megahertz)
-        e_omega *= 1e-6
+            # Convert to volts per meter per hertz
+            # (from volts per meter per megahertz)
+            e_omega *= 1e-6
 
-        # Parameterize away from Cherenkov angle using Gaussian peak (eqn 21)
-        e_omega *= np.exp(-0.5*((viewing_angle-theta_c)*ratio
-                                /np.radians(2.4))**2)
+            # Parameterize away from Cherenkov angle using Gaussian peak
+            # (ZHS equation 21)
+            e_omega *= np.exp(-0.5*((viewing_angle-theta_c)*ratio
+                                    /np.radians(2.4))**2)
 
-        # Shift the times so the signal comes at t0
-        freq_vals = e_omega * np.exp(-1j*2*np.pi*freqs*(t0-times[0]))
+            # Shift the times so the signal comes at t0
+            freq_vals = e_omega * np.exp(-1j*2*np.pi*freqs*(t0-times[0]))
 
-        # Normalize the inverse fourier transform by dt so the time-domain
-        # amplitude stays the same for different sampling rates
-        values = np.real(scipy.fftpack.ifft(freq_vals)) / dt
+            # Normalize the inverse fourier transform by dt so the time-domain
+            # amplitude stays the same for different sampling rates
+            return np.real(scipy.fftpack.ifft(freq_vals)) / dt
 
-        super().__init__(times, values, value_type=self.Type.field)
+        super().__init__(times, get_signal, value_type=self.Type.field)
 
 
 
-class AVZAskaryanSignal(Signal):
+class AVZAskaryanSignal(FunctionSignal):
     """
     Class for generating Askaryan signals according to ARVZ parameterization.
 
@@ -237,85 +240,92 @@ class AVZAskaryanSignal(Signal):
         # Calculate theta_c = arccos(1/n)
         theta_c = np.arccos(1/n)
 
-        # Calculate corresponding frequencies, ignoring zero frequency
-        N = len(times)
-        dt = times[1]-times[0]
-        freqs = np.fft.rfftfreq(N, dt)[1:]
+        def get_signal(times):
+            # Calculate corresponding frequencies, ignoring zero frequency
+            N = len(times)
+            dt = times[1]-times[0]
+            freqs = np.fft.rfftfreq(N, dt)[1:]
 
-        # LPM effect parameters
-        E_lpm = 2e15 # eV
-        dThetaEM = (np.radians(2.7) * 500e6 / freqs
-                    * (E_lpm / (0.14 * self.em_energy*1e9 + E_lpm)) ** 0.3)
+            # LPM effect parameters
+            E_lpm = 2e15 # eV
+            dThetaEM = (np.radians(2.7) * 500e6 / freqs
+                        * (E_lpm / (0.14 * self.em_energy*1e9 + E_lpm)) ** 0.3)
 
-        if self.had_energy==0:
-            epsilon = -np.inf
-        else:
-            epsilon = np.log10(self.had_energy / 1e3)
-        dThetaHad = 0
-        if (epsilon >= 0 and epsilon <= 2):
-            dThetaHad = 500e6 / freqs * (2.07 - 0.33 * epsilon
-                                         + 7.5e-2 * epsilon ** 2)
-        elif (epsilon > 2 and epsilon <= 5):
-            dThetaHad = 500e6 / freqs * (1.74 - 1.21e-2 * epsilon)
-        elif (epsilon > 5 and epsilon <= 7):
-            dThetaHad = 500e6 / freqs * (4.23 - 0.785 * epsilon
-                                         + 5.5e-2 * epsilon ** 2)
-        elif epsilon > 7:
-            dThetaHad = (500e6 / freqs * (4.23 - 0.785 * 7 + 5.5e-2 * 7 ** 2)
-                         * (1 + (epsilon - 7) * 0.075))
-        dThetaHad = np.radians(dThetaHad)
+            if self.had_energy==0:
+                epsilon = -np.inf
+            else:
+                epsilon = np.log10(self.had_energy / 1e3)
+            dThetaHad = 0
+            if (epsilon >= 0 and epsilon <= 2):
+                dThetaHad = 500e6 / freqs * (2.07 - 0.33 * epsilon
+                                             + 7.5e-2 * epsilon ** 2)
+            elif (epsilon > 2 and epsilon <= 5):
+                dThetaHad = 500e6 / freqs * (1.74 - 1.21e-2 * epsilon)
+            elif (epsilon > 5 and epsilon <= 7):
+                dThetaHad = 500e6 / freqs * (4.23 - 0.785 * epsilon
+                                             + 5.5e-2 * epsilon ** 2)
+            elif epsilon > 7:
+                dThetaHad = (500e6 / freqs
+                             * (4.23 - 0.785 * 7 + 5.5e-2 * 7 ** 2)
+                             * (1 + (epsilon - 7) * 0.075))
+            dThetaHad = np.radians(dThetaHad)
+
+            f0 = 1.15e9 # Hz
+            em_tmp = np.zeros(len(freqs) + 1)
+            had_tmp = np.zeros(len(freqs) + 1)
+            # Electromagnetic shower handling
+            if particle.interaction.em_frac>0:
+                E = (2.53e-7 * self.em_energy/1e3 * freqs / f0
+                    / (1 + (freqs / f0) ** 1.44)) # V/m/Hz
+                E /= 1e6 # convert to V/m/MHz
+                E *= np.sin(theta) / np.sin(theta_c)
+                em_tmp[1:] += (E / viewing_distance
+                               * np.exp(-np.log(2) *
+                                        ((theta - theta_c) / dThetaEM)**2))
+            # Hadronic shower handling (when hadronic energy is above 1 TeV)
+            if particle.interaction.had_frac>0 and np.any(dThetaHad!=0):
+                E = (2.53e-7 * self.had_energy/1e3 * freqs / f0
+                    / (1 + (freqs / f0) ** 1.44)) # V/m/Hz
+                E /= 1e6 # convert to V/m/MHz
+                E *= np.sin(theta) / np.sin(theta_c)
+                had_tmp[1:] += (E / viewing_distance
+                                * np.exp(-np.log(2) *
+                                         ((theta - theta_c) / dThetaHad)**2))
+
+                def missing_energy_factor(E_0):
+                    # Missing energy factor for hadronic cascades
+                    # Taken from DOI: 10.1016/S0370-2693(98)00905-8
+                    epsilon = np.log10(E_0/1e3)
+                    f_epsilon = (-1.27e-2 - 4.76e-2*(epsilon+3)
+                                 - 2.07e-3*(epsilon+3)**2
+                                 + 0.52*np.sqrt(epsilon+3))
+                    return f_epsilon
+
+                had_tmp[1:] *= missing_energy_factor(self.had_energy)
+
+            # Combine showers
+            tmp = em_tmp + had_tmp
+
+            # Factor of 0.5 is introduced to compensate the unusual fourier
+            # transform normalization used in the ZHS code
+            tmp *= 0.5
+
+            # Set phases to 90 degrees
+            trace = np.fft.irfft(tmp * np.exp(0.5j * np.pi)) / dt
+
+            # Shift to proper t0
+            trace = np.roll(trace, int((t0-times[0]) / dt))
+
+            # Correct trace length for odd-valued N by extrapolating slope
+            if len(trace)==N-1:
+                trace = np.concatenate((trace, [2*trace[-1]-trace[-2]]))
+
+            return trace
+
+        super().__init__(times, get_signal, value_type=self.Type.field)
 
 
-        f0 = 1.15e9 # Hz
-        em_tmp = np.zeros(len(freqs) + 1)
-        had_tmp = np.zeros(len(freqs) + 1)
-        # Electromagnetic shower handling
-        if particle.interaction.em_frac>0:
-            E = (2.53e-7 * self.em_energy/1e3 * freqs / f0
-                 / (1 + (freqs / f0) ** 1.44)) # V/m/Hz
-            E /= 1e6 # convert to V/m/MHz
-            E *= np.sin(theta) / np.sin(theta_c)
-            em_tmp[1:] += (E / viewing_distance
-                           * np.exp(-np.log(2) *
-                                    ((theta - theta_c) / dThetaEM)**2))
-        # Hadronic shower handling (when hadronic energy is above 1 TeV)
-        if particle.interaction.had_frac>0 and np.any(dThetaHad!=0):
-            E = (2.53e-7 * self.had_energy/1e3 * freqs / f0
-                / (1 + (freqs / f0) ** 1.44)) # V/m/Hz
-            E /= 1e6 # convert to V/m/MHz
-            E *= np.sin(theta) / np.sin(theta_c)
-            had_tmp[1:] += (E / viewing_distance
-                            * np.exp(-np.log(2) *
-                                     ((theta - theta_c) / dThetaHad)**2))
-
-            def missing_energy_factor(E_0):
-                # Missing energy factor for hadronic cascades
-                # Taken from DOI: 10.1016/S0370-2693(98)00905-8
-                epsilon = np.log10(E_0/1e3)
-                f_epsilon  = -1.27e-2 - 4.76e-2*(epsilon+3)
-                f_epsilon += -2.07e-3*(epsilon+3)**2 + 0.52*np.sqrt(epsilon+3)
-                return f_epsilon
-
-            had_tmp[1:] *= missing_energy_factor(self.had_energy)
-
-
-        # Combine showers
-        tmp = em_tmp + had_tmp
-
-        # Factor of 0.5 is introduced to compensate the unusual fourier
-        # transform normalization used in the ZHS code
-        tmp *= 0.5
-
-        # Set phases to 90 degrees
-        trace = np.fft.irfft(tmp * np.exp(0.5j * np.pi)) / dt
-
-        # Shift to proper t0
-        trace = np.roll(trace, int((t0-times[0]) / dt))
-
-        super().__init__(times, trace, value_type=self.Type.field)
-
-
-class ARVZAskaryanSignal(Signal):
+class ARVZAskaryanSignal(FunctionSignal):
     """
     Class for generating Askaryan signals according to ARVZ parameterization.
 
@@ -426,20 +436,23 @@ class ARVZAskaryanSignal(Signal):
 
         # Calculate the resulting pulse values from an electromagnetic shower
         # and a hadronic shower, then add them
-        em_vals = self.shower_signal(times=times, energy=self.em_energy,
-                                     profile_function=self.em_shower_profile,
-                                     potential_function=self.em_shower_RAC,
-                                     viewing_angle=theta,
-                                     viewing_distance=viewing_distance,
-                                     n=n, t0=t0)
-        had_vals = self.shower_signal(times=times, energy=self.had_energy,
-                                      profile_function=self.had_shower_profile,
-                                      potential_function=self.had_shower_RAC,
-                                      viewing_angle=theta,
-                                      viewing_distance=viewing_distance,
-                                      n=n, t0=t0)
+        def get_signal_from_showers(times):
+            em_vals = self.shower_signal(times=times, energy=self.em_energy,
+                                         profile_function=self.em_shower_profile,
+                                         potential_function=self.em_shower_RAC,
+                                         viewing_angle=theta,
+                                         viewing_distance=viewing_distance,
+                                         n=n, t0=t0)
+            had_vals = self.shower_signal(times=times, energy=self.had_energy,
+                                          profile_function=self.had_shower_profile,
+                                          potential_function=self.had_shower_RAC,
+                                          viewing_angle=theta,
+                                          viewing_distance=viewing_distance,
+                                          n=n, t0=t0)
+            return em_vals + had_vals
 
-        super().__init__(times, em_vals+had_vals, value_type=self.Type.field)
+        super().__init__(times, get_signal_from_showers,
+                         value_type=self.Type.field)
 
 
     def shower_signal(self, times, energy, profile_function, potential_function,
