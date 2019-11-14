@@ -6,7 +6,6 @@ range.
 
 """
 
-import copy
 import logging
 import numpy as np
 import scipy.optimize
@@ -265,7 +264,7 @@ class LayeredRayTracePath(LazyMutableClass):
                 return
 
             else:
-                new_signal = copy.deepcopy(signal)
+                new_signal = signal.copy()
                 new_signal.shift(self.tof)
                 new_signal.filter_frequencies(self.attenuation)
                 return new_signal

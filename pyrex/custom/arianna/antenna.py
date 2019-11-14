@@ -5,7 +5,6 @@ Based primarily on the LPDA implementation (and data) in NuRadioReco.
 
 """
 
-import copy
 import logging
 import os.path
 import pickle
@@ -509,7 +508,7 @@ class ARIANNAAntenna(Antenna):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        new_signal = copy.deepcopy(signal)
+        new_signal = signal.copy()
         new_signal.value_type = Signal.Type.voltage
         freq_response = self.frequency_response
 
@@ -806,7 +805,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        new_signal = copy.deepcopy(signal)
+        new_signal = signal.copy()
         new_signal.filter_frequencies(self.interpolate_filter,
                                       force_real=True)
         clipped_values = np.clip(new_signal.values * self.amplification,

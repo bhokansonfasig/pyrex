@@ -9,7 +9,6 @@ an antenna.
 
 """
 
-import copy
 import logging
 import numpy as np
 import scipy.fftpack
@@ -525,7 +524,7 @@ class Antenna:
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        new_signal = copy.deepcopy(signal)
+        new_signal = signal.copy()
         new_signal.value_type = Signal.Type.voltage
         new_signal.filter_frequencies(self.frequency_response,
                                       force_real=force_real)

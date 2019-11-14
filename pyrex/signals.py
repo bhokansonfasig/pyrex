@@ -167,6 +167,19 @@ class Signal:
             return NotImplemented
         return self
 
+    def copy(self):
+        """
+        Get a copy of the ``Signal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``Signal`` object with identical
+            ``times``, ``values``, and ``value_type``.
+
+        """
+        return Signal(self.times, self.values, self.value_type)
+
     @property
     def value_type(self):
         """
@@ -431,6 +444,19 @@ class EmptySignal(Signal):
         new_signal.value_type = value_type
         return new_signal
 
+    def copy(self):
+        """
+        Get a copy of the ``EmptySignal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``EmptySignal`` object with identical
+            ``times`` and ``value_type``.
+
+        """
+        return EmptySignal(self.times, self.value_type)
+
     def with_times(self, new_times):
         """
         Returns a representation of this signal over a different times array.
@@ -559,7 +585,7 @@ class FunctionSignal(LazyMutableClass, Signal):
             value_type = self.value_type
 
         if isinstance(other, FunctionSignal):
-            new_signal = copy.deepcopy(self)
+            new_signal = self.copy()
             new_signal._functions += copy.deepcopy(other._functions)
             new_signal._t0s += copy.deepcopy(other._t0s)
             new_signal._factors += copy.deepcopy(other._factors)
@@ -582,7 +608,7 @@ class FunctionSignal(LazyMutableClass, Signal):
             factors = [f * other for f in self._factors]
         except TypeError:
             return NotImplemented
-        new_signal = copy.deepcopy(self)
+        new_signal = self.copy()
         new_signal._factors = factors
         return new_signal
 
@@ -592,7 +618,7 @@ class FunctionSignal(LazyMutableClass, Signal):
             factors = [other * f for f in self._factors]
         except TypeError:
             return NotImplemented
-        new_signal = copy.deepcopy(self)
+        new_signal = self.copy()
         new_signal._factors = factors
         return new_signal
 
@@ -610,7 +636,7 @@ class FunctionSignal(LazyMutableClass, Signal):
             factors = [f / other for f in self._factors]
         except TypeError:
             return NotImplemented
-        new_signal = copy.deepcopy(self)
+        new_signal = self.copy()
         new_signal._factors = factors
         return new_signal
 
@@ -622,6 +648,24 @@ class FunctionSignal(LazyMutableClass, Signal):
             return NotImplemented
         return self
 
+    def copy(self):
+        """
+        Get a copy of the ``FunctionSignal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``FunctionSignal`` object with
+            identical ``times``, ``value_type``, and internal function
+            parameters.
+
+        """
+        new_signal = FunctionSignal(self.times, None, self.value_type)
+        new_signal._functions = copy.deepcopy(self._functions)
+        new_signal._t0s = copy.deepcopy(self._t0s)
+        new_signal._factors = copy.deepcopy(self._factors)
+        new_signal._filters = copy.deepcopy(self._filters)
+        return new_signal
 
     def resample(self, n):
         """

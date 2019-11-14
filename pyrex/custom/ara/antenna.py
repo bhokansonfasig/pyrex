@@ -6,7 +6,6 @@ ensure that AraSim results can be matched.
 
 """
 
-import copy
 import logging
 import os.path
 import pickle
@@ -522,7 +521,7 @@ class ARAAntenna(Antenna):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        new_signal = copy.deepcopy(signal)
+        new_signal = signal.copy()
         new_signal.value_type = Signal.Type.voltage
         freq_response = self.frequency_response
 
@@ -897,7 +896,7 @@ class ARAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        base_signal = copy.deepcopy(signal)
+        base_signal = signal.copy()
         base_signal.filter_frequencies(self.interpolate_filter,
                                        force_real=True)
         # Apply sqrt(2) for 3dB splitter for TURF, SURF

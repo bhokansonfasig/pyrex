@@ -6,7 +6,6 @@ types and the detector grid can be made up of stations or strings.
 
 """
 
-import copy
 import logging
 import numpy as np
 from pyrex.detector import Detector
@@ -471,13 +470,13 @@ class PhasedArrayString(Detector):
 
             # Check each delay for trigger
             for delay in delays:
-                total = copy.deepcopy(center_wave)
+                total = center_wave.copy()
                 for i, wave in enumerate(waveforms):
                     if i==center_i:
                         continue
                     times = total.times - (center_i-i)*delay
                     add_wave = wave.with_times(times)
-                    add_wave.times += (center_i-i)*delay
+                    add_wave.shift((center_i-i)*delay)
                     total += add_wave.with_times(total.times)
                 if np.max(np.abs(total.values))>np.abs(beam_threshold*rms):
                     return True

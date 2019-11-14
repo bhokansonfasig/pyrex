@@ -8,7 +8,6 @@ returning information about propagation along their respective path.
 
 """
 
-import copy
 import logging
 import numpy as np
 import scipy.optimize
@@ -360,7 +359,7 @@ class BasicRayTracePath(LazyMutableClass):
                 return
 
             else:
-                new_signal = copy.deepcopy(signal)
+                new_signal = signal.copy()
                 new_signal.shift(self.tof)
                 new_signal.filter_frequencies(self.attenuation)
                 return new_signal
@@ -1995,7 +1994,7 @@ class UniformRayTracePath(LazyMutableClass):
                 return
 
             else:
-                new_signal = copy.deepcopy(signal)
+                new_signal = signal.copy()
                 new_signal.shift(self.tof)
                 new_signal.filter_frequencies(self.attenuation)
                 return new_signal
