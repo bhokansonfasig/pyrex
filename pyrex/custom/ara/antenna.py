@@ -908,12 +908,6 @@ class ARAAntennaSystem(AntennaSystem):
         )
         return FunctionSignal(signal.times, clip_values,
                               value_type=signal.value_type)
-        # clipped_values = np.clip(new_signal.values / np.sqrt(2)
-        #                          * self.amplification,
-        #                          a_min=-self.amplifier_clipping,
-        #                          a_max=self.amplifier_clipping)
-        # return Signal(signal.times, clipped_values,
-        #               value_type=signal.value_type)
 
     def trigger(self, signal):
         """

@@ -805,14 +805,17 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        new_signal = signal.copy()
-        new_signal.filter_frequencies(self.interpolate_filter,
-                                      force_real=True)
-        clipped_values = np.clip(new_signal.values * self.amplification,
-                                 a_min=-self.amplifier_clipping,
-                                 a_max=self.amplifier_clipping)
-        return Signal(signal.times, clipped_values,
-                      value_type=signal.value_type)
+        base_signal = signal.copy()
+        base_signal.filter_frequencies(self.interpolate_filter,
+                                       force_real=True)
+        base_signal *= self.amplification
+        clip_values = lambda times: np.clip(
+            base_signal.with_times(times).values,
+            a_min=-self.amplifier_clipping,
+            a_max=self.amplifier_clipping
+        )
+        return FunctionSignal(signal.times, clip_values,
+                              value_type=signal.value_type)
 
     def trigger(self, signal):
         """
