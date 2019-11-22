@@ -524,7 +524,7 @@ class ARVZAskaryanSignal(FunctionSignal):
         if np.abs(z_to_t)<=10*np.finfo(z_to_t.dtype).eps:
             logger.debug("Using RAC parameterization directly for theta=%f "+
                          "(z_to_t=%e)", theta, z_to_t)
-            times = np.concatenate((times, [times[-1]+dt]))
+            times = np.concatenate((times, [times[-1]+dt])) - t0
             A = potential_function(times, energy) / viewing_distance
             return -np.diff(A) / dt
 
