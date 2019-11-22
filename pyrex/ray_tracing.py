@@ -10,6 +10,7 @@ returning information about propagation along their respective path.
 
 import logging
 import numpy as np
+import scipy.fftpack
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
 from pyrex.ice_model import AntarcticIce, UniformIce, ice
@@ -382,9 +383,13 @@ class BasicRayTracePath(LazyMutableClass):
                 pol_p = np.dot(polarization, u_p0)
                 # Fresnel reflectances of s and p components
                 r_s, r_p = self.fresnel
+                # Pre-calculate attenuation at the expected frequencies to save
+                # on heavy computation time of the attenuation method
+                freqs = scipy.fftpack.fftfreq(2*len(signal.times), d=signal.dt)
+                atten_vals = self.attenuation(freqs)
                 # Apply fresnel s and p coefficients in addition to attenuation
-                attenuation_s = lambda freqs: self.attenuation(freqs) * r_s
-                attenuation_p = lambda freqs: self.attenuation(freqs) * r_p
+                attenuation_s = lambda f: np.interp(f, freqs, atten_vals) * r_s
+                attenuation_p = lambda f: np.interp(f, freqs, atten_vals) * r_p
                 signal_s = signal * pol_s
                 signal_p = signal * pol_p
                 signal_s.shift(self.tof)
