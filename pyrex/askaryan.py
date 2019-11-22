@@ -543,13 +543,34 @@ class ARVZAskaryanSignal(FunctionSignal):
             logger.debug("z-step of %g too large; dt_divider changed to %g",
                          dt / z_to_t, dt_divider)
 
-        # Create the charge-profile array up to 5 times the nominal shower
+        # Prepare the charge-profile array up to 5 times the nominal shower
         # maximum length (to reduce errors) in the positive and negative
         # directions. Combined with the above, this guarantees that n_Q >= 1000
         z_max = 5*self.max_length(energy)
         n_Q = int(np.abs(z_max/dz)) * 2
         n_Q_negative = int(n_Q/2)
         z_Q_vals = (np.arange(n_Q) - n_Q_negative) * np.abs(dz)
+
+        # Prepare for RAC at a specific number of t values (n_RAC) determined
+        # such that the full convolution will have the same size as the times
+        # array, when appropriately rescaled by dt_divider.
+        # t_RAC_vals is forced to a reasonable range around the peak of RAC
+        # (at 0 ns) to ensure accuracy. The predetermined reasonable range
+        # based on the RAC function is +/- 10 ns around the peak
+        t_tolerance = 10e-9
+        t_start = times[0] - t0
+        n_shift = int((t_start+t_tolerance)/dz/z_to_t)
+        n_extra = int(2*t_tolerance/dz/z_to_t) + 1 + n_Q - N*dt_divider
+        n_RAC = N*dt_divider + 1 - n_Q + n_extra
+        t_RAC_vals = (np.arange(n_RAC) - n_shift) * dz * z_to_t + t_start
+
+        # Skip further calculation if the shift is further than the size of the
+        # convolution array (i.e. all field values would be zero)
+        if (-n_shift-n_Q_negative>=N*dt_divider or
+                n_shift+n_Q_negative-n_extra>=N*dt_divider):
+            return np.zeros(len(times))
+
+        # Calculate values for the charge-profile array
         Q = profile_function(np.sign(z_to_t)*z_Q_vals, energy)
 
         # Fail gracefully if the energy is less than the critical energy for
@@ -557,25 +578,7 @@ class ARVZAskaryanSignal(FunctionSignal):
         if np.all(Q==0) and len(Q)>0:
             return np.zeros(len(times))
 
-        # Calculate RAC at a specific number of t values (n_RAC) determined so
-        # that the full convolution will have the same size as the times array,
-        # when appropriately rescaled by dt_divider.
-        # If t_RAC_vals does not include a reasonable range around zero
-        # (typically because n_RAC is too small), errors occur. In that case
-        # extra points are added at the beginning and/or end of RAC.
-        # If n_RAC is too large, the convolution can take a very long time.
-        # In that case, points are removed from the beginning and/or end of RAC.
-        # The predetermined reasonable range based on the RAC function is
-        # +/- 10 ns around the peak
-        t_tolerance = 10e-9
-        t_start = times[0] - t0
-        n_extra_beginning = int((t_start+t_tolerance)/dz/z_to_t) + 1
-        n_extra_end = (int((t_tolerance-t_start)/dz/z_to_t) + 1
-                       + n_Q - N*dt_divider)
-        n_RAC = (N*dt_divider + 1 - n_Q + n_Q_negative
-                 + n_extra_beginning + n_extra_end)
-        t_RAC_vals = (np.arange(n_RAC) * dz * z_to_t
-                      + t_start - n_extra_beginning * dz * z_to_t)
+        # Calculate values for the RAC array
         RA_C = potential_function(t_RAC_vals, energy)
 
         # Convolve Q and RAC to get unnormalized vector potential
@@ -584,24 +587,40 @@ class ARVZAskaryanSignal(FunctionSignal):
                          n_Q, n_RAC)
         convolution = scipy.signal.convolve(Q, RA_C, mode='full')
 
-        # Adjust convolution by zero-padding or removing values according to
-        # the values added/removed at the beginning and end of RA_C
-        n_extra_beginning += n_Q_negative
-        if n_extra_beginning<0:
-            convolution = np.concatenate((np.zeros(-n_extra_beginning),
-                                          convolution))
+        # Shift convolution by the amount given by n_shift and n_Q_negative
+        # (assuming all values outside the set range are zero) and also
+        # zero-pad or remove values according to the values added/removed by
+        # n_extra
+        n_shift += n_Q_negative
+        if n_shift>0:
+            if n_shift-n_extra>=0:
+                convolution = np.concatenate((
+                    convolution[n_shift:],
+                    np.zeros(n_shift-n_extra)
+                ))
+            else:
+                convolution = convolution[n_shift:n_shift-n_extra]
         else:
-            convolution = convolution[n_extra_beginning:]
-        if n_extra_end<=0:
-            convolution = np.concatenate((convolution,
-                                          np.zeros(-n_extra_end)))
-        else:
-            convolution = convolution[:-n_extra_end]
+            if n_shift-n_extra>=0:
+                convolution = np.concatenate((
+                    np.zeros(-n_shift),
+                    convolution,
+                    np.zeros(n_shift-n_extra)
+                ))
+            else:
+                convolution = np.concatenate((
+                    np.zeros(-n_shift),
+                    convolution[:n_shift-n_extra]
+                ))
 
         # Reduce the number of values in the convolution based on the dt_divider
         # so that the number of values matches the length of the times array.
         if dt_divider!=1:
-            convolution = scipy.signal.resample(convolution, N)
+            # Downsample by simple decimation. Scipy resample method assumes
+            # periodic signal which is problematic when signal is at the edge
+            # of the times array. Scipy decimate method doesn't appear to be
+            # reliable for large decimation factors
+            convolution = convolution[::dt_divider]
 
         # Calculate LQ_tot (the excess longitudinal charge along the showers)
         LQ_tot = np.trapz(Q, dx=dz)
