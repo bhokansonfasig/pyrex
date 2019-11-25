@@ -524,9 +524,10 @@ class Antenna:
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        copy = Signal(signal.times, signal.values,
-                      value_type=Signal.Type.voltage)
-        copy.filter_frequencies(self.frequency_response, force_real=force_real)
+        new_signal = signal.copy()
+        new_signal.value_type = Signal.Type.voltage
+        new_signal.filter_frequencies(self.frequency_response,
+                                      force_real=force_real)
 
         if direction is None:
             d_gain = 1
@@ -551,9 +552,9 @@ class Antenna:
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy *= signal_factor
+        new_signal *= signal_factor
 
-        return copy
+        return new_signal
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=False):

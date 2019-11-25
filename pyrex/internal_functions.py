@@ -406,7 +406,6 @@ def lazy_property(fn):
     def _lazy_property(self):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, fn(self))
-            # print("Setting", attr_name)
         return getattr(self, attr_name)
 
     return _lazy_property
@@ -483,14 +482,13 @@ class LazyMutableClass:
     def __setattr__(self, name, value):
         # If static attributes have not yet been set, just use default setattr.
         # This avoids problems with setting _static_attrs in the first place.
-        if "_static_attrs" not in self.__dict__:
-            super().__setattr__(name, value)
-
-        elif name in self._static_attrs:
-            lazy_attributes = [attr for attr in self.__dict__
-                               if attr.startswith("_lazy_")]
-            for lazy_attr in lazy_attributes:
-                # print("Clearing", lazy_attr)
-                delattr(self, lazy_attr)
-
+        if "_static_attrs" in self.__dict__ and name in self._static_attrs:
+            self._clear_cache()
         super().__setattr__(name, value)
+
+    def _clear_cache(self):
+        """Clears the cache of lazily-evaluated parameters."""
+        lazy_attributes = [attr for attr in self.__dict__
+                           if attr.startswith("_lazy_")]
+        for lazy_attr in lazy_attributes:
+            delattr(self, lazy_attr)

@@ -7,12 +7,14 @@ processing and general physics.
 
 """
 
+import copy
 from enum import Enum
 import logging
 import numpy as np
 import scipy.signal
 import scipy.fftpack
-from pyrex.internal_functions import get_from_enum
+from pyrex.internal_functions import (LazyMutableClass, lazy_property,
+                                      get_from_enum)
 
 logger = logging.getLogger(__name__)
 
@@ -165,6 +167,19 @@ class Signal:
             return NotImplemented
         return self
 
+    def copy(self):
+        """
+        Get a copy of the ``Signal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``Signal`` object with identical
+            ``times``, ``values``, and ``value_type``.
+
+        """
+        return Signal(self.times, self.values, self.value_type)
+
     @property
     def value_type(self):
         """
@@ -237,6 +252,17 @@ class Signal:
                                left=0, right=0)
         return Signal(new_times, new_values, value_type=self.value_type)
 
+    def shift(self, dt):
+        """
+        Shifts the signal values in time by `dt`.
+
+        Parameters
+        ----------
+        dt : float
+            Time shift (s) to be applied to the signal.
+
+        """
+        self.times += dt
 
     @property
     def spectrum(self):
@@ -281,28 +307,8 @@ class Signal:
         vals = np.concatenate((self.values, np.zeros(len(self.values))))
         spectrum = scipy.fftpack.fft(vals)
         freqs = scipy.fftpack.fftfreq(n=2*len(self.values), d=self.dt)
-        if force_real:
-            true_freqs = np.array(freqs)
-            freqs = np.abs(freqs)
 
-        # Attempt to evaluate all responses in one function call
-        try:
-            responses = np.array(freq_response(freqs), dtype=np.complex_)
-        # Otherwise evaluate responses one at a time
-        except (TypeError, ValueError):
-            logger.debug("Frequency response function %r could not be "+
-                         "evaluated for multiple frequencies at once",
-                         freq_response)
-            responses = np.zeros(len(spectrum), dtype=np.complex_)
-            for i, f in enumerate(freqs):
-                responses[i] = freq_response(f)
-
-        # To make the filtered signal real, mirror the positive frequency
-        # response into the negative frequencies, making the real part even
-        # (done above) and the imaginary part odd (below)
-        if force_real:
-            responses.imag[true_freqs<0] *= -1
-
+        responses = self._get_filter_response(freqs, freq_response, force_real)
         filtered_vals = scipy.fftpack.ifft(responses*spectrum)
         self.values = np.real(filtered_vals[:len(self.times)])
 
@@ -320,6 +326,53 @@ class Signal:
                         "Signal.filter_frequencies function")
             msg += "."
             logger.warning(msg, freq_response.__name__)
+
+    @staticmethod
+    def _get_filter_response(freqs, function, force_real=False):
+        """
+        Get the frequency response of a filter function.
+
+        Parameters
+        ----------
+        freqs : ndarray
+            Array of frequencies [Hz] over which to calculate the filter
+            response.
+        function : function
+            Response function taking a frequency (or array of frequencies) and
+            returning the corresponding complex gain(s).
+        force_real : boolean, optional
+            If ``True``, complex conjugation is used on the positive-frequency
+            response to force the filtered signal to be real-valued.
+
+        Returns
+        -------
+        response : ndarray
+            Complex response of the filter at the given frequencies.
+
+        """
+        if force_real:
+            true_freqs = np.array(freqs)
+            freqs = np.abs(freqs)
+
+        # Attempt to evaluate all responses in one function call
+        try:
+            responses = np.array(function(freqs), dtype=np.complex_)
+        # Otherwise evaluate responses one at a time
+        except (TypeError, ValueError):
+            logger.debug("Frequency response function %r could not be "+
+                         "evaluated for multiple frequencies at once",
+                         function)
+            responses = np.zeros(len(spectrum), dtype=np.complex_)
+            for i, f in enumerate(freqs):
+                responses[i] = function(f)
+
+        # To make the filtered signal real, mirror the positive frequency
+        # response into the negative frequencies, making the real part even
+        # (done above) and the imaginary part odd (below)
+        if force_real:
+            responses.imag[true_freqs<0] *= -1
+
+        return responses
 
 
 
@@ -356,6 +409,54 @@ class EmptySignal(Signal):
     def __init__(self, times, value_type=None):
         super().__init__(times, np.zeros(len(times)), value_type=value_type)
 
+    def __add__(self, other):
+        """
+        Adds two signals by adding their values at each time.
+
+        Adding ``Signal`` objects is only allowed when they have identical
+        ``times`` arrays, and their ``value_type``s are compatible. This means
+        that the ``value_type``s must be the same, or one must be ``undefined``
+        which will be coerced to the other ``value_type``.
+
+        Raises
+        ------
+        ValueError
+            If the other ``Signal`` has different ``times`` or ``value_type``.
+
+        """
+        if not isinstance(other, Signal):
+            return NotImplemented
+        if not np.array_equal(self.times, other.times):
+            raise ValueError("Can't add signals with different times")
+        if (self.value_type!=self.Type.undefined and
+                other.value_type!=self.Type.undefined and
+                self.value_type!=other.value_type):
+            raise ValueError("Can't add signals with different value types")
+
+        if self.value_type==self.Type.undefined:
+            value_type = other.value_type
+        else:
+            value_type = self.value_type
+
+        # Adding an EmptySignal is essentially transparent (returns a copy
+        # of the other Signal), except for the value_type coercion
+        new_signal = copy.deepcopy(other)
+        new_signal.value_type = value_type
+        return new_signal
+
+    def copy(self):
+        """
+        Get a copy of the ``EmptySignal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``EmptySignal`` object with identical
+            ``times`` and ``value_type``.
+
+        """
+        return EmptySignal(self.times, self.value_type)
+
     def with_times(self, new_times):
         """
         Returns a representation of this signal over a different times array.
@@ -379,7 +480,7 @@ class EmptySignal(Signal):
         return EmptySignal(new_times, value_type=self.value_type)
 
 
-class FunctionSignal(Signal):
+class FunctionSignal(LazyMutableClass, Signal):
     """
     Class for signals generated by a function.
 
@@ -412,22 +513,173 @@ class FunctionSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
-    EmptySignal : Class for signal with zero amplitude.
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
 
     """
     def __init__(self, times, function, value_type=None):
         self.times = np.array(times)
-        self.function = function
-        # Attempt to evaluate all values in one function call
-        try:
-            values = self.function(self.times)
-        # Otherwise evaluate values one at a time
-        except (ValueError, TypeError):
-            values = []
-            for t in self.times:
-                values.append(self.function(t))
+        self._functions = [function]
+        self._t0s = [0]
+        self._factors = [1]
+        self._filters = [[]]
+        self.value_type = value_type
+        super().__init__(static_attributes=['times', '_functions', '_t0s',
+                                            '_factors', '_filters'])
 
-        super().__init__(times, values, value_type=value_type)
+    @lazy_property
+    def values(self):
+        """1D array of values which define the signal."""
+        values = np.zeros(len(self.times))
+        for i, function in enumerate(self._functions):
+            # Attempt to evaluate all values in one function call
+            try:
+                func_vals = function(self.times - self._t0s[i])
+            # Otherwise evaluate values one at a time
+            except (ValueError, TypeError):
+                func_vals = [function(t) for t in (self.times-self._t0s[i])]
+
+            func_vals *= self._factors[i]
+
+            if len(self._filters[i])!=0:
+                values += self._apply_filters(func_vals, self._filters[i])
+            else:
+                values += func_vals
+
+        return values
+
+
+    def __add__(self, other):
+        """
+        Adds two signals by adding their values at each time.
+
+        Adding ``Signal`` objects is only allowed when they have identical
+        ``times`` arrays, and their ``value_type``s are compatible. This means
+        that the ``value_type``s must be the same, or one must be ``undefined``
+        which will be coerced to the other ``value_type``. If two
+        ``FunctionSignal`` objects are added, the result is another
+        ``FunctionSignal``. If a ``FunctionSignal`` object is added to a
+        ``Signal`` object, the result is a ``Signal`` object where the
+        ``FunctionSignal`` has been evaluated over the ``Signal`` object's
+        ``times``.
+
+        Raises
+        ------
+        ValueError
+            If the other ``Signal`` has a different ``value_type``.
+
+        """
+        if not isinstance(other, Signal):
+            return NotImplemented
+        if not np.array_equal(self.times, other.times):
+            raise ValueError("Can't add signals with different times")
+        if (self.value_type!=self.Type.undefined and
+                other.value_type!=self.Type.undefined and
+                self.value_type!=other.value_type):
+            raise ValueError("Can't add signals with different value types")
+
+        if self.value_type==self.Type.undefined:
+            value_type = other.value_type
+        else:
+            value_type = self.value_type
+
+        if isinstance(other, FunctionSignal):
+            new_signal = self.copy()
+            new_signal._functions += copy.deepcopy(other._functions)
+            new_signal._t0s += copy.deepcopy(other._t0s)
+            new_signal._factors += copy.deepcopy(other._factors)
+            new_signal._filters += copy.deepcopy(other._filters)
+            new_signal.value_type = value_type
+            return new_signal
+        elif isinstance(other, EmptySignal):
+            # Adding an EmptySignal is essentially transparent (returns a copy
+            # of the FunctionSignal), except for the value_type coercion
+            new_signal = copy.deepcopy(self)
+            new_signal.value_type = value_type
+            return new_signal
+        else:
+            return Signal(self.times, self.values+other.values,
+                          value_type=value_type)
+
+    def __mul__(self, other):
+        """Multiply signal values at all times by some value."""
+        try:
+            factors = [f * other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        new_signal = self.copy()
+        new_signal._factors = factors
+        return new_signal
+
+    def __rmul__(self, other):
+        """Multiply signal values at all times by some value."""
+        try:
+            factors = [other * f for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        new_signal = self.copy()
+        new_signal._factors = factors
+        return new_signal
+
+    def __imul__(self, other):
+        """Multiply signal values at all times by some value in-place."""
+        try:
+            self._factors = [f * other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        return self
+
+    def __truediv__(self, other):
+        """Divide signal values at all times by some value."""
+        try:
+            factors = [f / other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        new_signal = self.copy()
+        new_signal._factors = factors
+        return new_signal
+
+    def __itruediv__(self, other):
+        """Divide signal values at all times by some value in-place."""
+        try:
+            self._factors = [f / other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        return self
+
+    def copy(self):
+        """
+        Get a copy of the ``FunctionSignal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``FunctionSignal`` object with
+            identical ``times``, ``value_type``, and internal function
+            parameters.
+
+        """
+        new_signal = FunctionSignal(self.times, None, self.value_type)
+        new_signal._functions = copy.deepcopy(self._functions)
+        new_signal._t0s = copy.deepcopy(self._t0s)
+        new_signal._factors = copy.deepcopy(self._factors)
+        new_signal._filters = copy.deepcopy(self._filters)
+        return new_signal
+
+    def resample(self, n):
+        """
+        Resamples the signal into n points in the same time range, in-place.
+
+        Parameters
+        ----------
+        n : int
+            The number of points into which the signal should be resampled.
+
+        """
+        if n==len(self.times):
+            return
+        self.times = np.linspace(self.times[0], self.times[-1], n)
 
     def with_times(self, new_times):
         """
@@ -449,8 +701,115 @@ class FunctionSignal(Signal):
         recalculate exact (not interpolated) values for the new times.
 
         """
-        return FunctionSignal(new_times, self.function,
-                              value_type=self.value_type)
+        new_signal = copy.deepcopy(self)
+        new_signal.times = new_times
+        return new_signal
+
+    def shift(self, dt):
+        """
+        Shifts the signal values in time by `dt`.
+
+        Parameters
+        ----------
+        dt : float
+            Time shift (s) to be applied to the signal.
+
+        """
+        self.times += dt
+        self._t0s = [t+dt for t in self._t0s]
+
+
+    def filter_frequencies(self, freq_response, force_real=False):
+        """
+        Apply the given frequency response function to the signal, in-place.
+
+        For the given response function, multiplies the response into the
+        frequency domain of the signal. If the filtered signal is forced to be
+        real, the positive-frequency response is mirrored into the negative
+        frequencies by complex conjugation.
+
+        Parameters
+        ----------
+        freq_response : function
+            Response function taking a frequency (or array of frequencies) and
+            returning the corresponding complex gain(s).
+        force_real : boolean, optional
+            If ``True``, complex conjugation is used on the positive-frequency
+            response to force the filtered signal to be real-valued. Otherwise
+            the frequency response is left alone and any imaginary parts of the
+            filtered signal are thrown out.
+
+        Warns
+        -----
+        Raises a warning if the maximum value of the imaginary part of the
+        filtered signal was greater than 1e-5 times the maximum value of the
+        real part, indicating that there was significant signal lost when
+        discarding the imaginary part.
+
+        """
+        # Since we're using append instead of setting self._filters, need to
+        # manually enforce the cache clearing
+        self._clear_cache()
+        for group in self._filters:
+            group.append((freq_response, force_real))
+
+
+    def _apply_filters(self, input_vals, filters):
+        """
+        Apply the given frequency response function to the signal, in-place.
+
+        For each filter function, multiplies the response into the frequency
+        domain of the signal. If a filtered signal is forced to be real, the
+        positive-frequency response is mirrored into the negative frequencies
+        by complex conjugation.
+
+        Parameters
+        ----------
+        input_vals : array_like
+            1D array of values for the unfiltered signal function.
+        filters : list of tuple
+            List of response functions and ``force_real`` parameters of filters
+            to be applied to the unfiltered function values.
+
+        Warns
+        -----
+        Raises a warning if the maximum value of the imaginary part of the
+        filtered signal was greater than 1e-5 times the maximum value of the
+        real part, indicating that there was significant signal lost when
+        discarding the imaginary part.
+
+        """
+        freqs = scipy.fftpack.fftfreq(n=2*len(self.times), d=self.dt)
+        all_filters = np.ones(len(freqs), dtype=np.complex_)
+
+        for freq_response, force_real in filters:
+            all_filters *= self._get_filter_response(freqs, freq_response,
+                                                     force_real)
+
+        # Zero-pad the signal so the filter doesn't cause the resulting
+        # signal to wrap around the end of the time array
+        vals = np.concatenate((input_vals, np.zeros(len(self.times))))
+        spectrum = scipy.fftpack.fft(vals)
+
+        filtered_vals = scipy.fftpack.ifft(all_filters*spectrum)
+        output_vals = np.real(filtered_vals[:len(self.times)])
+
+        # Issue a warning if there was significant signal in the (discarded)
+        # imaginary part of the filtered values
+        if np.any(np.abs(np.imag(filtered_vals[:len(self.times)])) >
+                  np.max(np.abs(output_vals)) * 1e-5):
+            msg = ("Significant signal amplitude was lost when forcing the "+
+                   "signal values to be real after applying the frequency "+
+                   "filters '%s'. This may be avoided by making sure the "+
+                   "filters being used are properly defined for negative "+
+                   "frequencies")
+            if not np.all([force_real for _, force_real in filters]):
+                msg += (", or by passing force_real=True to the "+
+                        "Signal.filter_frequencies function")
+            msg += "."
+            logger.warning(msg, [name for name, _ in filters])
+
+        return output_vals
 
 
 
