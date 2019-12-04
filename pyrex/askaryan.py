@@ -577,6 +577,8 @@ class ARVZAskaryanSignal(FunctionSignal):
             return np.zeros(len(times))
 
         # Calculate values for the charge-profile array
+        # Since this is normalized by LQ_tot in the end, there is no need to
+        # change from number of particles to charge
         Q = profile_function(np.sign(z_to_t)*z_Q_vals, energy)
 
         # Fail gracefully if the energy is less than the critical energy for
@@ -759,11 +761,10 @@ class ARVZAskaryanSignal(FunctionSignal):
     def em_shower_profile(z, energy, density=0.92, crit_energy=7.86e-2,
                           rad_length=36.08):
         """
-        Calculates the electromagnetic shower longitudinal charge profile.
+        Calculates the electromagnetic shower longitudinal profile.
 
-        The longitudinal charge profile is calculated for a given distance,
-        shower energy, density, critical energy, and electron radiation length
-        in ice.
+        The longitudinal profile is calculated for a given distance, shower
+        energy, density, critical energy, and electron radiation length in ice.
 
         Parameters
         ----------
@@ -781,7 +782,7 @@ class ARVZAskaryanSignal(FunctionSignal):
         Returns
         -------
         array_like
-            The charge (C) at the given distance along the shower.
+            The number of particles at the given distance along the shower.
 
         Notes
         -----
@@ -817,18 +818,18 @@ class ARVZAskaryanSignal(FunctionSignal):
         N[z>0] = (0.31 * np.exp(x_ratio[z>0] * (1 - 1.5*np.log(s[z>0])))
                   / np.sqrt(np.log(e_ratio)))
 
-        return N * 1.602e-19
+        return N
 
     @staticmethod
     def had_shower_profile(z, energy, density=0.92, crit_energy=17.006e-2,
                            rad_length=39.562, int_length=113.03,
                            scale_factor=0.11842):
         """
-        Calculates the hadronic shower longitudinal charge profile.
+        Calculates the hadronic shower longitudinal profile.
 
-        The longitudinal charge profile is calculated for a given distance,
-        density, critical energy, hadron radiation length, and interaction
-        length in ice, plus a scale factor for the number of particles.
+        The longitudinal charge is calculated for a given distance, density,
+        critical energy, hadron radiation length, and interaction length in
+        ice, plus a scale factor for the number of particles.
 
         Parameters
         ----------
@@ -851,7 +852,7 @@ class ARVZAskaryanSignal(FunctionSignal):
         Returns
         -------
         array_like
-            The charge (C) at the given distance along the shower.
+            The number of particles at the given distance along the shower.
 
         Notes
         -----
@@ -883,7 +884,7 @@ class ARVZAskaryanSignal(FunctionSignal):
                   * (x[z>0] / (x_max - int_length))**(x_max / int_length)
                   * np.exp((x_max - x[z>0])/int_length - 1))
 
-        return N * 1.602e-19
+        return N
 
     @staticmethod
     def max_length(energy, density=0.92, crit_energy=7.86e-2,
