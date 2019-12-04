@@ -365,6 +365,9 @@ class ARVZAskaryanSignal(FunctionSignal):
         Energy (GeV) of the electromagnetic shower producing the pulse.
     had_energy : float
         Energy (GeV) of the hadronic shower producing the pulse.
+    oncone_range : float
+        Maximum angular deviation (radians) from the Cherenkov angle which
+        should be forced to the Cherenkov angle form factor parameterization.
     vector_potential
     dt
     frequencies
@@ -409,6 +412,9 @@ class ARVZAskaryanSignal(FunctionSignal):
         effect." ICRC proceedings, 17-25 (1999). :arxiv:`astro-ph/9906347`
 
     """
+    oncone_range = (np.arccos((1-10*3e8*np.finfo(np.float_).eps)/1.78)
+                    - np.arccos(1/1.78))
+
     def __init__(self, times, particle, viewing_angle, viewing_distance=1,
                  ice_model=ice, t0=0):
         # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
@@ -521,7 +527,7 @@ class ARVZAskaryanSignal(FunctionSignal):
         # potential_function at the Cherenkov angle. This saves time in the
         # convolution, and the numerical accuracy of calculations involving
         # z_to_t at this point is questionable anyway
-        if np.abs(z_to_t)<=10*np.finfo(z_to_t.dtype).eps:
+        if np.abs(theta - np.arccos(1/n))<=self.oncone_range:
             logger.debug("Using RAC parameterization directly for theta=%f "+
                          "(z_to_t=%e)", theta, z_to_t)
             times = np.concatenate((times, [times[-1]+dt])) - t0
