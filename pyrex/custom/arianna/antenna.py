@@ -16,7 +16,6 @@ from pyrex.internal_functions import (normalize, complex_bilinear_interp,
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
-from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -323,9 +322,12 @@ class ARIANNAAntenna(Antenna):
         Frequency (Hz) at the center of the antenna's frequency range.
     bandwidth : float
         Bandwidth (Hz) of the antenna.
+    temperature : float
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
     z_axis : array_like, optional
         Vector direction of the z-axis of the antenna.
     x_axis : array_like, optional
@@ -381,8 +383,8 @@ class ARIANNAAntenna(Antenna):
 
     """
     def __init__(self, response_data, position, center_frequency, bandwidth,
-                 resistance, z_axis=(0,0,1), x_axis=(1,0,0), efficiency=1,
-                 noisy=True, unique_noise_waveforms=10):
+                 temperature, resistance, z_axis=(0,0,1), x_axis=(1,0,0),
+                 efficiency=1, noisy=True, unique_noise_waveforms=10):
         # Parse the response data
         self._theta_response = response_data[0]
         self._phi_response = response_data[1]
@@ -396,8 +398,8 @@ class ARIANNAAntenna(Antenna):
 
         super().__init__(position=position, z_axis=z_axis, x_axis=x_axis,
                          efficiency=efficiency, freq_range=(f_low, f_high),
-                         temperature=ice.temperature(position[2]),
-                         resistance=resistance, noisy=noisy,
+                         temperature=temperature, resistance=resistance,
+                         noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms)
 
     def directional_gain(self, theta, phi):
@@ -707,8 +709,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
         return meta
 
     def setup_antenna(self, center_frequency=350e6, bandwidth=600e6,
-                      resistance=16.5, z_axis=(0,0,1), x_axis=(1,0,0),
-                      efficiency=1, noisy=True, unique_noise_waveforms=10,
+                      temperature=300, resistance=50, z_axis=(0,0,1),
+                      x_axis=(1,0,0), efficiency=1, noisy=True,
+                      unique_noise_waveforms=10,
                       response_data=None, response_freqs=None, **kwargs):
         """
         Setup the antenna by passing along its init arguments.
@@ -730,9 +733,12 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Frequency (Hz) at the center of the antenna's frequency range.
         bandwidth : float, optional
             Bandwidth (Hz) of the antenna.
+        temperature : float, optional
+            The noise temperature (K) of the antenna. Used in combination with
+            `resistance` to calculate the RMS voltage of the antenna noise.
         resistance : float, optional
-            The noise resistance (ohm) of the antenna. Used to calculate the
-            RMS voltage of the antenna noise.
+            The noise resistance (ohm) of the antenna. Used in combination with
+            `temperature` to calculate the RMS voltage of the antenna noise.
         z_axis : array_like, optional
             Vector direction of the z-axis of the antenna.
         x_axis : array_like, optional
@@ -747,15 +753,13 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         """
         # ARIANNA expects a noise rms of about 11 microvolts (before amps).
-        # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~16.5 Ohm
-        # Additionally, the bandwidth of the antenna is set slightly larger
-        # than the nominal bandwidth of the true ARA antenna system (700 MHz),
-        # but the extra frequencies should be killed by the front-end filter
+        # This is mostly satisfied by using the a noise temperature of 300 K,
+        # along with a 50 ohm resistance
         super().setup_antenna(response_data=response_data,
                               position=self.position,
                               center_frequency=center_frequency,
                               bandwidth=bandwidth,
+                              temperature=temperature,
                               resistance=resistance,
                               z_axis=z_axis,
                               x_axis=x_axis,

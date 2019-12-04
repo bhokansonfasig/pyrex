@@ -15,7 +15,6 @@ import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal, ThermalNoise, EmptySignal
-from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -633,9 +632,12 @@ class DipoleAntenna(Antenna):
         Tuned frequency (Hz) of the dipole.
     bandwidth : float
         Bandwidth (Hz) of the antenna.
+    temperature : float
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     trigger_threshold : float, optional
@@ -701,9 +703,9 @@ class DipoleAntenna(Antenna):
     Antenna : Base class for antennas.
 
     """
-    def __init__(self, name, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), trigger_threshold=0,
-                 effective_height=None, noisy=True,
+    def __init__(self, name, position, center_frequency, bandwidth,
+                 temperature, resistance, orientation=(0,0,1),
+                 trigger_threshold=0, effective_height=None, noisy=True,
                  unique_noise_waveforms=10):
         self.name = name
         self.threshold = trigger_threshold
@@ -726,10 +728,9 @@ class DipoleAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         temperature=ice.temperature(position[2]),
-                         freq_range=(f_low, f_high), resistance=resistance,
-                         unique_noise_waveforms=unique_noise_waveforms,
-                         noisy=noisy)
+                         freq_range=(f_low, f_high), temperature=temperature,
+                         resistance=resistance, noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
 
         # Build scipy butterworth filter to speed up response function
         b, a  = scipy.signal.butter(1, 2*np.pi*np.array(self.freq_range),

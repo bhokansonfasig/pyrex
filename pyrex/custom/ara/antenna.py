@@ -16,7 +16,6 @@ from pyrex.internal_functions import (normalize, complex_bilinear_interp,
 from pyrex.signals import Signal, FunctionSignal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
-from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -290,9 +289,12 @@ class ARAAntenna(Antenna):
         Frequency (Hz) at the center of the antenna's frequency range.
     bandwidth : float
         Bandwidth (Hz) of the antenna.
+    temperature : float
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     efficiency : float, optional
@@ -330,7 +332,7 @@ class ARAAntenna(Antenna):
         The noise resistance (ohm) of the antenna. Used in combination with
         `temperature` to calculate the RMS voltage of the antenna noise.
     noise_rms : float or None
-        The RMS voltage (v) of the antenna noise. If not ``None``, this value
+        The RMS voltage (V) of the antenna noise. If not ``None``, this value
         will be used instead of the RMS voltage calculated from the values of
         `temperature` and `resistance`.
     signals : list of Signal
@@ -346,8 +348,8 @@ class ARAAntenna(Antenna):
 
     """
     def __init__(self, response_data, position, center_frequency, bandwidth,
-                 resistance, orientation=(0,0,1), efficiency=1, noisy=True,
-                 unique_noise_waveforms=10):
+                 temperature, resistance, orientation=(0,0,1), efficiency=1,
+                 noisy=True, unique_noise_waveforms=10):
         # Parse the response data
         self._theta_response = response_data[0]
         self._phi_response = response_data[1]
@@ -368,8 +370,8 @@ class ARAAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          efficiency=efficiency, freq_range=(f_low, f_high),
-                         temperature=ice.temperature(position[2]),
-                         resistance=resistance, noisy=noisy,
+                         temperature=temperature, resistance=resistance,
+                         noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms)
 
     def directional_gain(self, theta, phi):
@@ -718,9 +720,9 @@ class ARAAntennaSystem(AntennaSystem):
         return meta
 
     def setup_antenna(self, response_data, center_frequency=500e6,
-                      bandwidth=800e6, resistance=16.8, orientation=(0,0,1),
-                      efficiency=1, noisy=True, unique_noise_waveforms=10,
-                      **kwargs):
+                      bandwidth=800e6, temperature=325, resistance=50,
+                      orientation=(0,0,1), efficiency=1, noisy=True,
+                      unique_noise_waveforms=10, **kwargs):
         """
         Setup the antenna by passing along its init arguments.
 
@@ -741,9 +743,12 @@ class ARAAntennaSystem(AntennaSystem):
             Frequency (Hz) at the center of the antenna's frequency range.
         bandwidth : float, optional
             Bandwidth (Hz) of the antenna.
+        temperature : float, optional
+            The noise temperature (K) of the antenna. Used in combination with
+            `resistance` to calculate the RMS voltage of the antenna noise.
         resistance : float, optional
-            The noise resistance (ohm) of the antenna. Used to calculate the
-            RMS voltage of the antenna noise.
+            The noise resistance (ohm) of the antenna. Used in combination with
+            `temperature` to calculate the RMS voltage of the antenna noise.
         orientation : array_like, optional
             Vector direction of the z-axis of the antenna.
         efficiency : float, optional
@@ -756,8 +761,8 @@ class ARAAntennaSystem(AntennaSystem):
 
         """
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
-        # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~16.8 Ohm
+        # This is mostly satisfied by using the default noise temperature from
+        # AraSim, 325 K, along with a 50 ohm resistance
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
@@ -765,6 +770,7 @@ class ARAAntennaSystem(AntennaSystem):
                               position=self.position,
                               center_frequency=center_frequency,
                               bandwidth=bandwidth,
+                              temperature=temperature,
                               resistance=resistance,
                               orientation=orientation,
                               efficiency=efficiency,
