@@ -57,6 +57,8 @@ class BaseGenerator:
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
+    volume
+    solid_angle
 
     See Also
     --------
@@ -79,6 +81,25 @@ class BaseGenerator:
         self.ratio = np.array(flavor_ratio)/np.sum(flavor_ratio)
         self.interaction_model = interaction_model
         self.count = 0
+
+    @property
+    def volume(self):
+        """
+        Generation volume (m^3) in which event vertices are produced.
+
+        """
+        raise NotImplementedError("volume property must be implemented by "+
+                                  "inheriting class")
+
+    @property
+    def solid_angle(self):
+        """
+        Generation solid angle (sr) in which event directions are produced.
+
+        """
+        logger.debug("Using default solid_angle from "+
+                     "pyrex.generation.BaseGenerator")
+        return 4 * np.pi
 
     def get_vertex(self):
         """
@@ -352,6 +373,8 @@ class CylindricalGenerator(BaseGenerator):
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
+    volume
+    solid_angle
 
     See Also
     --------
@@ -366,6 +389,14 @@ class CylindricalGenerator(BaseGenerator):
         super().__init__(energy=energy, shadow=shadow,
                          flavor_ratio=flavor_ratio,
                          interaction_model=interaction_model)
+
+    @property
+    def volume(self):
+        """
+        Generation volume (m^3) in which event vertices are produced.
+
+        """
+        return np.pi * self.dr**2 * self.dz
 
     def get_vertex(self):
         """
@@ -528,6 +559,8 @@ class RectangularGenerator(BaseGenerator):
         [electron, muon, tau] neutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
+    volume
+    solid_angle
 
     See Also
     --------
@@ -543,6 +576,14 @@ class RectangularGenerator(BaseGenerator):
         super().__init__(energy=energy, shadow=shadow,
                          flavor_ratio=flavor_ratio,
                          interaction_model=interaction_model)
+
+    @property
+    def volume(self):
+        """
+        Generation volume (m^3) in which event vertices are produced.
+
+        """
+        return self.dx * self.dy * self.dz
 
     def get_vertex(self):
         """
