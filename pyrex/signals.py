@@ -1002,8 +1002,11 @@ class ThermalNoise(FunctionSignal):
         if rms_voltage is not None:
             self.rms = rms_voltage
         elif temperature is not None and resistance is not None:
-            # RMS voltage = sqrt(4 * kB * T * R * bandwidth)
-            self.rms = np.sqrt(4 * 1.38e-23 * temperature * resistance
+            # RMS voltage = sqrt(kB * T * R * bandwidth)
+            # Not using sqrt(4 * kB * T * R * bandwidth) because in the antenna
+            # system only half the voltage is seen and the other half goes to
+            # "ground" (changed under advisement by Cosmin Deaconu)
+            self.rms = np.sqrt(1.38e-23 * temperature * resistance
                                * (self.f_max - self.f_min))
         else:
             raise ValueError("Either RMS voltage or temperature and resistance"+
