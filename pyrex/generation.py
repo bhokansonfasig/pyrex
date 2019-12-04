@@ -6,9 +6,11 @@ Generators are responsible for the input of events into the simulation.
 """
 
 from collections.abc import Iterable
+from enum import Enum
 import logging
 import numpy as np
 import warnings
+from pyrex.internal_functions import get_from_enum
 import pyrex.earth_model as earth_model
 from pyrex.particle import Event, Particle, NeutrinoInteraction
 from pyrex.io import File
@@ -16,7 +18,7 @@ from pyrex.io import File
 logger = logging.getLogger(__name__)
 
 
-class BaseGenerator:
+class Generator:
     """
     Base class for neutrino generators.
 
@@ -38,6 +40,9 @@ class BaseGenerator:
     flavor_ratio : array_like, optional
         Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
         tau] neutrino fractions.
+    source : optional
+        Source type of neutrinos to be generated. Used in the determination of
+        per-flavor neutrino/antineutrino fractions.
     interaction_model : optional
         Class to use to describe interactions of the generated particles.
         Should inherit from (or behave like) the base ``Interaction`` class.
@@ -55,6 +60,9 @@ class BaseGenerator:
     ratio : ndarary
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
+    source : Generator.SourceType
+        Source type of neutrinos to be generated. Used in the determination of
+        per-flavor neutrino/antineutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
     volume
@@ -66,8 +74,26 @@ class BaseGenerator:
                                  attributes.
 
     """
+    class SourceType(Enum):
+        """
+        Enum containing possible sources for neutrinos.
+
+        Attributes
+        ----------
+        pgamma, cosmogenic
+        pp, astrophysical
+        unknown, undefined
+
+        """
+        undefined = 0
+        unknown = 0
+        cosmogenic = 1
+        pgamma = 1
+        astrophysical = 2
+        pp = 2
+
     def __init__(self, energy, shadow=False, flavor_ratio=(1,1,1),
-                 interaction_model=NeutrinoInteraction):
+                 source="cosmogenic", interaction_model=NeutrinoInteraction):
         if not callable(energy):
             try:
                 e = float(energy)
@@ -79,8 +105,27 @@ class BaseGenerator:
         self.get_energy = energy
         self.shadow = shadow
         self.ratio = np.array(flavor_ratio)/np.sum(flavor_ratio)
+        self.source = source
         self.interaction_model = interaction_model
         self.count = 0
+
+    @property
+    def source(self):
+        """
+        Value of the source type.
+
+        Should always be a value from the ``Interaction.Type`` enum. Setting
+        with integer or string values may work if carefully chosen.
+
+        """
+        return self._source
+
+    @source.setter
+    def source(self, src_type):
+        if src_type is None:
+            self._source = self.SourceType.undefined
+        else:
+            self._source = get_from_enum(src_type, self.SourceType)
 
     @property
     def volume(self):
@@ -98,14 +143,14 @@ class BaseGenerator:
 
         """
         logger.debug("Using default solid_angle from "+
-                     "pyrex.generation.BaseGenerator")
+                     "pyrex.generation.Generator")
         return 4 * np.pi
 
     def get_vertex(self):
         """
         Get the vertex of the next particle to be generated.
 
-        For the `BaseGenerator` class, this method is not implemented.
+        For the `Generator` class, this method is not implemented.
         Subclasses should override this method with their own procedure for
         generating neutrino vertices in some volume.
 
@@ -116,7 +161,7 @@ class BaseGenerator:
 
         """
         logger.debug("Using default get_vertex from "+
-                     "pyrex.generation.BaseGenerator")
+                     "pyrex.generation.Generator")
         raise NotImplementedError("get_vertex method must be implemented by "
                                   +"inheriting class")
 
@@ -150,9 +195,8 @@ class BaseGenerator:
         Get the particle type of the next particle to be generated.
 
         Randomly generates a neutrino flavor according to the flavor ratio of
-        the generator, and chooses neutrino or antineutrino based on an
-        assumption that the neutrinos are generated from proton-gamma
-        interactions.
+        the generator, and chooses neutrino or antineutrino based on ratios
+        derived from the source type.
 
         Returns
         -------
@@ -175,21 +219,29 @@ class BaseGenerator:
 
         """
         rand_flavor = np.random.rand()
+        rand_nunubar = np.random.rand()
+        if self.source==self.SourceType.cosmogenic:
+            nunubar_ratios = [0.78, 0.61, 0.61]
+        elif self.source==self.SourceType.astrophysical:
+            nunubar_ratios = [0.5, 0.5, 0.5]
+        else:
+            raise ValueError("Source type not supported")
+
         # Electron neutrinos
         if rand_flavor<self.ratio[0]:
-            if np.random.rand()<0.78:
+            if rand_nunubar<nunubar_ratios[0]:
                 return Particle.Type.electron_neutrino
             else:
                 return Particle.Type.electron_antineutrino
         # Muon neutrinos
         elif rand_flavor<self.ratio[0]+self.ratio[1]:
-            if np.random.rand()<0.61:
+            if rand_nunubar<nunubar_ratios[1]:
                 return Particle.Type.muon_neutrino
             else:
                 return Particle.Type.muon_antineutrino
         # Tau neutrinos
         else:
-            if np.random.rand()<0.61:
+            if rand_nunubar<nunubar_ratios[2]:
                 return Particle.Type.tau_neutrino
             else:
                 return Particle.Type.tau_antineutrino
@@ -198,7 +250,7 @@ class BaseGenerator:
         """
         Get the intersections of the particle path with the ice volume edges.
 
-        For the `BaseGenerator` class, this method is not implemented.
+        For the `Generator` class, this method is not implemented.
         Subclasses should override this method with their own procedure for
         calculating exit points given the generation volume.
 
@@ -218,7 +270,7 @@ class BaseGenerator:
 
         """
         logger.debug("Using default get_exit_points from "+
-                     "pyrex.generation.BaseGenerator")
+                     "pyrex.generation.Generator")
         raise NotImplementedError("get_exit_points method must be implemented "
                                   +"by inheriting class")
 
@@ -324,7 +376,7 @@ class BaseGenerator:
             return self.create_event()
 
 
-class CylindricalGenerator(BaseGenerator):
+class CylindricalGenerator(Generator):
     """
     Class to generate neutrino vertices in a cylindrical ice volume.
 
@@ -349,6 +401,9 @@ class CylindricalGenerator(BaseGenerator):
     flavor_ratio : array_like, optional
         Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
         tau] neutrino fractions.
+    source : optional
+        Source type of neutrinos to be generated. Used in the determination of
+        per-flavor neutrino/antineutrino fractions.
     interaction_model : optional
         Class to use to describe interactions of the generated particles.
         Should inherit from (or behave like) the base ``Interaction`` class.
@@ -371,6 +426,9 @@ class CylindricalGenerator(BaseGenerator):
     ratio : ndarary
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
+    source : Generator.SourceType
+        Source type of neutrinos to be generated. Used in the determination of
+        per-flavor neutrino/antineutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
     volume
@@ -383,11 +441,11 @@ class CylindricalGenerator(BaseGenerator):
 
     """
     def __init__(self, dr, dz, energy, shadow=False, flavor_ratio=(1,1,1),
-                 interaction_model=NeutrinoInteraction):
+                 source="cosmogenic", interaction_model=NeutrinoInteraction):
         self.dr = dr
         self.dz = dz
         super().__init__(energy=energy, shadow=shadow,
-                         flavor_ratio=flavor_ratio,
+                         flavor_ratio=flavor_ratio, source=source,
                          interaction_model=interaction_model)
 
     @property
@@ -502,7 +560,7 @@ class CylindricalGenerator(BaseGenerator):
             raise ValueError("Could not determine exit points")
 
 
-class RectangularGenerator(BaseGenerator):
+class RectangularGenerator(Generator):
     """
     Class to generate neutrino vertices in a rectangular ice volume.
 
@@ -531,6 +589,9 @@ class RectangularGenerator(BaseGenerator):
     flavor_ratio : array_like, optional
         Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
         tau] neutrino fractions.
+    source : optional
+        Source type of neutrinos to be generated. Used in the determination of
+        per-flavor neutrino/antineutrino fractions.
     interaction_model : optional
         Class to use to describe interactions of the generated particles.
         Should inherit from (or behave like) the base ``Interaction`` class.
@@ -557,6 +618,9 @@ class RectangularGenerator(BaseGenerator):
     ratio : ndarary
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
+    source : Generator.SourceType
+        Source type of neutrinos to be generated. Used in the determination of
+        per-flavor neutrino/antineutrino fractions.
     interaction_model : Interaction
         Class to use to describe interactions of the generated particles.
     volume
@@ -569,12 +633,12 @@ class RectangularGenerator(BaseGenerator):
 
     """
     def __init__(self, dx, dy, dz, energy, shadow=False, flavor_ratio=(1,1,1),
-                 interaction_model=NeutrinoInteraction):
+                 source="cosmogenic", interaction_model=NeutrinoInteraction):
         self.dx = dx
         self.dy = dy
         self.dz = dz
         super().__init__(energy=energy, shadow=shadow,
-                         flavor_ratio=flavor_ratio,
+                         flavor_ratio=flavor_ratio, source=source,
                          interaction_model=interaction_model)
 
     @property
