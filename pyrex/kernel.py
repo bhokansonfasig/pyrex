@@ -51,6 +51,11 @@ class EventKernel:
         A function or dictionary with function values representing trigger
         conditions of the detector. If a dictionary, must have a "global" key
         with its value representing the global detector trigger.
+    offcone_max : float or None, optional
+        The maximum angle away from the Cherenkov angle to be simulated.
+        Antennas which view an event with an angle larger than this angle will
+        skip the calculation of the Askaryan signal and assume no significant
+        signal is seen. If `None`, no offcone cut is applied.
 
     Attributes
     ----------
@@ -71,6 +76,8 @@ class EventKernel:
         The file object to be used for writing data output.
     triggers
         The trigger condition(s) of the detector.
+    offcone_max
+        The maximum angle away from the Cherenkov angle to be simulated.
 
     See Also
     --------
@@ -126,7 +133,7 @@ class EventKernel:
     def __init__(self, generator, antennas, ice_model=ice,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
                  signal_times=np.linspace(-50e-9, 50e-9, 2000, endpoint=False),
-                 event_writer=None, triggers=None):
+                 event_writer=None, triggers=None, offcone_max=40):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
@@ -135,6 +142,10 @@ class EventKernel:
         self.signal_times = signal_times
         self.writer = event_writer
         self.triggers = triggers
+        if offcone_max is None:
+            self.offcone_max = np.radians(180)
+        else:
+            self.offcone_max = np.radians(offcone_max)
         self._gen_count = self.gen.count
         if self.writer is not None:
             if not self.writer.is_open:
@@ -195,6 +206,8 @@ class EventKernel:
                     logger.debug("Ray paths to %s do not exist", ant)
                     continue
 
+                theta_c = np.arccos(1/self.ice.index(particle.vertex[2]))
+
                 ray_paths[i].extend(rt.solutions)
                 for path in rt.solutions:
                     # nu_pol is the signal polarization at the neutrino vertex
@@ -217,17 +230,24 @@ class EventKernel:
                                             path.emitted_direction))
                     logger.debug("Angle to %s is %f degrees", ant,
                                  np.degrees(psi))
-                    # TODO: Support angles larger than pi/2
-                    # (low priority since these angles are far from the
-                    # cherenkov cone)
-                    if psi>np.pi/2:
-                        continue
 
-                    pulse = self.signal_model(times=self.signal_times,
-                                              particle=particle,
-                                              viewing_angle=psi,
-                                              viewing_distance=path.path_length,
-                                              ice_model=self.ice)
+                    try:
+                        if np.abs(psi-theta_c)>offcone_max:
+                            raise ValueError("Viewing angle is larger than "+
+                                             "offcone limit "+
+                                             str(np.degrees(offcone_max)))
+                        pulse = self.signal_model(
+                            times=self.signal_times,
+                            particle=particle,
+                            viewing_angle=psi,
+                            viewing_distance=path.path_length,
+                            ice_model=self.ice
+                        )
+                    except ValueError as err:
+                        logger.debug("Eliminating invalid Askaryan signal: %s",
+                                     err)
+                        pulse = EmptySignal(self.signal_times,
+                                            value_type=EmptySignal.Type.field)
 
                     ant_pulses, ant_pols = path.propagate(signal=pulse,
                                                           polarization=nu_pol)
