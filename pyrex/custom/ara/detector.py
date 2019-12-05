@@ -465,7 +465,7 @@ class PhasedArrayString(Detector):
                 for ant in self:
                     noise = ant.antenna.make_noise(center_wave.times)
                     processed_noise = ant.front_end(noise)
-                    rms += np.sqrt(np.mean(processed_noise.values**2))
+                    rms += np.std(processed_noise.values)
                 rms /= np.sqrt(len(self))
 
             # Check each delay for trigger

@@ -942,8 +942,7 @@ class ARAAntennaSystem(AntennaSystem):
             long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
             power_noise = self.tunnel_diode(self.front_end(long_noise))
             self._power_mean = np.mean(power_noise.values)
-            self._power_std = np.sqrt(np.mean((power_noise.values
-                                               -self._power_mean)**2))
+            self._power_std = np.std(power_noise.values)
 
         power_signal = self.tunnel_diode(signal)
         # Use the absolute value of the power_threshold value so that the value

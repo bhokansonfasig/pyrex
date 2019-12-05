@@ -851,8 +851,7 @@ class ARIANNAAntennaSystem(AntennaSystem):
             long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
             processed_noise = self.front_end(long_noise)
             self._noise_mean = np.mean(processed_noise.values)
-            self._noise_std = np.sqrt(np.mean((processed_noise.values
-                                               -self._noise_mean)**2))
+            self._noise_std = np.std(processed_noise.values)
 
         low_trigger = (self._noise_mean -
                        self._noise_std*np.abs(self.threshold))
