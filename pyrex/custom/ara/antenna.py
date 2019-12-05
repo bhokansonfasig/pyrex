@@ -179,8 +179,8 @@ def _read_arasim_antenna_pickle(filename):
     # If there is no pickle file, read the response data using the
     # _read_arasim_antenna_data function, and then make a pickle file
     if not os.path.isfile(filename+".pkl"):
-        logger.warn("Antenna model file "+filename+".pkl not found. "+
-                    "Generating a new file now")
+        logger.warning("Antenna model file %s.pkl not found. "+
+                       "Generating a new file now", filename)
         response_data = _read_arasim_antenna_data(filename+".txt")
         with open(filename+".pkl", 'wb') as f:
             pickle.dump(response_data, f)

@@ -212,8 +212,8 @@ def _read_response_pickle(filename):
     # If there is no pickle file, read the response data using the
     # _read_response_data function, and then make a pickle file
     if not os.path.isfile(filename+".pkl"):
-        logger.warn("Antenna model file "+filename+".pkl not found. "+
-                    "Generating a new file now")
+        logger.warning("Antenna model file %s.pkl not found. "+
+                       "Generating a new file now", filename)
         heff_data = _read_response_data(filename)
         with open(filename+".pkl", 'wb') as f:
             pickle.dump(heff_data, f)
