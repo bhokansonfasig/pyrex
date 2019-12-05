@@ -268,7 +268,7 @@ class EventKernel:
                         logger.debug("Eliminating invalid Askaryan signal: %s",
                                      err)
                         ant.receive(
-                            EmptySignal(self.signal_times,
+                            EmptySignal(self.signal_times+path.tof,
                                         value_type=EmptySignal.Type.field)
                         )
                     else:
