@@ -1942,7 +1942,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
         else:
             opening_script = stack[i+1].filename
         metadata = {
-            "file_version": "1.0",
+            "file_version": (str(self._file_version_major)+"."+
+                             str(self._file_version_minor)),
             "file_version_major": self._file_version_major,
             "file_version_minor": self._file_version_minor,
             "pyrex_version": __version__,
