@@ -386,6 +386,7 @@ class BasicRayTracePath(LazyMutableClass):
                 # Pre-calculate attenuation at the expected frequencies to save
                 # on heavy computation time of the attenuation method
                 freqs = scipy.fftpack.fftfreq(2*len(signal.times), d=signal.dt)
+                freqs.sort()
                 atten_vals = self.attenuation(freqs)
                 # Apply fresnel s and p coefficients in addition to attenuation
                 attenuation_s = lambda f: np.interp(f, freqs, atten_vals) * r_s
