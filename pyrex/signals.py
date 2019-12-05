@@ -479,6 +479,39 @@ class EmptySignal(Signal):
         """
         return EmptySignal(new_times, value_type=self.value_type)
 
+    def filter_frequencies(self, freq_response, force_real=False):
+        """
+        Apply the given frequency response function to the signal, in-place.
+
+        For the given response function, multiplies the response into the
+        frequency domain of the signal. If the filtered signal is forced to be
+        real, the positive-frequency response is mirrored into the negative
+        frequencies by complex conjugation. For EmptySignal objects, all
+        calculation is skipped and the EmptySignal is preserved.
+
+        Parameters
+        ----------
+        freq_response : function
+            Response function taking a frequency (or array of frequencies) and
+            returning the corresponding complex gain(s).
+        force_real : boolean, optional
+            If ``True``, complex conjugation is used on the positive-frequency
+            response to force the filtered signal to be real-valued. Otherwise
+            the frequency response is left alone and any imaginary parts of the
+            filtered signal are thrown out.
+
+        Warns
+        -----
+        Raises a warning if the maximum value of the imaginary part of the
+        filtered signal was greater than 1e-5 times the maximum value of the
+        real part, indicating that there was significant signal lost when
+        discarding the imaginary part.
+
+        """
+        # All values of the signal are zero anyway, so filters will have no
+        # effect. We can just skip all the calculation then.
+        pass
+
 
 class FunctionSignal(LazyMutableClass, Signal):
     """

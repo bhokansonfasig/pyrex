@@ -246,15 +246,19 @@ class EventKernel:
                     except ValueError as err:
                         logger.debug("Eliminating invalid Askaryan signal: %s",
                                      err)
-                        pulse = EmptySignal(self.signal_times,
-                                            value_type=EmptySignal.Type.field)
-
-                    ant_pulses, ant_pols = path.propagate(signal=pulse,
-                                                          polarization=nu_pol)
-
-                    ant.receive(ant_pulses,
-                                direction=path.received_direction,
-                                polarization=ant_pols)
+                        ant.receive(
+                            EmptySignal(self.signal_times,
+                                        value_type=EmptySignal.Type.field)
+                        )
+                    else:
+                        ant_pulses, ant_pols = path.propagate(
+                            signal=pulse, polarization=nu_pol
+                        )
+                        ant.receive(
+                            ant_pulses,
+                            direction=path.received_direction,
+                            polarization=ant_pols
+                        )
 
         if self.triggers is None:
             triggered = None
