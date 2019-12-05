@@ -58,7 +58,7 @@ class EventKernel:
         skip the calculation of the Askaryan signal and assume no significant
         signal is seen. If `None`, no offcone cut is applied.
     weight_min : float or tuple or None, optional
-        The minimum particle weight which should be simulated. If a float,
+        The minimum particle weight(s) which should be simulated. If a float,
         particles with a total weight less than this value will be skipped. If
         a tuple, particles with a survival weight less than the first element
         of the tuple or with an interaction weight less than the second element
@@ -85,6 +85,8 @@ class EventKernel:
         The trigger condition(s) of the detector.
     offcone_max
         The maximum angle away from the Cherenkov angle to be simulated.
+    weight_min
+        The minimum particle weight(s) which should be simulated.
 
     See Also
     --------
