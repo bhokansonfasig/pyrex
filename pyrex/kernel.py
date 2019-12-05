@@ -156,6 +156,8 @@ class EventKernel:
             self.offcone_max = np.radians(offcone_max)
         if weight_min is None:
             self.weight_min = 0
+        else:
+            self.weight_min = weight_min
         self._gen_count = self.gen.count
         if self.writer is not None:
             if not self.writer.is_open:
@@ -253,10 +255,10 @@ class EventKernel:
                                  np.degrees(psi))
 
                     try:
-                        if np.abs(psi-theta_c)>offcone_max:
+                        if np.abs(psi-theta_c)>self.offcone_max:
                             raise ValueError("Viewing angle is larger than "+
                                              "offcone limit "+
-                                             str(np.degrees(offcone_max)))
+                                             str(np.degrees(self.offcone_max)))
                         pulse = self.signal_model(
                             times=self.signal_times,
                             particle=particle,
