@@ -8,6 +8,7 @@ and handle antenna processing of the signals.
 
 """
 
+from collections.abc import Sequence
 import logging
 import numpy as np
 from pyrex.internal_functions import normalize
@@ -56,6 +57,12 @@ class EventKernel:
         Antennas which view an event with an angle larger than this angle will
         skip the calculation of the Askaryan signal and assume no significant
         signal is seen. If `None`, no offcone cut is applied.
+    weight_min : float or tuple or None, optional
+        The minimum particle weight which should be simulated. If a float,
+        particles with a total weight less than this value will be skipped. If
+        a tuple, particles with a survival weight less than the first element
+        of the tuple or with an interaction weight less than the second element
+        of the tuple will be skipped. If `None`, no minimum weight is applied.
 
     Attributes
     ----------
@@ -133,7 +140,8 @@ class EventKernel:
     def __init__(self, generator, antennas, ice_model=ice,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
                  signal_times=np.linspace(-50e-9, 50e-9, 2000, endpoint=False),
-                 event_writer=None, triggers=None, offcone_max=40):
+                 event_writer=None, triggers=None, offcone_max=40,
+                 weight_min=None):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
@@ -146,6 +154,8 @@ class EventKernel:
             self.offcone_max = np.radians(180)
         else:
             self.offcone_max = np.radians(offcone_max)
+        if weight_min is None:
+            self.weight_min = 0
         self._gen_count = self.gen.count
         if self.writer is not None:
             if not self.writer.is_open:
@@ -197,6 +207,17 @@ class EventKernel:
             polarizations.append([])
         for particle in event:
             logger.info("Processing event for %s", particle)
+            if isinstance(self.weight_min, Sequence):
+                if (particle.survival_weight<self.weight_min[0] or
+                        particle.interaction_weight<self.weight_min[1]):
+                    logger.debug("Skipping particle with weight below %s",
+                                 self.weight_min)
+                    continue
+            elif particle.weight<self.weight_min:
+                logger.debug("Skipping particle with weight below %s",
+                             self.weight_min)
+                continue
+
             for i, ant in enumerate(self.antennas):
                 rt = self.ray_tracer(particle.vertex, ant.position,
                                      ice_model=self.ice)
