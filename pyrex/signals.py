@@ -560,7 +560,7 @@ class FunctionSignal(LazyMutableClass, Signal):
         self._filters = [[]]
         self.value_type = value_type
         super().__init__(static_attributes=['times', '_functions', '_t0s',
-                                            '_factors', '_filters'])
+                                            '_buffers', '_factors', '_filters'])
 
     def _full_times(self, index):
         """
