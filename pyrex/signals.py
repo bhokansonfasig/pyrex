@@ -555,11 +555,54 @@ class FunctionSignal(LazyMutableClass, Signal):
         self.times = np.array(times)
         self._functions = [function]
         self._t0s = [0]
+        self._buffers = [[0, 0]]
         self._factors = [1]
         self._filters = [[]]
         self.value_type = value_type
         super().__init__(static_attributes=['times', '_functions', '_t0s',
                                             '_factors', '_filters'])
+
+    def _full_times(self, index):
+        """
+        1D array of times including buffer time.
+
+        Parameters
+        ----------
+        index : int
+            Index of the function and buffer to calculate the times array for.
+
+        Returns
+        -------
+        ndarray
+            1D array of times for the function, including the buffer time.
+
+        """
+        # Number of points in the buffer arrays
+        n_before = int(self._buffers[index][0]/self.dt)
+        if self._buffers[index][0]%self.dt:
+            n_before += 1
+        n_after = int(self._buffers[index][1]/self.dt)
+        if self._buffers[index][1]%self.dt:
+            n_after += 1
+        # Proper starting points of buffer arrays to preserve dt
+        t_min = self.times[0] - n_before*self.dt
+        t_max = self.times[-1] + n_after*self.dt
+        return np.concatenate((
+            np.linspace(t_min, self.times[0], n_before, endpoint=False),
+            self.times,
+            np.linspace(self.times[-1], t_max, n_after+1)[1:]
+        ))
+
+    def _value_window(self, index):
+        """Window of `_full_times` values array corresponding to `times`."""
+        # Number of points in the buffer arrays
+        n_before = int(self._buffers[index][0]/self.dt)
+        if self._buffers[index][0]%self.dt:
+            n_before += 1
+        # n_after = int(self._buffers[index][1]/self.dt)
+        # if self._buffers[index][1]%self.dt:
+        #     n_after += 1
+        return slice(n_before, n_before+len(self.times))
 
     @lazy_property
     def values(self):
@@ -568,17 +611,20 @@ class FunctionSignal(LazyMutableClass, Signal):
         for i, function in enumerate(self._functions):
             # Attempt to evaluate all values in one function call
             try:
-                func_vals = function(self.times - self._t0s[i])
+                func_vals = function(self._full_times(i) - self._t0s[i])
             # Otherwise evaluate values one at a time
             except (ValueError, TypeError):
-                func_vals = [function(t) for t in (self.times-self._t0s[i])]
+                func_vals = [function(t) for t in
+                             self._full_times(i)-self._t0s[i]]
 
             func_vals *= self._factors[i]
 
             if len(self._filters[i])!=0:
-                values += self._apply_filters(func_vals, self._filters[i])
+                full_vals = self._apply_filters(func_vals, self._filters[i])
             else:
-                values += func_vals
+                full_vals = func_vals
+
+            values += full_vals[self._value_window(i)]
 
         return values
 
@@ -621,6 +667,7 @@ class FunctionSignal(LazyMutableClass, Signal):
             new_signal = self.copy()
             new_signal._functions += copy.deepcopy(other._functions)
             new_signal._t0s += copy.deepcopy(other._t0s)
+            new_signal._buffers += copy.deepcopy(other._buffers)
             new_signal._factors += copy.deepcopy(other._factors)
             new_signal._filters += copy.deepcopy(other._filters)
             new_signal.value_type = value_type
@@ -696,6 +743,7 @@ class FunctionSignal(LazyMutableClass, Signal):
         new_signal = FunctionSignal(self.times, None, self.value_type)
         new_signal._functions = copy.deepcopy(self._functions)
         new_signal._t0s = copy.deepcopy(self._t0s)
+        new_signal._buffers = copy.deepcopy(self._buffers)
         new_signal._factors = copy.deepcopy(self._factors)
         new_signal._filters = copy.deepcopy(self._filters)
         return new_signal
@@ -750,6 +798,48 @@ class FunctionSignal(LazyMutableClass, Signal):
         """
         self.times += dt
         self._t0s = [t+dt for t in self._t0s]
+
+    def set_buffers(self, leading=None, trailing=None, force=False):
+        """
+        Set leading and trailing buffers used in calculation of signal values.
+
+        Parameters
+        ----------
+        leading : float or None
+            Leading buffer time (s).
+        trailing : float or None
+            Trailing buffer time (s).
+        force : boolean
+            Whether the buffer times should be forced to the given values. If
+            `False`, each buffer time is set to the maximum of the current and
+            given buffer time. If `True`, each buffer time is set to the given
+            buffer time regardless of the current buffer time (unless the given
+            value is `None`).
+
+        Raises
+        ------
+        ValueError
+            If either buffer time is less than zero.
+
+        """
+        if leading is not None:
+            if leading<0:
+                raise ValueError("Buffer time cannot be less than zero")
+            if force:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][0] = leading
+            else:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][0] = max(leading, current[0])
+        if trailing is not None:
+            if trailing<0:
+                raise ValueError("Buffer time cannot be less than zero")
+            if force:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][1] = trailing
+            else:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][1] = max(trailing, current[1])
 
 
     def filter_frequencies(self, freq_response, force_real=False):
@@ -812,7 +902,7 @@ class FunctionSignal(LazyMutableClass, Signal):
         discarding the imaginary part.
 
         """
-        freqs = scipy.fftpack.fftfreq(n=2*len(self.times), d=self.dt)
+        freqs = scipy.fftpack.fftfreq(n=2*len(input_vals), d=self.dt)
         all_filters = np.ones(len(freqs), dtype=np.complex_)
 
         for freq_response, force_real in filters:
@@ -821,15 +911,15 @@ class FunctionSignal(LazyMutableClass, Signal):
 
         # Zero-pad the signal so the filter doesn't cause the resulting
         # signal to wrap around the end of the time array
-        vals = np.concatenate((input_vals, np.zeros(len(self.times))))
+        vals = np.concatenate((input_vals, np.zeros(len(input_vals))))
         spectrum = scipy.fftpack.fft(vals)
 
         filtered_vals = scipy.fftpack.ifft(all_filters*spectrum)
-        output_vals = np.real(filtered_vals[:len(self.times)])
+        output_vals = np.real(filtered_vals[:len(input_vals)])
 
         # Issue a warning if there was significant signal in the (discarded)
         # imaginary part of the filtered values
-        if np.any(np.abs(np.imag(filtered_vals[:len(self.times)])) >
+        if np.any(np.abs(np.imag(filtered_vals[:len(input_vals)])) >
                   np.max(np.abs(output_vals)) * 1e-5):
             msg = ("Significant signal amplitude was lost when forcing the "+
                    "signal values to be real after applying the frequency "+
