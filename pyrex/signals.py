@@ -781,9 +781,21 @@ class FunctionSignal(LazyMutableClass, Signal):
         Leverages knowledge of the function that creates the signal to properly
         recalculate exact (not interpolated) values for the new times.
 
+        Tries to interpret cases where `with_times` was used to incorporate
+        effects of a leading (or trailing) signal outside of the `times` array
+        by setting leading and trailing buffer values when `new_times` is fully
+        contained by the previous `times` array.
+
         """
         new_signal = copy.deepcopy(self)
         new_signal.times = new_times
+        # Check whether `new_times` is a subset of the previous `times`, and
+        # set buffers accordingly
+        if new_times[0]>=self.times[0] and new_times[-1]<=self.times[-1]:
+            logger.debug("New times array is contained by previous times. "+
+                         "Setting buffers to incorporate previous times.")
+            new_signal.set_buffers(leading=new_times[0]-self.times[0],
+                                   trailing=self.times[-1]-new_times[-1])
         return new_signal
 
     def shift(self, dt):
