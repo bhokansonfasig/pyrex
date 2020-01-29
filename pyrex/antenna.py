@@ -271,14 +271,32 @@ class Antenna:
             Complete waveform with noise and all signals.
 
         """
+        # Only include signals reasonably close to the times array
+        # (i.e. within one extra signal length forwards and backwards)
+        dt = times[1] - times[0]
+        signal_length = max(signal.times[-1] - signal.times[0]
+                            for signal in self.signals)
+        n_pts = int(signal_length/dt)
+        if signal_length%dt:
+            n_pts += 1
+        long_times = np.concatenate((
+            times[0]+np.linspace(-n_pts*dt, 0, n_pts, endpoint=False),
+            times,
+            times[-1]+np.linspace(0, n_pts*dt, n_pts+1)[1:]
+        ))
+
         if self.noisy:
-            waveform = self.make_noise(times)
+            waveform = self.make_noise(long_times)
         else:
-            waveform = EmptySignal(times)
+            waveform = EmptySignal(long_times)
 
         for signal in self.signals:
-            waveform += signal.with_times(times)
-        return waveform
+            if (signal.times[-1]<long_times[0]
+                    or signal.times[0]>long_times[-1]):
+                continue
+            waveform += signal.with_times(long_times)
+
+        return waveform.with_times(times)
 
     def make_noise(self, times):
         """
