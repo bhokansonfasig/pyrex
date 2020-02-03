@@ -67,8 +67,7 @@ class PREM:
         """
         Calculates the Earth's density at a given radius.
 
-        Density from the Preliminary reference Earth Model (PREM). Supports
-        passing an array of radii or a single radius.
+        Supports passing an array of radii or a single radius.
 
         Parameters
         ----------
@@ -79,16 +78,6 @@ class PREM:
         -------
         array_like
             Density (g/cm^3) of the Earth at the given radii.
-
-        Notes
-        -----
-        The density calculation is based on the Preliminary reference Earth
-        Model [1]_.
-
-        References
-        ----------
-        .. [1] A. Dziewonski & D. Anderson, "Preliminary reference Earth model."
-            Physics of the Earth and Planetary Interiors **25**, 297–356 (1981). :doi:`10.1016/0031-9201(81)90046-7`
 
         """
         r = np.array(r)
