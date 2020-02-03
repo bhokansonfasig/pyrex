@@ -14,7 +14,7 @@ from .askaryan import AskaryanSignal
 from .antenna import Antenna, DipoleAntenna
 from .detector import AntennaSystem, Detector
 from .ice_model import ice
-from .earth_model import prem_density, slant_depth
+from .earth_model import earth
 from .particle import Event, Particle, NeutrinoInteraction
 from .generation import (CylindricalGenerator, RectangularGenerator,
                          ShadowGenerator, ListGenerator, FileGenerator)
