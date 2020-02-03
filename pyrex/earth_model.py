@@ -24,15 +24,16 @@ class PREM:
     earth_radius : float
         Mean radius of the Earth (m).
     radii : tuple
-        Boundary radii at which the functional form of the density of the
+        Boundary radii (m) at which the functional form of the density of the
         Earth changes. The density function in `densities` at index `i`
         corresponds to the radius range from radius at index `i-1` to radius
         at index `i`.
     densities : tuple
-        Functions which calculate the density of the Earth in a specific radius
-        range as described by `radii`. The parameter of each function is the
-        fractional radius, e.g. radius divided by `earth_radius`. Scalar values
-        denote constant density over the range of radii.
+        Functions which calculate the density of the Earth (g/cm^3) in a
+        specific radius range as described by `radii`. The parameter of each
+        function is the fractional radius, e.g. radius divided by
+        `earth_radius`. Scalar values denote constant density over the range of
+        radii.
 
     Notes
     -----
@@ -144,6 +145,37 @@ class PREM:
         x_int = np.trapz(rhos*(x1-x0), ts)
         z_int = np.trapz(rhos*(z1-z0), ts)
         return 100 * np.sqrt(x_int**2 + z_int**2)
+
+
+
+class CoreMantleCrustModel(PREM):
+    """
+    Class describing the Earth's density.
+
+    Uses densities from the Core-Mantle-Crust model as implemented in AraSim.
+
+    Attributes
+    ----------
+    earth_radius : float
+        Mean radius of the Earth (m).
+    radii : tuple
+        Boundary radii (m) at which the functional form of the density of the
+        Earth changes. The density function in `densities` at index `i`
+        corresponds to the radius range from radius at index `i-1` to radius
+        at index `i`.
+    densities : tuple
+        Functions which calculate the density of the Earth (g/cm^3) in a
+        specific radius range as described by `radii`. The parameter of each
+        function is the fractional radius, e.g. radius divided by
+        `earth_radius`. Scalar values denote constant density over the range of
+        radii.
+
+    """
+    earth_radius = 6.378140e6
+
+    radii = (np.sqrt(1.2e13), earth_radius-4e4, earth_radius)
+
+    densities = (14, 3.4, 2.9)
 
 
 
