@@ -19,36 +19,20 @@ class PREM:
 
     Uses densities from the Preliminary reference Earth Model (PREM).
 
-    Parameters
-    ----------
-    n0 : float, optional
-        Asymptotic index of refraction of the deep ice.
-    k : float, optional
-        Multiplicative factor for the index of refraction parameterization.
-    a : float, optional
-        Exponential factor for the index of refraction parameterization with
-        units of 1/m.
-    valid_range : array_like of float, optional
-        Range of depths over which the uniform index of refraction applies.
-        Assumed to have two elements where the first value is lower (deeper,
-        more negative) than the second.
-    index_above : float or None, optional
-        Index of refraction above the ice region. If `None`, uses the same
-        index of refraction as the top of the ice.
-    index_below : float or None, optional
-        Index of refraction below the ice region. If `None`, uses the same
-        index of refraction as the bottom of the ice.
-
     Attributes
     ----------
-    n0, k, a : float
-        Parameters of the index of refraction of the ice.
-    valid_range : tuple
-        Range of depths over which the ice model is valid. Consists of two
-        elements where the first value is lower (deeper, more negative) than
-        the second.
-    index_above
-    index_below
+    earth_radius : float
+        Mean radius of the Earth (m).
+    radii : tuple
+        Boundary radii at which the functional form of the density of the
+        Earth changes. The density function in `densities` at index `i`
+        corresponds to the radius range from radius at index `i-1` to radius
+        at index `i`.
+    densities : tuple
+        Functions which calculate the density of the Earth in a specific radius
+        range as described by `radii`. The parameter of each function is the
+        fractional radius, e.g. radius divided by `earth_radius`. Scalar values
+        denote constant density over the range of radii.
 
     Notes
     -----
@@ -63,10 +47,10 @@ class PREM:
     """
     earth_radius = 6.3710e6
 
-    radii = [1.2215e6, 3.4800e6, 5.7010e6, 5.7710e6, 5.9710e6,
-             6.1510e6, 6.3466e6, 6.3560e6, 6.3680e6, earth_radius]
+    radii = (1.2215e6, 3.4800e6, 5.7010e6, 5.7710e6, 5.9710e6,
+             6.1510e6, 6.3466e6, 6.3560e6, 6.3680e6, earth_radius)
 
-    densities = [
+    densities = (
         lambda x: 13.0885 - 8.8381*x**2,
         lambda x: 12.5815 - 1.2638*x - 3.6426*x**2 - 5.5281*x**3,
         lambda x: 7.9565 - 6.4761*x + 5.5283*x**2 - 3.0807*x**3,
@@ -77,15 +61,14 @@ class PREM:
         2.9,
         2.6,
         1.02
-    ]
-
+    )
 
     def density(self, r):
         """
         Calculates the Earth's density at a given radius.
 
-        Density from the Preliminary reference Earth Model (PREM). Supports passing
-        an array of radii or a single radius.
+        Density from the Preliminary reference Earth Model (PREM). Supports
+        passing an array of radii or a single radius.
 
         Parameters
         ----------
@@ -99,8 +82,8 @@ class PREM:
 
         Notes
         -----
-        The density calculation is based on the Preliminary reference Earth Model
-        [1]_.
+        The density calculation is based on the Preliminary reference Earth
+        Model [1]_.
 
         References
         ----------
@@ -120,7 +103,7 @@ class PREM:
         Calculates the column density of a chord cutting through Earth.
 
         Integrates the Earth's density along the chord, resulting in a column
-        density or material thickness with units of mass per area.
+        density (or material thickness) with units of mass per area.
 
         Parameters
         ----------
