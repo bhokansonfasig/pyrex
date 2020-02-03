@@ -11,7 +11,7 @@ import logging
 import numpy as np
 import warnings
 from pyrex.internal_functions import get_from_enum
-import pyrex.earth_model as earth_model
+from pyrex.earth_model import earth
 from pyrex.particle import Event, Particle, NeutrinoInteraction
 from pyrex.io import File
 
@@ -93,7 +93,8 @@ class Generator:
         pp = 2
 
     def __init__(self, energy, shadow=False, flavor_ratio=(1,1,1),
-                 source="cosmogenic", interaction_model=NeutrinoInteraction):
+                 source="cosmogenic", interaction_model=NeutrinoInteraction,
+                 earth_model=earth):
         if not callable(energy):
             try:
                 e = float(energy)
@@ -107,6 +108,7 @@ class Generator:
         self.ratio = np.array(flavor_ratio)/np.sum(flavor_ratio)
         self.source = source
         self.interaction_model = interaction_model
+        self.earth_model = earth
         self.count = 0
 
     @property
@@ -303,7 +305,7 @@ class Generator:
         """
         nadir = np.arccos(particle.direction[2])
         depth = -particle.vertex[2]
-        t = earth_model.slant_depth(nadir, depth)
+        t = self.earth_model.slant_depth(nadir, depth)
         x = t / particle.interaction.total_interaction_length
         survival_weight = np.exp(-x)
 
