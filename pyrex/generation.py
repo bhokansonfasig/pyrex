@@ -108,7 +108,7 @@ class Generator:
         self.ratio = np.array(flavor_ratio)/np.sum(flavor_ratio)
         self.source = source
         self.interaction_model = interaction_model
-        self.earth_model = earth
+        self.earth_model = earth_model
         self.count = 0
 
     @property
@@ -443,12 +443,14 @@ class CylindricalGenerator(Generator):
 
     """
     def __init__(self, dr, dz, energy, shadow=False, flavor_ratio=(1,1,1),
-                 source="cosmogenic", interaction_model=NeutrinoInteraction):
+                 source="cosmogenic", interaction_model=NeutrinoInteraction,
+                 earth_model=earth):
         self.dr = dr
         self.dz = dz
         super().__init__(energy=energy, shadow=shadow,
                          flavor_ratio=flavor_ratio, source=source,
-                         interaction_model=interaction_model)
+                         interaction_model=interaction_model,
+                         earth_model=earth_model)
 
     @property
     def volume(self):
@@ -635,13 +637,15 @@ class RectangularGenerator(Generator):
 
     """
     def __init__(self, dx, dy, dz, energy, shadow=False, flavor_ratio=(1,1,1),
-                 source="cosmogenic", interaction_model=NeutrinoInteraction):
+                 source="cosmogenic", interaction_model=NeutrinoInteraction,
+                 earth_model=earth):
         self.dx = dx
         self.dy = dy
         self.dz = dz
         super().__init__(energy=energy, shadow=shadow,
                          flavor_ratio=flavor_ratio, source=source,
-                         interaction_model=interaction_model)
+                         interaction_model=interaction_model,
+                         earth_model=earth_model)
 
     @property
     def volume(self):
@@ -787,13 +791,15 @@ class ShadowGenerator(RectangularGenerator):
                                  attributes.
     """
     def __init__(self, dx, dy, dz, energy, flavor_ratio=(1,1,1),
-                 interaction_model=NeutrinoInteraction):
+                 interaction_model=NeutrinoInteraction,
+                 earth_model=earth):
         warnings.warn("The 'ShadowGenerator' class functionality has been "+
                       "moved to 'RectangularGenerator' and will be removed in "+
                       "a future release", FutureWarning, stacklevel=2)
         super().__init__(dx=dx, dy=dy, dz=dz, energy=energy, shadow=True,
                          flavor_ratio=flavor_ratio,
-                         interaction_model=interaction_model)
+                         interaction_model=interaction_model,
+                         earth_model=earth_model)
 
 
 
