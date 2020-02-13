@@ -11,6 +11,7 @@ import os
 import os.path
 import sqlite3
 import numpy as np
+from pyrex.internal_functions import normalize
 from pyrex.detector import Detector
 from .antenna import ARA_DATA_DIR, HpolAntenna, VpolAntenna
 from .detector import ARAString, RegularStation
@@ -34,8 +35,7 @@ def _read_antenna_database(station, database):
     names : list of str
         List of antenna names (consisting of their borehole and antenna type).
     positions : list of tuple
-        List of antenna positions (m) in Cartesian coordinates, relative to the
-        center of the station.
+        List of antenna positions (m) in the local station coordinates.
 
     """
     names = []
@@ -71,6 +71,8 @@ def _read_station_database(station, database):
         Station nominal Northing coordinate (m).
     elevation : float
         Station nominal elevation (m).
+    local_coords : ndarray
+        Matrix of local coordinate system axes in global coordinates.
 
     Raises
     ------
@@ -84,9 +86,15 @@ def _read_station_database(station, database):
     for row in c.execute("SELECT * FROM ARA"):
         if row['stationName']==station:
             conn.close()
+            coords = np.array([
+                [row['local00'], row['local01'], row['local02']],
+                [row['local10'], row['local11'], row['local12']],
+                [row['local20'], row['local21'], row['local22']],
+            ])
             return (row['stationEasting'],
                     row['stationNorthing'],
-                    row['stationElevation'])
+                    row['stationElevation'],
+                    coords)
     raise ValueError("Couldn't find station '"+str(station)+"' in database")
 
 
@@ -100,6 +108,101 @@ logger.info("Getting ARA station coordinates from %s", ARA_DATABASE_PATH)
 ARA_ANTENNA_DB = os.path.join(ARA_DATABASE_PATH, 'AntennaInfo.sqlite')
 ARA_STATION_DB = os.path.join(ARA_DATABASE_PATH, 'AraArrayCoords.sqlite')
 ARA_CALPULSER_DB = os.path.join(ARA_DATABASE_PATH, 'CalPulserInfo.sqlite')
+
+
+def _convert_local_to_global(position, local_coords):
+    """
+    Convert local "station" coordinates into global "array" coordinates.
+
+    Parameters
+    ----------
+    position : array_like
+        Cartesian position in local "station" coordinates to be transformed.
+    local_coords : array_like
+        Matrix of local coordinate system axes in global coordinates.
+
+    Returns
+    -------
+    global_position : ndarray
+        Cartesian position transformed to the global "array" coordinates.
+
+    """
+    local_x = normalize(local_coords[0])
+    global_x = (1, 0, 0)
+    # Find angle between x-axes and rotation axis perpendicular to both x-axes
+    angle = np.arccos(np.dot(local_x, global_x))
+    axis = normalize(np.cross(global_x, local_x))
+    # Form rotation matrix
+    cos = np.cos(angle)
+    sin = np.sin(angle)
+    ux, uy, uz = axis
+    rot = np.array([
+        [cos + ux**2*(1-cos), ux*uy*(1-cos) - uz*sin, ux*uz*(1-cos) + uy*sin],
+        [uy*ux*(1-cos) + uz*sin, cos + uy**2*(1-cos), uy*uz*(1-cos) - ux*sin],
+        [uz*ux*(1-cos) - uy*sin, uz*uy*(1-cos) + ux*sin, cos + uz**2*(1-cos)],
+    ])
+    # Rotate position to new axes
+    return np.dot(rot, position)
+
+
+def _get_deployed_strings(station, x=0, y=0, z=0, local_coords=None):
+    """
+    Create DeployedString instances for the given station.
+
+    The positions of antennas can be returned in either the local "station"
+    coordinates or the global "array" coordinates.
+
+    Parameters
+    ----------
+    station : str
+        Name of the station as recorded in the antenna information database.
+    x : float, optional
+        Cartesian x-position (m) of the station center.
+    y : float, optional
+        Cartesian y-position (m) of the station center.
+    z : float, optional
+        Cartesian z-position offset (m) from the nominal surface.
+    local_coords : array_like or None, optional
+        Matrix of local coordinate system axes in global coordinates. If
+        `None`, the antenna positions will be set in the local coordinates.
+        Otherwise, this matrix will be used to transform the antenna positions
+        to global coordinates (in which case specifying `x`, `y`, and `z` is
+        crucial).
+
+    Returns
+    -------
+    list of DeployedString
+        List of strings which make up the station.
+
+    """
+    subsets = []
+    data_names, data_positions = _read_antenna_database(station, ARA_ANTENNA_DB)
+    strings = sorted(list(set([name.split()[0] for name in data_names
+                               if name.startswith("BH")])))
+    positions = {string: [] for string in strings}
+    names = {string: [] for string in strings}
+    types = {string: [] for string in strings}
+    transform_coordinates = local_coords is not None
+    for name, pos in zip(data_names, data_positions):
+        for string in strings:
+            if name.startswith(string):
+                if transform_coordinates:
+                    pos = _convert_local_to_global(pos, local_coords)
+                positions[string].append((pos[0]+x, pos[1]+y, pos[2]+z))
+                names[string].append(name)
+                if "VPol" in name:
+                    types[string].append(VpolAntenna)
+                elif "HPol" in name:
+                    types[string].append(HpolAntenna)
+                else:
+                    raise ValueError("No known antenna type for '"+
+                                     str(name)+"'")
+    for string in strings:
+        subsets.append(
+            DeployedString(positions[string], types[string], names[string])
+        )
+    return subsets
+
 
 
 class DeployedString(ARAString):
@@ -205,52 +308,6 @@ class DeployedString(ARAString):
         )
 
 
-def _get_deployed_strings(x, y, z, station):
-    """
-    Create DeployedString instances for the given station.
-
-    Parameters
-    ----------
-    x : float
-        Cartesian x-position (m) of the station center.
-    y : float
-        Cartesian y-position (m) of the station center.
-    z : float
-        Cartesian z-position offset (m) from the nominal surface.
-    station : str
-        Name of the station as recorded in the antenna information database.
-
-    Returns
-    -------
-    list of DeployedString
-        List of strings which make up the station.
-
-    """
-    subsets = []
-    data_names, data_positions = _read_antenna_database(station, ARA_ANTENNA_DB)
-    strings = sorted(list(set([name.split()[0] for name in data_names
-                               if name.startswith("BH")])))
-    positions = {string: [] for string in strings}
-    names = {string: [] for string in strings}
-    types = {string: [] for string in strings}
-    for name, pos in zip(data_names, data_positions):
-        for string in strings:
-            if name.startswith(string):
-                positions[string].append((pos[0]+x, pos[1]+y, pos[2]+z))
-                names[string].append(name)
-                if "VPol" in name:
-                    types[string].append(VpolAntenna)
-                elif "HPol" in name:
-                    types[string].append(HpolAntenna)
-                else:
-                    raise ValueError("No known antenna type for '"+
-                                     str(name)+"'")
-    for string in strings:
-        subsets.append(
-            DeployedString(positions[string], types[string], names[string])
-        )
-    return subsets
-
 
 class ARA01(RegularStation):
     """
@@ -263,15 +320,14 @@ class ARA01(RegularStation):
 
     Parameters
     ----------
-    x : float or None, optional
-        Cartesian x-position (m) of the station. If `None`, uses the nominal
-        Easting coordinate of the station.
-    y : float or None, optional
-        Cartesian y-position (m) of the station. If `None`, uses the nominal
-        Northing coordinate of the station.
-    z : float or None, optional
-        Cartesian z-position (m) of the station. If `None`, uses the nominal
-        elevation of the station.
+    global_coords : bool, optional
+        Whether the station should be positioned in global coordinates. If
+        `True`, the station will be set in the global "array" coordinate system
+        with appropriate relative positions to other ARA stations. In this case
+        the x-positions of antennas are their Easting coordinates and the
+        y-positions are their Northing coordinates. If `False`, the station
+        will be set in the local "station" coordinate system with the station
+        centered around zero in x and y.
 
     Attributes
     ----------
@@ -312,46 +368,44 @@ class ARA01(RegularStation):
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
-    easting, northing, elevation = _read_station_database('ARA1',
-                                                          ARA_STATION_DB)
+    easting, northing, elevation, _local_coords = _read_station_database(
+        'ARA1', ARA_STATION_DB
+    )
 
-    def set_positions(self, x=None, y=None, z=None):
+    def set_positions(self, global_coords=False):
         """
         Generates antenna positions around the station.
 
         Parameters
         ----------
-        x : float or None
-            Cartesian x-position (m) of the station. If `None`, uses the
-            nominal Easting coordinate of the station.
-        y : float or None
-            Cartesian y-position (m) of the station. If `None`, uses the
-            nominal Northing coordinate of the station.
-        z : float or None
-            Cartesian z-position (m) of the station. If `None`, uses the
-            nominal elevation of the station.
-
-        Notes
-        -----
-        The `x` and `y` positions are for the center of the station, while the
-        `z` position is for the top of the station (i.e. it corrects for the
-        relative elevations of the ARA stations).
+        global_coords : bool, optional
+            Whether the station should be positioned in global coordinates. If
+            `True`, the station will be set in the global "array" coordinate
+            system with appropriate relative positions to other ARA stations.
+            In this case the x-positions of antennas are their Easting
+            coordinates and the y-positions are their Northing coordinates. If
+            `False`, the station will be set in the local "station" coordinate
+            system with the station centered around zero in x and y.
 
         """
-        if x is None:
-            x = self.easting
-        if y is None:
-            y = self.northing
-        if z is None:
-            z = self.elevation
-        self.subsets.extend(
-            _get_deployed_strings(x=x, y=y, z=z, station='ARA01')
-        )
+        if global_coords:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA01',
+                                      x=self.easting,
+                                      y=self.northing,
+                                      z=self.elevation,
+                                      local_coords=self._local_coords)
+            )
+        else:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA01', x=0, y=0, z=0,
+                                      local_coords=None)
+            )
 
 
 class ARA02(RegularStation):
     """
-    Station geometry representing the deployed station ARA02.
+    Station geometry representing the deployed station ARA01.
 
     Sets the positions of strings around the station based on the parameters.
     Once the antennas have been built with `build_antennas`, the object can be
@@ -360,15 +414,14 @@ class ARA02(RegularStation):
 
     Parameters
     ----------
-    x : float or None, optional
-        Cartesian x-position (m) of the station. If `None`, uses the nominal
-        Easting coordinate of the station.
-    y : float or None, optional
-        Cartesian y-position (m) of the station. If `None`, uses the nominal
-        Northing coordinate of the station.
-    z : float or None, optional
-        Cartesian z-position (m) of the station. If `None`, uses the nominal
-        elevation of the station.
+    global_coords : bool, optional
+        Whether the station should be positioned in global coordinates. If
+        `True`, the station will be set in the global "array" coordinate system
+        with appropriate relative positions to other ARA stations. In this case
+        the x-positions of antennas are their Easting coordinates and the
+        y-positions are their Northing coordinates. If `False`, the station
+        will be set in the local "station" coordinate system with the station
+        centered around zero in x and y.
 
     Attributes
     ----------
@@ -409,41 +462,39 @@ class ARA02(RegularStation):
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
-    easting, northing, elevation = _read_station_database('ARA2',
-                                                          ARA_STATION_DB)
+    easting, northing, elevation, _local_coords = _read_station_database(
+        'ARA2', ARA_STATION_DB
+    )
 
-    def set_positions(self, x=None, y=None, z=None):
+    def set_positions(self, global_coords=False):
         """
         Generates antenna positions around the station.
 
         Parameters
         ----------
-        x : float or None
-            Cartesian x-position (m) of the station. If `None`, uses the
-            nominal Easting coordinate of the station.
-        y : float or None
-            Cartesian y-position (m) of the station. If `None`, uses the
-            nominal Northing coordinate of the station.
-        z : float or None
-            Cartesian z-position (m) of the station. If `None`, uses the
-            nominal elevation of the station.
-
-        Notes
-        -----
-        The `x` and `y` positions are for the center of the station, while the
-        `z` position is for the top of the station (i.e. it corrects for the
-        relative elevations of the ARA stations).
+        global_coords : bool, optional
+            Whether the station should be positioned in global coordinates. If
+            `True`, the station will be set in the global "array" coordinate
+            system with appropriate relative positions to other ARA stations.
+            In this case the x-positions of antennas are their Easting
+            coordinates and the y-positions are their Northing coordinates. If
+            `False`, the station will be set in the local "station" coordinate
+            system with the station centered around zero in x and y.
 
         """
-        if x is None:
-            x = self.easting
-        if y is None:
-            y = self.northing
-        if z is None:
-            z = self.elevation
-        self.subsets.extend(
-            _get_deployed_strings(x=x, y=y, z=z, station='ARA02')
-        )
+        if global_coords:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA02',
+                                      x=self.easting,
+                                      y=self.northing,
+                                      z=self.elevation,
+                                      local_coords=self._local_coords)
+            )
+        else:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA02', x=0, y=0, z=0,
+                                      local_coords=None)
+            )
 
 
 class ARA03(RegularStation):
@@ -457,15 +508,14 @@ class ARA03(RegularStation):
 
     Parameters
     ----------
-    x : float or None, optional
-        Cartesian x-position (m) of the station. If `None`, uses the nominal
-        Easting coordinate of the station.
-    y : float or None, optional
-        Cartesian y-position (m) of the station. If `None`, uses the nominal
-        Northing coordinate of the station.
-    z : float or None, optional
-        Cartesian z-position (m) of the station. If `None`, uses the nominal
-        elevation of the station.
+    global_coords : bool, optional
+        Whether the station should be positioned in global coordinates. If
+        `True`, the station will be set in the global "array" coordinate system
+        with appropriate relative positions to other ARA stations. In this case
+        the x-positions of antennas are their Easting coordinates and the
+        y-positions are their Northing coordinates. If `False`, the station
+        will be set in the local "station" coordinate system with the station
+        centered around zero in x and y.
 
     Attributes
     ----------
@@ -506,41 +556,39 @@ class ARA03(RegularStation):
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
-    easting, northing, elevation = _read_station_database('ARA3',
-                                                          ARA_STATION_DB)
+    easting, northing, elevation, _local_coords = _read_station_database(
+        'ARA3', ARA_STATION_DB
+    )
 
-    def set_positions(self, x=None, y=None, z=None):
+    def set_positions(self, global_coords=False):
         """
         Generates antenna positions around the station.
 
         Parameters
         ----------
-        x : float or None
-            Cartesian x-position (m) of the station. If `None`, uses the
-            nominal Easting coordinate of the station.
-        y : float or None
-            Cartesian y-position (m) of the station. If `None`, uses the
-            nominal Northing coordinate of the station.
-        z : float or None
-            Cartesian z-position (m) of the station. If `None`, uses the
-            nominal elevation of the station.
-
-        Notes
-        -----
-        The `x` and `y` positions are for the center of the station, while the
-        `z` position is for the top of the station (i.e. it corrects for the
-        relative elevations of the ARA stations).
+        global_coords : bool, optional
+            Whether the station should be positioned in global coordinates. If
+            `True`, the station will be set in the global "array" coordinate
+            system with appropriate relative positions to other ARA stations.
+            In this case the x-positions of antennas are their Easting
+            coordinates and the y-positions are their Northing coordinates. If
+            `False`, the station will be set in the local "station" coordinate
+            system with the station centered around zero in x and y.
 
         """
-        if x is None:
-            x = self.easting
-        if y is None:
-            y = self.northing
-        if z is None:
-            z = self.elevation
-        self.subsets.extend(
-            _get_deployed_strings(x=x, y=y, z=z, station='ARA03')
-        )
+        if global_coords:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA03',
+                                      x=self.easting,
+                                      y=self.northing,
+                                      z=self.elevation,
+                                      local_coords=self._local_coords)
+            )
+        else:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA03', x=0, y=0, z=0,
+                                      local_coords=None)
+            )
 
 
 class ARA04(RegularStation):
@@ -554,15 +602,14 @@ class ARA04(RegularStation):
 
     Parameters
     ----------
-    x : float or None, optional
-        Cartesian x-position (m) of the station. If `None`, uses the nominal
-        Easting coordinate of the station.
-    y : float or None, optional
-        Cartesian y-position (m) of the station. If `None`, uses the nominal
-        Northing coordinate of the station.
-    z : float or None, optional
-        Cartesian z-position (m) of the station. If `None`, uses the nominal
-        elevation of the station.
+    global_coords : bool, optional
+        Whether the station should be positioned in global coordinates. If
+        `True`, the station will be set in the global "array" coordinate system
+        with appropriate relative positions to other ARA stations. In this case
+        the x-positions of antennas are their Easting coordinates and the
+        y-positions are their Northing coordinates. If `False`, the station
+        will be set in the local "station" coordinate system with the station
+        centered around zero in x and y.
 
     Attributes
     ----------
@@ -603,41 +650,39 @@ class ARA04(RegularStation):
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
-    easting, northing, elevation = _read_station_database('ARA4',
-                                                          ARA_STATION_DB)
+    easting, northing, elevation, _local_coords = _read_station_database(
+        'ARA4', ARA_STATION_DB
+    )
 
-    def set_positions(self, x=None, y=None, z=None):
+    def set_positions(self, global_coords=False):
         """
         Generates antenna positions around the station.
 
         Parameters
         ----------
-        x : float or None
-            Cartesian x-position (m) of the station. If `None`, uses the
-            nominal Easting coordinate of the station.
-        y : float or None
-            Cartesian y-position (m) of the station. If `None`, uses the
-            nominal Northing coordinate of the station.
-        z : float or None
-            Cartesian z-position (m) of the station. If `None`, uses the
-            nominal elevation of the station.
-
-        Notes
-        -----
-        The `x` and `y` positions are for the center of the station, while the
-        `z` position is for the top of the station (i.e. it corrects for the
-        relative elevations of the ARA stations).
+        global_coords : bool, optional
+            Whether the station should be positioned in global coordinates. If
+            `True`, the station will be set in the global "array" coordinate
+            system with appropriate relative positions to other ARA stations.
+            In this case the x-positions of antennas are their Easting
+            coordinates and the y-positions are their Northing coordinates. If
+            `False`, the station will be set in the local "station" coordinate
+            system with the station centered around zero in x and y.
 
         """
-        if x is None:
-            x = self.easting
-        if y is None:
-            y = self.northing
-        if z is None:
-            z = self.elevation
-        self.subsets.extend(
-            _get_deployed_strings(x=x, y=y, z=z, station='ARA04')
-        )
+        if global_coords:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA04',
+                                      x=self.easting,
+                                      y=self.northing,
+                                      z=self.elevation,
+                                      local_coords=self._local_coords)
+            )
+        else:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA04', x=0, y=0, z=0,
+                                      local_coords=None)
+            )
 
 
 class ARA05(RegularStation):
@@ -651,15 +696,14 @@ class ARA05(RegularStation):
 
     Parameters
     ----------
-    x : float or None, optional
-        Cartesian x-position (m) of the station. If `None`, uses the nominal
-        Easting coordinate of the station.
-    y : float or None, optional
-        Cartesian y-position (m) of the station. If `None`, uses the nominal
-        Northing coordinate of the station.
-    z : float or None, optional
-        Cartesian z-position (m) of the station. If `None`, uses the nominal
-        elevation of the station.
+    global_coords : bool, optional
+        Whether the station should be positioned in global coordinates. If
+        `True`, the station will be set in the global "array" coordinate system
+        with appropriate relative positions to other ARA stations. In this case
+        the x-positions of antennas are their Easting coordinates and the
+        y-positions are their Northing coordinates. If `False`, the station
+        will be set in the local "station" coordinate system with the station
+        centered around zero in x and y.
 
     Attributes
     ----------
@@ -700,38 +744,36 @@ class ARA05(RegularStation):
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
-    easting, northing, elevation = _read_station_database('ARA5',
-                                                          ARA_STATION_DB)
+    easting, northing, elevation, _local_coords = _read_station_database(
+        'ARA5', ARA_STATION_DB
+    )
 
-    def set_positions(self, x=None, y=None, z=None):
+    def set_positions(self, global_coords=False):
         """
         Generates antenna positions around the station.
 
         Parameters
         ----------
-        x : float or None
-            Cartesian x-position (m) of the station. If `None`, uses the
-            nominal Easting coordinate of the station.
-        y : float or None
-            Cartesian y-position (m) of the station. If `None`, uses the
-            nominal Northing coordinate of the station.
-        z : float or None
-            Cartesian z-position (m) of the station. If `None`, uses the
-            nominal elevation of the station.
-
-        Notes
-        -----
-        The `x` and `y` positions are for the center of the station, while the
-        `z` position is for the top of the station (i.e. it corrects for the
-        relative elevations of the ARA stations).
+        global_coords : bool, optional
+            Whether the station should be positioned in global coordinates. If
+            `True`, the station will be set in the global "array" coordinate
+            system with appropriate relative positions to other ARA stations.
+            In this case the x-positions of antennas are their Easting
+            coordinates and the y-positions are their Northing coordinates. If
+            `False`, the station will be set in the local "station" coordinate
+            system with the station centered around zero in x and y.
 
         """
-        if x is None:
-            x = self.easting
-        if y is None:
-            y = self.northing
-        if z is None:
-            z = self.elevation
-        self.subsets.extend(
-            _get_deployed_strings(x=x, y=y, z=z, station='ARA05')
-        )
+        if global_coords:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA05',
+                                      x=self.easting,
+                                      y=self.northing,
+                                      z=self.elevation,
+                                      local_coords=self._local_coords)
+            )
+        else:
+            self.subsets.extend(
+                _get_deployed_strings(station='ARA05', x=0, y=0, z=0,
+                                      local_coords=None)
+            )
