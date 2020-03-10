@@ -11,6 +11,7 @@ an antenna.
 
 import logging
 import numpy as np
+import scipy.constants
 import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
@@ -729,7 +730,7 @@ class DipoleAntenna(Antenna):
         self.threshold = trigger_threshold
         if effective_height is None:
             # Calculate length of half-wave dipole
-            self.effective_height = 3e8 / center_frequency / 2
+            self.effective_height = scipy.constants.c / center_frequency / 2
         else:
             self.effective_height = effective_height
 

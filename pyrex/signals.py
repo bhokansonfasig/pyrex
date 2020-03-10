@@ -11,8 +11,9 @@ import copy
 from enum import Enum
 import logging
 import numpy as np
-import scipy.signal
+import scipy.constants
 import scipy.fftpack
+import scipy.signal
 from pyrex.internal_functions import (LazyMutableClass, lazy_property,
                                       get_from_enum)
 
@@ -1141,7 +1142,7 @@ class ThermalNoise(FunctionSignal):
             # Not using sqrt(4 * kB * T * R * bandwidth) because in the antenna
             # system only half the voltage is seen and the other half goes to
             # "ground" (changed under advisement by Cosmin Deaconu)
-            self.rms = np.sqrt(1.38e-23 * temperature * resistance
+            self.rms = np.sqrt(scipy.constants.k * temperature * resistance
                                * (self.f_max - self.f_min))
         else:
             raise ValueError("Either RMS voltage or temperature and resistance"+

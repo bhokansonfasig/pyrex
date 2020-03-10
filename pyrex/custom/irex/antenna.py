@@ -8,6 +8,7 @@ consumption and the amount of digitized information.
 """
 
 import numpy as np
+import scipy.constants
 import scipy.signal
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
@@ -104,7 +105,7 @@ class DipoleTester(Antenna):
                  noisy=True, unique_noise_waveforms=10):
         if effective_height is None:
             # Calculate length of half-wave dipole
-            self.effective_height = 3e8 / center_frequency / 2
+            self.effective_height = scipy.constants.c / center_frequency / 2
         else:
             self.effective_height = effective_height
 

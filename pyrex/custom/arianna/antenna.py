@@ -10,6 +10,7 @@ import os.path
 import pickle
 import tarfile
 import numpy as np
+import scipy.constants
 import scipy.interpolate
 from pyrex.internal_functions import (normalize, complex_bilinear_interp,
                                       complex_interp)
@@ -156,7 +157,8 @@ def _read_response_data(filename):
             for k, phi in enumerate(sorted(phis)):
                 # gain, phase = data[(freq, theta, phi)]
                 # response[i, j, k] = gain * np.exp(1j*phase)
-                heff_factor = 3e8/freq * (1+s_params[freq]) * 50/377j
+                heff_factor = (scipy.constants.c/freq * (1+s_params[freq])
+                               * 50/377j)
                 E_theta, E_phi = data[(freq, theta, phi)]
                 theta_response[i, j, k] = E_theta * heff_factor
                 phi_response[i, j, k] = E_phi * heff_factor

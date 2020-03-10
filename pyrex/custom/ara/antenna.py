@@ -10,6 +10,7 @@ import logging
 import os.path
 import pickle
 import numpy as np
+import scipy.constants
 import scipy.signal
 from pyrex.internal_functions import (normalize, complex_bilinear_interp,
                                       complex_interp)
@@ -474,7 +475,8 @@ class ARAAntenna(Antenna):
         # The index of refraction in this calculation should be the index of
         # the ice used in the production of the antenna model.
         n = 1.78
-        heff[frequencies!=0] = np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
+        heff[frequencies!=0] = np.sqrt((scipy.constants.c
+                                        /frequencies[frequencies!=0]/n)**2
                                        * n*50/377 /(4*np.pi))
         return heff
 

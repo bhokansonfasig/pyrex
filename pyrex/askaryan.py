@@ -9,8 +9,9 @@ into the time domain at the end of initialization.
 
 import logging
 import numpy as np
-import scipy.signal
+import scipy.constants
 import scipy.fftpack
+import scipy.signal
 from pyrex.signals import FunctionSignal
 from pyrex.ice_model import ice
 
@@ -412,8 +413,8 @@ class ARVZAskaryanSignal(FunctionSignal):
         effect." ICRC proceedings, 17-25 (1999). :arxiv:`astro-ph/9906347`
 
     """
-    oncone_range = (np.arccos((1-10*3e8*np.finfo(np.float_).eps)/1.78)
-                    - np.arccos(1/1.78))
+    oncone_range = (np.arccos((1-10*scipy.constants.c*np.finfo(np.float_).eps)
+                              /1.78) - np.arccos(1/1.78))
 
     def __init__(self, times, particle, viewing_angle, viewing_distance=1,
                  ice_model=ice, t0=0):
@@ -517,7 +518,7 @@ class ARVZAskaryanSignal(FunctionSignal):
 
         # Conversion factor from z to t for RAC:
         # (1-n*cos(theta)) / c
-        z_to_t = (1 - n*np.cos(theta))/3e8
+        z_to_t = (1 - n*np.cos(theta))/scipy.constants.c
 
         # Calculate the time step and number of points for vector potential
         dt = times[1] - times[0]

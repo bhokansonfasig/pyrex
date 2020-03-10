@@ -10,6 +10,7 @@ returning information about propagation along their respective path.
 
 import logging
 import numpy as np
+import scipy.constants
 import scipy.fftpack
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
@@ -262,8 +263,8 @@ class BasicRayTracePath(LazyMutableClass):
     @lazy_property
     def tof(self):
         """Time of flight (s) along the ray path."""
-        return self.z_integral(lambda z: self.ice.index(z) / 3e8 /
-                               np.cos(self.theta(z)))
+        return self.z_integral(lambda z: self.ice.index(z) / scipy.constants.c
+                               / np.cos(self.theta(z)))
 
     @lazy_property
     def fresnel(self):
@@ -929,13 +930,14 @@ class SpecializedRayTracePath(BasicRayTracePath):
         """
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
-            return ice.n0*(n_z+ice.n0*(ice.a*z-1)) / (ice.a*np.sqrt(alpha)*3e8)
+            return (ice.n0*(n_z+ice.n0*(ice.a*z-1))
+                    / (ice.a*np.sqrt(alpha)*scipy.constants.c))
         else:
             return np.where(np.isclose(beta, 0, atol=cls.beta_tolerance),
-                            ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
+                            ((n_z-ice.n0)/ice.a + ice.n0*z) / scipy.constants.c,
                             (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
                                ice.n0**2*np.log(log_1)/np.sqrt(alpha))/ice.a) -
-                             z*ice.n0**2/np.sqrt(alpha)) / 3e8)
+                             z*ice.n0**2/np.sqrt(alpha)) / scipy.constants.c)
 
     @classmethod
     def _attenuation_integral_def(cls, zs, f, beta, ice, deep=False):
@@ -1883,7 +1885,7 @@ class UniformRayTracePath(LazyMutableClass):
     @lazy_property
     def tof(self):
         """Time of flight (s) along the ray path."""
-        return self.n0 * self.path_length / 3e8
+        return self.n0 * self.path_length / scipy.constants.c
 
     @lazy_property
     def fresnel(self):

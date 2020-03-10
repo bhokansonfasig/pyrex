@@ -8,6 +8,7 @@ plus a model for ice with uniform index of refraction.
 
 import logging
 import numpy as np
+import scipy.constants
 import scipy.interpolate
 
 logger = logging.getLogger(__name__)
@@ -231,7 +232,7 @@ class AntarcticIce:
         """
         z_km = -0.001 * z
         c_temp = -51.07 + z_km*(2.677 + z_km*(-0.01591 + z_km*1.83415))
-        return c_temp + 273.15
+        return c_temp + scipy.constants.zero_Celsius
 
     @staticmethod
     def _atten_coeffs(t, f):
@@ -275,7 +276,7 @@ class AntarcticIce:
         # Based on the code from Besson, et.al.
         # but simplified significantly since w1=0
 
-        t_C = t - 273.15
+        t_C = t - scipy.constants.zero_Celsius
         w0 = np.log(1e-4)
         # w1 = 0
         w2 = np.log(3.16)
@@ -725,7 +726,7 @@ class GreenlandIce(AntarcticIce):
         """
         z_km = -0.001 * z
         c_temp = -31.771 + z_km*(-0.32485 + z_km*(6.7427 + z_km*(-11.471 + z_km*(5.9122 - 0.84945*z_km))))
-        return c_temp + 273.15
+        return c_temp + scipy.constants.zero_Celsius
 
     def attenuation_length(self, z, f):
         """
@@ -765,7 +766,7 @@ class GreenlandIce(AntarcticIce):
         """
         # Temperature at the relevant depths
         t = self.temperature(z)
-        t_C = t - 273.15
+        t_C = t - scipy.constants.zero_Celsius
 
         # Parameterization of attenuation length at 75 MHz based on the ice
         # temperature profile

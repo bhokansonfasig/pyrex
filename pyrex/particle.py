@@ -13,11 +13,10 @@ import inspect
 import logging
 import os.path
 import numpy as np
+import scipy.constants
 from pyrex.internal_functions import normalize, get_from_enum
 
 logger = logging.getLogger(__name__)
-
-AVOGADRO_NUMBER = 6.02e23
 
 
 def _read_secondary_data_file(data_directory, flavor, secondary_type,
@@ -309,7 +308,7 @@ class Interaction:
         interaction lengths.
 
         """
-        return 1 / (AVOGADRO_NUMBER * self.total_cross_section)
+        return 1 / (scipy.constants.N_A * self.total_cross_section)
 
     @property
     def interaction_length(self):
@@ -322,7 +321,7 @@ class Interaction:
         is dependent on the energy of the ``particle``.
 
         """
-        return 1 / (AVOGADRO_NUMBER * self.cross_section)
+        return 1 / (scipy.constants.N_A * self.cross_section)
 
 
 class GQRSInteraction(Interaction):
