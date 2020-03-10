@@ -303,9 +303,7 @@ class Generator:
         pyrex.Particle : Class for storing particle attributes.
 
         """
-        nadir = np.arccos(particle.direction[2])
-        depth = -particle.vertex[2]
-        t = self.earth_model.slant_depth(nadir, depth)
+        t = self.earth_model.slant_depth(particle.vertex, -particle.direction)
         x = t / particle.interaction.total_interaction_length
         survival_weight = np.exp(-x)
 
