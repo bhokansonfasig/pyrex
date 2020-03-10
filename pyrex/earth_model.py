@@ -136,19 +136,16 @@ class PREM:
             return 0
         # Parameterize line integral with ts from 0 to 1, with steps just under
         # the given step size (in meters)
-        n_steps = int(distance/step)+2
+        n_steps = int(distance/step)
         if distance%step:
             n_steps += 1
         ts = np.linspace(0, 1, n_steps)
-        xs = endpoint[0] + ts * distance * direction[0]
-        ys = endpoint[1] + ts * distance * direction[1]
-        zs = endpoint[2] + ts * distance * direction[2]
-        rs = np.sqrt(xs**2 + ys**2 + zs**2)
+        # Array of parameterized positions with shape (n_steps, 3)
+        positions = endpoint + np.vstack(ts) * distance * direction
+        rs = np.sqrt(np.sum(positions**2, axis=1))
         rhos = self.density(rs)
-        x_int = np.trapz(rhos*(xs[-1]-xs[0]), ts)
-        y_int = np.trapz(rhos*(ys[-1]-ys[0]), ts)
-        z_int = np.trapz(rhos*(zs[-1]-zs[0]), ts)
-        return 100 * np.sqrt(x_int**2 + y_int**2 + z_int**2)
+        # Integrate the density times the distance along the chord
+        return 100 * np.trapz(rhos*distance, ts)
 
 
 
