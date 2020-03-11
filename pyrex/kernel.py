@@ -171,10 +171,18 @@ class EventKernel:
             kernel_metadata = {
                 "detector_class": str(type(self.antennas)),
                 "generator_class": str(type(self.gen)),
-                "ice_model_class": str(self.ice),
+                "ice_model_class": str(type(self.ice)),
                 "ray_tracer_class": str(self.ray_tracer),
                 "signal_model_class": str(self.signal_model),
+                "offcone_max": np.degrees(self.offcone_max),
+                "weight_min": self.weight_min,
             }
+            try:
+                kernel_metadata["earth_model_class"] = str(type(
+                    self.gen.earth_model
+                ))
+            except AttributeError:
+                pass
             self.writer.create_analysis_metadataset("sim_parameters")
             self.writer.add_analysis_metadata("sim_parameters", kernel_metadata)
 
