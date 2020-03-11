@@ -212,8 +212,10 @@ class EventKernel:
         for particle in event:
             logger.info("Processing event for %s", particle)
             if isinstance(self.weight_min, Sequence):
-                if (particle.survival_weight<self.weight_min[0] or
-                        particle.interaction_weight<self.weight_min[1]):
+                if ((particle.survival_weight is not None and
+                        particle.survival_weight<self.weight_min[0]) or
+                        (particle.interaction_weight is not None and
+                         particle.interaction_weight<self.weight_min[1])):
                     logger.debug("Skipping particle with weight below %s",
                                  self.weight_min)
                     continue
