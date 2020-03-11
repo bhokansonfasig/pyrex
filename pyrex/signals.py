@@ -363,7 +363,7 @@ class Signal:
             logger.debug("Frequency response function %r could not be "+
                          "evaluated for multiple frequencies at once",
                          function)
-            responses = np.zeros(len(spectrum), dtype=np.complex_)
+            responses = np.zeros(len(freqs), dtype=np.complex_)
             for i, f in enumerate(freqs):
                 responses[i] = function(f)
 
