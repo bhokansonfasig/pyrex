@@ -7,6 +7,7 @@ High-level Detectors (:mod:`pyrex.detector`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     AntennaSystem
     Detector

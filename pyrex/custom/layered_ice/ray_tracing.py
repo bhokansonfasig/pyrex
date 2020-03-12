@@ -11,7 +11,6 @@ import numpy as np
 import scipy.optimize
 from pyrex.internal_functions import (flatten, normalize,
                                       LazyMutableClass, lazy_property)
-from pyrex.signals import Signal
 from pyrex.ice_model import AntarcticIce, UniformIce
 from pyrex.ray_tracing import (BasicRayTracer, SpecializedRayTracer,
                                UniformRayTracer)
@@ -213,7 +212,7 @@ class LayeredRayTracePath(LazyMutableClass):
         f : array_like
             Frequencies (Hz) at which to calculate signal attenuation.
         *args, **kwargs
-            Arguments passed down to individual path attentuation methods.
+            Arguments passed down to individual path attenuation methods.
 
         Returns
         -------
@@ -265,10 +264,10 @@ class LayeredRayTracePath(LazyMutableClass):
                 return
 
             else:
-                copy = Signal(signal.times+self.tof, signal.values,
-                              value_type=signal.value_type)
-                copy.filter_frequencies(self.attenuation)
-                return copy
+                new_signal = signal.copy()
+                new_signal.shift(self.tof)
+                new_signal.filter_frequencies(self.attenuation)
+                return new_signal
 
         else:
             # Unit vectors perpendicular and parallel to plane of incidence
@@ -291,10 +290,10 @@ class LayeredRayTracePath(LazyMutableClass):
                 # Apply fresnel s and p coefficients in addition to attenuation
                 attenuation_s = lambda freqs: self.attenuation(freqs) * f_s
                 attenuation_p = lambda freqs: self.attenuation(freqs) * f_p
-                signal_s = Signal(signal.times+self.tof, signal.values*pol_s,
-                                  value_type=signal.value_type)
-                signal_p = Signal(signal.times+self.tof, signal.values*pol_p,
-                                  value_type=signal.value_type)
+                signal_s = signal * pol_s
+                signal_p = signal * pol_p
+                signal_s.shift(self.tof)
+                signal_p.shift(self.tof)
                 signal_s.filter_frequencies(attenuation_s, force_real=True)
                 signal_p.filter_frequencies(attenuation_p, force_real=True)
                 return (signal_s, signal_p), (u_s0, u_p1)
@@ -444,7 +443,7 @@ class LayeredRayTracer(LazyMutableClass):
         path : list of int
             The current index path so far.
         direction : int
-            The direciton of travel. +1 for moving up in indices, -1 for moving
+            The direction of travel. +1 for moving up in indices, -1 for moving
             down in indices.
         reflections : int
             Number of reflections remaining for the path.

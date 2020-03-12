@@ -39,7 +39,7 @@ Contributing via Pull Request
 
 The preferred method of contributing code to PyREx is to submit a pull request on GitHub. The general process for doing this is as follows:
 
-First, if you haven't already you will need to fork the repository so that you have a copy of the code in which you can make your changes. This can be done by visiting https://github.com/bhokansonfasig/pyrex and clicking the ``Fork`` button in the upper-right.
+First, if you haven't already you will need to fork the repository so that you have a copy of the code in which you can make your changes. This can be done by visiting https://github.com/bhokansonfasig/pyrex/ and clicking the ``Fork`` button in the upper-right.
 
 Next you likely want to clone the repository onto your computer to edit the code. To do this, visit your fork on GitHub and click the ``Clone or download`` button and in your terminal run the git clone command with the copied link.
 
@@ -57,7 +57,7 @@ Now before changing the code, you need to create a feature branch in which you c
 
 This will create a new branch for you with the name you give it, and it will push the branch to GitHub. The name you use for your feature branch (in place of ``feature-branch-name`` above) should be a relatively short name, all lowercase with hyphens between words, and descriptive of the feature you are adding. If you would prefer that the branch not be pushed to GitHub immediately, you can use the ``private`` action in place of ``new`` in the command above.
 
-Now that you have a feature branch set up, you can write the code for the new feature in this branch. One you've implemented (and tested!) the feature and you're ready for it to be added to PyREx, submit a pull request to the PyREx repository. To do this, go back to https://github.com/bhokansonfasig/pyrex and click the ``New pull request`` button. On the ``Compare changes`` page, click ``compare across forks``. The ``base fork`` should be the main PyREx repository, the ``base branch`` should be ``develop``, the ``head fork`` should be your fork of PyREx, and the ``compare branch`` should be your newly finished feature branch. Then after adding a title and description of your new feature, click ``Create pull request``.
+Now that you have a feature branch set up, you can write the code for the new feature in this branch. One you've implemented (and tested!) the feature and you're ready for it to be added to PyREx, submit a pull request to the PyREx repository. To do this, go back to https://github.com/bhokansonfasig/pyrex/ and click the ``New pull request`` button. On the ``Compare changes`` page, click ``compare across forks``. The ``base fork`` should be the main PyREx repository, the ``base branch`` should be ``develop``, the ``head fork`` should be your fork of PyREx, and the ``compare branch`` should be your newly finished feature branch. Then after adding a title and description of your new feature, click ``Create pull request``.
 
 The last step is for the maintainer and other reviewers to review your code and either suggest changes or accept the pull request, at which point your code will be integrated for the next PyREx release!
 

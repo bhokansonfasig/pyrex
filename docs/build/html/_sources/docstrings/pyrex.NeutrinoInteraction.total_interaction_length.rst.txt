@@ -3,4 +3,4 @@ pyrex.NeutrinoInteraction.total\_interaction\_length
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: NeutrinoInteraction.total_interaction_length
+.. autoproperty:: NeutrinoInteraction.total_interaction_length

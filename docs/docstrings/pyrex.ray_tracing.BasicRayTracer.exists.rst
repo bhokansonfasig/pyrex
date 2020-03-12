@@ -3,4 +3,4 @@ pyrex.ray\_tracing.BasicRayTracer.exists
 
 .. currentmodule:: pyrex.ray_tracing
 
-.. autoattribute:: BasicRayTracer.exists
+.. autoproperty:: BasicRayTracer.exists

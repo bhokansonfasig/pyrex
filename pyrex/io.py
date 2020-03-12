@@ -262,6 +262,71 @@ class HDF5Base:
         locations['noise'] = "/monte_carlo_data/noise"
         return locations
 
+    @staticmethod
+    def _generate_location_names(file, existing_locations):
+        """
+        Generate unique keys based on dataset locations in a file.
+
+        Parameters
+        ----------
+        file
+            hdf5 file object to be read.
+        existing_locations : dict
+            Existing dictionary of location names with values corresponding to
+            their actual location in the file. These names will be avoided when
+            creating keys for the other datasets in the file.
+
+        Returns
+        -------
+        dict
+            Dictionary of file locations as values with corresponding keys.
+
+        """
+        locations = {}
+        locations.update(existing_locations)
+        unregistered = []
+        def get_unregistered_locations(name):
+            if not name.startswith('/'):
+                name = '/'+name
+            final_name = name.split('/')[-1]
+            is_dataset = (isinstance(file[name], h5py.Dataset)
+                          and final_name!='str' and final_name!='float')
+            is_metagroup = (name+'/str' in file and
+                             isinstance(file[name+'/str'], h5py.Dataset) and
+                             name+'/float' in file and
+                             isinstance(file[name+'/float'], h5py.Dataset))
+            if (is_dataset or is_metagroup) and name not in locations.values():
+                unregistered.append(name)
+        file.visit(get_unregistered_locations)
+
+        def get_level_key(name, level):
+            return "_".join(name.split('/')[-level-1:])
+
+        def get_unique_key(name):
+            for level in range(name.count('/')):
+                key = get_level_key(name, level)
+                unique = True
+                if key in locations.keys():
+                    continue
+                unique = True
+                for other in unregistered:
+                    if other!=name and get_level_key(other, level)==key:
+                        unique = False
+                        break
+                if unique:
+                    return key
+            raise ValueError("Couldn't generate a unique key for "+str(name))
+
+        for value in unregistered:
+            try:
+                key = get_unique_key(value)
+            except ValueError:
+                logger.info("Unable to set unique location name for %s", value)
+            else:
+                locations[key] = value
+
+        return locations
+
     def _analysis_location(self, name):
         """
         Transform the given name into a valid analysis location.
@@ -570,10 +635,14 @@ class EventIterator(HDF5Base):
         HDF5Base.__init__(self, self._object.attrs["version_major"],
                           self._object.attrs["version_minor"])
 
-        self._locations_original = self._dataset_locations()
+        # Set locations including non-default locations present in the file
+        self._locations_original = self._generate_location_names(
+            self._object, self._dataset_locations()
+        )
         self._locations = {}
+        # Map metadata group datasets
         for key, value in self._locations_original.items():
-            if key.endswith("meta"):
+            if value+"/str" in self._object and value+"/float" in self._object:
                 self._locations[key+"_str"] = value+"/str"
                 self._locations[key+"_float"] = value+"/float"
             else:
@@ -681,7 +750,6 @@ class EventIterator(HDF5Base):
         slc = slice(self._slice_start_event,
                     self._slice_end_event,
                     self._slice_step)
-        self._data['indices'] = self._object[self._locations['indices']]
         for key, val in self._locations.items():
             if key=="indices":
                 continue
@@ -693,10 +761,14 @@ class EventIterator(HDF5Base):
             index = self._get_index_from_list(val_org, self._index_keys)
             if index>=0:
                 self._data[key] = []
-                # TODO: Could probably optimize this to only read once
-                # from each dataset rather than N times
-                for start, length in self._data['indices'][slc, index]:
-                    self._data[key].append(self._object[val][start:start+length])
+                tmp_indices = self._object[self._locations['indices']][slc, index]
+                tmp_start = tmp_indices[0][0]
+                tmp_end = tmp_indices[-1][0] + tmp_indices[-1][1]
+                tmp = self._object[val][tmp_start:tmp_end]
+                start = 0
+                for length in tmp_indices[:, 1]:
+                    self._data[key].append(tmp[start:start+length])
+                    start = start+length
 
 
     def _confirm_iterating(self):
@@ -710,32 +782,131 @@ class EventIterator(HDF5Base):
                              "next(<iterator>)")
 
 
-    def _get_event_data(self, group):
+    def _get_event_data(self, name):
         """
         Get data from the given dataset or metadata group.
 
         Parameters
         ----------
-        group : str
-            Short name of the dataset of metadata group (not the full path).
+        name : str
+            Short name of the dataset or metadata group (not the full path).
 
         Returns
         -------
         ndarray
-            If the `group` is a dataset, returns a single array of data.
-            If the `group` is a metadata group, returns a tuple of two
+            If the `name` is a dataset, returns a single array of data.
+            If the `name` is a metadata group, returns a tuple of two
             arrays representing the float data and string data, respectively.
 
+        Raises
+        ------
+        ValueError
+            If the dataset is not known by the `EventIterator`.
+
         """
-        if group.endswith("meta"):
-            float_data = (np.array([]) if not self._bool_dict[group+"_float"]
-                          else self._data[group+"_float"][self._iter_counter])
-            str_data = (np.array([]) if not self._bool_dict[group+"_str"]
-                        else self._data[group+"_str"][self._iter_counter])
+        if name in self._bool_dict:
+            return (np.array([]) if not self._bool_dict[name]
+                    else self._data[name][self._iter_counter])
+        elif (name+"_float" in self._bool_dict and
+              name+"_str" in self._bool_dict):
+            float_data = (np.array([]) if not self._bool_dict[name+"_float"]
+                          else self._data[name+"_float"][self._iter_counter])
+            str_data = (np.array([]) if not self._bool_dict[name+"_str"]
+                        else self._data[name+"_str"][self._iter_counter])
             return float_data, str_data
         else:
-            return (np.array([]) if not self._bool_dict[group]
-                    else self._data[group][self._iter_counter])
+            raise ValueError("Dataset "+str(name)+" not found")
+
+
+    def get_data(self, dataset, attribute=None):
+        """
+        Get data from a given dataset.
+
+        Parameters
+        ----------
+        dataset : str
+            Name or location of the dataset.
+        attribute : str
+            Attribute of the data to retreive.
+
+        Returns
+        -------
+        tuple or ndarray
+            Event data stored in the `dataset`, optionally narrowed by the
+            `attribute`. If `dataset` is actually a group containing float and
+            string datasets, and no `attribute` is specified, a tuple of
+            ndarray will be returned. Otherwise the return value will be an
+            ndarray.
+
+        Raises
+        ------
+        ValueError
+            If the dataset or attribute is unknown or if the dataset has no
+            event-specific data.
+
+        """
+        if dataset.endswith("_str") or dataset.endswith("_float"):
+            name = "_".join(dataset.split("_")[:-1])
+        else:
+            name = dataset
+
+        if name in self._locations_original:
+            location = self._locations_original[name]
+        else:
+            for key, val in self._locations_original.items():
+                if name==val:
+                    name = key
+                    location = val
+                    break
+            else:
+                analysis_name = self._analysis_location(name)
+                for key, val in self._locations_original.items():
+                    if analysis_name==val:
+                        name = key
+                        location = val
+                        break
+                else:
+                    raise ValueError("Dataset "+str(dataset)+" not found")
+
+        if location not in self._index_keys:
+            raise ValueError("No event-specific data is available in "+
+                             str(dataset))
+
+        data = self._get_event_data(name)
+
+        if isinstance(data, tuple):
+            if len(data[0])==0 and len(data[1])==0:
+                logger.debug("No relevant data was stored for event %s",
+                             self._iter_counter * self._slice_step
+                             + self._slice_start_event)
+                return data[0]
+        else:
+            if len(data)==0:
+                logger.debug("No relevant data was stored for event %s",
+                             self._iter_counter * self._slice_step
+                             + self._slice_start_event)
+                return data
+
+        if attribute is None:
+            return data
+        elif isinstance(attribute, str):
+            if isinstance(data, tuple):
+                if attribute in self._keys[name+"_float"]:
+                    index = self._keys[name+"_float"][attribute]
+                    return data[0][:, index]
+                elif attribute in self._keys[name+"_str"]:
+                    index = self._keys[name+"_str"][attribute]
+                    return data[1][:, index]
+                else:
+                    raise ValueError("Unrecognized attribute '"+attribute+"'")
+            else:
+                if attribute in self._keys[name]:
+                    index = self._keys[name][attribute]
+                    return data[:, index]
+                else:
+                    raise ValueError("Unrecognized attribute '"+attribute+"'")
+        else:
+            raise ValueError("Only string values supported as argument")
 
 
     def get_waveforms(self, antenna_id=None, waveform_type=None):
@@ -1047,7 +1218,7 @@ class EventIterator(HDF5Base):
         """
         Whether the event's initial particle is an anti-neutrino.
 
-        `None` if the inital particle is not a neutrino.
+        `None` if the initial particle is not a neutrino.
 
         """
         if self.is_neutrino:
@@ -1090,9 +1261,9 @@ class HDF5Reader(BaseReader, HDF5Base):
         File name to open in read mode.
     slice_range : int, optional
         Number of events to include in each slice when iterating the file.
-        Increasing this value should result in an improvement in speed, while
-        decreasing this value should result in an improvement in memory
-        consumption.
+        Loads the entire file at once by default. For large files specifying
+        a value will result in the file being read in chunks, allowing for
+        reduced memory consumption at the cost of some speed.
 
     Attributes
     ----------
@@ -1102,8 +1273,13 @@ class HDF5Reader(BaseReader, HDF5Base):
     antenna_info
     file_metadata
 
+    See Also
+    --------
+    pyrex.io.EventIterator : Class for iterating over event data from an hdf5
+                             file.
+
     """
-    def __init__(self, filename, slice_range=10):
+    def __init__(self, filename, slice_range=None):
         if filename.endswith(".hdf5") or filename.endswith(".h5"):
             self.filename = filename
             self._slice_range = slice_range
@@ -1238,10 +1414,14 @@ class HDF5Reader(BaseReader, HDF5Base):
         self._is_open = True
         HDF5Base.__init__(self, self._file.attrs["version_major"],
                           self._file.attrs["version_minor"] )
-        self._locations_original = self._dataset_locations()
+        # Set locations including non-default locations present in the file
+        self._locations_original = self._generate_location_names(
+            self._file, self._dataset_locations()
+        )
         self._locations = {}
+        # Map metadata group datasets
         for key, value in self._locations_original.items():
-            if key.endswith("meta"):
+            if value+"/str" in self._file and value+"/float" in self._file:
                 self._locations[key+"_str"] = value+"/str"
                 self._locations[key+"_float"] = value+"/float"
             else:
@@ -1253,10 +1433,13 @@ class HDF5Reader(BaseReader, HDF5Base):
             if loc in self._file:
                 self._num_ant = max(self._num_ant, len(self._file[loc]))
         self._iter_counter = None
-        # assumming that the data indices will have all the list of all events
+        # Assuming that the data indices will have all the list of all events
         self._num_events = 0
         if self._locations["indices"] in self._file:
             self._num_events = len(self._file[self._locations["indices"]])
+
+        if self._slice_range is None:
+            self._slice_range = self._num_events
 
         self._bool_dict = self._get_bool_dict(self._file, self._locations)
 
@@ -1332,9 +1515,9 @@ class HDF5Reader(BaseReader, HDF5Base):
             Array of all waveforms of the given type in the file.
 
         """
-        logger.warn("Getting all waveforms of a single type requires "+
-                    "iteration over the entire dataset. Consider iterating "+
-                    "the file manually instead.")
+        logger.warning("Getting all waveforms of a single type requires "+
+                       "iteration over the entire dataset. Consider iterating "+
+                       "the file manually instead.")
         return np.asarray(
             [event.get_waveforms(waveform_type=wf_type) for event in self]
         )
@@ -1539,7 +1722,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         else:
             self.filename = filename+".h5"
         if mode not in ['w', 'x', 'a', 'r+']:
-            raise ValueError("Uncrecognized file mode '"+str(mode)+"'")
+            raise ValueError("Unrecognized file mode '"+str(mode)+"'")
         self._mode = mode
         self._is_open = False
 
@@ -1582,7 +1765,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         keys : str or list of str
             Key(s) of `dictionary` which should take on the given `value`.
         value
-            Value to store in the `keys` of `dicitonary`.
+            Value to store in the `keys` of `dictionary`.
 
         """
         if isinstance(keys, str):
@@ -1759,7 +1942,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
         else:
             opening_script = stack[i+1].filename
         metadata = {
-            "file_version": "1.0",
+            "file_version": (str(self._file_version_major)+"."+
+                             str(self._file_version_minor)),
             "file_version_major": self._file_version_major,
             "file_version_minor": self._file_version_minor,
             "pyrex_version": __version__,
@@ -1931,7 +2115,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         -------
         group
             The group object corresponding to the created (or existing)
-            metadata group requested (contiaining 'float' and 'str' datasets).
+            metadata group requested (containing 'float' and 'str' datasets).
 
         Raises
         ------
@@ -2148,7 +2332,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
             Must contain the full path to the location and the name of the
             dataset or metadata group.
         start_index : int
-            Starting index in the dataset(s) contiaining information on the
+            Starting index in the dataset(s) containing information on the
             event.
         length : int, optional
             Number of rows in the dataset(s) containing data for the event.
@@ -2242,7 +2426,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         start_index = self._counters['particles_meta']
         self._counters['particles_meta'] += len(event)
         metadata = self._create_metadataset(self._data_locs['particles_meta'])
-        # Reshape metadata datasets to accomodate the event
+        # Reshape metadata datasets to accommodate the event
         str_data = metadata['str']
         float_data = metadata['float']
         str_data.resize(self._counters['particles_meta'], axis=0)
@@ -2416,7 +2600,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         start_index = self._counters['rays_meta']
         self._counters['rays_meta'] += max_waves
         metadata = self._create_metadataset(self._data_locs['rays_meta'])
-        # Reshape metadata datasets to accomodate the ray data of each solution
+        # Reshape metadata datasets to accommodate the ray data of each solution
         str_data = metadata['str']
         float_data = metadata['float']
         str_data.resize(self._counters['rays_meta'], axis=0)
@@ -2660,7 +2844,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         -------
         group
             The group object corresponding to the created (or existing)
-            metadata group requested (contiaining 'float' and 'str' datasets).
+            metadata group requested (containing 'float' and 'str' datasets).
 
         """
         location = self._analysis_location(name)
@@ -2711,7 +2895,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         global_index : int
             Global event index (row of the event indices dataset) to write to.
         start_index : int
-            Starting index in the dataset(s) contiaining information on the
+            Starting index in the dataset(s) containing information on the
             event.
         length : int, optional
             Number of rows in the dataset(s) containing data for the event.
@@ -2767,8 +2951,8 @@ class File:
 
     See Also
     --------
-    HDF5Reader : Class for reading data from an hdf5 file.
-    HDF5Writer : Class for writing data to an hdf5 file.
+    pyrex.io.HDF5Reader : Class for reading data from an hdf5 file.
+    pyrex.io.HDF5Writer : Class for writing data to an hdf5 file.
 
     """
     readers = {

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,36 +82,30 @@
 <h1>pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end<a class="headerlink" href="#pyrex-custom-irex-envelopevpol-envelopeless-front-end" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end">
-<code class="descclassname">EnvelopeVpol.</code><code class="descname">envelopeless_front_end</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">EnvelopeVpol.</code><code class="sig-name descname">envelopeless_front_end</code><span class="sig-paren">(</span><em class="sig-param">signal</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.EnvelopeVpol.envelopeless_front_end" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply front-end processes to a signal and return the output.</p>
 <p>The front-end consists of the full ARA electronics chain (including
 amplification) and signal clipping. Does not include the extra
 amplification and envelope circuit.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>signal</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Signal</span></dt>
-<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">Signal</span></code> object on which to apply the front-end processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>signal</strong><span class="classifier">Signal</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Signal</span></code> object on which to apply the front-end processes.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>Signal</strong></dt>
-<dd><p class="first last">Signal processed by the ARA antenna front end.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Signal</strong></dt><dd><p>Signal processed by the ARA antenna front end.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.front_end.html#pyrex.custom.ara.antenna.ARAAntennaSystem.front_end" title="pyrex.custom.ara.antenna.ARAAntennaSystem.front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.antenna.ARAAntennaSystem.front_end</span></code></a></dt>
-<dd>Apply front-end processes to a signal and return the output.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.custom.ara.antenna.ARAAntennaSystem.front_end.html#pyrex.custom.ara.antenna.ARAAntennaSystem.front_end" title="pyrex.custom.ara.antenna.ARAAntennaSystem.front_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.antenna.ARAAntennaSystem.front_end</span></code></a></dt><dd><p>Apply front-end processes to a signal and return the output.</p>
+</dd>
 </dl>
 </div>
 </dd></dl>
@@ -128,7 +123,7 @@ amplification and envelope circuit.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -192,10 +187,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

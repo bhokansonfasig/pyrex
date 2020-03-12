@@ -9,15 +9,14 @@ import os.path
 from .__about__ import __version__, __long_description__
 __doc__ = __long_description__
 
-from .signals import (Signal, EmptySignal, FunctionSignal,
-                      AskaryanSignal, ThermalNoise)
+from .signals import Signal, EmptySignal, FunctionSignal, ThermalNoise
+from .askaryan import AskaryanSignal
 from .antenna import Antenna, DipoleAntenna
 from .detector import AntennaSystem, Detector
 from .ice_model import ice
-from .earth_model import prem_density, slant_depth
+from .earth_model import earth
 from .particle import Event, Particle, NeutrinoInteraction
-from .generation import (CylindricalGenerator, CylindricalShadowGenerator,
-                         RectangularGenerator, RectangularShadowGenerator,
+from .generation import (CylindricalGenerator, RectangularGenerator,
                          ShadowGenerator, ListGenerator, FileGenerator)
 from .ray_tracing import RayTracer, RayTracePath
 from .kernel import EventKernel

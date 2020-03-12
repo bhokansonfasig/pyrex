@@ -8,10 +8,12 @@ and handle antenna processing of the signals.
 
 """
 
+from collections.abc import Sequence
 import logging
 import numpy as np
 from pyrex.internal_functions import normalize
-from pyrex.signals import AskaryanSignal, EmptySignal
+from pyrex.signals import EmptySignal
+from pyrex.askaryan import AskaryanSignal
 from pyrex.ray_tracing import RayTracer
 from pyrex.ice_model import ice
 
@@ -50,6 +52,17 @@ class EventKernel:
         A function or dictionary with function values representing trigger
         conditions of the detector. If a dictionary, must have a "global" key
         with its value representing the global detector trigger.
+    offcone_max : float or None, optional
+        The maximum angle away from the Cherenkov angle to be simulated.
+        Antennas which view an event with an angle larger than this angle will
+        skip the calculation of the Askaryan signal and assume no significant
+        signal is seen. If `None`, no offcone cut is applied.
+    weight_min : float or tuple or None, optional
+        The minimum particle weight(s) which should be simulated. If a float,
+        particles with a total weight less than this value will be skipped. If
+        a tuple, particles with a survival weight less than the first element
+        of the tuple or with an interaction weight less than the second element
+        of the tuple will be skipped. If `None`, no minimum weight is applied.
 
     Attributes
     ----------
@@ -70,13 +83,17 @@ class EventKernel:
         The file object to be used for writing data output.
     triggers
         The trigger condition(s) of the detector.
+    offcone_max
+        The maximum angle away from the Cherenkov angle to be simulated.
+    weight_min
+        The minimum particle weight(s) which should be simulated.
 
     See Also
     --------
     pyrex.Event : Class for storing a tree of `Particle` objects
                   representing an event.
     pyrex.Particle : Class for storing particle attributes.
-    pyrex.AntarcticIce : Class describing the ice at the south pole.
+    pyrex.ice_model.AntarcticIce : Class describing the ice at the south pole.
     pyrex.RayTracer : Class for calculating the ray-trace solutions between
                       points.
     pyrex.AskaryanSignal : Class for generating Askaryan signals according to
@@ -109,7 +126,7 @@ class EventKernel:
     kernel as the ``ice_model`` keyword argument. The ray tracer must also have
     ``exists`` and ``solutions`` attributes, the first of which denotes whether
     any paths exist between the given points and the second of which is an
-    iterable revelaing each path between the points. These paths must have
+    iterable revealing each path between the points. These paths must have
     ``emitted_direction``, ``received_direction``, and ``path_length``
     attributes, as well as a ``propagate`` method which takes a signal object
     and applies the propagation effects of the path in-place to that object.
@@ -124,8 +141,9 @@ class EventKernel:
     """
     def __init__(self, generator, antennas, ice_model=ice,
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
-                 signal_times=np.linspace(-20e-9, 80e-9, 2000, endpoint=False),
-                 event_writer=None, triggers=None):
+                 signal_times=np.linspace(-50e-9, 50e-9, 2000, endpoint=False),
+                 event_writer=None, triggers=None, offcone_max=40,
+                 weight_min=None):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
@@ -134,6 +152,14 @@ class EventKernel:
         self.signal_times = signal_times
         self.writer = event_writer
         self.triggers = triggers
+        if offcone_max is None:
+            self.offcone_max = np.radians(180)
+        else:
+            self.offcone_max = np.radians(offcone_max)
+        if weight_min is None:
+            self.weight_min = 0
+        else:
+            self.weight_min = weight_min
         self._gen_count = self.gen.count
         if self.writer is not None:
             if not self.writer.is_open:
@@ -145,10 +171,18 @@ class EventKernel:
             kernel_metadata = {
                 "detector_class": str(type(self.antennas)),
                 "generator_class": str(type(self.gen)),
-                "ice_model_class": str(self.ice),
+                "ice_model_class": str(type(self.ice)),
                 "ray_tracer_class": str(self.ray_tracer),
                 "signal_model_class": str(self.signal_model),
+                "offcone_max": np.degrees(self.offcone_max),
+                "weight_min": self.weight_min,
             }
+            try:
+                kernel_metadata["earth_model_class"] = str(type(
+                    self.gen.earth_model
+                ))
+            except AttributeError:
+                pass
             self.writer.create_analysis_metadataset("sim_parameters")
             self.writer.add_analysis_metadata("sim_parameters", kernel_metadata)
 
@@ -185,6 +219,19 @@ class EventKernel:
             polarizations.append([])
         for particle in event:
             logger.info("Processing event for %s", particle)
+            if isinstance(self.weight_min, Sequence):
+                if ((particle.survival_weight is not None and
+                        particle.survival_weight<self.weight_min[0]) or
+                        (particle.interaction_weight is not None and
+                         particle.interaction_weight<self.weight_min[1])):
+                    logger.debug("Skipping particle with weight below %s",
+                                 self.weight_min)
+                    continue
+            elif particle.weight<self.weight_min:
+                logger.debug("Skipping particle with weight below %s",
+                             self.weight_min)
+                continue
+
             for i, ant in enumerate(self.antennas):
                 rt = self.ray_tracer(particle.vertex, ant.position,
                                      ice_model=self.ice)
@@ -193,6 +240,8 @@ class EventKernel:
                 if not rt.exists:
                     logger.debug("Ray paths to %s do not exist", ant)
                     continue
+
+                theta_c = np.arccos(1/self.ice.index(particle.vertex[2]))
 
                 ray_paths[i].extend(rt.solutions)
                 for path in rt.solutions:
@@ -216,24 +265,35 @@ class EventKernel:
                                             path.emitted_direction))
                     logger.debug("Angle to %s is %f degrees", ant,
                                  np.degrees(psi))
-                    # TODO: Support angles larger than pi/2
-                    # (low priority since these angles are far from the
-                    # cherenkov cone)
-                    if psi>np.pi/2:
-                        continue
 
-                    pulse = self.signal_model(times=self.signal_times,
-                                              particle=particle,
-                                              viewing_angle=psi,
-                                              viewing_distance=path.path_length,
-                                              ice_model=self.ice)
-
-                    ant_pulses, ant_pols = path.propagate(signal=pulse,
-                                                          polarization=nu_pol)
-
-                    ant.receive(ant_pulses,
-                                direction=path.received_direction,
-                                polarization=ant_pols)
+                    try:
+                        if np.abs(psi-theta_c)>self.offcone_max:
+                            raise ValueError("Viewing angle is larger than "+
+                                             "offcone limit "+
+                                             str(np.degrees(self.offcone_max)))
+                        pulse = self.signal_model(
+                            times=self.signal_times,
+                            particle=particle,
+                            viewing_angle=psi,
+                            viewing_distance=path.path_length,
+                            ice_model=self.ice
+                        )
+                    except ValueError as err:
+                        logger.debug("Eliminating invalid Askaryan signal: %s",
+                                     err)
+                        ant.receive(
+                            EmptySignal(self.signal_times+path.tof,
+                                        value_type=EmptySignal.Type.field)
+                        )
+                    else:
+                        ant_pulses, ant_pols = path.propagate(
+                            signal=pulse, polarization=nu_pol
+                        )
+                        ant.receive(
+                            ant_pulses,
+                            direction=path.received_direction,
+                            polarization=ant_pols
+                        )
 
         if self.triggers is None:
             triggered = None

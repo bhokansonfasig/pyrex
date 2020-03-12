@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>About PyREx &mdash; PyREx 1.8.2 documentation</title>
+    <title>About PyREx &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="#" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="index.html" >
     <link rel="next" title="How to Use PyREx" href="usage.html" >
     <link rel="prev" title="PyREx Documentation" href="index.html" > 
   </head>
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -89,28 +90,28 @@
             
   <div class="section" id="about-pyrex">
 <h1>About PyREx<a class="headerlink" href="#about-pyrex" title="Permalink to this headline">¶</a></h1>
-<p>PyREx (<strong>Py</strong>thon package for an IceCube <strong>R</strong>adio <strong>Ex</strong>tension) is, as its name suggests, a Python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
-The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANNA collaborations).</p>
+<p>PyREx (<strong>Py</strong>thon package for <strong>R</strong>adio <strong>Ex</strong>periments) is a Python package designed to simulate the measurement of Askaryan pulses via in-ice radio antenna arrays.
+The code was written for the ARA collaboration with considerations for future radio arrays.
+As such, the package is designed to be highly modular so that it can easily be used for other radio projects (e.g. ARIANNA, RNO, and IceCube Gen2).</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The easiest way to get the PyREx package is using <code class="docutils literal notranslate"><span class="pre">pip</span></code> as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bhokansonfasig</span><span class="o">/</span><span class="n">pyrex</span><span class="c1">#egg=pyrex</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/bhokansonfasig/pyrex#egg<span class="o">=</span>pyrex
 </pre></div>
 </div>
 <p>PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+, which should be automatically installed when installing via <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
-<p>Alternatively, you can download the code from <a class="reference external" href="https://github.com/bhokansonfasig/pyrex">https://github.com/bhokansonfasig/pyrex</a> and then either include the <code class="docutils literal notranslate"><span class="pre">pyrex</span></code> directory (the one containing the python modules) in your <code class="docutils literal notranslate"><span class="pre">PYTHON_PATH</span></code>, or just copy the <code class="docutils literal notranslate"><span class="pre">pyrex</span></code> directory into your working directory.
+<p>Alternatively, you can download the code from <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/">https://github.com/bhokansonfasig/pyrex/</a> and then either include the <code class="docutils literal notranslate"><span class="pre">pyrex</span></code> directory (the one containing the python modules) in your <code class="docutils literal notranslate"><span class="pre">PYTHON_PATH</span></code>, or just copy the <code class="docutils literal notranslate"><span class="pre">pyrex</span></code> directory into your working directory.
 PyREx is not currently available on PyPI, so a simple <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyrex</span></code> will not have the intended effect.</p>
 </div>
 <div class="section" id="quick-code-example">
 <h2>Quick Code Example<a class="headerlink" href="#quick-code-example" title="Permalink to this headline">¶</a></h2>
 <p>The most basic simulation can be produced as follows:</p>
 <p>First, import the package:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pryex</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyrex</span>
 </pre></div>
 </div>
 <p>Then, create a particle generator object that will produce random particles in a cylinder with radius and depth of 1 km and with a fixed energy of 100 PeV:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">CylindricalShadowGenerator</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-                                                      <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">particle_generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">CylindricalGenerator</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>An array of antennas that represent the detector is also needed. The base <a class="reference internal" href="docstrings/pyrex.Antenna.html#pyrex.Antenna" title="pyrex.Antenna"><code class="xref py py-class docutils literal notranslate"><span class="pre">Antenna</span></code></a> class provides a basic antenna with a flat frequency response and no trigger condition. Here we make a single vertical “string” of four antennas with no noise:</p>
@@ -140,46 +141,46 @@ PyREx is not currently available on PyPI, so a simple <code class="docutils lite
 <div class="section" id="units">
 <h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
 <p>For ease of use, PyREx tries to use consistent units in all classes and functions. The units used are mostly SI with a few exceptions listed in bold below:</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="37%" />
-<col width="63%" />
+<col style="width: 37%" />
+<col style="width: 63%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Metric</th>
-<th class="head">Unit</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Unit</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>time</td>
-<td>seconds (s)</td>
+<tbody>
+<tr class="row-even"><td><p>time</p></td>
+<td><p>seconds (s)</p></td>
 </tr>
-<tr class="row-odd"><td>frequency</td>
-<td>hertz (Hz)</td>
+<tr class="row-odd"><td><p>frequency</p></td>
+<td><p>hertz (Hz)</p></td>
 </tr>
-<tr class="row-even"><td>distance</td>
-<td>meters (m)</td>
+<tr class="row-even"><td><p>distance</p></td>
+<td><p>meters (m)</p></td>
 </tr>
-<tr class="row-odd"><td><strong>density</strong></td>
-<td><strong>grams per cubic centimeter (g/cm^3)</strong></td>
+<tr class="row-odd"><td><p><strong>density</strong></p></td>
+<td><p><strong>grams per cubic centimeter (g/cm^3)</strong></p></td>
 </tr>
-<tr class="row-even"><td><strong>material thickness</strong></td>
-<td><strong>grams per square centimeter (g/cm^2)</strong></td>
+<tr class="row-even"><td><p><strong>material thickness</strong></p></td>
+<td><p><strong>grams per square centimeter (g/cm^2)</strong></p></td>
 </tr>
-<tr class="row-odd"><td>temperature</td>
-<td>kelvin (K)</td>
+<tr class="row-odd"><td><p>temperature</p></td>
+<td><p>kelvin (K)</p></td>
 </tr>
-<tr class="row-even"><td><strong>energy</strong></td>
-<td><strong>gigaelectronvolts (GeV)</strong></td>
+<tr class="row-even"><td><p><strong>energy</strong></p></td>
+<td><p><strong>gigaelectronvolts (GeV)</strong></p></td>
 </tr>
-<tr class="row-odd"><td>resistance</td>
-<td>ohms (Ω)</td>
+<tr class="row-odd"><td><p>resistance</p></td>
+<td><p>ohms</p></td>
 </tr>
-<tr class="row-even"><td>voltage</td>
-<td>volts (V)</td>
+<tr class="row-even"><td><p>voltage</p></td>
+<td><p>volts (V)</p></td>
 </tr>
-<tr class="row-odd"><td>electric field</td>
-<td>volts per meter (V/m)</td>
+<tr class="row-odd"><td><p>electric field</p></td>
+<td><p>volts per meter (V/m)</p></td>
 </tr>
 </tbody>
 </table>
@@ -197,7 +198,7 @@ PyREx is not currently available on PyPI, so a simple <code class="docutils lite
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -266,10 +267,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

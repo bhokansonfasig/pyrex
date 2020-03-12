@@ -3,4 +3,4 @@ pyrex.AskaryanSignal.vector\_potential
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: AskaryanSignal.vector_potential
+.. autoproperty:: AskaryanSignal.vector_potential

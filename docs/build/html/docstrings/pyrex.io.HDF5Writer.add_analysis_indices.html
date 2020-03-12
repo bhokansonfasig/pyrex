@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.io.HDF5Writer.add_analysis_indices &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.io.HDF5Writer.add_analysis_indices &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,33 +82,25 @@
 <h1>pyrex.io.HDF5Writer.add_analysis_indices<a class="headerlink" href="#pyrex-io-hdf5writer-add-analysis-indices" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.io.HDF5Writer.add_analysis_indices">
-<code class="descclassname">HDF5Writer.</code><code class="descname">add_analysis_indices</code><span class="sig-paren">(</span><em>name</em>, <em>global_index</em>, <em>start_index</em>, <em>length=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Writer.add_analysis_indices" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">HDF5Writer.</code><code class="sig-name descname">add_analysis_indices</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">global_index</em>, <em class="sig-param">start_index</em>, <em class="sig-param">length=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Writer.add_analysis_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the given start and length indices to the event indices dataset.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Location and name of the dataset or metadata group to be indexed.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Location and name of the dataset or metadata group to be indexed.
 Will be forced into an appropriate analysis location if it isn’t
 already a valid location.</p>
 </dd>
-<dt><strong>global_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Global event index (row of the event indices dataset) to write to.</p>
+<dt><strong>global_index</strong><span class="classifier">int</span></dt><dd><p>Global event index (row of the event indices dataset) to write to.</p>
 </dd>
-<dt><strong>start_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Starting index in the dataset(s) contiaining information on the
+<dt><strong>start_index</strong><span class="classifier">int</span></dt><dd><p>Starting index in the dataset(s) containing information on the
 event.</p>
 </dd>
-<dt><strong>length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Number of rows in the dataset(s) containing data for the event.</p>
+<dt><strong>length</strong><span class="classifier">int, optional</span></dt><dd><p>Number of rows in the dataset(s) containing data for the event.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -123,7 +116,7 @@ event.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -187,10 +180,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

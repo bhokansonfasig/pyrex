@@ -3,6 +3,47 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.9.0
+=============
+
+.. rubric:: New Features
+
+* Added a :class:`GreenlandIce` ice model based on measurements at Summit Station.
+
+* Added the :class:`AVZAskaryanSignal` Askaryan model from J. Alvarez-Muniz et al (2000) for comparison across simulation packages.
+
+* Added :class:`UniformIce` ice model with a constant index of refraction, along with the corresponding ray tracing with :class:`UniformRayTracer` and :class:`UniformRayTracePath`.
+
+* Added :mod:`pyrex.custom.layered_ice` for ice models with indices of refraction defined in stratified layers in the z-direction and the corresponding ray tracing.
+
+* Added :func:`complex_interp` and :func:`complex_bilinear_interp` functions for interpolating arrays of complex values using Cartesian or Euler methods.
+
+.. rubric:: Changes
+
+* :class:`IceModel` has been deprecated in favor of the :data:`ice` object, an object of the preferred ice model class (currently :class:`AntarcticIce`).
+
+* Removed the :class:`NewcombIce` ice model.
+
+* Handling of s-polarized and p-polarized signals by the :class:`RayTracer` have now been split. This resulted in different behavior for the :meth:`RayTracePath.propagate` and :meth:`Antenna.receive` methods, as well as a new method :meth:`Antenna.apply_response`.
+
+* Renamed :meth:`Antenna.response` method to :meth:`Antenna.frequency_response`.
+
+* ARA antennas have been updated to use the latest XFDTD simulations from the Chiba group.
+
+* The behavior of the :class:`CylindricalShadowGenerator` and :class:`RectangularShadowGenerator` classes have been moved into the :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes, respectively, when the ``shadow`` argument is set to ``True``.
+
+.. rubric:: Bug Fixes
+
+* The handling of phase shifts between s-polarized and p-polarized signals during total internal reflection is now properly implemented.
+
+* Fixed a bug in the antenna response of ARA antennas which resulted in an extra factor of sin(theta) for :class:`VpolAntenna` objects and had an unexplored effect on :class:`HpolAntenna` objects.
+
+* Fixed an off-by-one error in the final event count given by :class:`ListGenerator` objects.
+
+* Fixed a bug in the Earth shadowing effect produced by :class:`CylindricalGenerator` and :class:`RectangularGenerator` classes.
+
+
+
 Version 1.8.2
 =============
 
@@ -247,7 +288,7 @@ Version 1.3.1
 
 .. rubric:: New Features
 
-* Added diode bridge rectifier envelope circuit analytic model to :mod:`irex.frontends` and made it the default analytic envelope model in :classs:`IREXAntennaSystem`.
+* Added diode bridge rectifier envelope circuit analytic model to :mod:`irex.frontends` and made it the default analytic envelope model in :class:`IREXAntennaSystem`.
 
 * Added :attr:`allow_reflection` attribute to :class:`EventKernel` class to determine whether :class:`ReflectedPathFinder` solutions should be allowed.
 
@@ -268,7 +309,7 @@ Version 1.3.0
 
 .. rubric:: Changes
 
-* Change :class:`AksaryanSignal` angle to always be positive and remove < 90 degree restriction (Alvarez-Muniz, Romero-Wolf, & Zas paper suggests the algorithm should work for all angles).
+* Change :class:`AskaryanSignal` angle to always be positive and remove < 90 degree restriction (Alvarez-Muniz, Romero-Wolf, & Zas paper suggests the algorithm should work for all angles).
 
 
 .. rubric:: Performance Improvements

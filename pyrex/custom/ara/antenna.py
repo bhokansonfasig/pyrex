@@ -6,24 +6,29 @@ ensure that AraSim results can be matched.
 
 """
 
+import logging
 import os.path
+import pickle
 import numpy as np
+import scipy.constants
 import scipy.signal
-from pyrex.internal_functions import normalize
-from pyrex.signals import Signal
+from pyrex.internal_functions import (normalize, complex_bilinear_interp,
+                                      complex_interp)
+from pyrex.signals import Signal, FunctionSignal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
-from pyrex.ice_model import ice
+
+logger = logging.getLogger(__name__)
 
 
-def _read_directionality_data(filename):
+def _read_arasim_antenna_data(filename):
     """
-    Gather antenna directionality data from a data file.
+    Gather antenna directionality data from an AraSim-formatted data file.
 
     The data file should have columns for theta, phi, dB gain, non-dB gain, and
     phase (in degrees). This should be divided into sections for each frequency
     with a header line "freq : X MHz", optionally followed by a second line
-    "trans : Y".
+    "SWR : Y".
 
     Parameters
     ----------
@@ -32,11 +37,15 @@ def _read_directionality_data(filename):
 
     Returns
     -------
-    dict
-        Dictionary containing the data with keys (freq, theta, phi) and values
-        (gain, phase).
-    set
-        Set of unique frequencies appearing in the data keys.
+    response : ndarray
+        3-D array of complex-valued voltage gains as a function of frequency
+        along axis 0, zenith along axis 1, and azimuth along axis 2.
+    frequencies : ndarray
+        Frequencies (Hz) corresponding to axis 0 of `response`.
+    thetas : ndarray
+        Zenith angles (degrees) corresponding to axis 1 of `response`.
+    phis : ndarray
+        Azimuth angles (degrees) corresponding to axis 2 of `response`.
 
     """
     data = {}
@@ -76,22 +85,112 @@ def _read_directionality_data(filename):
                 phase = np.radians(float(words[4]))
                 data[(freq, theta, phi)] = (gain, phase)
 
-    for theta in thetas:
-        for phi in phis:
-            phase_offset = 0
-            prev_phase = 0
-            for freq in sorted(freqs):
-                # In order to smoothly interpolate phases, don't allow the phase
-                # to wrap from -pi to +pi, but instead apply an offset
+    # Convert data dictionary into 3-D array of responses
+    response = np.empty((len(freqs), len(thetas), len(phis)),
+                        dtype=np.complex_)
+    for i, freq in enumerate(sorted(freqs)):
+        for j, theta in enumerate(sorted(thetas)):
+            for k, phi in enumerate(sorted(phis)):
                 gain, phase = data[(freq, theta, phi)]
-                if phase-prev_phase>np.pi:
-                    phase_offset -= 2*np.pi
-                elif prev_phase-phase>np.pi:
-                    phase_offset += 2*np.pi
-                prev_phase = phase
-                data[(freq, theta, phi)] = (gain, phase+phase_offset)
+                response[i, j, k] = gain * np.exp(1j*phase)
 
-    return data, freqs
+    response_data = (response, np.array(sorted(freqs)),
+                     np.array(sorted(thetas)), np.array(sorted(phis)))
+    return _fix_response_wrapping(response_data)
+
+
+# If the antenna responses don't go all the way to phi=360, add the extra
+# column for the sake of the interpolators
+def _fix_response_wrapping(response_data):
+    """
+    Add phi=360 degrees column to antenna response data.
+
+    The interpolators require that the full azimuth range of the antennas is
+    described, so this function duplicates the phi=0 column of the antenna
+    response into a phi=360 column, as long as it matches with the rest of
+    the phi spacings.
+
+    Parameters
+    ----------
+    response_data : tuple of ndarray
+        Tuple containing the response data for the antenna. The first element
+        should contain a 3-D array of the antenna response model as a function
+        of frequency (axis 0), zenith (axis 1), and azimuth (axis 2). The
+        remaining elements should be the values of the frequency, zenith, and
+        azimuth axes, respectively.
+
+    Returns
+    -------
+    response : ndarray
+        Corrected 3-D array of antenna response values, including the phi=360
+        degree column if possible.
+    frequencies : ndarray
+        Frequencies (Hz) corresponding to axis 0 of `response`.
+    thetas : ndarray
+        Zenith angles (degrees) corresponding to axis 1 of `response`.
+    phis : ndarray
+        Azimuth angles (degrees) corresponding to axis 2 of `response`.
+
+    """
+    response, freqs, thetas, phis = response_data
+    if phis[-1]==360:
+        return response_data
+    if phis[0]==0 and phis[-1]==360-phis[1]:
+        phis = np.concatenate((phis, [360]))
+        response = np.concatenate((response, response[:, :, 0:1]), axis=2)
+    return response, freqs, thetas, phis
+
+
+def _read_arasim_antenna_pickle(filename):
+    """
+    Gather antenna directional response data from a pickled data file.
+
+    The data file should be a pickled file containing the antenna directional
+    response data from an AraSim-formatted data file as returned by the
+    `_read_arasim_antenna_data` function.
+
+    Parameters
+    ----------
+    filename : str
+        Name of the data file without the ``.pkl`` extension.
+
+    Returns
+    -------
+    response : ndarray
+        3-D array of complex-valued voltage gains as a function of frequency
+        along axis 0, zenith along axis 1, and azimuth along axis 2.
+    frequencies : ndarray
+        Frequencies (Hz) corresponding to axis 0 of `response`.
+    thetas : ndarray
+        Zenith angles (degrees) corresponding to axis 1 of `response`.
+    phis : ndarray
+        Azimuth angles (degrees) corresponding to axis 2 of `response`.
+
+    See Also
+    --------
+    _read_arasim_antenna_data : Gather antenna directionality data from an
+                                AraSim-formatted data file.
+
+    """
+    # Quick fix for filenames with one of the approved extensions already
+    # (just strip it)
+    if filename.endswith(".txt") or filename.endswith(".pkl"):
+        filename = filename[:-4]
+
+    # If there is no pickle file, read the response data using the
+    # _read_arasim_antenna_data function, and then make a pickle file
+    if not os.path.isfile(filename+".pkl"):
+        logger.warning("Antenna model file %s.pkl not found. "+
+                       "Generating a new file now", filename)
+        response_data = _read_arasim_antenna_data(filename+".txt")
+        with open(filename+".pkl", 'wb') as f:
+            pickle.dump(response_data, f)
+        return response_data
+
+    # Otherwise, read from the pickle file
+    else:
+        with open(filename+".pkl", 'rb') as f:
+            return pickle.load(f)
 
 
 def _read_filter_data(filename):
@@ -108,15 +207,15 @@ def _read_filter_data(filename):
 
     Returns
     -------
-    dict
-        Dictionary containing the data with keys (freq) and values
-        (gain, phase).
+    gains : ndarray
+        Complex-valued voltage gains as a function of frequency.
+    frequencies : ndarray
+        Frequencies (Hz) corresponding to the values of `gains`.
 
     """
-    data = {}
+    gains = []
+    freqs = []
     freq_scale = 0
-    phase_offset = 0
-    prev_phase = 0
     with open(filename) as f:
         for line in f:
             words = line.split()
@@ -138,28 +237,34 @@ def _read_filter_data(filename):
                 freq = float(f) * freq_scale
                 gain = float(g)
                 phase = float(p)
-                # In order to smoothly interpolate phases, don't allow the phase
-                # to wrap from -pi to +pi, but instead apply an offset
-                if phase-prev_phase>np.pi:
-                    phase_offset -= 2*np.pi
-                elif prev_phase-phase>np.pi:
-                    phase_offset += 2*np.pi
-                prev_phase = phase
-                data[freq] = (gain, phase+phase_offset)
+                freqs.append(freq)
+                gains.append(gain * np.exp(1j*phase))
 
-    return data
+    return np.array(gains), np.array(freqs)
 
 
 ARA_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 VPOL_DATA_FILE = os.path.join(ARA_DATA_DIR,
-                              "ARA_bicone6in_output_MY_fixed.txt")
+                              "Vpol_original_CrossFeed_150mmHole_Ice_ARASim.txt")
 HPOL_DATA_FILE = os.path.join(ARA_DATA_DIR,
-                              "ARA_dipoletest1_output_MY_fixed.txt")
+                              "Hpol_original_150mmHole_Ice_ARASim.txt")
 FILT_DATA_FILE = os.path.join(ARA_DATA_DIR,
                               "ARA_Electronics_TotalGain_TwoFilters.txt")
-VPOL_DIRECTIONALITY, VPOL_FREQS = _read_directionality_data(VPOL_DATA_FILE)
-HPOL_DIRECTIONALITY, HPOL_FREQS = _read_directionality_data(HPOL_DATA_FILE)
-ALL_FILTERS = _read_filter_data(FILT_DATA_FILE)
+# Vpol data file contains only the theta responses
+VPOL_THETA_RESPONSE_DATA = _read_arasim_antenna_pickle(VPOL_DATA_FILE)
+VPOL_RESPONSE_DATA = (
+    VPOL_THETA_RESPONSE_DATA[0],
+    np.zeros(VPOL_THETA_RESPONSE_DATA[0].shape),
+    *VPOL_THETA_RESPONSE_DATA[1:]
+)
+# Hpol data file contains only the phi responses
+HPOL_PHI_RESPONSE_DATA = _read_arasim_antenna_pickle(HPOL_DATA_FILE)
+HPOL_RESPONSE_DATA = (
+    np.zeros(HPOL_PHI_RESPONSE_DATA[0].shape),
+    *HPOL_PHI_RESPONSE_DATA
+)
+ALL_FILTERS_DATA = _read_filter_data(FILT_DATA_FILE)
+
 
 
 class ARAAntenna(Antenna):
@@ -167,19 +272,30 @@ class ARAAntenna(Antenna):
     Antenna class to be used for ARA antennas.
 
     Stores the attributes of an antenna as well as handling receiving,
-    processing, and storing signals and adding noise.
+    processing, and storing signals and adding noise. Antenna response based on
+    provided models.
 
     Parameters
     ----------
+    response_data : tuple of array_like
+        Tuple containing the response data for the antenna along the theta
+        and phi polarization directions. The first and second elements should
+        contain 3-D arrays of the antenna response model in the theta and phi
+        polarizations, respectively, as a function of frequency (axis 0),
+        zenith (axis 1), and azimuth (axis 2). The remaining elements should be
+        the values of the frequency, zenith, and azimuth axes, respectively.
     position : array_like
         Vector position of the antenna.
     center_frequency : float
         Frequency (Hz) at the center of the antenna's frequency range.
     bandwidth : float
         Bandwidth (Hz) of the antenna.
+    temperature : float
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     efficiency : float, optional
@@ -189,12 +305,6 @@ class ARAAntenna(Antenna):
     unique_noise_waveforms : int, optional
         The number of expected noise waveforms needed for each received signal
         to have its own noise.
-    directionality_data : None or dict, optional
-        Dictionary containing data on the directionality of the antenna. If
-        ``None``, behavior is undefined.
-    directionality_freqs : None or set, optional
-        Set of frequencies in the directionality data ``dict`` keys. If
-        ``None``, calculated automatically from `directionality_data`.
 
     Attributes
     ----------
@@ -223,12 +333,13 @@ class ARAAntenna(Antenna):
         The noise resistance (ohm) of the antenna. Used in combination with
         `temperature` to calculate the RMS voltage of the antenna noise.
     noise_rms : float or None
-        The RMS voltage (v) of the antenna noise. If not ``None``, this value
+        The RMS voltage (V) of the antenna noise. If not ``None``, this value
         will be used instead of the RMS voltage calculated from the values of
         `temperature` and `resistance`.
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -237,10 +348,16 @@ class ARAAntenna(Antenna):
     pyrex.Antenna : Base class for antennas.
 
     """
-    def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), efficiency=1, noisy=True,
-                 unique_noise_waveforms=10,
-                 directionality_data=None, directionality_freqs=None):
+    def __init__(self, response_data, position, center_frequency, bandwidth,
+                 temperature, resistance, orientation=(0,0,1), efficiency=1,
+                 noisy=True, unique_noise_waveforms=10):
+        # Parse the response data
+        self._theta_response = response_data[0]
+        self._phi_response = response_data[1]
+        self._response_freqs = response_data[2]
+        self._response_zens = response_data[3]
+        self._response_azis = response_data[4]
+
         # Get the critical frequencies in Hz
         f_low = center_frequency - bandwidth/2
         f_high = center_frequency + bandwidth/2
@@ -254,49 +371,29 @@ class ARAAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          efficiency=efficiency, freq_range=(f_low, f_high),
-                         temperature=ice.temperature(position[2]),
-                         resistance=resistance, noisy=noisy,
+                         temperature=temperature, resistance=resistance,
+                         noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms)
 
-        self._dir_data = directionality_data
-        self._dir_freqs = directionality_freqs
-        # Just in case the frequencies don't get set, set them now
-        if self._dir_freqs is None and self._dir_data is not None:
-            self._dir_freqs = set()
-            for key in self._dir_data:
-                self._dir_freqs.add(key[0])
+    def directional_gain(self, theta, phi):
+        raise NotImplementedError("Directional gain is not defined for "+
+                                  self.__class__.__name__+". Use the "+
+                                  "directional_response method instead.")
 
-    def polarization_gain(self, polarization, direction):
+    def polarization_gain(self, polarization):
+        raise NotImplementedError("Polarization gain is not defined for "+
+                                  self.__class__.__name__+". Use the "+
+                                  "directional_response method instead.")
+
+    def directional_response(self, theta, phi, polarization):
         """
-        Calculate the (complex) polarization gain of the antenna.
+        Generate the (complex) frequency-dependent directional response.
 
-        This function is expected to be overridden in subclasses, as for the
-        base class it simply returns 1 for any inputs.
-
-        Parameters
-        ----------
-        polarization : array_like
-            Vector polarization direction of the signal.
-        direction : array_like
-            Vector denoting the direction of travel of the signal as it reaches
-            the antenna.
-
-        Returns
-        -------
-        complex
-            Complex gain in voltage for the given signal polarization.
-
-        """
-        return 1
-
-
-    def generate_directionality_gains(self, theta, phi):
-        """
-        Generate the (complex) frequency-dependent directional gains.
-
-        For given angles, calculate arrays of frequencies and their
-        corresponding gains and phases, based on the directionality data of the
-        antenna.
+        For given angles and polarization direction, use the model of the
+        directional and polarization gains of the antenna to generate a
+        function for the interpolated response of the antenna with respect to
+        frequency. Used with the `frequency_response` method to calculate
+        effective heights.
 
         Parameters
         ----------
@@ -304,72 +401,55 @@ class ARAAntenna(Antenna):
             Polar angle (radians) from which a signal is arriving.
         phi : float
             Azimuthal angle (radians) from which a signal is arriving.
+        polarization : array_like
+            Normalized polarization vector in the antenna coordinate system.
 
         Returns
         -------
-        freqs : array_like
-            Frequencies over which the directionality was defined.
-        gains : array_like
-            Magnitudes of gains at the corrseponding frequencies.
-        phases : array_like
-            Phases of gains at the corresponding frequencies.
+        function
+            A function which returns complex-valued voltage gains for given
+            frequencies, using the values of incoming angle and polarization.
+
+        See Also
+        --------
+        ARAAntenna.frequency_response : Calculate the (complex) frequency
+                                        response of the antenna.
 
         """
-        if self._dir_data is None:
-            return np.array([1]), np.array([1]), np.array([0])
-
-        theta = np.degrees(theta)
-        phi = np.degrees(phi)
-
-        # Special case: if given exactly theta=180, don't take the modulus
-        if theta!=180:
-            theta %= 180
-        phi %= 360
-        theta_under = 5*int(theta/5)
-        theta_over = 5*(int(theta/5)+1)
-        phi_under = 5*int(phi/5)
-        phi_over = 5*(int(phi/5)+1)
-        t = (theta - theta_under) / (theta_over - theta_under)
-        u = (phi - phi_under) / (phi_over - phi_under)
-
-        theta_over = min(theta_over, 180)
-        phi_over %= 360
-
-        nfreqs = len(self._dir_freqs)
-        gain_ij = np.zeros(nfreqs)
-        phase_ij = np.zeros(nfreqs)
-        gain_i1j = np.zeros(nfreqs)
-        phase_i1j = np.zeros(nfreqs)
-        gain_ij1 = np.zeros(nfreqs)
-        phase_ij1 = np.zeros(nfreqs)
-        gain_i1j1 = np.zeros(nfreqs)
-        phase_i1j1 = np.zeros(nfreqs)
-        for f, freq in enumerate(sorted(self._dir_freqs)):
-            gain_ij[f] = self._dir_data[(freq, theta_under, phi_under)][0]
-            phase_ij[f] = self._dir_data[(freq, theta_under, phi_under)][1]
-            gain_i1j[f] = self._dir_data[(freq, theta_over, phi_under)][0]
-            phase_i1j[f] = self._dir_data[(freq, theta_over, phi_under)][1]
-            gain_ij1[f] = self._dir_data[(freq, theta_under, phi_over)][0]
-            phase_ij1[f] = self._dir_data[(freq, theta_under, phi_over)][1]
-            gain_i1j1[f] = self._dir_data[(freq, theta_over, phi_over)][0]
-            phase_i1j1[f] = self._dir_data[(freq, theta_over, phi_over)][1]
-
-        freqs = np.array(sorted(self._dir_freqs))
-        gains = ((1-t)*(1-u)*gain_ij + t*(1-u)*gain_i1j +
-                 (1-t)*u*gain_ij1 + t*u*gain_i1j1)
-        phases = ((1-t)*(1-u)*phase_ij + t*(1-u)*phase_i1j +
-                  (1-t)*u*phase_ij1 + t*u*phase_i1j1)
-
-        return freqs, gains, phases
+        e_theta = [np.cos(theta) * np.cos(phi),
+                   np.cos(theta) * np.sin(phi),
+                   -np.sin(theta)]
+        e_phi = [-np.sin(phi), np.cos(phi), 0]
+        theta_factor = np.dot(polarization, e_theta)
+        phi_factor = np.dot(polarization, e_phi)
+        theta_gains = complex_bilinear_interp(
+            x=np.degrees(theta), y=np.degrees(phi),
+            xp=self._response_zens,
+            yp=self._response_azis,
+            fp=self._theta_response,
+            method='cartesian'
+        )
+        phi_gains = complex_bilinear_interp(
+            x=np.degrees(theta), y=np.degrees(phi),
+            xp=self._response_zens,
+            yp=self._response_azis,
+            fp=self._phi_response,
+            method='cartesian'
+        )
+        freq_interpolator = lambda frequencies: complex_interp(
+            x=frequencies, xp=self._response_freqs,
+            fp=theta_factor*theta_gains + phi_factor*phi_gains,
+            method='euler', outer=0
+        )
+        return freq_interpolator
 
     def frequency_response(self, frequencies):
         """
         Calculate the (complex) frequency response of the antenna.
 
-        Frequency response of the antenna is based on the effective height
-        calculation with some electronics gains thrown in. The frequency
-        dependence of the directional gain is handled in the
-        `generate_directionality_gains` method.
+        Rather than handling the entire frequency response of the antenna, this
+        method is being used to convert the frequency-dependent gains from the
+        `directional_response` method into effective heights.
 
         Parameters
         ----------
@@ -381,13 +461,22 @@ class ARAAntenna(Antenna):
         array_like
             Complex gains in voltage for the given `frequencies`.
 
+        See Also
+        --------
+        ARAAntenna.directional_response : Generate the (complex) frequency
+                                          dependent directional response.
+
         """
-        # From AraSim GaintoHeight function, removing gain to receive function.
+        # From AraSim GaintoHeight function, with gain calculation moved to
+        # the directional_response method.
         # gain=4*pi*A_eff/lambda^2 and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
         # Then 0.5 to calculate power with heff (cancels 2 above)
         heff = np.zeros(len(frequencies))
-        n = ice.index(self.position[2])
-        heff[frequencies!=0] = np.sqrt((3e8/frequencies[frequencies!=0]/n)**2
+        # The index of refraction in this calculation should be the index of
+        # the ice used in the production of the antenna model.
+        n = 1.78
+        heff[frequencies!=0] = np.sqrt((scipy.constants.c
+                                        /frequencies[frequencies!=0]/n)**2
                                        * n*50/377 /(4*np.pi))
         return heff
 
@@ -436,44 +525,31 @@ class ARAAntenna(Antenna):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        copy = Signal(signal.times, signal.values, value_type=Signal.Type.voltage)
-        copy.filter_frequencies(self.frequency_response, force_real=force_real)
+        new_signal = signal.copy()
+        new_signal.value_type = Signal.Type.voltage
+        freq_response = self.frequency_response
 
-        if direction is not None:
+        if direction is not None and polarization is not None:
             # Calculate theta and phi relative to the orientation
             origin = self.position - normalize(direction)
             r, theta, phi = self._convert_to_antenna_coordinates(origin)
-            freq_data, gain_data, phase_data = self.generate_directionality_gains(theta, phi)
-            def interpolate_directionality(frequencies):
-                """
-                Generate interpolated directionality for given frequencies.
+            # Calculate polarization vector in the antenna coordinates
+            y_axis = np.cross(self.z_axis, self.x_axis)
+            transformation = np.array([self.x_axis, y_axis, self.z_axis])
+            ant_pol = np.dot(transformation, normalize(polarization))
+            # Calculate directional response as a function of frequency
+            directive_response = self.directional_response(theta, phi, ant_pol)
+            freq_response = lambda f: (self.frequency_response(f)
+                                       * directive_response(f))
 
-                Parameters
-                ----------
-                frequencies : array_like
-                    1D array of frequencies (Hz) at which to calculate gains.
+        elif (direction is not None and polarization is None
+              or direction is None and polarization is not None):
+            raise ValueError("Direction and polarization must be specified together")
 
-                Returns
-                -------
-                array_like
-                    Complex directional gain in voltage for the `frequencies`.
+        # Apply (combined) frequency response
+        new_signal.filter_frequencies(freq_response, force_real=force_real)
 
-                """
-                interp_gains = np.interp(frequencies, freq_data, gain_data,
-                                         left=0, right=0)
-                interp_phases = np.interp(frequencies, freq_data, phase_data,
-                                          left=0, right=0)
-                return interp_gains * np.exp(1j * interp_phases)
-            copy.filter_frequencies(interpolate_directionality,
-                                    force_real=force_real)
-
-        if polarization is None:
-            p_gain = 1
-        else:
-            p_gain = self.polarization_gain(normalize(polarization),
-                                            normalize(direction))
-
-        signal_factor = p_gain * self.efficiency
+        signal_factor = self.efficiency
 
         if signal.value_type==Signal.Type.voltage:
             pass
@@ -483,9 +559,9 @@ class ARAAntenna(Antenna):
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy *= signal_factor
+        new_signal *= signal_factor
 
-        return copy
+        return new_signal
 
     # Redefine receive method to use force_real as True by default
     def receive(self, signal, direction=None, polarization=None,
@@ -532,234 +608,6 @@ class ARAAntenna(Antenna):
                         force_real=force_real)
 
 
-class HpolBase(ARAAntenna):
-    """
-    Antenna class to be used for ARA Hpol antennas.
-
-    Stores the attributes of an antenna as well as handling receiving,
-    processing, and storing signals and adding noise. Directionality data
-    and antenna polarization gain specific to the Hpol ("quad-slot") antenna.
-
-    Parameters
-    ----------
-    position : array_like
-        Vector position of the antenna.
-    center_frequency : float
-        Frequency (Hz) at the center of the antenna's frequency range.
-    bandwidth : float
-        Bandwidth (Hz) of the antenna.
-    resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
-    orientation : array_like, optional
-        Vector direction of the z-axis of the antenna.
-    efficiency : float, optional
-        Antenna efficiency applied to incoming signal values.
-    noisy : boolean, optional
-        Whether or not the antenna should add noise to incoming signals.
-    unique_noise_waveforms : int, optional
-        The number of expected noise waveforms needed for each received signal
-        to have its own noise.
-
-    Attributes
-    ----------
-    position : array_like
-        Vector position of the antenna.
-    z_axis : ndarray
-        Vector direction of the z-axis of the antenna.
-    x_axis : ndarray
-        Vector direction of the x-axis of the antenna.
-    antenna_factor : float
-        Antenna factor used for converting fields to voltages.
-    efficiency : float
-        Antenna efficiency applied to incoming signal values.
-    noisy : boolean
-        Whether or not the antenna should add noise to incoming signals.
-    unique_noises : int
-        The number of expected noise waveforms needed for each received signal
-        to have its own noise.
-    freq_range : array_like
-        The frequency band in which the antenna operates (used for noise
-        production).
-    temperature : float or None
-        The noise temperature (K) of the antenna. Used in combination with
-        `resistance` to calculate the RMS voltage of the antenna noise.
-    resistance : float or None
-        The noise resistance (ohm) of the antenna. Used in combination with
-        `temperature` to calculate the RMS voltage of the antenna noise.
-    noise_rms : float or None
-        The RMS voltage (v) of the antenna noise. If not ``None``, this value
-        will be used instead of the RMS voltage calculated from the values of
-        `temperature` and `resistance`.
-    signals : list of Signal
-        The signals which have been received by the antenna.
-    is_hit
-    waveforms
-    all_waveforms
-
-    See Also
-    --------
-    ARAAntenna : Antenna class to be used for ARA antennas.
-
-    """
-    def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), efficiency=1, noisy=True,
-                 unique_noise_waveforms=10):
-        super().__init__(position=position,
-                         center_frequency=center_frequency,
-                         bandwidth=bandwidth,
-                         resistance=resistance,
-                         orientation=orientation,
-                         efficiency=efficiency,
-                         noisy=noisy,
-                         unique_noise_waveforms=unique_noise_waveforms,
-                         directionality_data=HPOL_DIRECTIONALITY,
-                         directionality_freqs=HPOL_FREQS)
-
-    def polarization_gain(self, polarization, direction):
-        """
-        Calculate the (complex) polarization gain of the antenna.
-
-        Polarization gain for the Hpol antenna is the dot product of the
-        polarization magnetic field direction with the antenna's z-axis.
-
-        Parameters
-        ----------
-        polarization : array_like
-            Vector polarization direction of the signal.
-        direction : array_like
-            Vector denoting the direction of travel of the signal as it reaches
-            the antenna.
-
-        Returns
-        -------
-        complex
-            Complex gain in voltage for the given signal polarization.
-
-        Notes
-        -----
-        Since the Hpol antenna is sensitive to magnetic fields rather than
-        electric fields, the polarization gain will be given by the dot product
-        of the signal's magnetic field with the z-axis of the antenna. This is
-        equivalent to the AraSim prescription of taking the dot product of the
-        signal's electric field (polarization) with the cross-product of the
-        antenna's z-axis and the signal direction (a vector in the antenna's
-        x-y plane perpendicular to the signal direction).
-
-        """
-        magnetic_polarization = np.cross(direction, polarization)
-        return np.vdot(self.z_axis, magnetic_polarization)
-
-
-class VpolBase(ARAAntenna):
-    """
-    Antenna class to be used for ARA Vpol antennas.
-
-    Stores the attributes of an antenna as well as handling receiving,
-    processing, and storing signals and adding noise. Directionality data
-    and antenna polarization gain specific to the Vpol ("bicone" or "birdcage")
-    antenna.
-
-    Parameters
-    ----------
-    position : array_like
-        Vector position of the antenna.
-    center_frequency : float
-        Frequency (Hz) at the center of the antenna's frequency range.
-    bandwidth : float
-        Bandwidth (Hz) of the antenna.
-    resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
-    orientation : array_like, optional
-        Vector direction of the z-axis of the antenna.
-    efficiency : float, optional
-        Antenna efficiency applied to incoming signal values.
-    noisy : boolean, optional
-        Whether or not the antenna should add noise to incoming signals.
-    unique_noise_waveforms : int, optional
-        The number of expected noise waveforms needed for each received signal
-        to have its own noise.
-
-    Attributes
-    ----------
-    position : array_like
-        Vector position of the antenna.
-    z_axis : ndarray
-        Vector direction of the z-axis of the antenna.
-    x_axis : ndarray
-        Vector direction of the x-axis of the antenna.
-    antenna_factor : float
-        Antenna factor used for converting fields to voltages.
-    efficiency : float
-        Antenna efficiency applied to incoming signal values.
-    noisy : boolean
-        Whether or not the antenna should add noise to incoming signals.
-    unique_noises : int
-        The number of expected noise waveforms needed for each received signal
-        to have its own noise.
-    freq_range : array_like
-        The frequency band in which the antenna operates (used for noise
-        production).
-    temperature : float or None
-        The noise temperature (K) of the antenna. Used in combination with
-        `resistance` to calculate the RMS voltage of the antenna noise.
-    resistance : float or None
-        The noise resistance (ohm) of the antenna. Used in combination with
-        `temperature` to calculate the RMS voltage of the antenna noise.
-    noise_rms : float or None
-        The RMS voltage (v) of the antenna noise. If not ``None``, this value
-        will be used instead of the RMS voltage calculated from the values of
-        `temperature` and `resistance`.
-    signals : list of Signal
-        The signals which have been received by the antenna.
-    is_hit
-    waveforms
-    all_waveforms
-
-    See Also
-    --------
-    ARAAntenna : Antenna class to be used for ARA antennas.
-
-    """
-    def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), efficiency=1, noisy=True,
-                 unique_noise_waveforms=10):
-        super().__init__(position=position,
-                         center_frequency=center_frequency,
-                         bandwidth=bandwidth,
-                         resistance=resistance,
-                         orientation=orientation,
-                         efficiency=efficiency,
-                         noisy=noisy,
-                         unique_noise_waveforms=unique_noise_waveforms,
-                         directionality_data=VPOL_DIRECTIONALITY,
-                         directionality_freqs=VPOL_FREQS)
-
-    def polarization_gain(self, polarization, direction):
-        """
-        Calculate the (complex) polarization gain of the antenna.
-
-        Polarization gain for the Vpol antenna is simply the dot product of the
-        polarization with the antenna's z-axis.
-
-        Parameters
-        ----------
-        polarization : array_like
-            Vector polarization direction of the signal.
-        direction : array_like
-            Vector denoting the direction of travel of the signal as it reaches
-            the antenna.
-
-        Returns
-        -------
-        complex
-            Complex gain in voltage for the given signal polarization.
-
-        """
-        return np.vdot(self.z_axis, polarization)
-
-
 
 class ARAAntennaSystem(AntennaSystem):
     """
@@ -771,8 +619,13 @@ class ARAAntennaSystem(AntennaSystem):
 
     Parameters
     ----------
-    base_antenna : Antenna
-        ``Antenna`` class or subclass to be extended with an ARA front end.
+    response_data : tuple of array_like
+        Tuple containing the response data for the antenna along the theta
+        and phi polarization directions. The first and second elements should
+        contain 3-D arrays of the antenna response model in the theta and phi
+        polarizations, respectively, as a function of frequency (axis 0),
+        zenith (axis 1), and azimuth (axis 2). The remaining elements should be
+        the values of the frequency, zenith, and azimuth axes, respectively.
     name : str
         Name of the antenna.
     position : array_like
@@ -794,14 +647,6 @@ class ARAAntennaSystem(AntennaSystem):
     unique_noise_waveforms : int, optional
         The number of expected noise waveforms needed for each received signal
         to have its own noise.
-    directionality_data : dict, optional
-        Dictionary containing data on the directionality of the antenna.
-        Should not be given if the `base_antenna` class does not accept a
-        `directionality_data` argument.
-    directionality_freqs : set, optional
-        Set of frequencies in the directionality data ``dict`` keys.
-        Should not be given if the `base_antenna` class does not accept a
-        `directionality_freqs` argument.
 
     Attributes
     ----------
@@ -825,6 +670,7 @@ class ARAAntennaSystem(AntennaSystem):
         Lead-in time (s) required for the front end to equilibrate.
         Automatically added in before calculation of signals and waveforms.
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -838,10 +684,11 @@ class ARAAntennaSystem(AntennaSystem):
     """
     lead_in_time = 5e-9
 
-    def __init__(self, base_antenna, name, position, power_threshold,
+    def __init__(self, response_data, name, position, power_threshold,
                  orientation=(0,0,1), amplification=1, amplifier_clipping=1,
-                 noisy=True, unique_noise_waveforms=10, **kwargs):
-        super().__init__(base_antenna)
+                 noisy=True, unique_noise_waveforms=10,
+                 **kwargs):
+        super().__init__(ARAAntenna)
 
         self.name = str(name)
         self.position = position
@@ -849,7 +696,8 @@ class ARAAntennaSystem(AntennaSystem):
         self.amplification = amplification
         self.amplifier_clipping = amplifier_clipping
 
-        self.setup_antenna(orientation=orientation, noisy=noisy,
+        self.setup_antenna(response_data=response_data,
+                           orientation=orientation, noisy=noisy,
                            unique_noise_waveforms=unique_noise_waveforms,
                            **kwargs)
 
@@ -857,7 +705,8 @@ class ARAAntennaSystem(AntennaSystem):
         self._power_mean = None
         self._power_std = None
 
-        self._filter_data = ALL_FILTERS
+        self._filter_response = ALL_FILTERS_DATA[0]
+        self._filter_freqs = ALL_FILTERS_DATA[1]
 
     @property
     def _metadata(self):
@@ -872,10 +721,10 @@ class ARAAntennaSystem(AntennaSystem):
         })
         return meta
 
-    def setup_antenna(self, center_frequency=500e6, bandwidth=800e6,
-                      resistance=16.8, orientation=(0,0,1),
-                      efficiency=1, noisy=True, unique_noise_waveforms=10,
-                      **kwargs):
+    def setup_antenna(self, response_data, center_frequency=500e6,
+                      bandwidth=800e6, temperature=325, resistance=50,
+                      orientation=(0,0,1), efficiency=1, noisy=True,
+                      unique_noise_waveforms=10, **kwargs):
         """
         Setup the antenna by passing along its init arguments.
 
@@ -884,13 +733,24 @@ class ARAAntennaSystem(AntennaSystem):
 
         Parameters
         ----------
+        response_data : tuple of array_like
+            Tuple containing the response data for the antenna along the theta
+            and phi polarization directions. The first and second elements
+            should contain 3-D arrays of the antenna response model in the
+            theta and phi polarizations, respectively, as a function of
+            frequency (axis 0), zenith (axis 1), and azimuth (axis 2). The
+            remaining elements should be the values of the frequency, zenith,
+            and azimuth axes, respectively.
         center_frequency : float, optional
             Frequency (Hz) at the center of the antenna's frequency range.
         bandwidth : float, optional
             Bandwidth (Hz) of the antenna.
+        temperature : float, optional
+            The noise temperature (K) of the antenna. Used in combination with
+            `resistance` to calculate the RMS voltage of the antenna noise.
         resistance : float, optional
-            The noise resistance (ohm) of the antenna. Used to calculate the
-            RMS voltage of the antenna noise.
+            The noise resistance (ohm) of the antenna. Used in combination with
+            `temperature` to calculate the RMS voltage of the antenna noise.
         orientation : array_like, optional
             Vector direction of the z-axis of the antenna.
         efficiency : float, optional
@@ -900,25 +760,19 @@ class ARAAntennaSystem(AntennaSystem):
         unique_noise_waveforms : int, optional
             The number of expected noise waveforms needed for each received
             signal to have its own noise.
-        directionality_data : None or dict, optional
-            Dictionary containing data on the directionality of the antenna.
-            Should not be given if the `base_antenna` class does not accept a
-            `directionality_data` argument.
-        directionality_freqs : None or set, optional
-            Set of frequencies in the directionality data ``dict`` keys.
-            Should not be given if the `base_antenna` class does not accept a
-            `directionality_freqs` argument.
 
         """
         # Noise rms should be about 40 mV (after filtering with gain of ~5000).
-        # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~16.8 Ohm
+        # This is mostly satisfied by using the default noise temperature from
+        # AraSim, 325 K, along with a 50 ohm resistance
         # Additionally, the bandwidth of the antenna is set slightly larger
         # than the nominal bandwidth of the true ARA antenna system (700 MHz),
         # but the extra frequencies should be killed by the front-end filter
-        super().setup_antenna(position=self.position,
+        super().setup_antenna(response_data=response_data,
+                              position=self.position,
                               center_frequency=center_frequency,
                               bandwidth=bandwidth,
+                              temperature=temperature,
                               resistance=resistance,
                               orientation=orientation,
                               efficiency=efficiency,
@@ -979,6 +833,17 @@ class ARAAntennaSystem(AntennaSystem):
         ValueError
             If the input `signal` doesn't have a ``value_type`` of ``voltage``.
 
+        Notes
+        -----
+        The tunnel diode response is based on the response parameterized in
+        AraSim, as developed by ANITA [1]_.
+
+        References
+        ----------
+        .. [1] A. Connolly & R. Nichol, ANITA Note #411, "A Power-Based Time
+            Domain Trigger Simulation."
+            https://elog.phys.hawaii.edu/elog/anita_notes/080827_041639/powertrigger.pdf
+
         """
         if signal.value_type!=Signal.Type.voltage:
             raise ValueError("Tunnel diode only accepts voltage signals")
@@ -1016,12 +881,10 @@ class ARAAntennaSystem(AntennaSystem):
             Complex filter gain in voltage for the given `frequencies`.
 
         """
-        freqs = sorted(self._filter_data.keys())
-        gains = [self._filter_data[f][0] for f in freqs]
-        phases = [self._filter_data[f][1] for f in freqs]
-        interp_gains = np.interp(frequencies, freqs, gains, left=0, right=0)
-        interp_phases = np.interp(frequencies, freqs, phases, left=0, right=0)
-        return interp_gains * np.exp(1j * interp_phases)
+        return complex_interp(
+            x=frequencies, xp=self._filter_freqs, fp=self._filter_response,
+            method='euler', outer=0
+        )
 
     def front_end(self, signal):
         """
@@ -1041,15 +904,18 @@ class ARAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        copy = Signal(signal.times, signal.values)
-        copy.filter_frequencies(self.interpolate_filter,
-                                force_real=True)
-        # sqrt(2) for 3dB splitter for TURF, SURF
-        clipped_values = np.clip(copy.values / np.sqrt(2) * self.amplification,
-                                 a_min=-self.amplifier_clipping,
-                                 a_max=self.amplifier_clipping)
-        return Signal(signal.times, clipped_values,
-                      value_type=signal.value_type)
+        base_signal = signal.copy()
+        base_signal.filter_frequencies(self.interpolate_filter,
+                                       force_real=True)
+        # Apply sqrt(2) for 3dB splitter for TURF, SURF
+        base_signal *= self.amplification / np.sqrt(2)
+        clip_values = lambda times: np.clip(
+            base_signal.with_times(times).values,
+            a_min=-self.amplifier_clipping,
+            a_max=self.amplifier_clipping
+        )
+        return FunctionSignal(signal.times, clip_values,
+                              value_type=signal.value_type)
 
     def trigger(self, signal):
         """
@@ -1078,8 +944,7 @@ class ARAAntennaSystem(AntennaSystem):
             long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
             power_noise = self.tunnel_diode(self.front_end(long_noise))
             self._power_mean = np.mean(power_noise.values)
-            self._power_std = np.sqrt(np.mean((power_noise.values
-                                               -self._power_mean)**2))
+            self._power_std = np.std(power_noise.values)
 
         power_signal = self.tunnel_diode(signal)
         # Use the absolute value of the power_threshold value so that the value
@@ -1184,6 +1049,7 @@ class HpolAntenna(ARAAntennaSystem):
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -1192,13 +1058,12 @@ class HpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    HpolBase : Antenna class to be used for ARA Hpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,
                  amplification=1, amplifier_clipping=1, noisy=True,
                  unique_noise_waveforms=10):
-        super().__init__(base_antenna=HpolBase,
+        super().__init__(response_data=HPOL_RESPONSE_DATA,
                          name=name, position=position,
                          power_threshold=power_threshold,
                          orientation=(0,0,1),
@@ -1257,6 +1122,7 @@ class VpolAntenna(ARAAntennaSystem):
         Voltage (V) above which the amplified signal is clipped (in positive
         and negative values).
     is_hit
+    is_hit_mc_truth
     signals
     waveforms
     all_waveforms
@@ -1265,13 +1131,12 @@ class VpolAntenna(ARAAntennaSystem):
     --------
     ARAAntennaSystem : Antenna system extending base ARA antenna with front-end
                        processing.
-    VpolBase : Antenna class to be used for ARA Vpol antennas.
 
     """
     def __init__(self, name, position, power_threshold,
                  amplification=1, amplifier_clipping=1, noisy=True,
                  unique_noise_waveforms=10):
-        super().__init__(base_antenna=VpolBase,
+        super().__init__(response_data=VPOL_RESPONSE_DATA,
                          name=name, position=position,
                          power_threshold=power_threshold,
                          orientation=(0,0,1),

@@ -11,14 +11,15 @@ pyrex.antenna.DipoleAntenna
       .. autosummary::
          :toctree:
       
+         DipoleAntenna.apply_response
          DipoleAntenna.clear
          DipoleAntenna.directional_gain
+         DipoleAntenna.frequency_response
          DipoleAntenna.full_waveform
          DipoleAntenna.is_hit_during
          DipoleAntenna.make_noise
          DipoleAntenna.polarization_gain
          DipoleAntenna.receive
-         DipoleAntenna.response
          DipoleAntenna.set_orientation
          DipoleAntenna.trigger
 

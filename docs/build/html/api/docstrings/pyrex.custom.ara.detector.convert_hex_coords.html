@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.detector.convert_hex_coords &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.ara.detector.convert_hex_coords &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="Custom Detectors (pyrex.custom.ara.detector)" href="../custom-ara/detector.html" >
     <link rel="next" title="pyrex.custom.ara.detector.ARAString" href="pyrex.custom.ara.detector.ARAString.html" >
     <link rel="prev" title="Custom Detectors (pyrex.custom.ara.detector)" href="../custom-ara/detector.html" > 
@@ -53,11 +54,11 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-ara.html" >Askaryan Radio Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
-          <li class="active"><a href="../custom-ara/detector.html" accesskey="U">Custom Detectors (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.ara.detector</span></code>)</a></li> 
+          <li class="active"><a href="../custom-ara.html" >Askaryan Radio Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
+          <li class="active"><a href="../custom-ara/detector.html" accesskey="U">Custom Detectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara.detector</span></code>)</a></li> 
     </ul>
               
               
@@ -95,34 +96,26 @@
 <h1>pyrex.custom.ara.detector.convert_hex_coords<a class="headerlink" href="#pyrex-custom-ara-detector-convert-hex-coords" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="pyrex.custom.ara.detector.convert_hex_coords">
-<code class="descclassname">pyrex.custom.ara.detector.</code><code class="descname">convert_hex_coords</code><span class="sig-paren">(</span><em>hex_coords</em>, <em>unit=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.detector.convert_hex_coords" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pyrex.custom.ara.detector.</code><code class="sig-name descname">convert_hex_coords</code><span class="sig-paren">(</span><em class="sig-param">hex_coords</em>, <em class="sig-param">unit=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.detector.convert_hex_coords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert from hexagonal coordinates to Cartesian.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>hex_coords</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span></dt>
-<dd><p class="first last">Array with two elements representing the hexagonal coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>hex_coords</strong><span class="classifier">array_like</span></dt><dd><p>Array with two elements representing the hexagonal coordinate.</p>
 </dd>
-<dt><strong>unit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Optional unit used to multiply the Cartesian coordinates.</p>
+<dt><strong>unit</strong><span class="classifier">float, optional</span></dt><dd><p>Optional unit used to multiply the Cartesian coordinates.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian x-position with the unit correction.</p>
 </dd>
-<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian y-position with the unit correction.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">float</span></dt><dd><p>Cartesian x-position with the unit correction.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">float</span></dt><dd><p>Cartesian y-position with the unit correction.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Hexagonal coordinate system defined along non-perpendicular axes where the
 first axis is 30 degrees from the Cartesian x-axis and the second axis is
@@ -143,7 +136,7 @@ x=h_0-h_1/2 and y=h_1*sqrt(3)/2.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -212,10 +205,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

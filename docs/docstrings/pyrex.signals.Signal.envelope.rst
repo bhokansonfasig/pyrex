@@ -3,4 +3,4 @@ pyrex.signals.Signal.envelope
 
 .. currentmodule:: pyrex.signals
 
-.. autoattribute:: Signal.envelope
+.. autoproperty:: Signal.envelope

@@ -11,6 +11,7 @@ pyrex.custom.ara.antenna.HpolAntenna
       .. autosummary::
          :toctree:
       
+         HpolAntenna.apply_response
          HpolAntenna.clear
          HpolAntenna.front_end
          HpolAntenna.full_waveform

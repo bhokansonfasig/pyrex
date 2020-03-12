@@ -1,3 +1,5 @@
+.. _custom-irex:
+
 IceCube Radio Extension (:mod:`pyrex.custom.irex`)
 ==================================================
 
@@ -10,6 +12,7 @@ Default Package Imports
 
 .. autosummary::
     :toctree: docstrings
+    :nosignatures:
 
     EnvelopeHpol
     EnvelopeVpol

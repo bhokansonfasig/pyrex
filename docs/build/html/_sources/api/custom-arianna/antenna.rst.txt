@@ -7,6 +7,7 @@ Custom Antennas (:mod:`pyrex.custom.arianna.antenna`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     _read_response_data
     _read_amplifier_data

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.detector.RegularStation.set_positions &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.irex.detector.RegularStation.set_positions &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,42 +82,32 @@
 <h1>pyrex.custom.irex.detector.RegularStation.set_positions<a class="headerlink" href="#pyrex-custom-irex-detector-regularstation-set-positions" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.custom.irex.detector.RegularStation.set_positions">
-<code class="descclassname">RegularStation.</code><code class="descname">set_positions</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>strings_per_station=4</em>, <em>station_diameter=50</em>, <em>string_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em>**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation.set_positions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">RegularStation.</code><code class="sig-name descname">set_positions</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">strings_per_station=4</em>, <em class="sig-param">station_diameter=50</em>, <em class="sig-param">string_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em class="sig-param">**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.RegularStation.set_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates antenna positions around the station.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian x-position (m) of the station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">float</span></dt><dd><p>Cartesian x-position (m) of the station.</p>
 </dd>
-<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Cartesian y-position (m) of the station.</p>
+<dt><strong>y</strong><span class="classifier">float</span></dt><dd><p>Cartesian y-position (m) of the station.</p>
 </dd>
-<dt><strong>strings_per_station</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Number of strings to be placed evenly around the station.</p>
+<dt><strong>strings_per_station</strong><span class="classifier">float, optional</span></dt><dd><p>Number of strings to be placed evenly around the station.</p>
 </dd>
-<dt><strong>station_diameter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Diameter (m) of the circle around which strings are placed.</p>
+<dt><strong>station_diameter</strong><span class="classifier">float, optional</span></dt><dd><p>Diameter (m) of the circle around which strings are placed.</p>
 </dd>
-<dt><strong>string_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
-<dd><p class="first last">Class to be used for creating string objects for <em class="xref py py-obj">subsets</em>.</p>
+<dt><strong>string_type</strong><span class="classifier">optional</span></dt><dd><p>Class to be used for creating string objects for <em class="xref py py-obj">subsets</em>.</p>
 </dd>
-<dt><strong>**string_kwargs</strong></dt>
-<dd><p class="first last">Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
+<dt><strong>**string_kwargs</strong></dt><dd><p>Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
 the <em class="xref py py-obj">string_type</em> class.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.custom.irex.detector.IREXString.set_positions.html#pyrex.custom.irex.detector.IREXString.set_positions" title="pyrex.custom.irex.detector.IREXString.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IREXString.set_positions</span></code></a></dt>
-<dd>Generates antenna positions along the string.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.custom.irex.detector.IREXString.set_positions.html#pyrex.custom.irex.detector.IREXString.set_positions" title="pyrex.custom.irex.detector.IREXString.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IREXString.set_positions</span></code></a></dt><dd><p>Generates antenna positions along the string.</p>
+</dd>
 </dl>
 </div>
 </dd></dl>
@@ -134,7 +125,7 @@ the <em class="xref py py-obj">string_type</em> class.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -198,10 +189,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

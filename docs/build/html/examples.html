@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Example Code &mdash; PyREx 1.8.2 documentation</title>
+    <title>Example Code &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="index.html" >
     <link rel="next" title="Contributing to PyREx" href="contributing.html" >
     <link rel="prev" title="Custom Sub-Package" href="customize.html" > 
   </head>
@@ -52,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -89,7 +90,7 @@
             
   <div class="section" id="example-code">
 <span id="id1"></span><h1>Example Code<a class="headerlink" href="#example-code" title="Permalink to this headline">¶</a></h1>
-<p>This section includes a number of more complete code examples for performing various tasks with PyREx. Each example includes a description of what it does, comments throughout describing the proccess, and a reference to the corresponding example script or notebook which can be run independent of one another. The examples are orgainzed roughly from more basic to more complex.</p>
+<p>This section includes a number of more complete code examples for performing various tasks with PyREx. Each example includes a description of what it does, comments throughout describing the process, and a reference to the corresponding example script or notebook which can be run independent of one another. The examples are organized roughly from more basic to more complex.</p>
 <div class="section" id="plot-detector-geometry">
 <h2>Plot Detector Geometry<a class="headerlink" href="#plot-detector-geometry" title="Permalink to this headline">¶</a></h2>
 <p>In this example we will make a few simple plots of the geometry of a detector object, handy for presentations or for visualizing your work. This code can be run from the Plot Detector notebook in the examples directory.</p>
@@ -187,7 +188,7 @@
 </div>
 <div class="section" id="askaryan-frequency-content">
 <h2>Askaryan Frequency Content<a class="headerlink" href="#askaryan-frequency-content" title="Permalink to this headline">¶</a></h2>
-<p>In this example we explore how the freqeuncy spectrum of an Askaryan pulse changes as a function of the off-cone angle (i.e. the angular distance between the Cherenkov angle and the observation angle). This code can be run from the Frequency Content notebook in the examples directory.</p>
+<p>In this example we explore how the frequency spectrum of an Askaryan pulse changes as a function of the off-cone angle (i.e. the angular distance between the Cherenkov angle and the observation angle). This code can be run from the Frequency Content notebook in the examples directory.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
@@ -251,8 +252,8 @@
 <h2>Calculate Effective Area<a class="headerlink" href="#calculate-effective-area" title="Permalink to this headline">¶</a></h2>
 <p>In this example we will calculate the effective area of a detector over a range of energies. This code can be run from the Effective Area notebook in the examples directory.</p>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">In order to finish reasonably quickly, the number of events thrown in this example is low. This means that there are likely not enough events to accurately represent the effective area of the detector. For an accurate measurement, the number of events must be increased, but this will need much more time to run in that case.</p>
+<p class="admonition-title">Warning</p>
+<p>In order to finish reasonably quickly, the number of events thrown in this example is low. This means that there are likely not enough events to accurately represent the effective area of the detector. For an accurate measurement, the number of events must be increased, but this will need much more time to run in that case.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
@@ -274,14 +275,14 @@
 
 <span class="c1"># Now set up a neutrino generator for each energy. We&#39;ll use unrealistically</span>
 <span class="c1"># small volumes to increase the chance of triggering.</span>
-<span class="n">generators</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">CylindricalShadowGenerator</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">)</span>
+<span class="n">generators</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">CylindricalGenerator</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">)</span>
               <span class="k">for</span> <span class="n">energy</span> <span class="ow">in</span> <span class="n">energies</span><span class="p">]</span>
 
 <span class="c1"># And then set up the event kernels for each energy. Let&#39;s use the ArasimIce</span>
 <span class="c1"># class as our ice model since it calculates attenuations faster at the loss</span>
 <span class="c1"># of some accuracy.</span>
 <span class="n">kernels</span> <span class="o">=</span> <span class="p">[</span><span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">gen</span><span class="p">,</span> <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
-                             <span class="n">ice_model</span><span class="o">=</span><span class="n">pryex</span><span class="o">.</span><span class="n">ice_model</span><span class="o">.</span><span class="n">ArasimIce</span><span class="p">)</span>
+                             <span class="n">ice_model</span><span class="o">=</span><span class="n">pyrex</span><span class="o">.</span><span class="n">ice_model</span><span class="o">.</span><span class="n">ArasimIce</span><span class="p">())</span>
            <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">]</span>
 
 <span class="c1"># Now run each kernel and record the number of events from each that triggered</span>
@@ -310,7 +311,7 @@
 <span class="c1"># Now that we have the trigger counts for each energy, we can calculate the</span>
 <span class="c1"># effective volumes by scaling the trigger probability by the generation volume.</span>
 <span class="c1"># Errors are calculated assuming poisson counting statistics.</span>
-<span class="n">generation_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span>
+<span class="n">generation_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">1000</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span>
 <span class="n">effective_volumes</span> <span class="o">=</span> <span class="n">triggers</span> <span class="o">/</span> <span class="n">n_events</span> <span class="o">*</span> <span class="n">generation_volumes</span>
 <span class="n">volume_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">triggers</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_events</span> <span class="o">*</span> <span class="n">generation_volumes</span>
 
@@ -324,7 +325,7 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Effective Volume (km^3)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="c1"># Then from the effecitve volumes, we can calculate the effective areas.</span>
+<span class="c1"># Then from the effective volumes, we can calculate the effective areas.</span>
 <span class="c1"># The effective area is the probability interaction in the ice volume times the</span>
 <span class="c1"># effective volume. The probability of interaction in the ice volume is given by</span>
 <span class="c1"># the interaction cross section times the density of the ice. Calculate the</span>
@@ -495,7 +496,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -565,10 +566,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

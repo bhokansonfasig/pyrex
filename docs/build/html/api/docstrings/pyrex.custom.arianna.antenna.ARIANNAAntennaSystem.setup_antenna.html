@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.setup_antenna &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.setup_antenna &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,52 +82,42 @@
 <h1>pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.setup_antenna<a class="headerlink" href="#pyrex-custom-arianna-antenna-ariannaantennasystem-setup-antenna" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.setup_antenna">
-<code class="descclassname">ARIANNAAntennaSystem.</code><code class="descname">setup_antenna</code><span class="sig-paren">(</span><em>center_frequency=350000000.0</em>, <em>bandwidth=600000000.0</em>, <em>resistance=16.5</em>, <em>z_axis=(0</em>, <em>0</em>, <em>1)</em>, <em>x_axis=(1</em>, <em>0</em>, <em>0)</em>, <em>efficiency=1</em>, <em>noisy=True</em>, <em>unique_noise_waveforms=10</em>, <em>response_data=None</em>, <em>response_freqs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.setup_antenna" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ARIANNAAntennaSystem.</code><code class="sig-name descname">setup_antenna</code><span class="sig-paren">(</span><em class="sig-param">center_frequency=350000000.0</em>, <em class="sig-param">bandwidth=600000000.0</em>, <em class="sig-param">resistance=16.5</em>, <em class="sig-param">z_axis=(0</em>, <em class="sig-param">0</em>, <em class="sig-param">1)</em>, <em class="sig-param">x_axis=(1</em>, <em class="sig-param">0</em>, <em class="sig-param">0)</em>, <em class="sig-param">efficiency=1</em>, <em class="sig-param">noisy=True</em>, <em class="sig-param">unique_noise_waveforms=10</em>, <em class="sig-param">response_data=None</em>, <em class="sig-param">response_freqs=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.setup_antenna" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the antenna by passing along its init arguments.</p>
 <p>Any arguments passed to this method are directly passed to the
 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of the <code class="docutils literal notranslate"><span class="pre">antenna</span></code>’s class.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>center_frequency</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Frequency (Hz) at the center of the antenna’s frequency range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>response_data</strong><span class="classifier">tuple of array_like</span></dt><dd><p>Tuple containing the response data for the antenna along the theta
+and phi polarization directions. The first and second elements
+should contain 3-D arrays of the antenna response model in the
+theta and phi polarizations, respectively, as a function of
+frequency (axis 0), zenith (axis 1), and azimuth (axis 2). The
+remaining elements should be the values of the frequency, zenith,
+and azimuth axes, respectively.</p>
 </dd>
-<dt><strong>bandwidth</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Bandwidth (Hz) of the antenna.</p>
+<dt><strong>center_frequency</strong><span class="classifier">float, optional</span></dt><dd><p>Frequency (Hz) at the center of the antenna’s frequency range.</p>
 </dd>
-<dt><strong>resistance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">The noise resistance (ohm) of the antenna. Used to calculate the
+<dt><strong>bandwidth</strong><span class="classifier">float, optional</span></dt><dd><p>Bandwidth (Hz) of the antenna.</p>
+</dd>
+<dt><strong>resistance</strong><span class="classifier">float, optional</span></dt><dd><p>The noise resistance (ohm) of the antenna. Used to calculate the
 RMS voltage of the antenna noise.</p>
 </dd>
-<dt><strong>z_axis</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like, optional</span></dt>
-<dd><p class="first last">Vector direction of the z-axis of the antenna.</p>
+<dt><strong>z_axis</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the z-axis of the antenna.</p>
 </dd>
-<dt><strong>x_axis</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like, optional</span></dt>
-<dd><p class="first last">Vector direction of the x-axis of the antenna.</p>
+<dt><strong>x_axis</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the x-axis of the antenna.</p>
 </dd>
-<dt><strong>efficiency</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Antenna efficiency applied to incoming signal values.</p>
+<dt><strong>efficiency</strong><span class="classifier">float, optional</span></dt><dd><p>Antenna efficiency applied to incoming signal values.</p>
 </dd>
-<dt><strong>noisy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">Whether or not the antenna should add noise to incoming signals.</p>
+<dt><strong>noisy</strong><span class="classifier">boolean, optional</span></dt><dd><p>Whether or not the antenna should add noise to incoming signals.</p>
 </dd>
-<dt><strong>unique_noise_waveforms</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">The number of expected noise waveforms needed for each received
+<dt><strong>unique_noise_waveforms</strong><span class="classifier">int, optional</span></dt><dd><p>The number of expected noise waveforms needed for each received
 signal to have its own noise.</p>
 </dd>
-<dt><strong>response_data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None or dict, optional</span></dt>
-<dd><p class="first last">Dictionary containing data on the response of the antenna.</p>
-</dd>
-<dt><strong>response_freqs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None or set, optional</span></dt>
-<dd><p class="first last">Set of frequencies in the response data <code class="docutils literal notranslate"><span class="pre">dict</span></code> keys.</p>
+</dl>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>
@@ -142,7 +133,7 @@ signal to have its own noise.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -206,10 +197,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

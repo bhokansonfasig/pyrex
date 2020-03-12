@@ -3,4 +3,4 @@ pyrex.RayTracePath.rho
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.rho
+.. autoproperty:: RayTracePath.rho

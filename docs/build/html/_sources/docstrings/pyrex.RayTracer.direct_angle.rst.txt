@@ -3,4 +3,4 @@ pyrex.RayTracer.direct\_angle
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracer.direct_angle
+.. autoproperty:: RayTracer.direct_angle

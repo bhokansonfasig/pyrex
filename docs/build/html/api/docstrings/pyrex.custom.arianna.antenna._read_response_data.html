@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.arianna.antenna._read_response_data &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.arianna.antenna._read_response_data &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="Custom Antennas (pyrex.custom.arianna.antenna)" href="../custom-arianna/antenna.html" >
     <link rel="next" title="pyrex.custom.arianna.antenna._read_amplifier_data" href="pyrex.custom.arianna.antenna._read_amplifier_data.html" >
     <link rel="prev" title="Custom Antennas (pyrex.custom.arianna.antenna)" href="../custom-arianna/antenna.html" > 
@@ -53,11 +54,11 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-arianna.html" >Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.arianna</span></code>)</a></li>
-          <li class="active"><a href="../custom-arianna/antenna.html" accesskey="U">Custom Antennas (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.arianna.antenna</span></code>)</a></li> 
+          <li class="active"><a href="../custom-arianna.html" >Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.arianna</span></code>)</a></li>
+          <li class="active"><a href="../custom-arianna/antenna.html" accesskey="U">Custom Antennas (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.arianna.antenna</span></code>)</a></li> 
     </ul>
               
               
@@ -95,53 +96,54 @@
 <h1>pyrex.custom.arianna.antenna._read_response_data<a class="headerlink" href="#pyrex-custom-arianna-antenna-read-response-data" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="pyrex.custom.arianna.antenna._read_response_data">
-<code class="descclassname">pyrex.custom.arianna.antenna.</code><code class="descname">_read_response_data</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.arianna.antenna._read_response_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gather antenna directionality/polarization data from a WIPLD data file.</p>
+<code class="sig-prename descclassname">pyrex.custom.arianna.antenna.</code><code class="sig-name descname">_read_response_data</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.arianna.antenna._read_response_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather antenna effective height data from a set of WIPLD data files.</p>
 <p>Data files should exist with names <em class="xref py py-obj">filename</em>.ra1 and <em class="xref py py-obj">filename</em>.ad1.
 The <code class="docutils literal notranslate"><span class="pre">.ad1</span></code> file should contain frequencies in the first column, real and
 imaginary parts of the impedance in the sixth and seventh columns, and
-S-parameter data in the eigth and ninth columns.
+S-parameter data in the eighth and ninth columns.
 The <code class="docutils literal notranslate"><span class="pre">.ra1</span></code> file should contain phi and theta in the first two columns,
 the real and imaginary parts of the phi field in the next two columns,
 and the real and imaginary parts of the theta field in the next two columns.
 This should be divided into sections for each frequency with a header line
 ”  &gt;  Gen. no.    1 X  GHz   73   91  Gain” where “X” is the frequency in
 GHz.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Name of the data files without extension. Extensions <code class="docutils literal notranslate"><span class="pre">.ra1</span></code> and
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Name of the data files without extension. Extensions <code class="docutils literal notranslate"><span class="pre">.ra1</span></code> and
 <code class="docutils literal notranslate"><span class="pre">.ad1</span></code> will be added automatically.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>dict</strong></dt>
-<dd><p class="first last">Dictionary containing the data with keys (freq, theta, phi) and values
-(theta E-field, phi E-field).</p>
 </dd>
-<dt><strong>set</strong></dt>
-<dd><p class="first last">Set of unique frequencies appearing in the data keys.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>theta_response</strong><span class="classifier">ndarray</span></dt><dd><p>3-D array of complex-valued effective heights in the theta polarization
+as a function of frequency along axis 0, zenith along axis 1, and
+azimuth along axis 2.</p>
 </dd>
-<dt><strong>ndarray</strong></dt>
-<dd><p class="first last">Array of S-parameter values corresponding to the frequencies.</p>
+<dt><strong>phi_response</strong><span class="classifier">ndarray</span></dt><dd><p>3-D array of complex-valued effective heights in the phi polarization
+as a function of frequency along axis 0, zenith along axis 1, and
+azimuth along axis 2.</p>
+</dd>
+<dt><strong>frequencies</strong><span class="classifier">ndarray</span></dt><dd><p>Frequencies (Hz) corresponding to axis 0 of <em class="xref py py-obj">theta_response</em> and
+<em class="xref py py-obj">phi_response</em>.</p>
+</dd>
+<dt><strong>thetas</strong><span class="classifier">ndarray</span></dt><dd><p>Zenith angles (degrees) corresponding to axis 1 of <em class="xref py py-obj">theta_response</em> and
+<em class="xref py py-obj">phi_response</em>.</p>
+</dd>
+<dt><strong>phis</strong><span class="classifier">ndarray</span></dt><dd><p>Azimuth angles (degrees) corresponding to axis 2 of <em class="xref py py-obj">theta_response</em>
+and <em class="xref py py-obj">phi_response</em>.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>ValueError</strong></dt>
-<dd><p class="first last">If the frequency values of the <code class="docutils literal notranslate"><span class="pre">.ra1</span></code> and <code class="docutils literal notranslate"><span class="pre">.ad1</span></code> files don’t match.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ValueError</strong></dt><dd><p>If the frequency values of the <code class="docutils literal notranslate"><span class="pre">.ra1</span></code> and <code class="docutils literal notranslate"><span class="pre">.ad1</span></code> files don’t match.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -157,7 +159,7 @@ GHz.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -226,10 +228,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

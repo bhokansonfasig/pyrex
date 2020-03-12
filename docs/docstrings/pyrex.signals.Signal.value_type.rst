@@ -3,4 +3,4 @@ pyrex.signals.Signal.value\_type
 
 .. currentmodule:: pyrex.signals
 
-.. autoattribute:: Signal.value_type
+.. autoproperty:: Signal.value_type

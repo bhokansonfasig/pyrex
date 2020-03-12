@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.generation.RectangularGenerator.get_particle_type &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.generation.RectangularGenerator.get_particle_type &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,42 +82,37 @@
 <h1>pyrex.generation.RectangularGenerator.get_particle_type<a class="headerlink" href="#pyrex-generation-rectangulargenerator-get-particle-type" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.generation.RectangularGenerator.get_particle_type">
-<code class="descclassname">RectangularGenerator.</code><code class="descname">get_particle_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.RectangularGenerator.get_particle_type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">RectangularGenerator.</code><code class="sig-name descname">get_particle_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.RectangularGenerator.get_particle_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the particle type of the next particle to be generated.</p>
 <p>Randomly generates a neutrino flavor according to the flavor ratio of
 the generator, and chooses neutrino or antineutrino based on an
 assumption that the neutrinos are generated from proton-gamma
 interactions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>Particle.Type</strong></dt>
-<dd><p class="first last">Enum value for the type of the particle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Particle.Type</strong></dt><dd><p>Enum value for the type of the particle.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Particle</span></code></a></dt>
-<dd>Class for storing particle attributes.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Particle</span></code></a></dt><dd><p>Class for storing particle attributes.</p>
+</dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
 <p>The neutrino/antineutrino choice is based on Section 3 of <a class="reference internal" href="#r32ed82193a2f-1" id="id1">[1]</a>.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r32ed82193a2f-1" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> A. Bhattacharya et al, “The Glashow resonance at IceCube.”
-JCAP <strong>1110</strong>, 017 (2011).</td></tr>
-</tbody>
-</table>
+<dl class="citation">
+<dt class="label" id="r32ed82193a2f-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>)</span></dt>
+<dd><p>A. Bhattacharya et al, “The Glashow resonance at IceCube.”
+JCAP <strong>1110</strong>, 017 (2011). <a class="reference external" href="https://arxiv.org/abs/1108.3163">arXiv:1108.3163</a>
+<a class="reference external" href="https://dx.doi.org/10.1088/1475-7516/2011/10/017">DOI:10.1088/1475-7516/2011/10/017</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -132,7 +128,7 @@ JCAP <strong>1110</strong>, 017 (2011).</td></tr>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -196,10 +192,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

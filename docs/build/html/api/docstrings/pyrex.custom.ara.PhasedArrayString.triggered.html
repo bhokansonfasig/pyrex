@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.PhasedArrayString.triggered &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.custom.ara.PhasedArrayString.triggered &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -50,7 +51,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	 
     </ul>
               
@@ -81,49 +82,40 @@
 <h1>pyrex.custom.ara.PhasedArrayString.triggered<a class="headerlink" href="#pyrex-custom-ara-phasedarraystring-triggered" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
 <dt id="pyrex.custom.ara.PhasedArrayString.triggered">
-<code class="descclassname">PhasedArrayString.</code><code class="descname">triggered</code><span class="sig-paren">(</span><em>beam_threshold</em>, <em>delays=None</em>, <em>angles=None</em>, <em>require_mc_truth=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.PhasedArrayString.triggered" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">PhasedArrayString.</code><code class="sig-name descname">triggered</code><span class="sig-paren">(</span><em class="sig-param">beam_threshold</em>, <em class="sig-param">delays=None</em>, <em class="sig-param">angles=None</em>, <em class="sig-param">require_mc_truth=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.PhasedArrayString.triggered" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the string is triggered based on its current state.</p>
 <p>String is triggered if the maximum value of the phased voltage waveform
 for any of the beams formed (according to <em class="xref py py-obj">delays</em> or <em class="xref py py-obj">angles</em>) exceeds
 the <em class="xref py py-obj">beam_threshold</em> times the expected noise RMS of the beams
 (calculated as the sum of all antenna noise RMS values divided by the
 square root of the number of antennas).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>beam_threshold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">Factor of expected noise RMS above which a phased beam waveform
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>beam_threshold</strong><span class="classifier">float</span></dt><dd><p>Factor of expected noise RMS above which a phased beam waveform
 will trigger.</p>
 </dd>
-<dt><strong>delays</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like or None</span></dt>
-<dd><p class="first last">Time delays (s) between each pair of antennas to use for beam
+<dt><strong>delays</strong><span class="classifier">array_like or None</span></dt><dd><p>Time delays (s) between each pair of antennas to use for beam
 forming. If <code class="docutils literal notranslate"><span class="pre">None</span></code> calculates the time delays based on the
 desired beam angles in <em class="xref py py-obj">angles</em>.</p>
 </dd>
-<dt><strong>angles</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array_like or None</span></dt>
-<dd><p class="first last">Polar angles (degrees) at which to form phased beams. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+<dt><strong>angles</strong><span class="classifier">array_like or None</span></dt><dd><p>Polar angles (degrees) at which to form phased beams. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
 and <em class="xref py py-obj">delays</em> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, default beam delays are used based on
 the typical ARA phased array delays (19 delays from -5.94 ns to
 5.94 ns).</p>
 </dd>
-<dt><strong>require_mc_truth</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">Whether or not the trigger should be based on the Monte-Carlo
+<dt><strong>require_mc_truth</strong><span class="classifier">boolean, optional</span></dt><dd><p>Whether or not the trigger should be based on the Monte-Carlo
 truth. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, noise-only triggers are removed.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>boolean</strong></dt>
-<dd><p class="first last">Whether or not the string is triggered in its current state.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>boolean</strong></dt><dd><p>Whether or not the string is triggered in its current state.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -139,7 +131,7 @@ truth. If <code class="docutils literal notranslate"><span class="pre">True</spa
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -203,10 +195,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

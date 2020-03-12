@@ -3,4 +3,4 @@ pyrex.RayTracePath.received\_direction
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: RayTracePath.received_direction
+.. autoproperty:: RayTracePath.received_direction

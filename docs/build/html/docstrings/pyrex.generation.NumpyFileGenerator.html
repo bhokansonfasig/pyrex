@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.generation.NumpyFileGenerator &mdash; PyREx 1.8.2 documentation</title>
+    <title>pyrex.generation.NumpyFileGenerator &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
     <link rel="up" title="Event Generators (pyrex.generation)" href="../api/generation.html" >
     <link rel="next" title="pyrex.generation.FileGenerator" href="pyrex.generation.FileGenerator.html" >
     <link rel="prev" title="pyrex.generation.ListGenerator" href="pyrex.generation.ListGenerator.html" > 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../api/generation.html" accesskey="U">Event Generators (<code class="docutils literal notranslate"><span class="pre">pyrex.generation</span></code>)</a></li> 
+          <li class="active"><a href="../api/generation.html" accesskey="U">Event Generators (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.generation</span></code>)</a></li> 
     </ul>
               
               
@@ -94,7 +95,7 @@
 <h1>pyrex.generation.NumpyFileGenerator<a class="headerlink" href="#pyrex-generation-numpyfilegenerator" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pyrex.generation.NumpyFileGenerator">
-<em class="property">class </em><code class="descclassname">pyrex.generation.</code><code class="descname">NumpyFileGenerator</code><span class="sig-paren">(</span><em>files</em>, <em>interaction_model=&lt;class 'pyrex.particle.CTWInteraction'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.NumpyFileGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.generation.</code><code class="sig-name descname">NumpyFileGenerator</code><span class="sig-paren">(</span><em class="sig-param">files</em>, <em class="sig-param">interaction_model=&lt;class 'pyrex.particle.CTWInteraction'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.NumpyFileGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to generate neutrino events from numpy file(s).</p>
 <p>Generates neutrinos by pulling their attributes from a (list of) .npz
 file(s). Each file must have four to six arrays, containing the id values,
@@ -103,80 +104,63 @@ respectively so the first particle will have properties given by the first
 elements of these arrays. Tries to smartly figure out which array is which
 based on their names, but if the arrays are unnamed, assumes they are in
 the order used above.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>files</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str or list of str</span></dt>
-<dd><p class="first last">List of file names containing neutrino information. If only a single
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>files</strong><span class="classifier">str or list of str</span></dt><dd><p>List of file names containing neutrino information. If only a single
 file name is provided, creates a list with that file alone.</p>
 </dd>
-<dt><strong>interaction_model</strong> <span class="classifier-delimiter">:</span> <span class="classifier">optional</span></dt>
-<dd><p class="first last">Class used to describe the interactions of the stored particles.</p>
+<dt><strong>interaction_model</strong><span class="classifier">optional</span></dt><dd><p>Class used to describe the interactions of the stored particles.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This generator only supports <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> objects containing a single <code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code>
+<p class="admonition-title">Warning</p>
+<p>This generator only supports <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code> objects containing a single <code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code>
 object. There is currently no way to read from files where an <code class="xref py py-obj docutils literal notranslate"><span class="pre">Event</span></code>
-contains mutliple <code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code> objects with some dependencies.</p>
+contains multiple <code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code> objects with some dependencies.</p>
 </div>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference internal" href="pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.particle.Interaction</span></code></a></dt>
-<dd>Base class for describing neutrino interaction attributes.</dd>
-<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Event</span></code></a></dt>
-<dd>Class for storing a tree of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code> objects representing an event.</dd>
-<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Particle</span></code></a></dt>
-<dd>Class for storing particle attributes.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.particle.Interaction</span></code></a></dt><dd><p>Base class for describing neutrino interaction attributes.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Event</span></code></a></dt><dd><p>Class for storing a tree of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Particle</span></code> objects representing an event.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Particle</span></code></a></dt><dd><p>Class for storing particle attributes.</p>
+</dd>
 </dl>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>files</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
-<dd><p class="first last">List of file names containing neutrino information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>files</strong><span class="classifier">list of str</span></dt><dd><p>List of file names containing neutrino information.</p>
 </dd>
-<dt><strong>ids</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
-<dd><p class="first last">Array of particle id values from the current file.</p>
+<dt><strong>ids</strong><span class="classifier">ndarray</span></dt><dd><p>Array of particle id values from the current file.</p>
 </dd>
-<dt><strong>vertices</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
-<dd><p class="first last">Array of neutrino vertices from the current file.</p>
+<dt><strong>vertices</strong><span class="classifier">ndarray</span></dt><dd><p>Array of neutrino vertices from the current file.</p>
 </dd>
-<dt><strong>directions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
-<dd><p class="first last">Array of neutrino directions from the current file.</p>
+<dt><strong>directions</strong><span class="classifier">ndarray</span></dt><dd><p>Array of neutrino directions from the current file.</p>
 </dd>
-<dt><strong>energies</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
-<dd><p class="first last">Array of neutrino energies from the current file.</p>
+<dt><strong>energies</strong><span class="classifier">ndarray</span></dt><dd><p>Array of neutrino energies from the current file.</p>
 </dd>
-<dt><strong>interactions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
-<dd><p class="first last">Array of interaction types from the current file.</p>
+<dt><strong>interactions</strong><span class="classifier">ndarray</span></dt><dd><p>Array of interaction types from the current file.</p>
 </dd>
-<dt><strong>weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
-<dd><p class="first last">Array of neutrino weights from the current file.</p>
+<dt><strong>weights</strong><span class="classifier">ndarray</span></dt><dd><p>Array of neutrino weights from the current file.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="pyrex.generation.NumpyFileGenerator.create_event.html#pyrex.generation.NumpyFileGenerator.create_event" title="pyrex.generation.NumpyFileGenerator.create_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_event</span></code></a>()</td>
-<td>Generate a neutrino.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.generation.NumpyFileGenerator.create_event.html#pyrex.generation.NumpyFileGenerator.create_event" title="pyrex.generation.NumpyFileGenerator.create_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_event</span></code></a>()</p></td>
+<td><p>Generate a neutrino.</p></td>
 </tr>
 </tbody>
 </table>
@@ -195,7 +179,7 @@ contains mutliple <code class="xref py py-obj docutils literal notranslate"><spa
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -264,10 +248,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

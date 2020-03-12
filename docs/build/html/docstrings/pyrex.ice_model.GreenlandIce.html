@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.ice_model.GreenlandIce &mdash; PyREx 1.9.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.9.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="up" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" >
+    <link rel="next" title="Ray Tracers (pyrex.ray_tracing)" href="../api/ray_tracing.html" >
+    <link rel="prev" title="pyrex.ice_model.ArasimIce" href="pyrex.ice_model.ArasimIce.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="../api/ray_tracing.html" title="Ray Tracers (pyrex.ray_tracing)"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.ice_model.ArasimIce.html" title="pyrex.ice_model.ArasimIce"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-ice-model-greenlandice">
+<h1>pyrex.ice_model.GreenlandIce<a class="headerlink" href="#pyrex-ice-model-greenlandice" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyrex.ice_model.GreenlandIce">
+<em class="property">class </em><code class="sig-prename descclassname">pyrex.ice_model.</code><code class="sig-name descname">GreenlandIce</code><span class="sig-paren">(</span><em class="sig-param">n0=1.775</em>, <em class="sig-param">k=0.448</em>, <em class="sig-param">a=0.0247</em>, <em class="sig-param">valid_range=(-3000</em>, <em class="sig-param">0)</em>, <em class="sig-param">index_above=1</em>, <em class="sig-param">index_below=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.GreenlandIce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class describing the ice at Summit Station in Greenland.</p>
+<p>For convenience, consists of static methods and class methods, so creating
+an instance of the class may not be necessary. In all methods, the depth
+z should be given as a negative value if it is below the surface of the
+ice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n0</strong><span class="classifier">float, optional</span></dt><dd><p>Asymptotic index of refraction of the deep ice.</p>
+</dd>
+<dt><strong>k</strong><span class="classifier">float, optional</span></dt><dd><p>Multiplicative factor for the index of refraction parameterization.</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float, optional</span></dt><dd><p>Exponential factor for the index of refraction parameterization with
+units of 1/m.</p>
+</dd>
+<dt><strong>valid_range</strong><span class="classifier">array_like of float, optional</span></dt><dd><p>Range of depths over which the uniform index of refraction applies.
+Assumed to have two elements where the first value is lower (deeper,
+more negative) than the second.</p>
+</dd>
+<dt><strong>index_above</strong><span class="classifier">float or None, optional</span></dt><dd><p>Index of refraction above the ice region. If <em class="xref py py-obj">None</em>, uses the same
+index of refraction as the top of the ice.</p>
+</dd>
+<dt><strong>index_below</strong><span class="classifier">float or None, optional</span></dt><dd><p>Index of refraction below the ice region. If <em class="xref py py-obj">None</em>, uses the same
+index of refraction as the bottom of the ice.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Index of refraction parameterization based on a slightly altered version
+of the density parameterization at Summit Station <a class="reference internal" href="#r4263524edcb5-1" id="id1">[1]</a>. The altered version
+ignores the break at small depths in order to have a uniform index of
+refraction parameterization matching the form of the Antarctic index.
+The temperature and attenuation length parameterizations are also based on
+parameterizations defined for Summit Station <a class="reference internal" href="#r4263524edcb5-2" id="id2">[2]</a>.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r4263524edcb5-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id3">2</a>)</span></dt>
+<dd><p>C. Deaconu et al, “Measurements and modeling of near-surface radio
+propagation in glacial ice and implications for neutrino experiments.”
+Physical Review D <strong>98</strong>, 043010 (2018). <a class="reference external" href="https://arxiv.org/abs/1805.12576">arXiv:1805.12576</a>
+<a class="reference external" href="https://dx.doi.org/10.1103/PhysRevD.98.043010">DOI:10.1103/PhysRevD.98.043010</a></p>
+</dd>
+<dt class="label" id="r4263524edcb5-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id4">2</a>)</span></dt>
+<dd><p>J. Avva et al, “An in Situ Measurement of the Radio-Frequency
+Attenuation in Ice at Summit Station, Greenland.” Journal of Glaciology
+<strong>61</strong>, no. 229, 1005-1011 (2015). <a class="reference external" href="https://dx.doi.org/10.3189/2015JoG15J057">DOI:10.3189/2015JoG15J057</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n0, k, a</strong><span class="classifier">float</span></dt><dd><p>Parameters of the index of refraction of the ice.</p>
+</dd>
+<dt><strong>valid_range</strong><span class="classifier">tuple</span></dt><dd><p>Range of depths over which the ice model is valid. Consists of two
+elements where the first value is lower (deeper, more negative) than
+the second.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ice_model.GreenlandIce.index_above.html#pyrex.ice_model.GreenlandIce.index_above" title="pyrex.ice_model.GreenlandIce.index_above"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index_above</span></code></a></dt><dd><p>The index of refraction above the ice’s valid range.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.ice_model.GreenlandIce.index_below.html#pyrex.ice_model.GreenlandIce.index_below" title="pyrex.ice_model.GreenlandIce.index_below"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index_below</span></code></a></dt><dd><p>The index of refraction below the ice’s valid range.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.GreenlandIce.attenuation_length.html#pyrex.ice_model.GreenlandIce.attenuation_length" title="pyrex.ice_model.GreenlandIce.attenuation_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attenuation_length</span></code></a>(z, f)</p></td>
+<td><p>Calculates attenuation lengths for given depths and frequencies.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.GreenlandIce.contains.html#pyrex.ice_model.GreenlandIce.contains" title="pyrex.ice_model.GreenlandIce.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains</span></code></a>(point)</p></td>
+<td><p>Determines if the given point is within the ice’s valid range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.GreenlandIce.depth_with_index.html#pyrex.ice_model.GreenlandIce.depth_with_index" title="pyrex.ice_model.GreenlandIce.depth_with_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">depth_with_index</span></code></a>(n)</p></td>
+<td><p>Calculates the corresponding depth for a given index of refraction.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.GreenlandIce.gradient.html#pyrex.ice_model.GreenlandIce.gradient" title="pyrex.ice_model.GreenlandIce.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a>(z)</p></td>
+<td><p>Calculates the gradient of the index of refraction at a given depth.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.ice_model.GreenlandIce.index.html#pyrex.ice_model.GreenlandIce.index" title="pyrex.ice_model.GreenlandIce.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(z)</p></td>
+<td><p>Calculates the index of refraction of the ice at a given depth.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.ice_model.GreenlandIce.temperature.html#pyrex.ice_model.GreenlandIce.temperature" title="pyrex.ice_model.GreenlandIce.temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temperature</span></code></a>(z)</p></td>
+<td><p>Calculates the temperature of the ice at a given depth.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.9.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

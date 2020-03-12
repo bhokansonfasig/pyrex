@@ -7,6 +7,7 @@ Earth Model (:mod:`pyrex.earth_model`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     prem_density
     slant_depth

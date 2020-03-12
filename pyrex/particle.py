@@ -13,11 +13,10 @@ import inspect
 import logging
 import os.path
 import numpy as np
+import scipy.constants
 from pyrex.internal_functions import normalize, get_from_enum
 
 logger = logging.getLogger(__name__)
-
-AVOGADRO_NUMBER = 6.02e23
 
 
 def _read_secondary_data_file(data_directory, flavor, secondary_type,
@@ -309,7 +308,7 @@ class Interaction:
         interaction lengths.
 
         """
-        return 1 / (AVOGADRO_NUMBER * self.total_cross_section)
+        return 1 / (scipy.constants.N_A * self.total_cross_section)
 
     @property
     def interaction_length(self):
@@ -322,7 +321,7 @@ class Interaction:
         is dependent on the energy of the ``particle``.
 
         """
-        return 1 / (AVOGADRO_NUMBER * self.cross_section)
+        return 1 / (scipy.constants.N_A * self.cross_section)
 
 
 class GQRSInteraction(Interaction):
@@ -355,6 +354,9 @@ class GQRSInteraction(Interaction):
         Fraction of `particle` energy deposited into an electromagnetic shower.
     had_frac : float
         Fraction of `particle` energy deposited into a hadronic shower.
+    include_secondaries : bool
+        If true, secondary interactions will be considered when calculating
+        the shower fractions.
     total_cross_section
     total_interaction_length
     cross_section
@@ -374,8 +376,11 @@ class GQRSInteraction(Interaction):
     ----------
     .. [1] R. Gandhi et al, "Ultrahigh-Energy Neutrino Interactions."
         Physical Review D **58**, 093009 (1998).
+        :doi:`10.1103/PhysRevD.58.093009`
 
     """
+    include_secondaries = True
+
     def choose_interaction(self):
         """
         Choose an interaction type for the ``particle`` attribute.
@@ -465,6 +470,10 @@ class GQRSInteraction(Interaction):
         else:
             raise ValueError("Interaction type not supported")
 
+        # Stop here if no secondary interactions should be considered
+        if not self.include_secondaries:
+            return em_frac, had_frac
+
         # Calculate lepton energy for inelasticity distributions
         if self.kind==self.Type.charged_current:
             lepton_energy = self.particle.energy * (1-self.inelasticity)
@@ -523,7 +532,7 @@ class GQRSInteraction(Interaction):
             Maximal electromagnetic shower fraction from secondary
             interactions.
         had_frac : float
-            Maximal adronic shower fraction form secondary interactions.
+            Maximal hadronic shower fraction form secondary interactions.
 
         """
         em_max = 0
@@ -711,6 +720,9 @@ class CTWInteraction(GQRSInteraction):
         Fraction of `particle` energy deposited into an electromagnetic shower.
     had_frac : float
         Fraction of `particle` energy deposited into a hadronic shower.
+    include_secondaries : bool
+        If true, secondary interactions will be considered when calculating
+        the shower fractions.
     total_cross_section
     total_interaction_length
     cross_section
@@ -732,7 +744,8 @@ class CTWInteraction(GQRSInteraction):
     .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
         Cross Sections and Uncertainties Using the MSTW Parton Distribution
         Functions and Implications for Future Experiments." Physical Review D
-        **83**, 113009 (2011).
+        **83**, 113009 (2011). :arxiv:`1102.0691`
+        :doi:`10.1103/PhysRevD.83.113009`
 
     """
     def choose_interaction(self):
@@ -757,7 +770,8 @@ class CTWInteraction(GQRSInteraction):
         .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
             Cross Sections and Uncertainties Using the MSTW Parton Distribution
             Functions and Implications for Future Experiments." Physical Review
-            D **83**, 113009 (2011).
+            D **83**, 113009 (2011). :arxiv:`1102.0691`
+            :doi:`10.1103/PhysRevD.83.113009`
 
         """
         d_0 = 1.76
@@ -792,7 +806,8 @@ class CTWInteraction(GQRSInteraction):
         .. [1] A. Connolly et al, "Calculation of High Energy Neutrino-Nucleon
             Cross Sections and Uncertainties Using the MSTW Parton Distribution
             Functions and Implications for Future Experiments." Physical Review
-            D **83**, 113009 (2011).
+            D **83**, 113009 (2011). :arxiv:`1102.0691`
+            :doi:`10.1103/PhysRevD.83.113009`
 
         """
         eps = np.log10(self.particle.energy)

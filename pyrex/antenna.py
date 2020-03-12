@@ -11,11 +11,11 @@ an antenna.
 
 import logging
 import numpy as np
+import scipy.constants
 import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal, ThermalNoise, EmptySignal
-from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +91,7 @@ class Antenna:
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -271,14 +272,32 @@ class Antenna:
             Complete waveform with noise and all signals.
 
         """
+        # Only include signals reasonably close to the times array
+        # (i.e. within one extra signal length forwards and backwards)
+        dt = times[1] - times[0]
+        signal_length = max(signal.times[-1] - signal.times[0]
+                            for signal in self.signals)
+        n_pts = int(signal_length/dt)
+        if signal_length%dt:
+            n_pts += 1
+        long_times = np.concatenate((
+            times[0]+np.linspace(-n_pts*dt, 0, n_pts, endpoint=False),
+            times,
+            times[-1]+np.linspace(0, n_pts*dt, n_pts+1)[1:]
+        ))
+
         if self.noisy:
-            waveform = self.make_noise(times)
+            waveform = self.make_noise(long_times)
         else:
-            waveform = EmptySignal(times)
+            waveform = EmptySignal(long_times)
 
         for signal in self.signals:
-            waveform += signal.with_times(times)
-        return waveform
+            if (signal.times[-1]<long_times[0]
+                    or signal.times[0]>long_times[-1]):
+                continue
+            waveform += signal.with_times(long_times)
+
+        return waveform.with_times(times)
 
     def make_noise(self, times):
         """
@@ -402,7 +421,7 @@ class Antenna:
         if r==0:
             return 0, 0, 0
         theta = np.arccos(z/r)
-        phi = np.arctan2(y, x)
+        phi = np.arctan2(y, x) % (2*np.pi)
         return r, theta, phi
 
     def directional_gain(self, theta, phi):
@@ -523,9 +542,10 @@ class Antenna:
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        copy = Signal(signal.times, signal.values,
-                      value_type=Signal.Type.voltage)
-        copy.filter_frequencies(self.frequency_response, force_real=force_real)
+        new_signal = signal.copy()
+        new_signal.value_type = Signal.Type.voltage
+        new_signal.filter_frequencies(self.frequency_response,
+                                      force_real=force_real)
 
         if direction is None:
             d_gain = 1
@@ -550,9 +570,9 @@ class Antenna:
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy *= signal_factor
+        new_signal *= signal_factor
 
-        return copy
+        return new_signal
 
     def receive(self, signal, direction=None, polarization=None,
                 force_real=False):
@@ -631,9 +651,12 @@ class DipoleAntenna(Antenna):
         Tuned frequency (Hz) of the dipole.
     bandwidth : float
         Bandwidth (Hz) of the antenna.
+    temperature : float
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     trigger_threshold : float, optional
@@ -690,6 +713,7 @@ class DipoleAntenna(Antenna):
     signals : list of Signal
         The signals which have been received by the antenna.
     is_hit
+    is_hit_mc_truth
     waveforms
     all_waveforms
 
@@ -698,15 +722,15 @@ class DipoleAntenna(Antenna):
     Antenna : Base class for antennas.
 
     """
-    def __init__(self, name, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), trigger_threshold=0,
-                 effective_height=None, noisy=True,
+    def __init__(self, name, position, center_frequency, bandwidth,
+                 temperature, resistance, orientation=(0,0,1),
+                 trigger_threshold=0, effective_height=None, noisy=True,
                  unique_noise_waveforms=10):
         self.name = name
         self.threshold = trigger_threshold
         if effective_height is None:
             # Calculate length of half-wave dipole
-            self.effective_height = 3e8 / center_frequency / 2
+            self.effective_height = scipy.constants.c / center_frequency / 2
         else:
             self.effective_height = effective_height
 
@@ -723,10 +747,9 @@ class DipoleAntenna(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         temperature=ice.temperature(position[2]),
-                         freq_range=(f_low, f_high), resistance=resistance,
-                         unique_noise_waveforms=unique_noise_waveforms,
-                         noisy=noisy)
+                         freq_range=(f_low, f_high), temperature=temperature,
+                         resistance=resistance, noisy=noisy,
+                         unique_noise_waveforms=unique_noise_waveforms)
 
         # Build scipy butterworth filter to speed up response function
         b, a  = scipy.signal.butter(1, 2*np.pi*np.array(self.freq_range),

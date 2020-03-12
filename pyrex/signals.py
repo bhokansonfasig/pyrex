@@ -7,13 +7,15 @@ processing and general physics.
 
 """
 
+import copy
 from enum import Enum
 import logging
 import numpy as np
-import scipy.signal
+import scipy.constants
 import scipy.fftpack
-from pyrex.internal_functions import get_from_enum
-from pyrex.ice_model import ice
+import scipy.signal
+from pyrex.internal_functions import (LazyMutableClass, lazy_property,
+                                      get_from_enum)
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,7 @@ class Signal:
         1D array of values of the signal corresponding to the given `times`.
         Will be resized to the size of `times` by zero-padding or truncating
         as necessary.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Values should be
         from the ``Signal.Type`` enum, but integer or string values may
         work if carefully chosen. ``Signal.Type.undefined`` by default.
@@ -166,6 +168,19 @@ class Signal:
             return NotImplemented
         return self
 
+    def copy(self):
+        """
+        Get a copy of the ``Signal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``Signal`` object with identical
+            ``times``, ``values``, and ``value_type``.
+
+        """
+        return Signal(self.times, self.values, self.value_type)
+
     @property
     def value_type(self):
         """
@@ -238,6 +253,17 @@ class Signal:
                                left=0, right=0)
         return Signal(new_times, new_values, value_type=self.value_type)
 
+    def shift(self, dt):
+        """
+        Shifts the signal values in time by `dt`.
+
+        Parameters
+        ----------
+        dt : float
+            Time shift (s) to be applied to the signal.
+
+        """
+        self.times += dt
 
     @property
     def spectrum(self):
@@ -261,9 +287,9 @@ class Signal:
         Parameters
         ----------
         freq_response : function
-            Response function taking a freqeuncy (or array of frequencies) and
+            Response function taking a frequency (or array of frequencies) and
             returning the corresponding complex gain(s).
-        force_real : boolean
+        force_real : boolean, optional
             If ``True``, complex conjugation is used on the positive-frequency
             response to force the filtered signal to be real-valued. Otherwise
             the frequency response is left alone and any imaginary parts of the
@@ -282,21 +308,64 @@ class Signal:
         vals = np.concatenate((self.values, np.zeros(len(self.values))))
         spectrum = scipy.fftpack.fft(vals)
         freqs = scipy.fftpack.fftfreq(n=2*len(self.values), d=self.dt)
+
+        responses = self._get_filter_response(freqs, freq_response, force_real)
+        filtered_vals = scipy.fftpack.ifft(responses*spectrum)
+        self.values = np.real(filtered_vals[:len(self.times)])
+
+        # Issue a warning if there was significant signal in the (discarded)
+        # imaginary part of the filtered values
+        if np.any(np.abs(np.imag(filtered_vals[:len(self.times)])) >
+                  np.max(np.abs(self.values)) * 1e-5):
+            msg = ("Significant signal amplitude was lost when forcing the "+
+                   "signal values to be real after applying the frequency "+
+                   "filter '%s'. This may be avoided by making sure the "+
+                   "filter being used is properly defined for negative "+
+                   "frequencies")
+            if not force_real:
+                msg += (", or by passing force_real=True to the "+
+                        "Signal.filter_frequencies function")
+            msg += "."
+            logger.warning(msg, freq_response.__name__)
+
+    @staticmethod
+    def _get_filter_response(freqs, function, force_real=False):
+        """
+        Get the frequency response of a filter function.
+
+        Parameters
+        ----------
+        freqs : ndarray
+            Array of frequencies [Hz] over which to calculate the filter
+            response.
+        function : function
+            Response function taking a frequency (or array of frequencies) and
+            returning the corresponding complex gain(s).
+        force_real : boolean, optional
+            If ``True``, complex conjugation is used on the positive-frequency
+            response to force the filtered signal to be real-valued.
+
+        Returns
+        -------
+        response : ndarray
+            Complex response of the filter at the given frequencies.
+
+        """
         if force_real:
             true_freqs = np.array(freqs)
             freqs = np.abs(freqs)
 
         # Attempt to evaluate all responses in one function call
         try:
-            responses = np.array(freq_response(freqs), dtype=np.complex_)
+            responses = np.array(function(freqs), dtype=np.complex_)
         # Otherwise evaluate responses one at a time
         except (TypeError, ValueError):
             logger.debug("Frequency response function %r could not be "+
                          "evaluated for multiple frequencies at once",
-                         freq_response)
-            responses = np.zeros(len(spectrum), dtype=np.complex_)
+                         function)
+            responses = np.zeros(len(freqs), dtype=np.complex_)
             for i, f in enumerate(freqs):
-                responses[i] = freq_response(f)
+                responses[i] = function(f)
 
         # To make the filtered signal real, mirror the positive frequency
         # response into the negative frequencies, making the real part even
@@ -304,20 +373,7 @@ class Signal:
         if force_real:
             responses.imag[true_freqs<0] *= -1
 
-        filtered_vals = scipy.fftpack.ifft(responses*spectrum)
-        self.values = np.real(filtered_vals[:len(self.times)])
-
-        # Issue a warning if there was significant signal in the (discarded)
-        # imaginary part of the filtered values
-        if np.any(np.imag(filtered_vals[:len(self.times)]) >
-                  np.max(self.values) * 1e-5):
-            msg = ("Significant signal amplitude was lost when forcing the "+
-                   "signal values to be real after applying the frequency "+
-                   "filter '%s'. This may be avoided by making sure the "+
-                   "filter being used is properly defined for negative "+
-                   "frequencies, or by passing force_real=True to the "+
-                   "Signal.filter_frequencies function.")
-            logger.warning(msg, freq_response.__name__)
+        return responses
 
 
 
@@ -329,7 +385,7 @@ class EmptySignal(Signal):
     ----------
     times : array_like
         1D array of times (s) for which the signal is defined.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Must be from the
         ``Signal.Type`` Enum.
 
@@ -354,6 +410,54 @@ class EmptySignal(Signal):
     def __init__(self, times, value_type=None):
         super().__init__(times, np.zeros(len(times)), value_type=value_type)
 
+    def __add__(self, other):
+        """
+        Adds two signals by adding their values at each time.
+
+        Adding ``Signal`` objects is only allowed when they have identical
+        ``times`` arrays, and their ``value_type``s are compatible. This means
+        that the ``value_type``s must be the same, or one must be ``undefined``
+        which will be coerced to the other ``value_type``.
+
+        Raises
+        ------
+        ValueError
+            If the other ``Signal`` has different ``times`` or ``value_type``.
+
+        """
+        if not isinstance(other, Signal):
+            return NotImplemented
+        if not np.array_equal(self.times, other.times):
+            raise ValueError("Can't add signals with different times")
+        if (self.value_type!=self.Type.undefined and
+                other.value_type!=self.Type.undefined and
+                self.value_type!=other.value_type):
+            raise ValueError("Can't add signals with different value types")
+
+        if self.value_type==self.Type.undefined:
+            value_type = other.value_type
+        else:
+            value_type = self.value_type
+
+        # Adding an EmptySignal is essentially transparent (returns a copy
+        # of the other Signal), except for the value_type coercion
+        new_signal = copy.deepcopy(other)
+        new_signal.value_type = value_type
+        return new_signal
+
+    def copy(self):
+        """
+        Get a copy of the ``EmptySignal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``EmptySignal`` object with identical
+            ``times`` and ``value_type``.
+
+        """
+        return EmptySignal(self.times, self.value_type)
+
     def with_times(self, new_times):
         """
         Returns a representation of this signal over a different times array.
@@ -365,7 +469,7 @@ class EmptySignal(Signal):
 
         Returns
         -------
-        EmtpySignal
+        EmptySignal
             A representation of the original signal over the `new_times` array.
 
         Notes
@@ -376,8 +480,41 @@ class EmptySignal(Signal):
         """
         return EmptySignal(new_times, value_type=self.value_type)
 
+    def filter_frequencies(self, freq_response, force_real=False):
+        """
+        Apply the given frequency response function to the signal, in-place.
 
-class FunctionSignal(Signal):
+        For the given response function, multiplies the response into the
+        frequency domain of the signal. If the filtered signal is forced to be
+        real, the positive-frequency response is mirrored into the negative
+        frequencies by complex conjugation. For EmptySignal objects, all
+        calculation is skipped and the EmptySignal is preserved.
+
+        Parameters
+        ----------
+        freq_response : function
+            Response function taking a frequency (or array of frequencies) and
+            returning the corresponding complex gain(s).
+        force_real : boolean, optional
+            If ``True``, complex conjugation is used on the positive-frequency
+            response to force the filtered signal to be real-valued. Otherwise
+            the frequency response is left alone and any imaginary parts of the
+            filtered signal are thrown out.
+
+        Warns
+        -----
+        Raises a warning if the maximum value of the imaginary part of the
+        filtered signal was greater than 1e-5 times the maximum value of the
+        real part, indicating that there was significant signal lost when
+        discarding the imaginary part.
+
+        """
+        # All values of the signal are zero anyway, so filters will have no
+        # effect. We can just skip all the calculation then.
+        pass
+
+
+class FunctionSignal(LazyMutableClass, Signal):
     """
     Class for signals generated by a function.
 
@@ -388,7 +525,7 @@ class FunctionSignal(Signal):
     function : function
         Function which evaluates the corresponding value(s) for a given time or
         array of times.
-    value_type
+    value_type : optional
         Type of signal, representing the units of the values. Must be from the
         ``Signal.Type`` Enum.
 
@@ -410,22 +547,221 @@ class FunctionSignal(Signal):
     See Also
     --------
     Signal : Base class for time-domain signals.
-    EmptySignal : Class for signal with zero amplitude.
+    pyrex.internal_functions.LazyMutableClass : Class with lazy properties
+                                                which may depend on other class
+                                                attributes.
 
     """
     def __init__(self, times, function, value_type=None):
         self.times = np.array(times)
-        self.function = function
-        # Attempt to evaluate all values in one function call
-        try:
-            values = self.function(self.times)
-        # Otherwise evaluate values one at a time
-        except (ValueError, TypeError):
-            values = []
-            for t in self.times:
-                values.append(self.function(t))
+        self._functions = [function]
+        self._t0s = [0]
+        self._buffers = [[0, 0]]
+        self._factors = [1]
+        self._filters = [[]]
+        self.value_type = value_type
+        super().__init__(static_attributes=['times', '_functions', '_t0s',
+                                            '_buffers', '_factors', '_filters'])
 
-        super().__init__(times, values, value_type=value_type)
+    def _full_times(self, index):
+        """
+        1D array of times including buffer time.
+
+        Parameters
+        ----------
+        index : int
+            Index of the function and buffer to calculate the times array for.
+
+        Returns
+        -------
+        ndarray
+            1D array of times for the function, including the buffer time.
+
+        """
+        # Number of points in the buffer arrays
+        n_before = int(self._buffers[index][0]/self.dt)
+        if self._buffers[index][0]%self.dt:
+            n_before += 1
+        n_after = int(self._buffers[index][1]/self.dt)
+        if self._buffers[index][1]%self.dt:
+            n_after += 1
+        # Proper starting points of buffer arrays to preserve dt
+        t_min = self.times[0] - n_before*self.dt
+        t_max = self.times[-1] + n_after*self.dt
+        return np.concatenate((
+            np.linspace(t_min, self.times[0], n_before, endpoint=False),
+            self.times,
+            np.linspace(self.times[-1], t_max, n_after+1)[1:]
+        ))
+
+    def _value_window(self, index):
+        """Window of `_full_times` values array corresponding to `times`."""
+        # Number of points in the buffer arrays
+        n_before = int(self._buffers[index][0]/self.dt)
+        if self._buffers[index][0]%self.dt:
+            n_before += 1
+        # n_after = int(self._buffers[index][1]/self.dt)
+        # if self._buffers[index][1]%self.dt:
+        #     n_after += 1
+        return slice(n_before, n_before+len(self.times))
+
+    @lazy_property
+    def values(self):
+        """1D array of values which define the signal."""
+        values = np.zeros(len(self.times))
+        for i, function in enumerate(self._functions):
+            # Attempt to evaluate all values in one function call
+            try:
+                func_vals = function(self._full_times(i) - self._t0s[i])
+            # Otherwise evaluate values one at a time
+            except (ValueError, TypeError):
+                func_vals = [function(t) for t in
+                             self._full_times(i)-self._t0s[i]]
+
+            func_vals *= self._factors[i]
+
+            if len(self._filters[i])!=0:
+                full_vals = self._apply_filters(func_vals, self._filters[i])
+            else:
+                full_vals = func_vals
+
+            values += full_vals[self._value_window(i)]
+
+        return values
+
+
+    def __add__(self, other):
+        """
+        Adds two signals by adding their values at each time.
+
+        Adding ``Signal`` objects is only allowed when they have identical
+        ``times`` arrays, and their ``value_type``s are compatible. This means
+        that the ``value_type``s must be the same, or one must be ``undefined``
+        which will be coerced to the other ``value_type``. If two
+        ``FunctionSignal`` objects are added, the result is another
+        ``FunctionSignal``. If a ``FunctionSignal`` object is added to a
+        ``Signal`` object, the result is a ``Signal`` object where the
+        ``FunctionSignal`` has been evaluated over the ``Signal`` object's
+        ``times``.
+
+        Raises
+        ------
+        ValueError
+            If the other ``Signal`` has a different ``value_type``.
+
+        """
+        if not isinstance(other, Signal):
+            return NotImplemented
+        if not np.array_equal(self.times, other.times):
+            raise ValueError("Can't add signals with different times")
+        if (self.value_type!=self.Type.undefined and
+                other.value_type!=self.Type.undefined and
+                self.value_type!=other.value_type):
+            raise ValueError("Can't add signals with different value types")
+
+        if self.value_type==self.Type.undefined:
+            value_type = other.value_type
+        else:
+            value_type = self.value_type
+
+        if isinstance(other, FunctionSignal):
+            new_signal = self.copy()
+            new_signal._functions += copy.deepcopy(other._functions)
+            new_signal._t0s += copy.deepcopy(other._t0s)
+            new_signal._buffers += copy.deepcopy(other._buffers)
+            new_signal._factors += copy.deepcopy(other._factors)
+            new_signal._filters += copy.deepcopy(other._filters)
+            new_signal.value_type = value_type
+            return new_signal
+        elif isinstance(other, EmptySignal):
+            # Adding an EmptySignal is essentially transparent (returns a copy
+            # of the FunctionSignal), except for the value_type coercion
+            new_signal = copy.deepcopy(self)
+            new_signal.value_type = value_type
+            return new_signal
+        else:
+            return Signal(self.times, self.values+other.values,
+                          value_type=value_type)
+
+    def __mul__(self, other):
+        """Multiply signal values at all times by some value."""
+        try:
+            factors = [f * other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        new_signal = self.copy()
+        new_signal._factors = factors
+        return new_signal
+
+    def __rmul__(self, other):
+        """Multiply signal values at all times by some value."""
+        try:
+            factors = [other * f for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        new_signal = self.copy()
+        new_signal._factors = factors
+        return new_signal
+
+    def __imul__(self, other):
+        """Multiply signal values at all times by some value in-place."""
+        try:
+            self._factors = [f * other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        return self
+
+    def __truediv__(self, other):
+        """Divide signal values at all times by some value."""
+        try:
+            factors = [f / other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        new_signal = self.copy()
+        new_signal._factors = factors
+        return new_signal
+
+    def __itruediv__(self, other):
+        """Divide signal values at all times by some value in-place."""
+        try:
+            self._factors = [f / other for f in self._factors]
+        except TypeError:
+            return NotImplemented
+        return self
+
+    def copy(self):
+        """
+        Get a copy of the ``FunctionSignal`` object.
+
+        Returns
+        -------
+        Signal
+            A (deep) copy of the existing ``FunctionSignal`` object with
+            identical ``times``, ``value_type``, and internal function
+            parameters.
+
+        """
+        new_signal = FunctionSignal(self.times, None, self.value_type)
+        new_signal._functions = copy.deepcopy(self._functions)
+        new_signal._t0s = copy.deepcopy(self._t0s)
+        new_signal._buffers = copy.deepcopy(self._buffers)
+        new_signal._factors = copy.deepcopy(self._factors)
+        new_signal._filters = copy.deepcopy(self._filters)
+        return new_signal
+
+    def resample(self, n):
+        """
+        Resamples the signal into n points in the same time range, in-place.
+
+        Parameters
+        ----------
+        n : int
+            The number of points into which the signal should be resampled.
+
+        """
+        if n==len(self.times):
+            return
+        self.times = np.linspace(self.times[0], self.times[-1], n)
 
     def with_times(self, new_times):
         """
@@ -446,621 +782,170 @@ class FunctionSignal(Signal):
         Leverages knowledge of the function that creates the signal to properly
         recalculate exact (not interpolated) values for the new times.
 
+        Tries to interpret cases where `with_times` was used to incorporate
+        effects of a leading (or trailing) signal outside of the `times` array
+        by setting leading and trailing buffer values when `new_times` is fully
+        contained by the previous `times` array.
+
         """
-        return FunctionSignal(new_times, self.function,
-                              value_type=self.value_type)
+        new_signal = copy.deepcopy(self)
+        new_signal.times = new_times
+        # Check whether `new_times` is a subset of the previous `times`, and
+        # set buffers accordingly
+        if new_times[0]>=self.times[0] and new_times[-1]<=self.times[-1]:
+            logger.debug("New times array is contained by previous times. "+
+                         "Setting buffers to incorporate previous times.")
+            new_signal.set_buffers(leading=new_times[0]-self.times[0],
+                                   trailing=self.times[-1]-new_times[-1])
+        return new_signal
 
-
-
-class ZHSAskaryanSignal(Signal):
-    """
-    Class for generating Askaryan signals according to ZHS parameterization.
-
-    Stores the time-domain information for an Askaryan electric field (V/m)
-    produced by the electromagnetic shower initiated by a neutrino.
-
-    Parameters
-    ----------
-    times : array_like
-        1D array of times (s) for which the signal is defined.
-    particle : Particle
-        ``Particle`` object responsible for the shower which produces the
-        Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
-        and ``id``, plus an ``interaction`` with an ``em_frac`` and
-        ``had_frac``.
-    viewing_angle : float
-        Observation angle (radians) measured relative to the shower axis.
-    viewing_distance : float, optional
-        Distance (m) between the shower vertex and the observation point (along
-        the ray path).
-    ice_model : optional
-        The ice model to be used for describing the index of refraction of the
-        medium.
-    t0 : float, optional
-        Pulse offset time (s), i.e. time at which the shower takes place.
-
-    Attributes
-    ----------
-    times, values : ndarray
-        1D arrays of times (s) and corresponding values which define the signal.
-    value_type : Signal.Type.field
-        Type of signal, representing the units of the values.
-    Type : Enum
-        Different value types available for `value_type` of signal objects.
-    energy : float
-        Energy (GeV) of the electromagnetic shower producing the pulse.
-    vector_potential
-    dt
-    frequencies
-    spectrum
-    envelope
-
-    Raises
-    ------
-    ValueError
-        If the `particle` object is not a neutrino or antineutrino with a
-        charged-current or neutral-current interaction.
-
-    See Also
-    --------
-    Signal : Base class for time-domain signals.
-    pyrex.Particle : Class for storing particle attributes.
-
-    Notes
-    -----
-    Calculates the Askaryan signal based on the ZHS parameterization [1]_.
-    Uses equations 20 and 21 to calculate the electric field close to the
-    Chereknov angle.
-
-    References
-    ----------
-    .. [1] E. Zas, F. Halzen, T. Stanev, "Electromagnetic pulses from
-        high-energy showers: implications for neutrino detection", Physical
-        Review D **45**, 362-376 (1992).
-
-    """
-    def __init__(self, times, particle, viewing_angle, viewing_distance=1,
-                 ice_model=ice, t0=0):
-        # Theta should represent the angle from the shower axis, and so should
-        # always be positive
-        theta = np.abs(viewing_angle)
-
-        if theta > np.pi:
-            raise ValueError("Angles greater than 180 degrees not supported")
-
-        # Calculate shower energy based on particle's total shower fractions
-        self.energy = particle.energy * (particle.interaction.em_frac +
-                                         particle.interaction.had_frac)
-
-        # Fail gracefully if there is no EM shower (the energy is zero)
-        if self.energy==0:
-            super().__init__(times, np.zeros(len(times)),
-                             value_type=self.Type.field)
-            return
-
-        # Calculate index of refraction at the shower position for the
-        # Cherenkov angle calculation and others
-        n = ice_model.index(particle.vertex[2])
-
-        # Calculate theta_c = arccos(1/n)
-        theta_c = np.arccos(1/n)
-
-        # Parameterization relative frequency value
-        nu_0 = 500e6
-
-        # Calculate dt of times array
-        dt = times[1] - times[0]
-
-        # Calculate frequencies for frequency-domain calculations
-        freqs = scipy.fftpack.fftfreq(len(times), d=dt)
-
-        # Field as a function of frequency at Cherenkov angle (ZHS equation 20)
-        ratio = np.abs(freqs)/nu_0
-        e_omega = 1.1e-7 * self.energy/1000 * ratio * 1/(1 + 0.4*ratio**2)
-        e_omega /= viewing_distance
-
-        # Convert to volts per meter per hertz
-        # (from volts per meter per megahertz)
-        e_omega *= 1e-6
-
-        # Parameterize away from Chereknov angle using Gaussian peak (eqn 21)
-        e_omega *= np.exp(-0.5*((viewing_angle-theta_c)*ratio
-                                /np.radians(2.4))**2)
-
-        # Shift the times so the signal comes at t0
-        freq_vals = e_omega * np.exp(-1j*2*np.pi*freqs*(t0-times[0]))
-
-        # Normalize the inverse fourier transform by dt so the time-domain
-        # amplitude stays the same for different sampling rates
-        values = np.real(scipy.fftpack.ifft(freq_vals)) / dt
-
-        super().__init__(times, values, value_type=self.Type.field)
-
-
-
-class ARVZAskaryanSignal(Signal):
-    """
-    Class for generating Askaryan signals according to ARVZ parameterization.
-
-    Stores the time-domain information for an Askaryan electric field (V/m)
-    produced by the electromagnetic and hadronic showers initiated by a
-    neutrino.
-
-    Parameters
-    ----------
-    times : array_like
-        1D array of times (s) for which the signal is defined.
-    particle : Particle
-        ``Particle`` object responsible for the showers which produce the
-        Askaryan signal. Should have an ``energy`` in GeV, ``vertex`` in m,
-        and ``id``, plus an ``interaction`` with an ``em_frac`` and
-        ``had_frac``.
-    viewing_angle : float
-        Observation angle (radians) measured relative to the shower axis.
-    viewing_distance : float, optional
-        Distance (m) between the shower vertex and the observation point (along
-        the ray path).
-    ice_model : optional
-        The ice model to be used for describing the index of refraction of the
-        medium.
-    t0 : float, optional
-        Pulse offset time (s), i.e. time at which the showers take place.
-
-    Attributes
-    ----------
-    times, values : ndarray
-        1D arrays of times (s) and corresponding values which define the signal.
-    value_type : Signal.Type.field
-        Type of signal, representing the units of the values.
-    Type : Enum
-        Different value types available for `value_type` of signal objects.
-    em_energy : float
-        Energy (GeV) of the electromagnetic shower producing the pulse.
-    had_energy : float
-        Energy (GeV) of the hadronic shower producing the pulse.
-    vector_potential
-    dt
-    frequencies
-    spectrum
-    envelope
-
-    Raises
-    ------
-    ValueError
-        If the `particle` object is not a neutrino or antineutrino with a
-        charged-current or neutral-current interaction.
-
-    See Also
-    --------
-    Signal : Base class for time-domain signals.
-    pyrex.Particle : Class for storing particle attributes.
-
-    Notes
-    -----
-    Calculates the Askaryan signal based on the ARVZ parameterization [1]_.
-    Uses a Heitler model for the electromagnetic shower profile [2]_ and a
-    Gaisser-Hillas model for the hadronic shower profile [3]_. Calculates the
-    electric field from the vector potential using the convolution method
-    outlined in section 4 of the ARVZ paper, which results in the most
-    efficient calculation of the parameterization.
-
-    References
-    ----------
-    .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
-        of Askaryan radiation." Physical Review D **84**, 103003 (2011).
-    .. [2] K.D. de Vries et al, "On the feasibility of RADAR detection of
-        high-energy neutrino-induced showers in ice." Astropart. Phys.
-        **60**, 25-31 (2015).
-    .. [3] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
-        effect." ICRC proceedings, 17-25 (1999).
-
-    """
-    def __init__(self, times, particle, viewing_angle, viewing_distance=1,
-                 ice_model=ice, t0=0):
-        # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
-        # Vector potential is given by:
-        #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
-        #                            RAC(z(1-n*cos(theta))/c))
-        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
-        #                * c / (1-n*cos(theta))
-
-        # Theta should represent the angle from the shower axis, and so should
-        # always be positive
-        theta = np.abs(viewing_angle)
-
-        if theta > np.pi:
-            raise ValueError("Angles greater than 180 degrees not supported")
-
-        # Calculate shower energies based on particle's electromagnetic and
-        # hadronic shower fractions
-        self.em_energy = particle.energy * particle.interaction.em_frac
-        self.had_energy = particle.energy * particle.interaction.had_frac
-
-        # Calculate index of refraction at the shower position for the
-        # Cherenkov angle calculation and others
-        n = ice_model.index(particle.vertex[2])
-
-        # Calculate the resulting pulse values from an electromagnetic shower
-        # and a hadronic shower, then add them
-        em_vals = self.shower_signal(times=times, energy=self.em_energy,
-                                     profile_function=self.em_shower_profile,
-                                     viewing_angle=theta,
-                                     viewing_distance=viewing_distance,
-                                     n=n, t0=t0)
-        had_vals = self.shower_signal(times=times, energy=self.had_energy,
-                                      profile_function=self.had_shower_profile,
-                                      viewing_angle=theta,
-                                      viewing_distance=viewing_distance,
-                                      n=n, t0=t0)
-
-        # Note that although len(values) = len(times)-1 (because of np.diff),
-        # the Signal class is desinged to handle this by zero-padding the values
-        super().__init__(times, em_vals+had_vals, value_type=self.Type.field)
-
-
-    def shower_signal(self, times, energy, profile_function, viewing_angle,
-                      viewing_distance, n, t0):
+    def shift(self, dt):
         """
-        Calculate the signal values for some shower type.
-
-        Calculates the time-domain values for an Askaryan electric field (V/m)
-        produced by a particular shower initiated by a neutrino.
+        Shifts the signal values in time by `dt`.
 
         Parameters
         ----------
-        times : array_like
-            1D array of times (s) for which the signal is defined.
-        energy : float
-            Energy (GeV) of the shower.
-        profile_function : function
-            Function to be used for calculating the longitudinal shower
-            profile. Should take a distance (m) and energy (GeV) and return the
-            profile value at that depth for a shower of that energy.
-        viewing_angle : float
-            Observation angle (radians) measured relative to the shower axis.
-            Should be positive-valued.
-        viewing_distance : float
-            Distance (m) between the shower vertex and the observation point
-            (along the ray path).
-        n : float
-            The index of refraction of the ice at the location of the shower.
-        t0 : float
-            Pulse offset time (s), i.e. time at which the shower takes place.
-
-        Returns
-        -------
-        array_like
-            1D array of values of the signal created by the shower
-            corresponding to the given `times`. Length ends up being one less
-            than the length of `times` due to implementation.
+        dt : float
+            Time shift (s) to be applied to the signal.
 
         """
-        # Calculation of pulse based on https://arxiv.org/pdf/1106.6283v3.pdf
-        # Vector potential is given by:
-        #   A(theta,t) = convolution(Q(z(1-n*cos(theta))/c)),
-        #                            RAC(z(1-n*cos(theta))/c))
-        #                * sin(theta) / sin(theta_c) / R / integral(Q(z))
-        #                * c / (1-n*cos(theta))
+        self.times += dt
+        self._t0s = [t+dt for t in self._t0s]
 
-        # Fail gracefully if there is no shower (the energy is zero)
-        if energy==0:
-            return np.zeros(len(times)-1)
-
-        theta = viewing_angle
-
-        # Conversion factor from z to t for RAC:
-        # (1-n*cos(theta)) / c
-        z_to_t = (1 - n*np.cos(theta))/3e8
-
-        # Calculate the time step and the corresponding z-step
-        dt = times[1] - times[0]
-
-        # Calculate the corresponding z-step (dz = dt / z_to_t)
-        # If the z-step is too large compared to the expected shower maximum
-        # length, then the result will be bad. Set dt_divider so that
-        # dz / max_length <= 0.1 (with dz=dt/z_to_t)
-        dt_divider = int(np.abs(10*dt/self.max_length(energy)/z_to_t)) + 1
-        dz = dt / dt_divider / z_to_t
-        if dt_divider!=1:
-            logger.debug("z-step of %g too large; dt_divider changed to %g",
-                         dt / z_to_t, dt_divider)
-
-        # Create the charge-profile array up to 2.5 times the nominal
-        # shower maximum length (to reduce errors).
-        z_max = 2.5*self.max_length(energy)
-        n_Q = int(np.abs(z_max/dz))
-        z_Q_vals = np.arange(n_Q) * np.abs(dz)
-        Q = profile_function(z_Q_vals, energy)
-
-        # Fail gracefully if the energy is less than the critical energy for
-        # shower formation (i.e. all Q values are zero)
-        if np.all(Q==0) and len(Q)>0:
-            return np.zeros(len(times)-1)
-
-        # Calculate RAC at a specific number of t values (n_RAC) determined so
-        # that the full convolution will have the same size as the times array,
-        # when appropriately rescaled by dt_divider.
-        # If t_RAC_vals does not include a reasonable range around zero
-        # (typically because n_RAC is too small), errors occur. In that case
-        # extra points are added at the beginning and/or end of RAC.
-        # If n_RAC is too large, the convolution can take a very long time.
-        # In that case, points are removed from the beginning and/or end of RAC.
-        t_tolerance = 10e-9
-        t_start = times[0] - t0
-        n_extra_beginning = int((t_start+t_tolerance)/dz/z_to_t) + 1
-        n_extra_end = (int((t_tolerance-t_start)/dz/z_to_t) + 1
-                       + n_Q - len(times)*dt_divider)
-        n_RAC = (len(times)*dt_divider + 1 - n_Q
-                 + n_extra_beginning + n_extra_end)
-        t_RAC_vals = (np.arange(n_RAC) * dz * z_to_t
-                      + t_start - n_extra_beginning * dz * z_to_t)
-        RA_C = self.RAC(t_RAC_vals, energy)
-
-        # Convolve Q and RAC to get unnormalized vector potential
-        if n_Q*n_RAC>1e6:
-            logger.debug("convolving %i Q points with %i RA_C points",
-                         n_Q, n_RAC)
-        convolution = scipy.signal.convolve(Q, RA_C, mode='full')
-
-        # Adjust convolution by zero-padding or removing values according to
-        # the values added/removed at the beginning and end of RA_C
-        if n_extra_beginning<0:
-            convolution = np.concatenate((np.zeros(-n_extra_beginning),
-                                          convolution))
-        else:
-            convolution = convolution[n_extra_beginning:]
-        if n_extra_end<=0:
-            convolution = np.concatenate((convolution,
-                                          np.zeros(-n_extra_end)))
-        else:
-            convolution = convolution[:-n_extra_end]
-
-        # Reduce the number of values in the convolution based on the dt_divider
-        # so that the number of values matches the length of the times array.
-        # It's possible that this should be using scipy.signal.resample instead
-        # TODO: Figure that out
-        convolution = convolution[::dt_divider]
-
-        # Calculate LQ_tot (the excess longitudinal charge along the showers)
-        LQ_tot = np.trapz(Q, dx=dz)
-
-        # Calculate sin(theta_c) = sqrt(1-cos^2(theta_c)) = sqrt(1-1/n^2)
-        sin_theta_c = np.sqrt(1 - 1/n**2)
-
-        # Scale the convolution by the necessary factors to get the true
-        # vector potential A
-        # z_to_t and dt_divider are divided based on trial and error to correct
-        # the normalization. They are not proven nicely like the other factors
-        A = (convolution * -1 * np.sin(theta) / sin_theta_c / LQ_tot
-             / z_to_t / dt_divider)
-
-        # Not sure why, but multiplying A by -dt is necessary to fix
-        # normalization and dependence of amplitude on time spacing.
-        # Since E = -dA/dt = np.diff(A) / -dt, we can skip multiplying
-        # and later dividing by dt to save a little computational effort
-        # (at the risk of more cognitive effort when deciphering the code)
-        # So, to clarify, the above statement should have "* -dt" at the end
-        # to be the true value of A, and the below would then have "/ -dt"
-
-        # Calculate electric field by taking derivative of vector potential,
-        # and divide by the viewing distance (R)
-        return np.diff(A) / viewing_distance
-
-
-    @property
-    def vector_potential(self):
+    def set_buffers(self, leading=None, trailing=None, force=False):
         """
-        The vector potential of the signal.
-
-        Recovered from the electric field, mostly just for testing purposes.
-
-        """
-        return np.cumsum(np.concatenate(([0],self.values)))[:-1] * -self.dt
-
-
-    @staticmethod
-    def RAC(time, energy):
-        """
-        Calculates R*A_C at the given time and energy.
-
-        The R*A_C value is the observation distance R (m) times the vector
-        potential (V*s/m) at the Cherenkov angle.
+        Set leading and trailing buffers used in calculation of signal values.
 
         Parameters
         ----------
-        time : array_like
-            Time (s) at which to calculate the R*A_C value.
-        energy : float
-            Energy (GeV) of the shower.
+        leading : float or None
+            Leading buffer time (s).
+        trailing : float or None
+            Trailing buffer time (s).
+        force : boolean
+            Whether the buffer times should be forced to the given values. If
+            `False`, each buffer time is set to the maximum of the current and
+            given buffer time. If `True`, each buffer time is set to the given
+            buffer time regardless of the current buffer time (unless the given
+            value is `None`).
 
-        Returns
-        -------
-        array_like
-            The R*A_C value (V*s) at the given time.
+        Raises
+        ------
+        ValueError
+            If either buffer time is less than zero.
 
-        Notes
+        """
+        if leading is not None:
+            if leading<0:
+                raise ValueError("Buffer time cannot be less than zero")
+            if force:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][0] = leading
+            else:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][0] = max(leading, current[0])
+        if trailing is not None:
+            if trailing<0:
+                raise ValueError("Buffer time cannot be less than zero")
+            if force:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][1] = trailing
+            else:
+                for i, current in enumerate(self._buffers):
+                    self._buffers[i][1] = max(trailing, current[1])
+
+
+    def filter_frequencies(self, freq_response, force_real=False):
+        """
+        Apply the given frequency response function to the signal, in-place.
+
+        For the given response function, multiplies the response into the
+        frequency domain of the signal. If the filtered signal is forced to be
+        real, the positive-frequency response is mirrored into the negative
+        frequencies by complex conjugation.
+
+        Parameters
+        ----------
+        freq_response : function
+            Response function taking a frequency (or array of frequencies) and
+            returning the corresponding complex gain(s).
+        force_real : boolean, optional
+            If ``True``, complex conjugation is used on the positive-frequency
+            response to force the filtered signal to be real-valued. Otherwise
+            the frequency response is left alone and any imaginary parts of the
+            filtered signal are thrown out.
+
+        Warns
         -----
-        Based on equation 16 of the ARVZ paper [1]_. This parameterization
-        is only described for electromagnetic showers, but in the absence of
-        a different parameterization for hadronic showers this one is used for
-        both cases.
-
-        References
-        ----------
-        .. [1] J. Alvarez-Muniz et al, "Practical and accurate calculations
-            of Askaryan radiation." Physical Review D **84**, 103003 (2011).
+        Raises a warning if the maximum value of the imaginary part of the
+        filtered signal was greater than 1e-5 times the maximum value of the
+        real part, indicating that there was significant signal lost when
+        discarding the imaginary part.
 
         """
-        # Get absolute value of time in nanoseconds
-        ta = np.abs(time) * 1e9
-        rac = np.zeros_like(time)
-        rac[time>=0] = (-4.5e-17 * energy *
-                        (np.exp(-ta[time>=0]/0.057) + (1+2.87*ta[time>=0])**-3))
-        rac[time<0] = (-4.5e-17 * energy *
-                       (np.exp(-ta[time<0]/0.030) + (1+3.05*ta[time<0])**-3.5))
-        return rac
+        # Since we're using append instead of setting self._filters, need to
+        # manually enforce the cache clearing
+        self._clear_cache()
+        for group in self._filters:
+            group.append((freq_response, force_real))
 
-    @staticmethod
-    def em_shower_profile(z, energy, density=0.92, crit_energy=7.86e-2,
-                          rad_length=36.08):
+
+    def _apply_filters(self, input_vals, filters):
         """
-        Calculates the electromagnetic shower longitudinal charge profile.
+        Apply the given frequency response function to the signal, in-place.
 
-        The longitudinal charge profile is calculated for a given distance,
-        shower energy, density, critical energy, and electron radiation length
-        in ice.
+        For each filter function, multiplies the response into the frequency
+        domain of the signal. If a filtered signal is forced to be real, the
+        positive-frequency response is mirrored into the negative frequencies
+        by complex conjugation.
 
         Parameters
         ----------
-        z : array_like
-            Distance (m) along the shower at which to calculate the charge.
-        energy : float
-            Energy (GeV) of the shower.
-        density : float, optional
-            Density (g/cm^3) of ice.
-        crit_energy : float, optional
-            Critical energy (GeV) for shower formation.
-        rad_length : float, optional
-            Electron radiation length (g/cm^2) in ice.
+        input_vals : array_like
+            1D array of values for the unfiltered signal function.
+        filters : list of tuple
+            List of response functions and ``force_real`` parameters of filters
+            to be applied to the unfiltered function values.
 
-        Returns
-        -------
-        array_like
-            The charge (C) at the given distance along the shower.
-
-        Notes
+        Warns
         -----
-        Profile calculated by a simplified Heitler model based on equations 24
-        and 25 of the radar feasibility paper [1]_.
-
-        References
-        ----------
-        .. [1] K.D. de Vries et al, "On the feasibility of RADAR detection of
-            high-energy neutrino-induced showers in ice." Astropart. Phys.
-            **60**, 25-31 (2015).
+        Raises a warning if the maximum value of the imaginary part of the
+        filtered signal was greater than 1e-5 times the maximum value of the
+        real part, indicating that there was significant signal lost when
+        discarding the imaginary part.
 
         """
-        z = np.array(z)
-        N = np.zeros(z.shape)
+        freqs = scipy.fftpack.fftfreq(n=2*len(input_vals), d=self.dt)
+        all_filters = np.ones(len(freqs), dtype=np.complex_)
 
-        # Below critical energy, no shower
-        if energy<=crit_energy:
-            return N
+        for freq_response, force_real in filters:
+            all_filters *= self._get_filter_response(freqs, freq_response,
+                                                     force_real)
 
-        # Depth calculated by "integrating" the density along the shower path
-        # (in g/cm^2)
-        x = 100 * z * density
-        x_ratio = x / rad_length
-        e_ratio = energy / crit_energy
+        # Zero-pad the signal so the filter doesn't cause the resulting
+        # signal to wrap around the end of the time array
+        vals = np.concatenate((input_vals, np.zeros(len(input_vals))))
+        spectrum = scipy.fftpack.fft(vals)
 
-        # Shower age
-        s = 3 * x_ratio / (x_ratio + 2*np.log(e_ratio))
+        filtered_vals = scipy.fftpack.ifft(all_filters*spectrum)
+        output_vals = np.real(filtered_vals[:len(input_vals)])
 
-        # Number of particles
-        N[z>0] = (0.31 * np.exp(x_ratio[z>0] * (1 - 1.5*np.log(s[z>0])))
-                  / np.sqrt(np.log(e_ratio)))
+        # Issue a warning if there was significant signal in the (discarded)
+        # imaginary part of the filtered values
+        if np.any(np.abs(np.imag(filtered_vals[:len(input_vals)])) >
+                  np.max(np.abs(output_vals)) * 1e-5):
+            msg = ("Significant signal amplitude was lost when forcing the "+
+                   "signal values to be real after applying the frequency "+
+                   "filters '%s'. This may be avoided by making sure the "+
+                   "filters being used are properly defined for negative "+
+                   "frequencies")
+            if not np.all([force_real for _, force_real in filters]):
+                msg += (", or by passing force_real=True to the "+
+                        "Signal.filter_frequencies function")
+            msg += "."
+            logger.warning(msg, [name for name, _ in filters])
 
-        return N * 1.602e-19
-
-    @staticmethod
-    def had_shower_profile(z, energy, density=0.92, crit_energy=17.006e-2,
-                           rad_length=39.562, int_length=113.03,
-                           scale_factor=0.11842):
-        """
-        Calculates the hadronic shower longitudinal charge profile.
-
-        The longitudinal charge profile is calculated for a given distance,
-        density, critical energy, hadron radiation length, and interaction
-        length in ice, plus a scale factor for the number of particles.
-
-        Parameters
-        ----------
-        z : array_like
-            Distance (m) along the shower at which to calculate the charge.
-        energy : float
-            Energy (GeV) of the shower.
-        density : float, optional
-            Density (g/cm^3) of ice.
-        crit_energy : float, optional
-            Critical energy (GeV) for shower formation.
-        rad_length : float, optional
-            Hadron radiation length (g/cm^2) in ice.
-        int_length : float, optional
-            Interaction length (g/cm^2) in ice.
-        scale_factor : float, optional
-            Scale factor S_0 which multiplies the number of particles in the
-            shower.
-
-        Returns
-        -------
-        array_like
-            The charge (C) at the given distance along the shower.
-
-        Notes
-        -----
-        Profile calculated by a Gaisser-Hillas model based on equation 1 of the
-        Alvarez hadronic shower paper [1]_.
-
-        References
-        ----------
-        .. [1] J. Alvarez-Muniz & E. Zas, "EeV Hadronic Showers in Ice: The LPM
-            effect." ICRC proceedings, 17-25 (1999).
-
-        """
-        z = np.array(z)
-        N = np.zeros(z.shape)
-
-        # Below critical energy, no shower
-        if energy<=crit_energy:
-            return N
-
-        # Calculate shower depth and shower maximum depth in g/cm^2
-        x = 100 * z * density
-        e_ratio = energy / crit_energy
-        x_max = rad_length * np.log(e_ratio)
-
-        # Number of particles
-        N[z>0] = (scale_factor * e_ratio * (x_max - int_length) / x_max
-                  * (x[z>0] / (x_max - int_length))**(x_max / int_length)
-                  * np.exp((x_max - x[z>0])/int_length - 1))
-
-        return N * 1.602e-19
-
-    @staticmethod
-    def max_length(energy, density=0.92, crit_energy=7.86e-2,
-                   rad_length=36.08):
-        """
-        Calculates the depth of a particle shower maximum.
-
-        The shower depth of a shower maximum is calculated for a given density,
-        critical energy, and particle radiation length in ice.
-
-        Parameters
-        ----------
-        energy : float
-            Energy (GeV) of the shower.
-        density : float, optional
-            Density (g/cm^3) of ice.
-        crit_energy : float, optional
-            Critical energy (GeV) for shower formation.
-        rad_length : float, optional
-            Radiation length (g/cm^2) in ice of the particle which makes up the
-            shower.
-
-        Returns
-        -------
-        float
-            The depth (m) of the shower maximum for a particle shower.
-
-        """
-        # Maximum depth in g/cm^2
-        x_max = rad_length * np.log(energy / crit_energy) / np.log(2)
-
-        return 0.01 * x_max / density
-
-
-
-AskaryanSignal = ARVZAskaryanSignal
+        return output_vals
 
 
 
@@ -1253,8 +1138,11 @@ class ThermalNoise(FunctionSignal):
         if rms_voltage is not None:
             self.rms = rms_voltage
         elif temperature is not None and resistance is not None:
-            # RMS voltage = sqrt(4 * kB * T * R * bandwidth)
-            self.rms = np.sqrt(4 * 1.38e-23 * temperature * resistance
+            # RMS voltage = sqrt(kB * T * R * bandwidth)
+            # Not using sqrt(4 * kB * T * R * bandwidth) because in the antenna
+            # system only half the voltage is seen and the other half goes to
+            # "ground" (changed under advisement by Cosmin Deaconu)
+            self.rms = np.sqrt(scipy.constants.k * temperature * resistance
                                * (self.f_max - self.f_min))
         else:
             raise ValueError("Either RMS voltage or temperature and resistance"+

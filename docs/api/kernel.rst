@@ -7,5 +7,6 @@ Simulation Kernel (:mod:`pyrex.kernel`)
 
 .. autosummary::
     :toctree: ../docstrings
+    :nosignatures:
 
     EventKernel

@@ -11,6 +11,7 @@ pyrex.custom.arianna.antenna.ARIANNAAntennaSystem
       .. autosummary::
          :toctree:
       
+         ARIANNAAntennaSystem.apply_response
          ARIANNAAntennaSystem.clear
          ARIANNAAntennaSystem.front_end
          ARIANNAAntennaSystem.full_waveform

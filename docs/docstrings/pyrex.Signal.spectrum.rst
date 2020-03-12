@@ -3,4 +3,4 @@ pyrex.Signal.spectrum
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: Signal.spectrum
+.. autoproperty:: Signal.spectrum

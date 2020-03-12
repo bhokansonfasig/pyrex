@@ -3,4 +3,4 @@ pyrex.ray\_tracing.SpecializedRayTracePath.n0
 
 .. currentmodule:: pyrex.ray_tracing
 
-.. autoattribute:: SpecializedRayTracePath.n0
+.. autoproperty:: SpecializedRayTracePath.n0

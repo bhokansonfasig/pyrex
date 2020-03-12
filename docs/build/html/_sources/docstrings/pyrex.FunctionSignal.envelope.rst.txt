@@ -3,4 +3,4 @@ pyrex.FunctionSignal.envelope
 
 .. currentmodule:: pyrex
 
-.. autoattribute:: FunctionSignal.envelope
+.. autoproperty:: FunctionSignal.envelope

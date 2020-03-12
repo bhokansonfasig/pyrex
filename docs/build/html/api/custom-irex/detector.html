@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Custom Detectors (pyrex.custom.irex.detector) &mdash; PyREx 1.8.2 documentation</title>
+    <title>Custom Detectors (pyrex.custom.irex.detector) &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,12 +23,13 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
     <link rel="up" title="IceCube Radio Extension (pyrex.custom.irex)" href="../custom-irex.html" >
     <link rel="next" title="pyrex.custom.irex.detector.IREXString" href="../docstrings/pyrex.custom.irex.detector.IREXString.html" >
     <link rel="prev" title="pyrex.custom.irex.antenna.EnvelopeVpol" href="../docstrings/pyrex.custom.irex.antenna.EnvelopeVpol.html" > 
@@ -53,10 +54,10 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.8.2 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
-          <li class="active"><a href="../custom-irex.html" accesskey="U">IceCube Radio Extension (<code class="docutils literal notranslate"><span class="pre">pyrex.custom.irex</span></code>)</a></li> 
+          <li class="active"><a href="../custom-irex.html" accesskey="U">IceCube Radio Extension (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.irex</span></code>)</a></li> 
     </ul>
               
               
@@ -95,23 +96,23 @@
 <p>Module containing customized detector geometry classes for IREX.</p>
 <p>Designed to be flexible such that stations can be built up from any string
 types and the detector grid can be made up of stations or strings.</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.IREXString.html#pyrex.custom.irex.detector.IREXString" title="pyrex.custom.irex.detector.IREXString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IREXString</span></code></a>(x,&nbsp;y[,&nbsp;antennas_per_string,&nbsp;…])</td>
-<td>String of IREX Vpol antennas.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.IREXString.html#pyrex.custom.irex.detector.IREXString" title="pyrex.custom.irex.detector.IREXString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IREXString</span></code></a></p></td>
+<td><p>String of IREX Vpol antennas.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.RegularStation.html#pyrex.custom.irex.detector.RegularStation" title="pyrex.custom.irex.detector.RegularStation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegularStation</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
-<td>Station geometry with strings evenly spaced radially around the center.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.RegularStation.html#pyrex.custom.irex.detector.RegularStation" title="pyrex.custom.irex.detector.RegularStation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegularStation</span></code></a></p></td>
+<td><p>Station geometry with strings evenly spaced radially around the center.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.CoxeterStation.html#pyrex.custom.irex.detector.CoxeterStation" title="pyrex.custom.irex.detector.CoxeterStation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoxeterStation</span></code></a>(x,&nbsp;y[,&nbsp;strings_per_station,&nbsp;…])</td>
-<td>Station geometry with center string and the rest evenly spaced radially.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.CoxeterStation.html#pyrex.custom.irex.detector.CoxeterStation" title="pyrex.custom.irex.detector.CoxeterStation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoxeterStation</span></code></a></p></td>
+<td><p>Station geometry with center string and the rest evenly spaced radially.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.StationGrid.html#pyrex.custom.irex.detector.StationGrid" title="pyrex.custom.irex.detector.StationGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StationGrid</span></code></a>([stations,&nbsp;station_separation,&nbsp;…])</td>
-<td>Rectangular grid of stations or strings.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.custom.irex.detector.StationGrid.html#pyrex.custom.irex.detector.StationGrid" title="pyrex.custom.irex.detector.StationGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StationGrid</span></code></a></p></td>
+<td><p>Rectangular grid of stations or strings.</p></td>
 </tr>
 </tbody>
 </table>
@@ -128,7 +129,7 @@ types and the detector grid can be made up of stations or strings.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -197,10 +198,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

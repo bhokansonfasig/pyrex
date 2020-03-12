@@ -12,6 +12,7 @@ pyrex.ice\_model.AntarcticIce
          :toctree:
       
          AntarcticIce.attenuation_length
+         AntarcticIce.contains
          AntarcticIce.depth_with_index
          AntarcticIce.gradient
          AntarcticIce.index
@@ -25,8 +26,6 @@ pyrex.ice\_model.AntarcticIce
       .. autosummary::
          :toctree:
       
-         AntarcticIce.a
-         AntarcticIce.k
-         AntarcticIce.n0
-         AntarcticIce.thickness
+         AntarcticIce.index_above
+         AntarcticIce.index_below
 

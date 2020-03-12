@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>PyREx Documentation &mdash; PyREx 1.8.2 documentation</title>
+    <title>PyREx Documentation &mdash; PyREx 1.9.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.2',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,11 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.8.2 documentation" href="#" >
+    <link rel="top" title="PyREx 1.9.0 documentation" href="#" >
     <link rel="next" title="About PyREx" href="about.html" > 
   </head>
   <body>
@@ -84,15 +86,16 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="section" id="id4">
-<h2>PyREx - (<strong>Py</strong>thon package for an IceCube <strong>R</strong>adio <strong>Ex</strong>tension)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<p>PyREx (<strong>Py</strong>thon package for an IceCube <strong>R</strong>adio <strong>Ex</strong>tension) is, as its name suggests, a Python package designed to simulate the measurement of Askaryan pulses via a radio antenna array around the IceCube South Pole Neutrino Observatory.
-The code is designed to be modular so that it can also be applied to other askaryan radio antennas (e.g. the ARA and ARIANNA collaborations).</p>
+<h2>PyREx - (<strong>Py</strong>thon package for <strong>R</strong>adio <strong>Ex</strong>periments)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>PyREx (<strong>Py</strong>thon package for <strong>R</strong>adio <strong>Ex</strong>periments) is a Python package designed to simulate the measurement of Askaryan pulses via in-ice radio antenna arrays.
+The code was written for the ARA collaboration with considerations for future radio arrays.
+As such, the package is designed to be highly modular so that it can easily be used for other radio projects (e.g. ARIANNA, RNO, and IceCube Gen2).</p>
 <div class="section" id="id5">
 <h3>Useful Links<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Source (GitHub): <a class="reference external" href="https://github.com/bhokansonfasig/pyrex">https://github.com/bhokansonfasig/pyrex</a></li>
-<li>Documentation: <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/">https://bhokansonfasig.github.io/pyrex/</a></li>
-<li>Release notes: <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/versions.html">https://bhokansonfasig.github.io/pyrex/build/html/versions.html</a></li>
+<li><p>Source (GitHub): <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/">https://github.com/bhokansonfasig/pyrex/</a></p></li>
+<li><p>Documentation: <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/">https://bhokansonfasig.github.io/pyrex/</a></p></li>
+<li><p>Release notes: <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/versions.html">https://bhokansonfasig.github.io/pyrex/build/html/versions.html</a></p></li>
 </ul>
 </div>
 <div class="section" id="id6">
@@ -109,7 +112,7 @@ pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
 </div>
 <div class="section" id="id8">
 <h4>Installing<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
-<p>The easiest way to get the PyREx package is using <code class="docutils literal notranslate"><span class="pre">pip</span></code> as follows</p>
+<p>The easiest way to get the PyREx package is using <code class="docutils literal notranslate"><span class="pre">pip</span></code> as follows:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/bhokansonfasig/pyrex#egg<span class="o">=</span>pyrex
 </pre></div>
 </div>
@@ -121,33 +124,38 @@ pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
 <div class="section" id="id11">
 <h5><a class="reference external" href="https://matplotlib.org">matplotlib</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h5>
 <p>Recommended version: 2.1+</p>
-<p>Used for creating plots in example code and auxilliary scripts.</p>
+<p>Used for creating plots in example code and auxiliary scripts.</p>
 </div>
-<div class="section" id="id13">
-<h5><a class="reference external" href="https://pyspice.fabrice-salvaire.fr">PySpice</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h5>
+<div class="section" id="id14">
+<h5><a class="reference external" href="https://www.sphinx-doc.org">sphinx</a> and <a class="reference external" href="https://numpydoc.readthedocs.io">numpydoc</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h5>
+<p>Recommended version: 2.1+, 0.9+</p>
+<p>Required for building documentation. Only needed by documentation maintainers and release handlers.</p>
+</div>
+<div class="section" id="id16">
+<h5><a class="reference external" href="https://pyspice.fabrice-salvaire.fr">PySpice</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h5>
 <p>Recommended version: 1.1</p>
 <p>Used by IREX sub-package for some complex front-end circuits. Not needed for default front-ends.</p>
 </div>
 </div>
 </div>
-<div class="section" id="id14">
-<h3>Examples<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id17">
+<h3>Examples<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <p>For examples of how to use PyREx, see the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/usage.html">usage page</a> and the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/examples.html">examples page</a> in the documentation, or the python notebooks in the <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/tree/master/examples">examples</a> directory.</p>
 </div>
-<div class="section" id="id18">
-<h3>Contributing<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
-<p>Contributions to the code base are mostly handled through pull requests. Before contributing, for more information please read the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/contributing.html">contribution page</a> in the documentation.</p>
+<div class="section" id="id21">
+<h3>Contributing<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<p>Contributions to the code base are mostly handled through pull requests on GitHub. Before contributing, please read the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/contributing.html">contribution page</a> in the documentation for more information.</p>
 </div>
-<div class="section" id="id20">
-<h3>Authors<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id23">
+<h3>Authors<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Ben Hokanson-Fasig</li>
+<li><p>Ben Hokanson-Fasig</p></li>
 </ul>
 </div>
-<div class="section" id="id21">
-<h3>License<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id24">
+<h3>License<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://github.com/bhokansonfasig/pyrex/blob/master/LICENSE">MIT License</a></p>
-<p>Copyright (c) 2018 Ben Hokanson-Fasig</p>
+<p>Copyright (c) 2019 Ben Hokanson-Fasig</p>
 </div>
 </div>
 </div>
@@ -163,7 +171,7 @@ pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.8.2</p>
+Version 1.9.0</p>
 
 
 
@@ -227,10 +235,10 @@ Version 1.8.2</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2018, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
       </li>
     </ul>
     </div>

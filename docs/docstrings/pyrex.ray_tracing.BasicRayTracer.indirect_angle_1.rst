@@ -3,4 +3,4 @@ pyrex.ray\_tracing.BasicRayTracer.indirect\_angle\_1
 
 .. currentmodule:: pyrex.ray_tracing
 
-.. autoattribute:: BasicRayTracer.indirect_angle_1
+.. autoproperty:: BasicRayTracer.indirect_angle_1
