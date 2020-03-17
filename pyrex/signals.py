@@ -618,7 +618,7 @@ class FunctionSignal(LazyMutableClass, Signal):
                 func_vals = [function(t) for t in
                              self._full_times(i)-self._t0s[i]]
 
-            func_vals *= self._factors[i]
+            func_vals = np.asarray(func_vals) * self._factors[i]
 
             if len(self._filters[i])!=0:
                 full_vals = self._apply_filters(func_vals, self._filters[i])
