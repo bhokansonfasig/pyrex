@@ -564,3 +564,17 @@ class TestThermalNoise:
         assert np.mean(thermal_signal.values) == pytest.approx(0, abs=5e-3)
         assert (np.std(thermal_signal.values) ==
                 pytest.approx(thermal_signal.rms, rel=0.05))
+
+    def test_with_times(self, thermal_signal):
+        """Test that a shifted signal gives similar values in the same time range"""
+        expected_values = np.interp(np.linspace(0.5e-6, 1e-6, 5001),
+                                    thermal_signal.times, thermal_signal.values)
+        shifted = thermal_signal.with_times(np.linspace(0.5e-6, 1.5e-6, 10001))
+        assert np.allclose(shifted.values[:5001], expected_values)
+
+    def test_resample(self, thermal_signal):
+        """Test that a downsampled signal gives similar values"""
+        expected_values = np.interp(np.linspace(0, 1e-6, 1001),
+                                    thermal_signal.times, thermal_signal.values)
+        resampled = thermal_signal.with_times(np.linspace(0, 1e-6, 1001))
+        assert np.allclose(resampled.values, expected_values)
