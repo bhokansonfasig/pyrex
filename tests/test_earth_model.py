@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrex.earth_model import prem_density, slant_depth
+from pyrex.earth_model import PREM, CoreMantleCrustModel
 
 import numpy as np
 
@@ -84,16 +84,41 @@ prem_data = [
 ]
 
 
-@pytest.mark.parametrize("radius, density", prem_data)
-def test_prem_density(radius, density):
-    """Test that prem_density function matches data"""
-    assert prem_density(radius) == pytest.approx(density, rel=1e-5)
+class TestPREM:
+    """Tests for PREM earth model class"""
+    @pytest.mark.parametrize("radius, density", prem_data)
+    def test_density(self, radius, density):
+        """Test that density function matches PREM data"""
+        earth = PREM()
+        assert earth.density(radius) == pytest.approx(density, rel=1e-5)
 
-def test_prem_mutliple():
-    """Test prem_density for multiple values at once"""
-    radii = np.linspace(0, 6500e3, 6501)
-    expected = [prem_density(r) for r in radii]
-    assert np.array_equal(prem_density(radii), expected)
+    def test_density_multiple(self):
+        """Test density function for multiple values at once"""
+        earth = PREM()
+        radii = np.linspace(0, 6500e3, 6501)
+        expected = [earth.density(r) for r in radii]
+        assert np.array_equal(earth.density(radii), expected)
+
+    # TODO: Add tests for slant depth
 
 
-# TODO: Add tests for slant depth
+
+class TestCoreMantleCrustModel:
+    """Tests for CoreMantleCrustModel class"""
+    def test_density(self):
+        """Test that density function matches expected values"""
+        earth = CoreMantleCrustModel()
+        assert earth.density(0) == 14
+        assert earth.density(1e6) == 14
+        assert earth.density(3.464e6) == 14
+        assert earth.density(3.5e6) == 3.4
+        assert earth.density(5e6) == 3.4
+        assert earth.density(6.338e6) == 3.4
+        assert earth.density(6.378e6) == 2.9
+
+    def test_density_multiple(self):
+        """Test density function for multiple values at once"""
+        earth = CoreMantleCrustModel()
+        radii = np.linspace(0, 6500e3, 6501)
+        expected = [earth.density(r) for r in radii]
+        assert np.array_equal(earth.density(radii), expected)
