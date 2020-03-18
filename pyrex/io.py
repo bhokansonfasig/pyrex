@@ -648,10 +648,15 @@ class EventIterator(HDF5Base):
             else:
                 self._locations[key] = value
 
-        self._max_antenna = max(
-            len(self._object[self._locations["antennas_meta_float"]]),
-            len(self._object[self._locations["antennas_meta_str"]])
-        )
+        self._max_antenna = 0
+        for key in ["antennas_meta_float", "antennas_meta_str"]:
+            if not key in self._locations:
+                continue
+            loc = self._locations[key]
+            if loc in self._object:
+                self._max_antenna = max(self._max_antenna,
+                                        len(self._object[loc]))
+
         self._max_events = hdf5_file[self._locations["indices"]].shape[0]
         self._total_thrown = hdf5_file[self._locations_original["particles_meta"]].attrs["total_thrown"]
 
@@ -1429,6 +1434,8 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         self._num_ant = 0
         for key in ["antennas_meta_float", "antennas_meta_str"]:
+            if not key in self._locations:
+                continue
             loc = self._locations[key]
             if loc in self._file:
                 self._num_ant = max(self._num_ant, len(self._file[loc]))
