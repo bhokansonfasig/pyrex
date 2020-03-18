@@ -6,9 +6,10 @@ from config import SEED
 
 from pyrex.generation import (Generator, CylindricalGenerator,
                               RectangularGenerator, ListGenerator,
-                              NumpyFileGenerator)
+                              NumpyFileGenerator, FileGenerator)
 from pyrex.particle import Event, Particle, NeutrinoInteraction
 from pyrex.earth_model import earth
+from pyrex.io import File
 
 from collections import Counter
 import numpy as np
@@ -627,95 +628,147 @@ class TestRectangularGenerator:
 
 
 @pytest.fixture
-def event():
-    """Fixture for forming basic Event object"""
-    return Event(Particle(particle_id=Particle.Type.electron_neutrino,
-                          vertex=[100, 200, -500], direction=[0, 0, 1],
-                          energy=1e9))
+def events():
+    """Fixture for forming basic list of Event objects"""
+    return [
+        Event(Particle(particle_id=Particle.Type.electron_neutrino,
+                       vertex=[100, 200, -500], direction=[0, 0, 1],
+                       energy=1e9)),
+        Event(Particle(particle_id=Particle.Type.electron_antineutrino,
+                       vertex=[0, 0, 0], direction=[0, 0, -1],
+                       energy=1e9)),
+    ]
 
 class TestListGenerator:
     """Tests for ListGenerator class"""
-    def test_creation(self, event):
-        """Test initialization of ListGenerator"""
-        generator = ListGenerator(event)
-        assert generator.events[0] == event
+    def test_creation(self, events):
+        """Test initialization of ListGenerator with various argument types"""
+        generator = ListGenerator(events)
+        assert generator.events[0] == events[0]
+        assert generator.events[1] == events[1]
         assert generator.loop
-        generator = ListGenerator([event, event])
-        assert generator.events[0] == event
-        assert generator.events[1] == event
+        assert generator.count == 0
+        generator = ListGenerator(events[0])
+        assert generator.events[0] == events[0]
         assert generator.loop
+        assert generator.count == 0
+        generator = ListGenerator(events[0].roots[0])
+        assert generator.events[0].roots[0] == events[0].roots[0]
+        assert generator.loop
+        assert generator.count == 0
 
-    def test_create_event(self, event):
-        event2 = Event(Particle(particle_id="nu_e", vertex=[0, 0, 0],
-                                direction=[0, 0, -1], energy=1e9))
-        generator = ListGenerator([event, event2])
-        assert generator.create_event() == event
-        assert generator.create_event() == event2
+    def test_create_event(self, events):
+        """Test that create_event returns the appropriate given events"""
+        generator = ListGenerator(events)
+        assert generator.create_event() == events[0]
+        assert generator.create_event() == events[1]
 
-    def test_loop(self, event):
+    def test_loop(self, events):
         """Test that the loop property allows for turning on and off the
         re-iteration of the list of events"""
-        event2 = Event(Particle(particle_id="nu_e", vertex=[0, 0, 0],
-                                direction=[0, 0, -1], energy=1e9))
-        generator = ListGenerator([event, event2])
-        assert generator.create_event() == event
-        assert generator.create_event() == event2
-        assert generator.create_event() == event
-        assert generator.create_event() == event2
-        assert generator.create_event() == event
-        generator = ListGenerator(event, loop=False)
+        generator = ListGenerator(events)
+        assert generator.create_event() == events[0]
+        assert generator.create_event() == events[1]
+        assert generator.create_event() == events[0]
+        assert generator.create_event() == events[1]
+        assert generator.create_event() == events[0]
+        generator = ListGenerator(events, loop=False)
         assert not generator.loop
-        assert generator.create_event() == event
+        for i, match_event in enumerate(events):
+            assert generator.create_event() == match_event
         with pytest.raises(StopIteration):
             generator.create_event()
 
+    def test_count(self, events):
+        """Test that the count increments appropriately when throwing events"""
+        generator = ListGenerator(events)
+        assert generator.count == 0
+        for i in range(5):
+            generator.create_event()
+            assert generator.count == i+1
+        generator = ListGenerator(events, loop=False)
+        assert generator.count == 0
+        for i in range(len(events)):
+            generator.create_event()
+            assert generator.count == i+1
+        with pytest.raises(StopIteration):
+            generator.create_event()
+        assert generator.count == 2
 
 
-test_ids = [12, -12, 14, 16]
-test_vertices = [(0, 0, 0), (0, 0, -100), (-100, -100, -300), (100, 200, -500)]
-test_directions = [(0, 0, -1), (0, 0, 1), (1, 0, 1), (0, 0, 1)]
-test_energies = [1e9]*4
-test_interactions = ["cc", "nc", "cc", "nc"]
-test_weights = [0.2, 0.3, 0.4, 0.5]
 
 @pytest.fixture
-def file_gen(tmpdir):
-    """Fixture for forming basic NumpyFileGenerator object,
-    including creating temporary .npz files (once per test)."""
-    if not "test_particles_1.npz" in [f.basename for f in tmpdir.listdir()]:
-        np.savez(str(tmpdir.join("test_particles_1.npz")),
-                 particle_ids=test_ids[:2], vertices=test_vertices[:2],
-                 directions=test_directions[:2], energies=test_energies[:2],
-                 interactions=test_interactions[:2], weights=test_weights[:2])
-        np.savez(str(tmpdir.join("test_particles_2.npz")),
-                 test_ids[2:], test_vertices[2:], test_directions[2:],
-                 test_energies[2:], test_interactions[2:], test_weights[2:])
-    return NumpyFileGenerator([str(tmpdir.join("test_particles_1.npz")),
-                               str(tmpdir.join("test_particles_2.npz"))])
+def file_generator(tmpdir):
+    """Fixture for forming basic FileGenerator object, including creating a
+    temporary output file to be read from (once per test)."""
+    if not "test_output_1.h5" in [f.basename for f in tmpdir.listdir()]:
+        writer1 = File(str(tmpdir.join('test_output_1.h5')), mode='w',
+                       write_particles=True, write_triggers=False,
+                       write_antenna_triggers=False, write_rays=False,
+                       write_noise=False, write_waveforms=False,
+                       require_trigger=False)
+        writer2 = File(str(tmpdir.join('test_output_2.h5')), mode='w',
+                       write_particles=True, write_triggers=False,
+                       write_antenna_triggers=False, write_rays=False,
+                       write_noise=False, write_waveforms=False,
+                       require_trigger=False)
+        writer1.open()
+        writer2.open()
+        np.random.seed(SEED)
+        gen = CylindricalGenerator(dr=5000, dz=3000, energy=1e9)
+        for _ in range(10):
+            writer1.add(gen.create_event())
+        for _ in range(10):
+            writer2.add(gen.create_event())
+        writer1.close()
+        writer2.close()
+    return FileGenerator([str(tmpdir.join('test_output_1.h5')),
+                          str(tmpdir.join('test_output_2.h5'))])
 
-class TestNumpyFileGenerator:
-    """Tests for NumpyFileGenerator class"""
-    def test_creation(self, file_gen, tmpdir):
-        """Test initialization of NumpyFileGenerator"""
-        assert file_gen.files == [str(tmpdir.join("test_particles_1.npz")),
-                                  str(tmpdir.join("test_particles_2.npz"))]
-        assert issubclass(file_gen.interaction_model, NeutrinoInteraction)
-        file_gen_2 = NumpyFileGenerator(str(tmpdir.join("test_particles_1.npz")))
-        assert file_gen_2.files == [str(tmpdir.join("test_particles_1.npz"))]
+@pytest.fixture
+def shadow_file_generator(tmpdir):
+    """Fixture for forming FileGenerator object from a shadowed generator,
+    including creating a temporary output file to be read from (once per test)."""
+    if not "test_shadow_output.h5" in [f.basename for f in tmpdir.listdir()]:
+        writer = File(str(tmpdir.join('test_shadow_output.h5')), mode='w',
+                      write_particles=True, write_triggers=False,
+                      write_antenna_triggers=False, write_rays=False,
+                      write_noise=False, write_waveforms=False,
+                      require_trigger=False)
+        writer.open()
+        np.random.seed(SEED)
+        gen = CylindricalGenerator(dr=5000, dz=3000, energy=1e9, shadow=True)
+        for _ in range(10):
+            prev = gen.count
+            event = gen.create_event()
+            writer.add(event, events_thrown=gen.count-prev)
+        writer.close()
+    return FileGenerator(str(tmpdir.join('test_shadow_output.h5')))
 
-    def test_create_event(self, file_gen, tmpdir):
-        """Test that create_event method loops over files correctly.
-        Also tests ability to read files without explicit labels since
-        test_particles_2.npz is created without explicit labels"""
-        for i in range(4):
-            event = file_gen.create_event()
+class TestFileGenerator:
+    """Tests for FileGenerator class"""
+    def test_creation(self, file_generator, tmpdir):
+        """Test initialization of FileGenerator"""
+        assert file_generator.files == [str(tmpdir.join("test_output_1.h5")),
+                                        str(tmpdir.join("test_output_2.h5"))]
+        assert issubclass(file_generator.interaction_model, NeutrinoInteraction)
+        assert file_generator.slice_range == 100
+        assert file_generator.count == 0
+        file_generator2 = FileGenerator(str(tmpdir.join("test_output_1.h5")),
+                                        slice_range=1)
+        assert file_generator2.files == [str(tmpdir.join("test_output_1.h5"))]
+        assert file_generator2.slice_range == 1
+        assert file_generator2.count == 0
+
+    def test_create_event(self, file_generator, tmpdir):
+        """Test that create_event method loops over files correctly"""
+        np.random.seed(SEED)
+        gen = CylindricalGenerator(dr=5000, dz=3000, energy=1e9)
+        expected_events = [gen.create_event() for _ in range(20)]
+        for i in range(20):
+            event = file_generator.create_event()
             particle = event.roots[0]
-            expected = Particle(particle_id=test_ids[i],
-                                vertex=test_vertices[i],
-                                direction=test_directions[i],
-                                energy=test_energies[i],
-                                interaction_type=test_interactions[i],
-                                weight=test_weights[i])
+            expected = expected_events[i].roots[0]
             assert particle.id == expected.id
             assert np.array_equal(particle.vertex, expected.vertex)
             assert np.array_equal(particle.direction, expected.direction)
@@ -723,16 +776,28 @@ class TestNumpyFileGenerator:
             assert particle.interaction.kind == expected.interaction.kind
             assert particle.weight == expected.weight
         with pytest.raises(StopIteration):
-            file_gen.create_event()
+            file_generator.create_event()
 
-    def test_bad_files(self, tmpdir):
-        """Test that appropriate errors are raised when bad files are passed"""
-        np.savez(str(tmpdir.join("bad_particles_1.npz")),
-                 some=[(0, 0, 0), (0, 0, -100)], badly=[(0, 0, -1), (0, 0, 1)],
-                 named=[0]*2, keys=[1e9]*2)
-        with pytest.raises(KeyError):
-            NumpyFileGenerator(str(tmpdir.join("bad_particles_1.npz")))
-        np.savez(str(tmpdir.join("bad_particles_2.npz")),
-                 [(0, 0, 0), (0, 0, -100)], [(0, 0, -1), (0, 0, 1)], [0], [1e9])
-        with pytest.raises(ValueError):
-            NumpyFileGenerator(str(tmpdir.join("bad_particles_2.npz")))
+    def test_slice_range(self, file_generator, tmpdir):
+        """Test that the slice range is obeyed when iterating files"""
+        assert (len(file_generator._events) ==
+                min(file_generator.slice_range, 10))
+        file_generator2 = FileGenerator(str(tmpdir.join("test_output_1.h5")),
+                                        slice_range=1)
+        assert (len(file_generator2._events) ==
+                min(file_generator2.slice_range, 10))
+
+    def test_count(self, file_generator, shadow_file_generator, tmpdir):
+        """Test that the count increments appropriately when throwing events,
+        event for shadow-based generators"""
+        assert file_generator.count == 0
+        for i in range(20):
+            file_generator.create_event()
+            assert file_generator.count == i+1
+        assert shadow_file_generator.count == 0
+        counts = [shadow_file_generator.count]
+        for i in range(10):
+            shadow_file_generator.create_event()
+            counts.append(shadow_file_generator.count)
+        assert np.all(np.diff(counts)>=1)
+        assert np.max(np.diff(counts)) > 1
