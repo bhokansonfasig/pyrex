@@ -137,11 +137,16 @@ class Antenna:
             "efficiency": self.efficiency,
             "noisy": int(self.noisy),
             "unique_noises": self.unique_noises,
-            "freq_range_min": self.freq_range[0],
-            "freq_range_max": self.freq_range[1],
-            "noise_rms": np.nan if self.noise_rms is None else self.noise_rms,
-            "temperature": np.nan if self.temperature is None else self.temperature,
-            "resistance": np.nan if self.resistance is None else self.resistance
+            "freq_range_min": (np.nan if self.freq_range is None
+                               else self.freq_range[0]),
+            "freq_range_max": (np.nan if self.freq_range is None
+                               else self.freq_range[1]),
+            "noise_rms": (np.nan if self.noise_rms is None
+                          else self.noise_rms),
+            "temperature": (np.nan if self.temperature is None
+                            else self.temperature),
+            "resistance": (np.nan if self.resistance is None
+                           else self.resistance)
         }
 
     def set_orientation(self, z_axis=(0,0,1), x_axis=(1,0,0)):
