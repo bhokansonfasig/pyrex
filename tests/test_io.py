@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrex.io import HDF5Base, HDF5Reader, HDF5Writer, File
+from pyrex.io import HDF5Base, HDF5Reader, HDF5Writer, EventIterator, File
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.particle import Particle, Event
@@ -277,22 +277,6 @@ class TestHDF5Writer:
         del h5writer['file_meta']
         assert '/file_metadata' not in h5writer
         h5writer.close()
-
-    # def test_write_indices(self, h5writer):
-    #     """Test the _write_indices method of HDF5Writer"""
-    #     h5writer.open()
-    #     assert h5writer['indices'].shape == (0, 0, 2)
-    #     h5writer._file.create_dataset('dataset', [0, 1, 2, 3])
-    #     h5writer._write_indices('dataset', 0)
-    #     assert h5writer['indices'].shape == (1, 1, 2)
-    #     assert np.array_equal(h5writer['indices'][:], [[[0, 1]]])
-    #     assert np.array_equal(h5writer['indices'].attrs['keys'],
-    #                           [str.encode('dataset')])
-    #     h5writer._write_indices('dataset', 1, length=2)
-    #     assert h5writer['indices'].shape == (1, 1, 2)
-    #     assert np.array_equal(h5writer['indices'][:], [[[0, 1], [1, 2]]])
-    #     assert np.array_equal(h5writer['indices'].attrs['keys'],
-    #                           [str.encode('dataset')])
 
     def test_set_detector(self, h5writer):
         """Test assigning a detector to the HDF5Writer object"""
@@ -652,3 +636,421 @@ class TestHDF5Writer:
                 str.encode('zero'))
         assert h5writer['file_meta']['float'][float_key_idx+1] == 0
         h5writer.close()
+
+
+
+@pytest.fixture
+def h5reader(tmpdir):
+    """Fixture for forming basic HDF5Reader object on a test file"""
+    h5writer = HDF5Writer(str(tmpdir.join('test_output.h5')), mode='w',
+                          write_particles=True, write_triggers=True,
+                          write_antenna_triggers=True, write_rays=True,
+                          write_noise=False, write_waveforms=True,
+                          require_trigger=True)
+    event = Event(Particle(particle_id=Particle.Type.electron_neutrino,
+                            vertex=[100, 200, -500], direction=[0, 0, 1],
+                            energy=1e9, interaction_type='nc'))
+    detector = [Antenna(position=(0, 0, -100), noisy=False),
+                Antenna(position=(0, 0, -200), noisy=False)]
+    rays = [RayTracer(event.roots[0].vertex, ant.position).solutions
+            for ant in detector]
+    polarizations = [[(0, 0, 1), (0, 0, -1)] for _ in detector]
+    for ant in detector:
+        ant.signals.append(Signal([0, 1e-9, 2e-9], [0, 1, 2]))
+    h5writer.open()
+    h5writer.set_detector(detector)
+    amps = h5writer.create_analysis_dataset('signal_amplitudes', shape=(2, 2))
+    h5writer.add(event=event, triggered=False, ray_paths=rays,
+                 polarizations=polarizations)
+    amps[0] = [np.max(ant.signals[0].values) for ant in detector]
+    h5writer.add_analysis_indices('signal_amplitudes', 0, 0)
+    h5writer.add(event=event, triggered=True, ray_paths=rays,
+                 polarizations=polarizations, events_thrown=5)
+    amps[1] = [np.max(ant.signals[0].values) for ant in detector]
+    h5writer.add_analysis_indices('signal_amplitudes', 1, 1)
+    h5writer.close()
+    return HDF5Reader(str(tmpdir.join('test_output.h5')))
+
+class TestHDF5Reader:
+    """Tests for HDF5Reader class"""
+    def test_creation(self, h5reader, tmpdir):
+        """Test initialization of HDF5Reader object"""
+        assert h5reader.filename == str(tmpdir.join('test_output.h5'))
+
+    def test_open_close(self, h5reader):
+        """Test opening and closing the HDF5Reader object"""
+        assert not h5reader.is_open
+        h5reader.open()
+        assert h5reader.is_open
+        assert h5reader._file_version_major == 1
+        assert h5reader._file_version_minor == 0
+        h5reader.close()
+        assert not h5reader.is_open
+
+    def test_context_manager(self, h5reader, tmpdir):
+        """Test opening and closing the HDF5Reader object with a context
+        manager"""
+        with HDF5Reader(str(tmpdir.join('test_output.h5'))) as h5reader:
+            assert h5reader.is_open
+        assert not h5reader.is_open
+
+    def test_getitem_str(self, h5reader):
+        """Test the __getitem__ method for getting groups and datasets"""
+        with pytest.raises(IOError):
+            h5reader['/event_indices']
+        h5reader.open()
+        assert h5reader['/event_indices'].name == '/event_indices'
+        assert h5reader['event_indices'].name == '/event_indices'
+        assert h5reader['indices'].name == '/event_indices'
+        assert h5reader['file_meta'].name == '/file_metadata'
+        with pytest.raises(ValueError):
+            h5reader['nonexistent']
+        h5reader.close()
+
+    def test_contains(self, h5reader):
+        """Test the __contains__ method for checking existence of datasets"""
+        with pytest.raises(IOError):
+            '/event_indices' in h5reader
+        h5reader.open()
+        assert '/event_indices' in h5reader
+        assert 'event_indices' in h5reader
+        assert 'indices' in h5reader
+        assert 'file_meta' in h5reader
+        assert 'nonexistent' not in h5reader
+        h5reader.close()
+
+    def test_get_waveforms(self, h5reader, tmpdir):
+        """Test reading waveform data from the hdf5 file"""
+        with pytest.raises(IOError):
+            h5reader.get_waveforms()
+        empty = HDF5Writer(str(tmpdir.join('test_empty.h5')), mode='w')
+        empty.open()
+        empty.close()
+        with HDF5Reader(str(tmpdir.join('test_empty.h5'))) as empty_reader:
+            with pytest.raises(ValueError):
+                empty_reader.get_waveforms()
+        h5reader.open()
+        waves = h5reader.get_waveforms()
+        expected = [[[np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])],
+                     [np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])]]]
+        assert waves.shape == (1, 2, 2)
+        for i, row in enumerate(waves):
+            for j, col in enumerate(row):
+                for k, element in enumerate(col):
+                    assert np.array_equal(element, expected[i][j][k])
+        waves = h5reader.get_waveforms(event_id=0)
+        assert waves.shape == (0, 2, 2)
+        waves = h5reader.get_waveforms(event_id=1)
+        expected = [[[np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])],
+                     [np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])]]]
+        assert waves.shape == (1, 2, 2)
+        for i, row in enumerate(waves):
+            for j, col in enumerate(row):
+                for k, element in enumerate(col):
+                    assert np.array_equal(element, expected[i][j][k])
+        with pytest.raises(ValueError):
+            h5reader.get_waveforms(event_id=2)
+        waves = h5reader.get_waveforms(antenna_id=0)
+        expected = [[np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])]]
+        assert waves.shape == (1, 2)
+        for i, row in enumerate(waves):
+            for j, element in enumerate(row):
+                assert np.array_equal(element, expected[i][j])
+        with pytest.raises(ValueError):
+            h5reader.get_waveforms(antenna_id=2)
+        waves = h5reader.get_waveforms(event_id=1, antenna_id=1,
+                                       waveform_type=0)
+        assert len(waves) == 2
+        assert np.array_equal(waves[0], [0, 1e-9, 2e-9])
+        assert np.array_equal(waves[1], [0, 1, 2])
+        h5reader.close()
+
+    def test_antenna_info(self, h5reader):
+        """Test the antenna_info property of the HDF5Reader class"""
+        with pytest.raises(IOError):
+            h5reader.antenna_info
+        h5reader.open()
+        assert len(h5reader.antenna_info) == 2
+        assert h5reader.antenna_info[0]['position_z'] == -100
+        assert h5reader.antenna_info[1]['position_z'] == -200
+        h5reader.close()
+
+    def test_file_metadata(self, h5reader):
+        """Test the file_metadata property of the HDF5Reader class"""
+        with pytest.raises(IOError):
+            h5reader.file_metadata
+        h5reader.open()
+        assert h5reader.file_metadata['file_version'] == '1.0'
+        assert h5reader.file_metadata['file_version_major'] == 1
+        assert h5reader.file_metadata['file_version_minor'] == 0
+        h5reader.close()
+
+    def test_total_events_thrown(self, h5reader):
+        """Test the total_events_thrown propety of the HDF5Reader class"""
+        with pytest.raises(IOError):
+            h5reader.total_events_thrown
+        h5reader.open()
+        assert h5reader.total_events_thrown == 6
+        h5reader.close()
+
+
+
+class TestEventIterator:
+    """Test EventIterator through the lens of HDF5Reader"""
+    def test_getitem_events(self, h5reader):
+        """Test the HDF5Reader __getitem__ method for getting events"""
+        with pytest.raises(IOError):
+            h5reader[0]
+        h5reader.open()
+        assert isinstance(h5reader[0], EventIterator)
+        assert isinstance(h5reader[:], EventIterator)
+        assert isinstance(h5reader[slice(0, 2)], EventIterator)
+        with pytest.raises(IndexError):
+            assert isinstance(h5reader[2], EventIterator)
+        with pytest.raises(IndexError):
+            assert isinstance(h5reader[:10], EventIterator)
+        with pytest.raises(IndexError):
+            assert isinstance(h5reader[slice(0, 10)], EventIterator)
+        h5reader.close()
+
+    def test_reader_len(self, h5reader):
+        """Test the HDF5Reader __len__ method for getting number of events"""
+        with pytest.raises(IOError):
+            len(h5reader)
+        h5reader.open()
+        assert len(h5reader) == 2
+        h5reader.close()
+
+    def test_iteration(self, h5reader):
+        """Test the HDF5Reader __iter__ method for iterating events"""
+        with pytest.raises(IOError):
+            for event in h5reader:
+                pass
+        h5reader.open()
+        for event in h5reader:
+            assert isinstance(event, EventIterator)
+        h5reader.close()
+
+    def test_get_waveforms(self, h5reader):
+        """Test getting waveform data per event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            if i==0:
+                assert len(event.get_waveforms()) == 0
+            else:
+                waves = event.get_waveforms()
+                expected = [[[np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])],
+                             [np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])]]]
+                assert waves.shape == (1, 2, 2)
+                for i, row in enumerate(waves):
+                    for j, col in enumerate(row):
+                        for k, element in enumerate(col):
+                            assert np.array_equal(element, expected[i][j][k])
+                waves = event.get_waveforms(antenna_id=0)
+                expected = [[np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])]]
+                assert waves.shape == (1, 2)
+                for i, row in enumerate(waves):
+                    for j, element in enumerate(row):
+                        assert np.array_equal(element, expected[i][j])
+                with pytest.raises(ValueError):
+                    event.get_waveforms(antenna_id=2)
+                waves = event.get_waveforms(waveform_type=0)
+                expected = [[np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])],
+                            [np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])]]
+                assert waves.shape == (2, 2)
+                for i, row in enumerate(waves):
+                    for j, element in enumerate(row):
+                        assert np.array_equal(element, expected[i][j])
+        h5reader.close()
+
+
+    def test_get_particle_info(self, h5reader):
+        """Test getting particle data per event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            all_info = event.get_particle_info()
+            interaction_info = event.get_particle_info('interaction_info')
+            assert all_info[0]['vertex_z'] == -500
+            assert event.get_particle_info('vertex_z')[0] == -500
+            assert all_info[0]['particle_name'] == 'electron_neutrino'
+            assert (event.get_particle_info('particle_name')[0] ==
+                    'electron_neutrino')
+            assert all_info[0]['interaction_name'] == 'neutral_current'
+            assert interaction_info['interaction_name'][0] == 'neutral_current'
+            assert (event.get_particle_info('interaction_name')[0] ==
+                    'neutral_current')
+            assert np.array_equal(event.get_particle_info('vertex')[0],
+                                  [100, 200, -500])
+            assert np.array_equal(event.get_particle_info('direction')[0],
+                                  [0, 0, 1])
+            with pytest.raises(ValueError):
+                event.get_particle_info('nonexistent')
+        h5reader.close()
+
+    def test_get_rays_info(self, h5reader):
+        """Test getting ray data per event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            if i==0:
+                assert len(event.get_rays_info()) == 0
+            else:
+                all_info = event.get_rays_info()
+                assert (all_info[0][0]['launch_angle'] ==
+                        pytest.approx(0.5029228722862866))
+                assert (event.get_rays_info('launch_angle')[0][0] ==
+                        pytest.approx(0.5029228722862866))
+                assert (all_info[0][1]['launch_angle'] ==
+                        pytest.approx(0.6375599137798126))
+                assert (event.get_rays_info('launch_angle')[0][1] ==
+                        pytest.approx(0.6375599137798126))
+                assert (all_info[1][0]['launch_angle'] ==
+                        pytest.approx(0.3349375068726318))
+                assert (event.get_rays_info('launch_angle')[1][0] ==
+                        pytest.approx(0.3349375068726318))
+                assert (all_info[1][1]['launch_angle'] ==
+                        pytest.approx(0.291598249209347))
+                assert (event.get_rays_info('launch_angle')[1][1] ==
+                        pytest.approx(0.291598249209347))
+                expected = np.zeros((2, 2, 3))
+                for ray in range(2):
+                    for ant in range(2):
+                        expected[ray][ant][0] = all_info[ray][ant]['emitted_x']
+                        expected[ray][ant][1] = all_info[ray][ant]['emitted_y']
+                        expected[ray][ant][2] = all_info[ray][ant]['emitted_z']
+                assert np.array_equal(event.get_rays_info('emitted_direction'),
+                                      expected)
+                with pytest.raises(ValueError):
+                    event.get_rays_info('nonexistent')
+        h5reader.close()
+
+    def test_triggered(self, h5reader):
+        """Test the triggered property of each event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            assert event.triggered == bool(i)
+        h5reader.close()
+
+    def test_noise_bases(self, tmpdir):
+        """Test the noise_bases property of each event with EventIterator"""
+        h5writer = HDF5Writer(str(tmpdir.join('test_output.h5')), mode='w',
+                              write_particles=True, write_triggers=True,
+                              write_antenna_triggers=False, write_rays=False,
+                              write_noise=True, write_waveforms=False,
+                              require_trigger=True)
+        event = Event(Particle(particle_id=Particle.Type.electron_neutrino,
+                               vertex=[100, 200, -500], direction=[0, 0, 1],
+                               energy=1e9, interaction_type='nc'))
+        detector = [Antenna(position=(0, 0, -100), noisy=True, temperature=300,
+                            resistance=100, freq_range=[500e6, 750e6]),
+                    Antenna(position=(0, 0, -200), noisy=True, temperature=300,
+                            resistance=100, freq_range=[500e6, 750e6])]
+        for ant in detector:
+            ant.signals.append(Signal([0, 1e-9, 2e-9], [0, 1, 2]))
+            ant.all_waveforms
+        h5writer.open()
+        h5writer.set_detector(detector)
+        h5writer.add(event=event, triggered=False)
+        h5writer.add(event=event, triggered=True, events_thrown=5)
+        h5writer.close()
+        h5reader = HDF5Reader(str(tmpdir.join('test_output.h5')))
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            if i==0:
+                assert len(event.noise_bases) == 0
+            else:
+                assert event.noise_bases.shape == (2, 3)
+                for (freqs, amps, phases) in event.noise_bases:
+                    assert np.array_equal(freqs,
+                                          np.linspace(500e6, 700e6, 5))
+                    assert len(amps) == len(freqs)
+                    assert len(phases) == len(freqs)
+        h5reader.close()
+
+    def test_get_triggered_components(self, h5reader):
+        """Test getting the triggered components of each event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            assert (event.get_triggered_components() ==
+                    ['antenna_0', 'antenna_1'])
+            assert (event.get_triggered_components(ray=0) ==
+                    ['antenna_0', 'antenna_1'])
+        h5reader.close()
+
+    def test_flavor(self, h5reader):
+        """Test the flavor property of each event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            assert event.flavor == 'electron'
+        h5reader.close()
+
+    def test_is_nubar(self, h5reader):
+        """Test the is_nubar property of each event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            assert not event.is_nubar
+        h5reader.close()
+
+    def test_is_neutrino(self, h5reader):
+        """Test the is_neutrino property of each event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            assert event.is_neutrino
+        h5reader.close()
+
+    def test_total_events_thrown(self, h5reader):
+        """Test the total_events_thrown property of each event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            assert event.total_events_thrown == 3*(i+1)
+        h5reader.close()
+
+    def test_get_data(self, h5reader):
+        """Test getting arbitrary data for each event with EventIterator"""
+        h5reader.open()
+        for i, event in enumerate(h5reader):
+            particle_floats, particle_strings = event.get_data('particles_meta')
+            assert particle_floats[0][0] == 12
+            assert particle_strings[0][0] == 'electron_neutrino'
+            assert event.get_data('particles_meta', 'vertex_z') == -500
+            assert event.get_data('triggers') == [bool(i)]
+            assert np.array_equal(event.get_data('signal_amplitudes'),
+                                  [[2, 2]])
+        h5reader.close()
+
+    def test_slice_range(self, tmpdir):
+        """Test that reading files works the same for various slice ranges"""
+        h5writer = HDF5Writer(str(tmpdir.join('test_output.h5')), mode='w',
+                              write_particles=True, write_triggers=True,
+                              write_antenna_triggers=True, write_rays=True,
+                              write_noise=False, write_waveforms=False,
+                              require_trigger=True)
+        event = Event(Particle(particle_id=Particle.Type.electron_neutrino,
+                                vertex=[100, 200, -500], direction=[0, 0, 1],
+                                energy=1e9, interaction_type='nc'))
+        detector = [Antenna(position=(0, 0, -100), noisy=False),
+                    Antenna(position=(0, 0, -200), noisy=False)]
+        rays = [RayTracer(event.roots[0].vertex, ant.position).solutions
+                for ant in detector]
+        polarizations = [[(0, 0, 1), (0, 0, -1)] for _ in detector]
+        for ant in detector:
+            ant.signals.append(Signal([0, 1e-9, 2e-9], [0, 1, 2]))
+        h5writer.open()
+        h5writer.set_detector(detector)
+        h5writer.add(event=event, triggered=False, ray_paths=rays,
+                    polarizations=polarizations)
+        h5writer.add(event=event, triggered=True, ray_paths=rays,
+                    polarizations=polarizations, events_thrown=5)
+        h5writer.close()
+        for slice_range in [1, 2, 10]:
+            h5reader = HDF5Reader(str(tmpdir.join('test_output.h5')),
+                                  slice_range=slice_range)
+            h5reader.open()
+            for i, event in enumerate(h5reader):
+                assert event.triggered == bool(i)
+                if i==0:
+                    assert len(event.get_rays_info()) == 0
+                else:
+                    all_info = event.get_rays_info()
+                    assert len(all_info) == 2
+                    assert len(all_info[0]) == 2
+            h5reader.close()
