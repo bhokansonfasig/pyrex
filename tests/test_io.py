@@ -637,6 +637,54 @@ class TestHDF5Writer:
         assert h5writer['file_meta']['float'][float_key_idx+1] == 0
         h5writer.close()
 
+    def test_append_mode(self, tmpdir):
+        """Test appending to an existing hdf5 file"""
+        h5writer = HDF5Writer(str(tmpdir.join('test_output.h5')), mode='w',
+                              write_particles=True, write_triggers=True,
+                              write_antenna_triggers=False, write_rays=False,
+                              write_noise=False, write_waveforms=False,
+                              require_trigger=False)
+        event = Event(Particle(particle_id=Particle.Type.electron_neutrino,
+                               vertex=[100, 200, -500], direction=[0, 0, 1],
+                               energy=1e9))
+        h5writer.open()
+        assert 'particles_meta' not in h5writer
+        assert 'triggers' not in h5writer
+        h5writer.add(event, triggered=False)
+        assert 'particles_meta' in h5writer
+        assert h5writer['particles_meta']['str'].shape[0] == 1
+        assert h5writer['particles_meta']['float'].shape[0] == 1
+        assert 'triggers' in h5writer
+        assert h5writer['triggers'].shape[0] == 1
+        h5writer.close()
+        h5appender = HDF5Writer(str(tmpdir.join('test_output.h5')), mode='a',
+                                write_particles=True, write_triggers=True,
+                                write_antenna_triggers=False, write_rays=False,
+                                write_noise=False, write_waveforms=False,
+                                require_trigger=False)
+        h5appender.open()
+        assert 'particles_meta' in h5appender
+        assert h5appender['particles_meta']['str'].shape[0] == 1
+        assert h5appender['particles_meta']['float'].shape[0] == 1
+        assert 'triggers' in h5appender
+        assert h5appender['triggers'].shape[0] == 1
+        h5appender.add(event, triggered=True)
+        assert 'particles_meta' in h5appender
+        assert h5appender['particles_meta']['str'].shape[0] == 2
+        assert h5appender['particles_meta']['float'].shape[0] == 2
+        assert 'triggers' in h5appender
+        assert h5appender['triggers'].shape[0] == 2
+        h5appender.close()
+
+    def test_existing_mode(self, tmpdir):
+        """Test overwrite protection mode for opening hdf5 file"""
+        h5writer = HDF5Writer(str(tmpdir.join('test_output.h5')), mode='x')
+        h5writer.open()
+        h5writer.close()
+        h5existing = HDF5Writer(str(tmpdir.join('test_output.h5')), mode='x')
+        with pytest.raises(IOError):
+            h5existing.open()
+
 
 
 @pytest.fixture
@@ -1054,3 +1102,32 @@ class TestEventIterator:
                     assert len(all_info) == 2
                     assert len(all_info[0]) == 2
             h5reader.close()
+
+
+
+class TestFile:
+    """Tests for File class wrapping other I/O classes"""
+    def test_attributes(self):
+        """Test for expected values in the class attributes"""
+        assert File.readers['h5'] == HDF5Reader
+        assert File.readers['hdf5'] == HDF5Reader
+        assert File.writers['h5'] == HDF5Writer
+        assert File.writers['hdf5'] == HDF5Writer
+
+    def test_writer_creation(self, tmpdir):
+        """Test initialization of a writer object"""
+        h5writer = File(str(tmpdir.join('test_output.h5')), mode='w')
+        assert isinstance(h5writer, HDF5Writer)
+        assert h5writer.filename == str(tmpdir.join('test_output.h5'))
+        h5appender = File(str(tmpdir.join('test_output.h5')), mode='a')
+        assert isinstance(h5appender, HDF5Writer)
+        assert h5appender.filename == str(tmpdir.join('test_output.h5'))
+
+    def test_reader_creation(self, tmpdir):
+        """Test initialization of a reader object"""
+        h5writer = File(str(tmpdir.join('test_output.h5')), mode='w')
+        h5writer.open()
+        h5writer.close()
+        h5reader = File(str(tmpdir.join('test_output.h5')), mode='r')
+        assert isinstance(h5reader, HDF5Reader)
+        assert h5reader.filename == str(tmpdir.join('test_output.h5'))
