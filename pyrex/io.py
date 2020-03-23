@@ -949,7 +949,7 @@ class EventIterator(HDF5Base):
 
         if antenna_id is None:
             antenna_id = slice(None)
-        elif isinstance(antenna_id, int) and antenna_id > self._max_antenna:
+        elif isinstance(antenna_id, int) and antenna_id >= self._max_antenna:
             raise ValueError("Antenna Id provided is greater than the number "+
                              "of antennas in detector")
 
@@ -1369,6 +1369,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         Length of the file (i.e. the number of events stored).
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         return self._num_events
 
     def __iter__(self):
@@ -1376,6 +1378,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         Iterable responsible for returning each event in turn.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         return EventIterator(hdf5_file=self._file,
                              slice_range=self._slice_range)
 
@@ -1552,6 +1556,9 @@ class HDF5Reader(BaseReader, HDF5Base):
             Waveform data from the specified portions of the file.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
+
         if not self._bool_dict["waveforms"]:
             raise ValueError("Waveform data was not saved in this file")
 
@@ -1567,7 +1574,7 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         if antenna_id is None:
             antenna_id = slice(None)
-        elif isinstance(antenna_id, int) and antenna_id > self._num_ant:
+        elif isinstance(antenna_id, int) and antenna_id >= self._num_ant:
             raise ValueError("Antenna Id provided is greater than the number "+
                              "of antennas in detector")
 
@@ -1630,6 +1637,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         and monte-carlo based.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         if (not self._bool_dict["antennas"] and
                 not self._bool_dict["antennas_meta_float"] and
                 not self._bool_dict["antennas_meta_str"]):
@@ -1648,6 +1657,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         Metadata from the file's metadata datasets.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         if (not self._bool_dict["file_meta_float"] and
                 not self._bool_dict["file_meta_str"]):
             raise ValueError("File metadata was not saved in this file")
@@ -1665,6 +1676,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         survive travel through the Earth.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         return self._file[self._locations_original['particles_meta']].attrs['total_thrown']
 
 
