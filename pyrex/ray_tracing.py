@@ -325,7 +325,8 @@ class BasicRayTracePath(LazyMutableClass):
 
         return np.exp(-np.abs(self.z_integral(integrand)))
 
-    def propagate(self, signal=None, polarization=None):
+    def propagate(self, signal=None, polarization=None,
+                  attenuation_interpolation=None):
         """
         Propagate the signal with optional polarization along the ray path.
 
@@ -339,6 +340,11 @@ class BasicRayTracePath(LazyMutableClass):
             ``Signal`` object to propagate.
         polarization : array_like, optional
             Vector representing the linear polarization of the `signal`.
+        attenuation_interpolation: float, optional
+            Logarithmic (base 10) interpolation step to be used for
+            interpolating attenuation along the ray path. If `None`, no
+            interpolation is applied and the attenuation is pre-calculated at
+            the expected signal frequencies.
 
         Returns
         -------
@@ -363,7 +369,23 @@ class BasicRayTracePath(LazyMutableClass):
             else:
                 new_signal = signal.copy()
                 new_signal.shift(self.tof)
-                new_signal.filter_frequencies(self.attenuation)
+                # Pre-calculate attenuation at the designated frequencies to
+                # save on heavy computation time of the attenuation method
+                freqs = scipy.fftpack.fftfreq(2*len(signal.times), d=signal.dt)
+                if attenuation_interpolation is None:
+                    freqs.sort()
+                else:
+                    logf_min = np.log10(np.min(freqs[freqs>0]))
+                    logf_max = np.log10(np.max(freqs))
+                    n_steps = int((logf_max - logf_min)
+                                  / attenuation_interpolation)
+                    if (logf_max-logf_min)%attenuation_interpolation:
+                        n_steps += 1
+                    logf = np.logspace(logf_min, logf_max, n_steps+1)
+                    freqs = np.concatenate((-np.flipud(logf), [0], logf))
+                atten_vals = self.attenuation(freqs)
+                attenuation = lambda f: np.interp(f, freqs, atten_vals)
+                new_signal.filter_frequencies(attenuation)
                 return new_signal
 
         else:
@@ -384,10 +406,20 @@ class BasicRayTracePath(LazyMutableClass):
                 pol_p = np.dot(polarization, u_p0)
                 # Fresnel reflectances of s and p components
                 r_s, r_p = self.fresnel
-                # Pre-calculate attenuation at the expected frequencies to save
-                # on heavy computation time of the attenuation method
+                # Pre-calculate attenuation at the designated frequencies to
+                # save on heavy computation time of the attenuation method
                 freqs = scipy.fftpack.fftfreq(2*len(signal.times), d=signal.dt)
-                freqs.sort()
+                if attenuation_interpolation is None:
+                    freqs.sort()
+                else:
+                    logf_min = np.log10(np.min(freqs[freqs>0]))
+                    logf_max = np.log10(np.max(freqs))
+                    n_steps = int((logf_max - logf_min)
+                                  / attenuation_interpolation)
+                    if (logf_max-logf_min)%attenuation_interpolation:
+                        n_steps += 1
+                    logf = np.logspace(logf_min, logf_max, n_steps+1)
+                    freqs = np.concatenate((-np.flipud(logf), [0], logf))
                 atten_vals = self.attenuation(freqs)
                 # Apply fresnel s and p coefficients in addition to attenuation
                 attenuation_s = lambda f: np.interp(f, freqs, atten_vals) * r_s
@@ -982,10 +1014,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
                                  (-ice.k*ice.a*np.exp(ice.a*zs)))
 
         alen = ice.attenuation_length(zs, fa)
-        if alen.ndim<2:
-            integrand = np.vstack(partial_integrand / alen)
-        else:
-            integrand = np.vstack(partial_integrand) / alen
+        integrand = (partial_integrand / alen.T).T
 
         return np.trapz(integrand, x=int_var, axis=0)
 

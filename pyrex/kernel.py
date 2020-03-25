@@ -143,7 +143,7 @@ class EventKernel:
                  ray_tracer=RayTracer, signal_model=AskaryanSignal,
                  signal_times=np.linspace(-50e-9, 50e-9, 2000, endpoint=False),
                  event_writer=None, triggers=None, offcone_max=40,
-                 weight_min=None):
+                 weight_min=None, attenuation_interpolation=0.1):
         self.gen = generator
         self.antennas = antennas
         self.ice = ice_model
@@ -160,6 +160,7 @@ class EventKernel:
             self.weight_min = 0
         else:
             self.weight_min = weight_min
+        self.attenuation_interpolation = attenuation_interpolation
         self._gen_count = self.gen.count
         if self.writer is not None:
             if not self.writer.is_open:
@@ -176,6 +177,9 @@ class EventKernel:
                 "signal_model_class": str(self.signal_model),
                 "offcone_max": np.degrees(self.offcone_max),
                 "weight_min": self.weight_min,
+                "attenuation_interpolation": (self.attenuation_interpolation
+                                              if self.attenuation_interpolation
+                                              is not None else 0),
             }
             try:
                 kernel_metadata["earth_model_class"] = str(type(
@@ -287,7 +291,8 @@ class EventKernel:
                         )
                     else:
                         ant_pulses, ant_pols = path.propagate(
-                            signal=pulse, polarization=nu_pol
+                            signal=pulse, polarization=nu_pol,
+                            attenuation_interpolation=self.attenuation_interpolation
                         )
                         ant.receive(
                             ant_pulses,
