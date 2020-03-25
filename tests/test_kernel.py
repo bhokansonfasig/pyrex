@@ -36,7 +36,7 @@ class TestEventKernel:
         assert kernel.ray_tracer == RayTracer
         assert kernel.signal_model == AskaryanSignal
         assert np.array_equal(kernel.signal_times,
-                              np.linspace(-20e-9, 80e-9, 2000, endpoint=False))
+                              np.linspace(-50e-9, 50e-9, 2000, endpoint=False))
 
     def test_event(self, kernel):
         """Test that the event method runs smoothly"""

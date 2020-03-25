@@ -648,10 +648,15 @@ class EventIterator(HDF5Base):
             else:
                 self._locations[key] = value
 
-        self._max_antenna = max(
-            len(self._object[self._locations["antennas_meta_float"]]),
-            len(self._object[self._locations["antennas_meta_str"]])
-        )
+        self._max_antenna = 0
+        for key in ["antennas_meta_float", "antennas_meta_str"]:
+            if not key in self._locations:
+                continue
+            loc = self._locations[key]
+            if loc in self._object:
+                self._max_antenna = max(self._max_antenna,
+                                        len(self._object[loc]))
+
         self._max_events = hdf5_file[self._locations["indices"]].shape[0]
         self._total_thrown = hdf5_file[self._locations_original["particles_meta"]].attrs["total_thrown"]
 
@@ -944,7 +949,7 @@ class EventIterator(HDF5Base):
 
         if antenna_id is None:
             antenna_id = slice(None)
-        elif isinstance(antenna_id, int) and antenna_id > self._max_antenna:
+        elif isinstance(antenna_id, int) and antenna_id >= self._max_antenna:
             raise ValueError("Antenna Id provided is greater than the number "+
                              "of antennas in detector")
 
@@ -1364,6 +1369,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         Length of the file (i.e. the number of events stored).
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         return self._num_events
 
     def __iter__(self):
@@ -1371,6 +1378,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         Iterable responsible for returning each event in turn.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         return EventIterator(hdf5_file=self._file,
                              slice_range=self._slice_range)
 
@@ -1429,6 +1438,8 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         self._num_ant = 0
         for key in ["antennas_meta_float", "antennas_meta_str"]:
+            if not key in self._locations:
+                continue
             loc = self._locations[key]
             if loc in self._file:
                 self._num_ant = max(self._num_ant, len(self._file[loc]))
@@ -1545,6 +1556,9 @@ class HDF5Reader(BaseReader, HDF5Base):
             Waveform data from the specified portions of the file.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
+
         if not self._bool_dict["waveforms"]:
             raise ValueError("Waveform data was not saved in this file")
 
@@ -1560,7 +1574,7 @@ class HDF5Reader(BaseReader, HDF5Base):
 
         if antenna_id is None:
             antenna_id = slice(None)
-        elif isinstance(antenna_id, int) and antenna_id > self._num_ant:
+        elif isinstance(antenna_id, int) and antenna_id >= self._num_ant:
             raise ValueError("Antenna Id provided is greater than the number "+
                              "of antennas in detector")
 
@@ -1623,6 +1637,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         and monte-carlo based.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         if (not self._bool_dict["antennas"] and
                 not self._bool_dict["antennas_meta_float"] and
                 not self._bool_dict["antennas_meta_str"]):
@@ -1641,6 +1657,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         Metadata from the file's metadata datasets.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         if (not self._bool_dict["file_meta_float"] and
                 not self._bool_dict["file_meta_str"]):
             raise ValueError("File metadata was not saved in this file")
@@ -1658,6 +1676,8 @@ class HDF5Reader(BaseReader, HDF5Base):
         survive travel through the Earth.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         return self._file[self._locations_original['particles_meta']].attrs['total_thrown']
 
 
@@ -1826,8 +1846,6 @@ class HDF5Writer(BaseWriter, HDF5Base):
             Existence of the `item` in the writer file.
 
         """
-        if not self.is_open:
-            raise IOError("File is not open")
         return self._get_key_location(item) in self._file
 
     def __delitem__(self, key):
@@ -1865,6 +1883,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             group or dataset doesn't exist in the file.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         if key in self._file:
             return key
         elif key in self._data_locs:
@@ -2007,6 +2027,9 @@ class HDF5Writer(BaseWriter, HDF5Base):
             If there is no rule for building the given dataset.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
+
         if not name.startswith("/"):
             name = "/"+name
 
@@ -2123,6 +2146,9 @@ class HDF5Writer(BaseWriter, HDF5Base):
             If there is no rule for building the given metadata group.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
+
         if not name.startswith("/"):
             name = "/"+name
 
@@ -2223,6 +2249,9 @@ class HDF5Writer(BaseWriter, HDF5Base):
             for writing to the metadata group.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
+
         if not name.startswith("/"):
             name = "/"+name
 
@@ -2341,6 +2370,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             Defaults to the internal event counter of the writer.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         if global_index_value is None:
             global_index_value = self._counters['indices']
         indices = self._file[self._data_locs['indices']]
@@ -2387,6 +2418,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
         same detector object used in the `EventKernel`.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         self._detector = detector
         data = self._create_dataset(self._data_locs['antennas'])
         self._create_metadataset(self._data_locs['antennas_meta'])
@@ -2514,6 +2547,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
         # Write extra triggers
         if include_antennas or extra_triggers:
+            if not self.has_detector:
+                raise ValueError("File does not have an associated detector")
             max_waves = max(len(ant.all_waveforms) for ant in self._detector)
             start_index = self._counters['mc_triggers']
             self._counters['mc_triggers'] += max_waves
@@ -2582,6 +2617,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             match each other and the linked detector.
 
         """
+        if not self.has_detector:
+            raise ValueError("File does not have an associated detector")
         if len(ray_paths)!=len(self._detector):
             raise ValueError("Ray paths length doesn't match detector size"+
                              " ("+str(len(ray_paths))+"!="+
@@ -2659,6 +2696,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
         Increments the noise counter and writes data to the 'noise' dataset.
 
         """
+        if not self.has_detector:
+            raise ValueError("File does not have an associated detector")
         self._counters['noise'] += 1
         data = self._create_dataset(self._data_locs['noise'])
         data.resize(self._counters['noise'], axis=0)
@@ -2676,6 +2715,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
         dataset.
 
         """
+        if not self.has_detector:
+            raise ValueError("File does not have an associated detector")
         max_waves = max(len(ant.all_waveforms) for ant in self._detector)
         start_index = self._counters['waveforms']
         self._counters['waveforms'] += max_waves
@@ -2727,6 +2768,9 @@ class HDF5Writer(BaseWriter, HDF5Base):
             necessary data.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
+
         if self._write_data['rays'] and (ray_paths is None or
                                          polarizations is None):
             raise ValueError("Ray path and polarization information must be "+
@@ -2790,6 +2834,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             requested.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         location = self._analysis_location(name)
         return self._file.create_group(location, *args, **kwargs)
 
@@ -2814,6 +2860,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             dataset requested.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         location = self._analysis_location(name)
         return self._file.create_dataset(location, *args, **kwargs)
 
@@ -2847,6 +2895,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             metadata group requested (containing 'float' and 'str' datasets).
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         location = self._analysis_location(name)
         return self._create_metadataset(location, *args, **kwargs)
 
@@ -2878,6 +2928,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             If `name` is not an existing metadata group.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         location = self._analysis_location(name)
         return self._write_metadata(location, metadata, index=index)
 
@@ -2901,6 +2953,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             Number of rows in the dataset(s) containing data for the event.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         location = self._analysis_location(name)
         return self._write_indices(location, start_index, length=length,
                                    global_index_value=global_index)
@@ -2919,6 +2973,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             string data as values.
 
         """
+        if not self.is_open:
+            raise IOError("File is not open")
         self._write_metadata(self._data_locs['file_meta'], metadata)
 
 
