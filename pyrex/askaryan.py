@@ -119,7 +119,7 @@ class ZHSAskaryanSignal(FunctionSignal):
             dt = times[1] - times[0]
 
             # Calculate frequencies for frequency-domain calculations
-            freqs = scipy.fftpack.fftfreq(len(times), d=dt)
+            freqs = scipy.fftpack.fftfreq(2*len(times), d=dt)
 
             # Field as a function of frequency at Cherenkov angle
             # (ZHS equation 20)
@@ -137,11 +137,14 @@ class ZHSAskaryanSignal(FunctionSignal):
                                     /np.radians(2.4))**2)
 
             # Shift the times so the signal comes at t0
+            shift = int((t0-times[0]) / dt) - int(len(times)/2)
+            if np.abs(shift)>len(times):
+                return np.zeros(len(times))
             freq_vals = e_omega * np.exp(-1j*2*np.pi*freqs*(t0-times[0]))
 
             # Normalize the inverse fourier transform by dt so the time-domain
             # amplitude stays the same for different sampling rates
-            return np.real(scipy.fftpack.ifft(freq_vals)) / dt
+            return np.real(scipy.fftpack.ifft(freq_vals)[:len(times)]) / dt
 
         super().__init__(times, get_signal, value_type=self.Type.field)
 
