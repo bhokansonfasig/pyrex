@@ -183,11 +183,15 @@ class EventKernel:
                 "ray_tracer_class": str(self.ray_tracer),
                 "signal_model_class": str(self.signal_model),
                 "offcone_max": np.degrees(self.offcone_max),
-                "weight_min": self.weight_min,
                 "attenuation_interpolation": (self.attenuation_interpolation
                                               if self.attenuation_interpolation
                                               is not None else 0),
             }
+            if isinstance(self.weight_min, Sequence):
+                kernel_metadata["survival_weight_min"] = self.weight_min[0]
+                kernel_metadata["interaction_weight_min"] = self.weight_min[1]
+            else:
+                kernel_metadata["weight_min"] = self.weight_min
             try:
                 kernel_metadata["earth_model_class"] = str(type(
                     self.gen.earth_model
