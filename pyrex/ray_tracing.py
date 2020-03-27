@@ -318,10 +318,7 @@ class BasicRayTracePath(LazyMutableClass):
         def integrand(z):
             partial_integrand = 1 / np.cos(self.theta(z))
             alen = self.ice.attenuation_length(z, fa)
-            if alen.ndim<2:
-                return np.vstack(partial_integrand / alen)
-            else:
-                return np.vstack(partial_integrand) / alen
+            return (partial_integrand / alen.T).T
 
         return np.exp(-np.abs(self.z_integral(integrand)))
 
