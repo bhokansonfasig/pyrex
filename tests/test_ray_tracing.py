@@ -451,8 +451,7 @@ class TestSpecializedRayTracePath:
         }
         for i, path in enumerate(ray_tracer.solutions+ray_tracer2.solutions
                                  +ray_tracer3.solutions):
-            print(i)
-            assert (path.attenuation(frequency)[0] ==
+            assert (path.attenuation(frequency) ==
                     pytest.approx(expected[frequency][i], rel=rel))
 
 
