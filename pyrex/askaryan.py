@@ -314,8 +314,17 @@ class AVZAskaryanSignal(FunctionSignal):
             # Set phases to 90 degrees
             trace = np.fft.irfft(tmp * np.exp(0.5j * np.pi)) / dt
 
+            # Shift waveform to the center of the trace
+            shift = int(len(trace)/2)
+            trace = np.roll(trace, shift)
+
             # Shift to proper t0
-            trace = np.roll(trace, int((t0-times[0]) / dt))
+            shift = int((t0-times[0]) / dt) - shift
+            if np.abs(shift)>len(trace):
+                trace = np.zeros(len(trace), dtype=trace.dtype)
+            else:
+                long_trace = np.concatenate((trace, np.zeros(len(trace))))
+                trace = np.roll(long_trace, shift)[:len(trace)]
 
             # Correct trace length for odd-valued N by extrapolating slope
             if len(trace)==N-1:
