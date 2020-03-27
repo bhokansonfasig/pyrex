@@ -63,6 +63,10 @@ class EventKernel:
         a tuple, particles with a survival weight less than the first element
         of the tuple or with an interaction weight less than the second element
         of the tuple will be skipped. If `None`, no minimum weight is applied.
+    attenuation_interpolation : float or None, optional
+        The logarithmic (base 10) interpolation step size to be used for
+        interpolating attenuation along the ray path. If `None`, no
+        interpolation of the attenuation is applied.
 
     Attributes
     ----------
@@ -87,6 +91,9 @@ class EventKernel:
         The maximum angle away from the Cherenkov angle to be simulated.
     weight_min
         The minimum particle weight(s) which should be simulated.
+    attenuation_interpolation : float or None, optional
+        The logarithmic (base 10) interpolation step size to be used for
+        interpolating attenuation along the ray path.
 
     See Also
     --------
