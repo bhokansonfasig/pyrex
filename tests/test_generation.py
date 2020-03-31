@@ -6,7 +6,7 @@ from config import SEED
 
 from pyrex.generation import (Generator, CylindricalGenerator,
                               RectangularGenerator, ListGenerator,
-                              NumpyFileGenerator, FileGenerator)
+                              FileGenerator)
 from pyrex.particle import Event, Particle, NeutrinoInteraction
 from pyrex.earth_model import earth
 from pyrex.io import File
