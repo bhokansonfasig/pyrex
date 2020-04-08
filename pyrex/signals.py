@@ -1021,10 +1021,10 @@ class FullThermalNoise(FunctionSignal):
     resistance : float, optional
         The resistance (ohm) for the noise. Used in combination with the value
         of `temperature` to calculate the RMS voltage of the noise.
-    n_freqs : int, optional
-        The number of frequencies within the frequency band to use to calculate
-        the noise signal. By default determines the number of frequencies based
-        on the FFT bin size of `times`.
+    uniqueness_factor : int, optional
+        The number of unique waveform traces that can be expected from this
+        noise signal. This factor multiplies the length of the total trace to
+        be calculated.
 
     Attributes
     ----------
@@ -1093,7 +1093,7 @@ class FullThermalNoise(FunctionSignal):
 
     """
     def __init__(self, times, f_band, f_amplitude=None, rms_voltage=None,
-                 temperature=None, resistance=None, n_freqs=0):
+                 temperature=None, resistance=None, uniqueness_factor=1):
         # Calculation based on Rician (Rayleigh) noise model for ANITA:
         # https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps
 
@@ -1101,21 +1101,26 @@ class FullThermalNoise(FunctionSignal):
         if self.f_min>=self.f_max:
             raise ValueError("Frequency band must have smaller frequency as "+
                              "first value and larger frequency as second value")
-        # If number of frequencies is unspecified (or invalid),
-        # determine based on the FFT bin size of the times array
-        if n_freqs<1:
-            n_freqs = (self.f_max - self.f_min) * (times[-1] - times[0])
-            # Broken out into steps to ease understanding:
-            #   duration = times[-1] - times[0]
-            #   f_bin_size = 1 / duration
-            #   n_freqs = (self.f_max - self.f_min) / f_bin_size
+        # Determine the number of frequencies needed based on the FFT bin size
+        # of the times array
+        n_freqs = (self.f_max - self.f_min) * (times[-1] - times[0])
+        # Broken out into steps to ease understanding:
+        #   duration = times[-1] - times[0]
+        #   f_bin_size = 1 / duration
+        #   n_freqs = (self.f_max - self.f_min) / f_bin_size
 
-        # If number of frequencies is still zero (e.g. len(times)==1),
-        # force it to 1
+        # If number of frequencies is zero (e.g. len(times)==1), force it to 1
         if n_freqs<1:
             n_freqs = 1
 
-        self.freqs = np.linspace(self.f_min, self.f_max, int(n_freqs),
+        # Force uniqueness_factor to at least 1
+        if uniqueness_factor<1:
+            uniqueness_factor = 1
+
+        # Multiply number of frequencies by the uniqueness factor
+        self._n_freqs = int(n_freqs * uniqueness_factor)
+
+        self.freqs = np.linspace(self.f_min, self.f_max, self._n_freqs,
                                  endpoint=False)
 
         if f_amplitude is None:

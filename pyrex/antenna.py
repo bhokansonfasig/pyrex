@@ -338,29 +338,18 @@ class Antenna:
                                  +" resistance) are required to generate"
                                  +" antenna noise")
 
-            # Calculate recommended number of frequencies for longest
-            # signal length stored
-            duration = 1e-7 if len(self.signals)==0 else 0
-            for signal in self.signals:
-                signal_duration = signal.times[-1] - signal.times[0]
-                if signal_duration > duration:
-                    duration = signal_duration
-            n_freqs = (self.freq_range[1] - self.freq_range[0]) * duration
-
-            # Multiply n_freqs by the number of unique noise waveforms needed
-            # so that up to about that many signals can be stored without the
-            # noise being obviously periodic
-            n_freqs *= self.unique_noises
-
             if self.noise_rms is None:
-                self._noise_master = ThermalNoise(times, f_band=self.freq_range,
-                                                  temperature=self.temperature,
-                                                  resistance=self.resistance,
-                                                  n_freqs=n_freqs)
+                self._noise_master = ThermalNoise(
+                    times, f_band=self.freq_range,
+                    temperature=self.temperature, resistance=self.resistance,
+                    uniqueness_factor=self.unique_noises
+                )
             else:
-                self._noise_master = ThermalNoise(times, f_band=self.freq_range,
-                                                  rms_voltage=self.noise_rms,
-                                                  n_freqs=n_freqs)
+                self._noise_master = ThermalNoise(
+                    times, f_band=self.freq_range,
+                    rms_voltage=self.noise_rms,
+                    uniqueness_factor=self.unique_noises
+                )
 
         return self._noise_master.with_times(times)
 
