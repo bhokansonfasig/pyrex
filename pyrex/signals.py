@@ -1351,40 +1351,37 @@ class FFTThermalNoise(FunctionSignal):
 
         def get_fft_values(ts):
             """Set the time-domain signal using the FFT."""
-            return np.interp(ts+self._fft_start,
-                             self._fft_times, self._fft_values,
-                             period=self._fft_times[-1]-self._fft_times[0])
+            # Get the complete times array
+            length = ((self._fft_end-self._fft_start+self._dt) * self._unique
+                      - self._dt)
+            fft_times = np.linspace(self._fft_start, self._fft_start+length,
+                                    self._n_all_freqs)
+
+            # Get the complete values array
+            all_freqs = scipy.fft.rfftfreq(self._n_all_freqs, self._dt)
+            band = (all_freqs>=self.f_min) & (all_freqs<=self.f_max)
+            amps = np.zeros(len(all_freqs))
+            amps[band] = self.amps
+            phases = np.zeros(len(all_freqs))
+            phases[band] = self.phases
+            fft_values = scipy.fft.irfft(amps * np.exp(-1j*phases),
+                                         n=self._n_all_freqs)
+
+            # Normalization calculated by guess-and-check; seems to work fine
+            # normalization = len(all_freqs) * np.sqrt(1/(2*len(band_freqs)))
+            fft_values *= self._n_all_freqs * np.sqrt(1/(2*self._n_freqs))
+
+            # Interpolate values at the given ts based on the full arrays
+            values = np.interp(ts, fft_times, fft_values, period=length)
+
+            # So far, the units of the values are V/V_rms, so multiply by the
+            # rms voltage:
+            values *= self.rms
+
+            return values
 
         super().__init__(times, function=get_fft_values,
                          value_type=self.Type.voltage)
-
-    @property
-    def _fft_times(self):
-        full_length = ((self._fft_end-self._fft_start+self._dt) * self._unique
-                       - self._dt)
-        return np.linspace(self._fft_start, self._fft_start+full_length,
-                           self._n_all_freqs)
-
-    @property
-    def _fft_values(self):
-        all_freqs = scipy.fft.rfftfreq(self._n_all_freqs, self._dt)
-        band = (all_freqs>=self.f_min) & (all_freqs<=self.f_max)
-        amps = np.zeros(len(all_freqs))
-        amps[band] = self.amps
-        phases = np.zeros(len(all_freqs))
-        phases[band] = self.phases + (2*np.pi*self.freqs *
-                                      (self.times[0] - self._fft_start))
-        values = scipy.fft.irfft(amps * np.exp(-1j*phases), n=self._n_all_freqs)
-
-        # Normalization calculated by guess-and-check; seems to work fine
-        # normalization = len(all_freqs) * np.sqrt(1/(2*len(band_freqs)))
-        values *= self._n_all_freqs * np.sqrt(1/(2*self._n_freqs))
-
-        # So far, the units of the values are V/V_rms, so multiply by the
-        # rms voltage:
-        values *= self.rms
-
-        return values
 
 
 
