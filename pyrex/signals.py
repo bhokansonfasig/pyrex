@@ -1299,40 +1299,39 @@ class FFTThermalNoise(FunctionSignal):
         # Force uniqueness_factor to at least 1
         if uniqueness_factor<1:
             uniqueness_factor = 1
-        self._fft_factor = int(uniqueness_factor)
+        self._unique = int(uniqueness_factor)
 
-        self.freqs = scipy.fftpack.fftfreq(self._fft_factor*len(times),
-                                           times[1]-times[0])
-        band = (np.abs(self.freqs)>self.f_min) & (np.abs(self.freqs)<self.f_max)
+        self._n_all_freqs = self._unique * len(times)
+        self._dt = times[1] - times[0]
+
+        all_freqs = scipy.fft.rfftfreq(self._n_all_freqs, self._dt)
+        band = (all_freqs>=self.f_min) & (all_freqs<=self.f_max)
+        self.freqs = all_freqs[band]
         self._n_freqs = len(self.freqs)
-        self._n_freqs_inband = len(self.freqs[band])
 
         if f_amplitude is None:
             f_amplitude = lambda f: np.random.rayleigh(1/np.sqrt(2),
                                                        size=f.shape)
 
-        self.amps = np.zeros(self._n_freqs)
         # Allow f_amplitude to be either a function or a single value
         if callable(f_amplitude):
             # Attempt to evaluate all amplitudes in one function call
             try:
-                self.amps[band] = f_amplitude(self.freqs[band])
+                self.amps = np.array(f_amplitude(self.freqs))
             # Otherwise evaluate responses one at a time
             except (TypeError, ValueError):
                 logger.debug("Amplitude function %r could not be evaluated "+
                              "for multiple frequencies at once", f_amplitude)
-                self.amps[band] = [f_amplitude(f) for f in self.freqs[band]]
+                self.amps = np.array([f_amplitude(f) for f in self.freqs])
         else:
-            self.amps[band] = np.full(self._n_freqs_inband, f_amplitude,
-                                      dtype=np.float_)
+            self.amps = np.full(self._n_freqs, f_amplitude, dtype=np.float_)
 
         # If the frequency range includes zero, force the zero-frequency (DC)
         # amplitude to zero
         if 0 in self.freqs:
             self.amps[np.where(self.freqs==0)[0]] = 0
 
-        self.phases = np.zeros(self._n_freqs)
-        self.phases[band] = np.random.rand(self._n_freqs_inband) * 2*np.pi
+        self.phases = np.random.rand(self._n_freqs) * 2*np.pi
 
         if rms_voltage is not None:
             self.rms = rms_voltage
@@ -1347,11 +1346,8 @@ class FFTThermalNoise(FunctionSignal):
             raise ValueError("Either RMS voltage or temperature and resistance"+
                              " must be provided to calculate noise amplitude")
 
-        length = (times[-1]-times[0]) + (times[1]-times[0])
-        self._fft_times = np.concatenate(
-            list(times+i*length for i in range(self._fft_factor))
-        )
         self._fft_start = times[0]
+        self._fft_end = times[-1]
 
         def get_fft_values(ts):
             """Set the time-domain signal using the FFT."""
@@ -1363,14 +1359,26 @@ class FFTThermalNoise(FunctionSignal):
                          value_type=self.Type.voltage)
 
     @property
+    def _fft_times(self):
+        full_length = ((self._fft_end-self._fft_start+self._dt) * self._unique
+                       - self._dt)
+        return np.linspace(self._fft_start, self._fft_start+full_length,
+                           self._n_all_freqs)
+
+    @property
     def _fft_values(self):
-        phases = self.phases + (2*np.pi*self.freqs *
-                                (self.times[0] - self._fft_start))
-        values = np.real(scipy.fftpack.ifft(self.amps * np.exp(-1j*phases)))
+        all_freqs = scipy.fft.rfftfreq(self._n_all_freqs, self._dt)
+        band = (all_freqs>=self.f_min) & (all_freqs<=self.f_max)
+        amps = np.zeros(len(all_freqs))
+        amps[band] = self.amps
+        phases = np.zeros(len(all_freqs))
+        phases[band] = self.phases + (2*np.pi*self.freqs *
+                                      (self.times[0] - self._fft_start))
+        values = scipy.fft.irfft(amps * np.exp(-1j*phases), n=self._n_all_freqs)
 
         # Normalization calculated by guess-and-check; seems to work fine
-        # normalization = len(all_freqs) * np.sqrt(2/len(band_freqs))
-        values *= self._n_freqs * np.sqrt(2/self._n_freqs_inband)
+        # normalization = len(all_freqs) * np.sqrt(1/(2*len(band_freqs)))
+        values *= self._n_all_freqs * np.sqrt(1/(2*self._n_freqs))
 
         # So far, the units of the values are V/V_rms, so multiply by the
         # rms voltage:
