@@ -280,8 +280,11 @@ class Antenna:
         # Only include signals reasonably close to the times array
         # (i.e. within one extra signal length forwards and backwards)
         dt = times[1] - times[0]
-        signal_length = max(signal.times[-1] - signal.times[0]
-                            for signal in self.signals)
+        if len(self.signals)>0:
+            signal_length = max(signal.times[-1] - signal.times[0]
+                                for signal in self.signals)
+        else:
+            signal_length = 0
         n_pts = int(signal_length/dt)
         if signal_length%dt:
             n_pts += 1
