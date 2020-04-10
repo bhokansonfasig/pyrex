@@ -441,7 +441,7 @@ class EmptySignal(Signal):
 
         # Adding an EmptySignal is essentially transparent (returns a copy
         # of the other Signal), except for the value_type coercion
-        new_signal = copy.deepcopy(other)
+        new_signal = other.copy()
         new_signal.value_type = value_type
         return new_signal
 
@@ -676,7 +676,7 @@ class FunctionSignal(LazyMutableClass, Signal):
         elif isinstance(other, EmptySignal):
             # Adding an EmptySignal is essentially transparent (returns a copy
             # of the FunctionSignal), except for the value_type coercion
-            new_signal = copy.deepcopy(self)
+            new_signal = self.copy()
             new_signal.value_type = value_type
             return new_signal
         else:
@@ -788,7 +788,7 @@ class FunctionSignal(LazyMutableClass, Signal):
         contained by the previous `times` array.
 
         """
-        new_signal = copy.deepcopy(self)
+        new_signal = self.copy()
         new_signal.times = new_times
         # Check whether `new_times` is a subset of the previous `times`, and
         # set buffers accordingly
