@@ -12,7 +12,7 @@ from enum import Enum
 import logging
 import numpy as np
 import scipy.constants
-import scipy.fftpack
+import scipy.fft
 import scipy.signal
 from pyrex.internal_functions import (LazyMutableClass, lazy_property,
                                       get_from_enum)
@@ -268,12 +268,12 @@ class Signal:
     @property
     def spectrum(self):
         """The FFT complex spectrum values of the signal."""
-        return scipy.fftpack.fft(self.values)
+        return scipy.fft.fft(self.values)
 
     @property
     def frequencies(self):
         """The FFT frequencies of the signal."""
-        return scipy.fftpack.fftfreq(n=len(self.values), d=self.dt)
+        return scipy.fft.fftfreq(n=len(self.values), d=self.dt)
 
     def filter_frequencies(self, freq_response, force_real=False):
         """
@@ -306,11 +306,11 @@ class Signal:
         # Zero-pad the signal so the filter doesn't cause the resulting
         # signal to wrap around the end of the time array
         vals = np.concatenate((self.values, np.zeros(len(self.values))))
-        spectrum = scipy.fftpack.fft(vals)
-        freqs = scipy.fftpack.fftfreq(n=2*len(self.values), d=self.dt)
+        spectrum = scipy.fft.fft(vals)
+        freqs = scipy.fft.fftfreq(n=2*len(self.values), d=self.dt)
 
         responses = self._get_filter_response(freqs, freq_response, force_real)
-        filtered_vals = scipy.fftpack.ifft(responses*spectrum)
+        filtered_vals = scipy.fft.ifft(responses*spectrum)
         self.values = np.real(filtered_vals[:len(self.times)])
 
         # Issue a warning if there was significant signal in the (discarded)
@@ -915,7 +915,7 @@ class FunctionSignal(LazyMutableClass, Signal):
         discarding the imaginary part.
 
         """
-        freqs = scipy.fftpack.fftfreq(n=2*len(input_vals), d=self.dt)
+        freqs = scipy.fft.fftfreq(n=2*len(input_vals), d=self.dt)
         all_filters = np.ones(len(freqs), dtype=np.complex_)
 
         for freq_response, force_real in filters:
@@ -925,9 +925,9 @@ class FunctionSignal(LazyMutableClass, Signal):
         # Zero-pad the signal so the filter doesn't cause the resulting
         # signal to wrap around the end of the time array
         vals = np.concatenate((input_vals, np.zeros(len(input_vals))))
-        spectrum = scipy.fftpack.fft(vals)
+        spectrum = scipy.fft.fft(vals)
 
-        filtered_vals = scipy.fftpack.ifft(all_filters*spectrum)
+        filtered_vals = scipy.fft.ifft(all_filters*spectrum)
         output_vals = np.real(filtered_vals[:len(input_vals)])
 
         # Issue a warning if there was significant signal in the (discarded)

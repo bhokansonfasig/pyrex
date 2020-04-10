@@ -12,7 +12,6 @@ an antenna.
 import logging
 import numpy as np
 import scipy.constants
-import scipy.fftpack
 import scipy.signal
 from pyrex.internal_functions import normalize
 from pyrex.signals import Signal, ThermalNoise, EmptySignal

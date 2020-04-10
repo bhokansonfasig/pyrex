@@ -11,7 +11,7 @@ returning information about propagation along their respective path.
 import logging
 import numpy as np
 import scipy.constants
-import scipy.fftpack
+import scipy.fft
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
 from pyrex.ice_model import AntarcticIce, UniformIce, ice
@@ -368,7 +368,7 @@ class BasicRayTracePath(LazyMutableClass):
                 new_signal.shift(self.tof)
                 # Pre-calculate attenuation at the designated frequencies to
                 # save on heavy computation time of the attenuation method
-                freqs = scipy.fftpack.fftfreq(2*len(signal.times), d=signal.dt)
+                freqs = scipy.fft.fftfreq(2*len(signal.times), d=signal.dt)
                 if attenuation_interpolation is None:
                     freqs.sort()
                 else:
@@ -405,7 +405,7 @@ class BasicRayTracePath(LazyMutableClass):
                 r_s, r_p = self.fresnel
                 # Pre-calculate attenuation at the designated frequencies to
                 # save on heavy computation time of the attenuation method
-                freqs = scipy.fftpack.fftfreq(2*len(signal.times), d=signal.dt)
+                freqs = scipy.fft.fftfreq(2*len(signal.times), d=signal.dt)
                 if attenuation_interpolation is None:
                     freqs.sort()
                 else:

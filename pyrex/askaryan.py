@@ -10,7 +10,7 @@ into the time domain at the end of initialization.
 import logging
 import numpy as np
 import scipy.constants
-import scipy.fftpack
+import scipy.fft
 import scipy.signal
 from pyrex.signals import FunctionSignal
 from pyrex.ice_model import ice
@@ -119,7 +119,7 @@ class ZHSAskaryanSignal(FunctionSignal):
             dt = times[1] - times[0]
 
             # Calculate frequencies for frequency-domain calculations
-            freqs = scipy.fftpack.fftfreq(2*len(times), d=dt)
+            freqs = scipy.fft.fftfreq(2*len(times), d=dt)
 
             # Field as a function of frequency at Cherenkov angle
             # (ZHS equation 20)
@@ -144,7 +144,7 @@ class ZHSAskaryanSignal(FunctionSignal):
 
             # Normalize the inverse fourier transform by dt so the time-domain
             # amplitude stays the same for different sampling rates
-            return np.real(scipy.fftpack.ifft(freq_vals)[:len(times)]) / dt
+            return np.real(scipy.fft.ifft(freq_vals)[:len(times)]) / dt
 
         super().__init__(times, get_signal, value_type=self.Type.field)
 
