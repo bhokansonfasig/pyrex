@@ -1351,6 +1351,10 @@ class FFTThermalNoise(FunctionSignal):
 
         def get_fft_values(ts):
             """Set the time-domain signal using the FFT."""
+            # Return zeros if there are no frequencies in-band
+            if self._n_freqs==0:
+                return np.zeros(len(ts))
+
             # Get the complete times array
             length = ((self._fft_end-self._fft_start+self._dt) * self._unique
                       - self._dt)

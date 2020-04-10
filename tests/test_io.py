@@ -41,7 +41,7 @@ class TestHDF5Base:
 
     def test_generate_location_names(self, h5base, tmpdir):
         """Test that location names can be generated from a file"""
-        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')))
+        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')), 'a')
         tmpfile.create_group('additional_group')
         tmpfile.create_dataset('additional_group/new_dataset', data=(0, 1, 2))
         tmpfile.create_dataset('additional_group/duplicate', data=(3, 4, 5))
@@ -80,7 +80,7 @@ class TestHDF5Base:
             "number": [1, 2, 3],
             "zero": [0, 0, 0],
         }
-        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')))
+        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')), 'a')
         tmpfile.create_group('metadata_group')
         str_dataset = tmpfile.create_dataset(
             'metadata_group/str',
@@ -109,7 +109,7 @@ class TestHDF5Base:
         """Test behavior of the _read_dataset_to_dicts method"""
         numbers = [1, 2, 3, 4, 5]
         zeros = [0, 0, 0, 0, 0]
-        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')))
+        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')), 'a')
         dataset = tmpfile.create_dataset(
             'float_data',
             data=np.array([numbers, zeros]).T
@@ -127,7 +127,7 @@ class TestHDF5Base:
 
     def test_get_bool_dict(self, h5base, tmpdir):
         """Test creation of a boolean dictionary of existing datasets"""
-        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')))
+        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')), 'a')
         tmpfile.create_dataset('event_indices', data=(0, 1, 2, 3, 4))
         tmpfile.create_dataset('triggers', data=[])
         tmpfile.create_group('additional_group')
@@ -167,7 +167,7 @@ class TestHDF5Base:
             "number": [1, 2, 3],
             "zero": [0, 0, 0],
         }
-        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')))
+        tmpfile = h5py.File(str(tmpdir.join('tmpfile.h5')), 'a')
         tmpfile.create_group('metadata_group')
         str_dataset = tmpfile.create_dataset(
             'metadata_group/str',
@@ -455,11 +455,14 @@ class TestHDF5Writer:
                               write_noise=True, write_waveforms=False,
                               require_trigger=False)
         detector = [Antenna(position=(0, 0, -100), noisy=True, temperature=300,
-                            resistance=100, freq_range=[500e6, 750e6]),
+                            resistance=100, freq_range=[500e6, 750e6],
+                            unique_noise_waveforms=10),
                     Antenna(position=(0, 0, -200), noisy=True, temperature=300,
-                            resistance=100, freq_range=[500e6, 750e6])]
+                            resistance=100, freq_range=[500e6, 750e6],
+                            unique_noise_waveforms=10)]
         for ant in detector:
-            ant.signals.append(Signal([0, 1e-9, 2e-9], [0, 1, 2]))
+            ant.signals.append(Signal([0, 0.5e-9, 1e-9, 1.5e-9, 2e-9, 2.5e-9],
+                                      [0, 1, 2, 3, 4, 5]))
             ant.all_waveforms
         with pytest.raises(IOError):
             h5writer.add(event=None)
@@ -989,12 +992,20 @@ class TestEventIterator:
                                vertex=[100, 200, -500], direction=[0, 0, 1],
                                energy=1e9, interaction_type='nc'))
         detector = [Antenna(position=(0, 0, -100), noisy=True, temperature=300,
-                            resistance=100, freq_range=[500e6, 750e6]),
+                            resistance=100, freq_range=[500e6, 750e6],
+                            unique_noise_waveforms=10),
                     Antenna(position=(0, 0, -200), noisy=True, temperature=300,
-                            resistance=100, freq_range=[500e6, 750e6])]
+                            resistance=100, freq_range=[500e6, 750e6],
+                            unique_noise_waveforms=10)]
         for ant in detector:
-            ant.signals.append(Signal([0, 1e-9, 2e-9], [0, 1, 2]))
+            ant.signals.append(Signal([0, 0.5e-9, 1e-9, 1.5e-9, 2e-9, 2.5e-9],
+                                      [0, 1, 2, 3, 4, 5]))
             ant.all_waveforms
+            noise = ant._noise_master
+            print(noise.freqs)
+            import scipy.fft
+            print(scipy.fft.rfftfreq(noise._n_all_freqs, noise._dt))
+            print()
         h5writer.open()
         h5writer.set_detector(detector)
         h5writer.add(event=event, triggered=False)
@@ -1008,8 +1019,7 @@ class TestEventIterator:
             else:
                 assert event.noise_bases.shape == (2, 3)
                 for (freqs, amps, phases) in event.noise_bases:
-                    assert np.array_equal(freqs,
-                                          np.linspace(500e6, 700e6, 5))
+                    assert np.allclose(freqs, np.arange(500e6, 750e6, 1e8/9))
                     assert len(amps) == len(freqs)
                     assert len(phases) == len(freqs)
         h5reader.close()

@@ -128,23 +128,23 @@ class TestAntennaSystem:
 
     def test_waveforms(self, halver):
         """Test that front end is applied to waveforms array"""
-        halver.antenna.signals.append(Signal([0,1e-9,2e-9], [2,4,2]))
+        halver.antenna.signals.append(Signal([0, 0.5e-9, 1e-9], [2, 4, 2]))
         assert halver.waveforms != []
         assert np.array_equal(halver.waveforms[0].values,
                               halver.antenna.waveforms[0].values/2)
 
     def test_all_waveforms(self, halver):
         """Test that front end is applied to all_waveforms array"""
-        halver.antenna.signals.append(Signal([0,1e-9,2e-9], [0.2,0.4,0.2]))
+        halver.antenna.signals.append(Signal([0, 0.5e-9, 1e-9], [0.2, 0.4, 0.2]))
         assert halver.waveforms == []
         assert np.array_equal(halver.all_waveforms[0].values,
                               halver.antenna.all_waveforms[0].values/2)
 
     def test_full_waveform(self, halver):
         """Test that front end is applied to full waveform"""
-        halver.antenna.signals.append(Signal([0,1e-9,2e-9], [2,4,2]))
-        assert np.array_equal(halver.full_waveform([-1e-9, 0, 1e-9, 2e-9, 3e-9]).values,
-                              halver.antenna.full_waveform([-1e-9, 0, 1e-9, 2e-9, 3e-9]).values/2)
+        halver.antenna.signals.append(Signal([0, 0.5e-9, 1e-9], [2, 4, 2]))
+        assert np.array_equal(halver.full_waveform([-0.5e-9, 0, 0.5e-9, 1e-9, 1.5e-9]).values,
+                              halver.antenna.full_waveform([-0.5e-9, 0, 0.5e-9, 1e-9, 1.5e-9]).values/2)
 
     def test_receive(self, ant_obj_sys):
         """Test that receive is passed along to underlying antenna"""
