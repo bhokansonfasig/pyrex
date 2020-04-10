@@ -263,12 +263,14 @@ class TestCylindricalGenerator:
         """Test that the get_exit_points method returns appropriate exit points"""
         particle = Particle(particle_id='nu_e', energy=1e9,
                             vertex=(0, 0, -1000), direction=(0, 0, 1))
-        points = cyl_generator.get_exit_points(particle)
+        with np.errstate(divide='ignore'):
+            points = cyl_generator.get_exit_points(particle)
         assert np.array_equal(points[0], (0, 0, -3000))
         assert np.array_equal(points[1], (0, 0, 0))
         particle = Particle(particle_id='nu_e', energy=1e9,
                             vertex=(0, 0, -1000), direction=(0, 0, -1))
-        points = cyl_generator.get_exit_points(particle)
+        with np.errstate(divide='ignore'):
+            points = cyl_generator.get_exit_points(particle)
         assert np.array_equal(points[0], (0, 0, 0))
         assert np.array_equal(points[1], (0, 0, -3000))
         particle = Particle(particle_id='nu_e', energy=1e9,
