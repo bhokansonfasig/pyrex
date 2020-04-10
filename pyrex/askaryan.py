@@ -8,6 +8,7 @@ into the time domain at the end of initialization.
 """
 
 import logging
+import warnings
 import numpy as np
 import scipy.constants
 import scipy.fft

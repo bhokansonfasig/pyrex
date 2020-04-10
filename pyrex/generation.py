@@ -9,7 +9,6 @@ from collections.abc import Iterable
 from enum import Enum
 import logging
 import numpy as np
-import warnings
 from pyrex.internal_functions import get_from_enum
 from pyrex.earth_model import earth
 from pyrex.particle import Event, Particle, NeutrinoInteraction
