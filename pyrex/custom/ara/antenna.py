@@ -939,9 +939,24 @@ class ARAAntennaSystem(AntennaSystem):
         """
         if self._power_mean is None or self._power_std is None:
             # Prepare for antenna trigger by finding mean and standard
-            # deviation of a long noise waveform (1 microsecond) convolved with
-            # the tunnel diode response
-            long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
+            # deviation of the full noise waveform convolved with the tunnel
+            # diode response
+            if len(self.antenna.signals)>0:
+                times = self.antenna.signals[0].times
+            else:
+                times = signal.times
+            n = len(times)
+            dt = times[1]-times[0]
+            duration = times[-1]-times[0] + dt
+            full_times = np.linspace(0, duration*self.antenna.unique_noises,
+                                     n*self.antenna.unique_noises)
+            if self.antenna._noise_master is None:
+                # Make sure the noise_master has the appropriate length
+                # (automatically gets set to N*len(times) the first time it is
+                # called, so make sure the first `times` is not the expanded
+                # array but the single-signal array)
+                self.antenna.make_noise(times)
+            long_noise = self.antenna.make_noise(full_times)
             power_noise = self.tunnel_diode(self.front_end(long_noise))
             self._power_mean = np.mean(power_noise.values)
             self._power_std = np.std(power_noise.values)

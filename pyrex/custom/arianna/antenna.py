@@ -848,9 +848,23 @@ class ARIANNAAntennaSystem(AntennaSystem):
         """
         if self._noise_mean is None or self._noise_std is None:
             # Prepare for antenna trigger by finding mean and standard
-            # deviation of a long noise waveform (1 microsecond) passed through
-            # the front-end
-            long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
+            # deviation of the full noise waveform passed through the front-end
+            if len(self.antenna.signals)>0:
+                times = self.antenna.signals[0].times
+            else:
+                times = signal.times
+            n = len(times)
+            dt = times[1]-times[0]
+            duration = times[-1]-times[0] + dt
+            full_times = np.linspace(0, duration*self.antenna.unique_noises,
+                                     n*self.antenna.unique_noises)
+            if self.antenna._noise_master is None:
+                # Make sure the noise_master has the appropriate length
+                # (automatically gets set to N*len(times) the first time it is
+                # called, so make sure the first `times` is not the expanded
+                # array but the single-signal array)
+                self.antenna.make_noise(times)
+            long_noise = self.antenna.make_noise(full_times)
             processed_noise = self.front_end(long_noise)
             self._noise_mean = np.mean(processed_noise.values)
             self._noise_std = np.std(processed_noise.values)
