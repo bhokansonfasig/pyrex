@@ -1598,8 +1598,7 @@ class SpecializedRayTracer(BasicRayTracer):
     @lazy_property
     def direct_r_max(self):
         """Maximum r value of direct ray solutions."""
-        z_turn = self.ice.depth_with_index(self.n0 * np.sin(self.max_angle))
-        return self._direct_r(self.max_angle, force_z1=z_turn)
+        return self._direct_r(self.max_angle)
 
     def _r_distance(self, theta, z0, z1):
         """
@@ -1688,7 +1687,7 @@ class SpecializedRayTracer(BasicRayTracer):
             z1 = self.z1
         return self._r_distance(angle, self.z0, z1) - brent_arg
 
-    def _indirect_r(self, angle, brent_arg=0):
+    def _indirect_r(self, angle, brent_arg=0, link_range=1e-6):
         """
         Calculate the r distance of the indirect ray for a given launch angle.
 
@@ -1699,6 +1698,10 @@ class SpecializedRayTracer(BasicRayTracer):
         brent_arg : float, optional
             Argument to subtract from the return value. Used for the brentq
             root finder to find a value other than zero.
+        link_range : float, optional
+            Angular range from `max_angle` over which the indirect ray distance
+            is adjusted so that it linearly approaches the maximum direct ray
+            distance at `max_angle`.
 
         Returns
         -------
@@ -1707,8 +1710,17 @@ class SpecializedRayTracer(BasicRayTracer):
 
         """
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
-        return (self._r_distance(angle, self.z0, z_turn) +
-                self._r_distance(angle, self.z1, z_turn)) - brent_arg
+        link_angle = self.max_angle - link_range
+        if angle>link_angle:
+            link_dist = (self._r_distance(link_angle, self.z0, z_turn) +
+                         self._r_distance(link_angle, self.z1, z_turn))
+            slope = (link_dist - self.direct_r_max) / link_range
+            dist = self.direct_r_max + slope * (self.max_angle - angle)
+            return dist - brent_arg
+        else:
+            dist = (self._r_distance(angle, self.z0, z_turn) +
+                    self._r_distance(angle, self.z1, z_turn))
+            return dist - brent_arg
 
     def _indirect_r_prime(self, angle, brent_arg=0):
         """
