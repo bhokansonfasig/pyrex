@@ -42,6 +42,6 @@ class TestAskaryanSignal:
         # assert np.min(arz_pulse.values) == pytest.approx(-200, rel=0.1)
         peak_to_peak_time = (arz_pulse.times[np.argmin(arz_pulse.values)] -
                              arz_pulse.times[np.argmax(arz_pulse.values)])
-        assert peak_to_peak_time == pytest.approx(0.2e-9, abs=0.05e-9)
+        assert peak_to_peak_time == pytest.approx(0.2e-9, abs=0.06e-9)
 
     # TODO: Add tests for vector_potential, RAC, charge_profile, and max_length methods

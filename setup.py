@@ -40,7 +40,7 @@ setup(
     package_data = {
         '': ['README.rst', 'LICENSE', 'PyREx Documentation.pdf'],
         'pyrex': ['data/secondary/*/*.vec'],
-        'pyrex.custom.ara': ['data/*.txt'],
+        'pyrex.custom.ara': ['data/*.txt', 'data/*.sqlite'],
         'pyrex.custom.arianna': ['data/*.txt', 'data/*.csv', 'data/*.tar.gz']
     },
 )

@@ -8,7 +8,7 @@ types and the detector grid can be made up of stations or strings.
 
 import logging
 import numpy as np
-from pyrex.signals import Signal
+import scipy.constants
 from pyrex.detector import Detector
 from pyrex.ice_model import ice
 from .antenna import HpolAntenna, VpolAntenna
@@ -291,7 +291,7 @@ class PhasedArrayString(Detector):
 
     """
     def set_positions(self, x, y, antennas_per_string=10,
-                      antenna_separation=1, lowest_antenna=-100,
+                      antenna_separation=1, lowest_antenna=-180,
                       antenna_type=VpolAntenna):
         """
         Generates antenna positions along the string.
@@ -420,7 +420,7 @@ class PhasedArrayString(Detector):
                 # Calculate delays based on elevation angles
                 thetas = np.radians(angles)
                 n = np.mean([ice.index(ant.position[2]) for ant in self])
-                v = 3e8 / n
+                v = scipy.constants.c / n
                 delays = dz / v * np.sin(thetas)
 
         rms = 0
@@ -466,18 +466,18 @@ class PhasedArrayString(Detector):
                 for ant in self:
                     noise = ant.antenna.make_noise(center_wave.times)
                     processed_noise = ant.front_end(noise)
-                    rms += np.sqrt(np.mean(processed_noise.values**2))
+                    rms += np.std(processed_noise.values)
                 rms /= np.sqrt(len(self))
 
             # Check each delay for trigger
             for delay in delays:
-                total = Signal(center_wave.times, center_wave.values)
+                total = center_wave.copy()
                 for i, wave in enumerate(waveforms):
                     if i==center_i:
                         continue
                     times = total.times - (center_i-i)*delay
                     add_wave = wave.with_times(times)
-                    add_wave.times += (center_i-i)*delay
+                    add_wave.shift((center_i-i)*delay)
                     total += add_wave.with_times(total.times)
                 if np.max(np.abs(total.values))>np.abs(beam_threshold*rms):
                     return True
@@ -631,18 +631,15 @@ class RegularStation(Detector):
 
 
 
-class AlbrechtStation(Detector):
+class PhasedArrayStation(Detector):
     """
-    Station geometry with center phased string and some outrigger strings.
+    Station geometry with center phased array string and regular outer strings.
 
-    Station geometry proposed by Albrecht with a phased array string of each
-    polarization at the station center, plus a number of outrigger strings
-    evenly spaced radially around the station center. Sets the positions of
-    strings around the station based on the parameters. Supports any string
-    type and passes extra keyword arguments on to the string class. Once the
-    antennas have been built with `build_antennas`, the object can be
-    directly iterated over to iterate over the antennas (as if the object were
-    just a list of the antennas).
+    Sets the positions of strings around the station based on the parameters.
+    Supports any string type and passes extra keyword arguments on to the
+    string class. Once the antennas have been built with `build_antennas`,
+    the object can be directly iterated over to iterate over the antennas (as
+    if the object were just a list of the antennas).
 
     Parameters
     ----------
@@ -650,21 +647,17 @@ class AlbrechtStation(Detector):
         Cartesian x-position (m) of the station.
     y : float
         Cartesian y-position (m) of the station.
+    phased_antennas : float, optional
+        Total number of antennas to be placed on the phased array string.
+    phased_separation : float or list of float, optional
+        Antenna separation (m) for the phased array antennas.
+    phased_lowest : float, optional
+        The Cartesian z-position (m) of the lowest antenna on the phased array.
+    phased_antenna_type : optional
+        The class to be used to create the phased array antenna objects.
     station_diameter : float, optional
         Diameter (m) of the circle around which outrigger strings are
         placed.
-    hpol_phased_antennas : float, optional
-        Number of Hpol phased antennas for the center string.
-    vpol_phased_antennas : float, optional
-        Number of Vpol phased antennas for the center string.
-    hpol_phased_separation : float or list of float, optional
-        Antenna separation (m) for the phased Hpol antennas.
-    vpol_phased_separation : float or list of float, optional
-        Antenna separation (m) for the phased Vpol antennas.
-    hpol_phased_lowest : float, optional
-        Cartesian z-position (m) of the lowest phased Hpol antenna.
-    vpol_phased_lowest : float, optional
-        Cartesian z-position (m) of the lowest phased Vpol antenna.
     outrigger_strings_per_station : float, optional
         Number of outrigger strings to be placed evenly around the station.
     outrigger_string_type : optional
@@ -710,11 +703,9 @@ class AlbrechtStation(Detector):
     iterated, all the antennas of its strings will be yielded as in a 1D list.
 
     """
-    def set_positions(self, x, y, station_diameter=40,
-                      hpol_phased_antennas=10, vpol_phased_antennas=10,
-                      hpol_phased_separation=1, vpol_phased_separation=1,
-                      hpol_phased_lowest=-49, vpol_phased_lowest=-69,
-                      outrigger_strings_per_station=3,
+    def set_positions(self, x, y, phased_antennas=10, phased_separation=1,
+                      phased_lowest=-180, phased_antenna_type=VpolAntenna,
+                      outrigger_strings_per_station=4,
                       outrigger_string_type=ARAString,
                       **outrigger_string_kwargs):
         """
@@ -726,21 +717,17 @@ class AlbrechtStation(Detector):
             Cartesian x-position (m) of the station.
         y : float
             Cartesian y-position (m) of the station.
+        phased_antennas : float, optional
+            Total number of antennas to be placed on the phased array string.
+        phased_separation : float or list of float, optional
+            Antenna separation (m) for the phased array antennas.
+        phased_lowest : float, optional
+            The Cartesian z-position (m) of the lowest antenna on the phased array.
+        phased_antenna_type : optional
+            The class to be used to create the phased array antenna objects.
         station_diameter : float, optional
             Diameter (m) of the circle around which outrigger strings are
             placed.
-        hpol_phased_antennas : float, optional
-            Number of Hpol phased antennas for the center string.
-        vpol_phased_antennas : float, optional
-            Number of Vpol phased antennas for the center string.
-        hpol_phased_separation : float or list of float, optional
-            Antenna separation (m) for the phased Hpol antennas.
-        vpol_phased_separation : float or list of float, optional
-            Antenna separation (m) for the phased Vpol antennas.
-        hpol_phased_lowest : float, optional
-            Cartesian z-position (m) of the lowest phased Hpol antenna.
-        vpol_phased_lowest : float, optional
-            Cartesian z-position (m) of the lowest phased Vpol antenna.
         outrigger_strings_per_station : float, optional
             Number of outrigger strings to be placed evenly around the station.
         outrigger_string_type : optional
@@ -759,27 +746,11 @@ class AlbrechtStation(Detector):
                                           string.
 
         """
-        # Change defaults for outrigger strings
-        if "antennas_per_string" not in outrigger_string_kwargs:
-            outrigger_string_kwargs["antennas_per_string"] = 8
-        if "antenna_separation" not in outrigger_string_kwargs:
-            n = outrigger_string_kwargs["antennas_per_string"]
-            sep = [1, 29] * int(n/2)
-            outrigger_string_kwargs["antenna_separation"] = sep[:n-1]
-        if "lowest_antenna" not in outrigger_string_kwargs:
-            outrigger_string_kwargs["lowest_antenna"] = -100
-
         self.subsets.append(
-            PhasedArrayString(x, y, antennas_per_string=hpol_phased_antennas,
-                              antenna_separation=hpol_phased_separation,
-                              lowest_antenna=hpol_phased_lowest,
-                              antenna_type=HpolAntenna)
-        )
-        self.subsets.append(
-            PhasedArrayString(x, y, antennas_per_string=vpol_phased_antennas,
-                              antenna_separation=vpol_phased_separation,
-                              lowest_antenna=vpol_phased_lowest,
-                              antenna_type=VpolAntenna)
+            PhasedArrayString(x, y, antennas_per_string=phased_antennas,
+                              antenna_separation=phased_separation,
+                              lowest_antenna=phased_lowest,
+                              antenna_type=phased_antenna_type)
         )
 
         r = station_diameter/2
@@ -796,12 +767,11 @@ class AlbrechtStation(Detector):
         """
         Check if the station is triggered based on its current state.
 
-        Station is triggered if either of the polarized phased arrays triggers
-        with the parameters. If the `outrigger_antenna_requirement` is not
-        ``None`` then the station will also trigger if the number of outrigger
-        antennas that have been hit (according to ``is_hit``) of a single type
-        (polarization) is greater than or equal to the
-        `outrigger_antenna_requirement`.
+        Station is triggered if the phased array triggers with the given
+        parameters. If the `outrigger_antenna_requirement` is not ``None`` then
+        the station will also trigger if the number of outrigger antennas that
+        have been hit (according to ``is_hit``) of a single type (polarization)
+        is greater than or equal to the `outrigger_antenna_requirement`.
 
         Parameters
         ----------
@@ -842,7 +812,7 @@ class AlbrechtStation(Detector):
         if outrigger_antenna_requirement is not None:
             hpol_outriggers_hit = 0
             vpol_outriggers_hit = 0
-            for string in self.subsets[2:]:
+            for string in self.subsets[1:]:
                 if require_mc_truth:
                     hpol_outriggers_hit += sum(1 for ant in string
                                                if isinstance(ant, HpolAntenna)
@@ -862,14 +832,10 @@ class AlbrechtStation(Detector):
                 return True
 
         # Check for phased array trigger
-        return (
-            self.subsets[0].triggered(beam_threshold=beam_threshold,
-                                      delays=beam_delays, angles=beam_angles,
-                                      require_mc_truth=require_mc_truth) or
-            self.subsets[1].triggered(beam_threshold=beam_threshold,
-                                      delays=beam_delays, angles=beam_angles,
-                                      require_mc_truth=require_mc_truth)
-        )
+        return self.subsets[0].triggered(beam_threshold=beam_threshold,
+                                         delays=beam_delays,
+                                         angles=beam_angles,
+                                         require_mc_truth=require_mc_truth)
 
 
 

@@ -8,10 +8,10 @@ consumption and the amount of digitized information.
 """
 
 import numpy as np
+import scipy.constants
 import scipy.signal
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
-from pyrex.ice_model import ice
 
 from pyrex.custom.ara.antenna import (ARAAntennaSystem, HPOL_RESPONSE_DATA,
                                       VPOL_RESPONSE_DATA)
@@ -35,9 +35,12 @@ class DipoleTester(Antenna):
         Tuned frequency (Hz) of the dipole.
     bandwidth : float
         Bandwidth (Hz) of the antenna.
+    temperature : float
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
     orientation : array_like, optional
         Vector direction of the z-axis of the antenna.
     effective_height : float, optional
@@ -97,12 +100,12 @@ class DipoleTester(Antenna):
     all_waveforms
 
     """
-    def __init__(self, position, center_frequency, bandwidth, resistance,
-                 orientation=(0,0,1), effective_height=None, noisy=True,
-                 unique_noise_waveforms=10):
+    def __init__(self, position, center_frequency, bandwidth, temperature,
+                 resistance, orientation=(0,0,1), effective_height=None,
+                 noisy=True, unique_noise_waveforms=10):
         if effective_height is None:
             # Calculate length of half-wave dipole
-            self.effective_height = 3e8 / center_frequency / 2
+            self.effective_height = scipy.constants.c / center_frequency / 2
         else:
             self.effective_height = effective_height
 
@@ -119,8 +122,8 @@ class DipoleTester(Antenna):
 
         super().__init__(position=position, z_axis=orientation, x_axis=ortho,
                          antenna_factor=1/self.effective_height,
-                         temperature=ice.temperature(position[2]),
-                         freq_range=(f_low, f_high), resistance=resistance,
+                         freq_range=(f_low, f_high),
+                         temperature=temperature, resistance=resistance,
                          unique_noise_waveforms=unique_noise_waveforms,
                          noisy=noisy)
 
