@@ -767,8 +767,9 @@ class EventIterator(HDF5Base):
             if index>=0:
                 self._data[key] = []
                 tmp_indices = self._object[self._locations['indices']][slc, index]
-                tmp_start = tmp_indices[0][0]
-                tmp_end = tmp_indices[-1][0] + tmp_indices[-1][1]
+                tmp_start = np.min(tmp_indices[:, 0])
+                tmp_end_idx = np.argmin(tmp_indices[:, 0])
+                tmp_end = tmp_indices[tmp_end_idx][0] + tmp_indices[tmp_end_idx][1]
                 tmp = self._object[val][tmp_start:tmp_end]
                 start = 0
                 for length in tmp_indices[:, 1]:
