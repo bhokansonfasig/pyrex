@@ -9,6 +9,7 @@ writer classes which can be extended to read and write other file formats.
 import datetime
 import inspect
 import logging
+from pkg_resources import parse_version
 import h5py
 import numpy as np
 from pyrex.__about__ import __version__
@@ -18,6 +19,9 @@ from pyrex.antenna import Antenna
 from pyrex.particle import Particle, Event
 
 logger = logging.getLogger(__name__)
+
+
+H5PY_V2_STRINGS = parse_version(h5py.__version__) < parse_version('3.0.0')
 
 
 class BaseReader:
@@ -230,6 +234,60 @@ class HDF5Base:
         self._file_version_major = file_version_major
         self._file_version_minor = file_version_minor
 
+    def _decode_attr(self, attribute):
+        """
+        Decode attributes from the file to string values.
+
+        Parameters
+        ----------
+        attribute : str or bytes
+            Raw value of an attribute from a `DATASET.attrs` list.
+
+        Returns
+        -------
+        str
+            Attribute value decoded into the `str` type.
+
+        Notes
+        -----
+        If the file was written using h5py versions below 3.0.0 (file version
+        1.0), this function decodes the byte-typed attribute. If written using
+        h5py versions above 3.0.0 (file version 1.1+), this function simply
+        passes along the string-typed attribute.
+
+        """
+        if self._file_version_major==1 and self._file_version_minor==0:
+            return bytes.decode(attribute)
+        else:
+            return attribute
+
+    def _encode_attr(self, attribute):
+        """
+        Encode attribute string values for writing to the file.
+
+        Parameters
+        ----------
+        attribute : str
+            String value to be stored as an attribute in a `DATASET.attrs` list.
+
+        Returns
+        -------
+        str or bytes
+            Attribute value encoded into the appropriate type for storage.
+
+        Notes
+        -----
+        If the file is being written using h5py versions below 3.0.0 (file
+        version 1.0), this function encodes to a byte-typed attribute. If it is
+        being written using h5py versions above 3.0.0 (file version 1.1+), this
+        function simply passes along the string-typed attribute.
+
+        """
+        if self._file_version_major==1 and self._file_version_minor==0:
+            return str.encode(attribute)
+        else:
+            return attribute
+
     def _dataset_locations(self):
         """
         Get the file locations of datasets and metadata groups.
@@ -362,8 +420,7 @@ class HDF5Base:
                         name, new_name)
         return new_name
 
-    @staticmethod
-    def _read_metadata_to_dicts(data, name, index=None,
+    def _read_metadata_to_dicts(self, data, name, index=None,
                                 str_keys=None, float_keys=None):
         """
         Read data from a metadata group into a dictionary for convenience.
@@ -411,10 +468,10 @@ class HDF5Base:
             float_table = float_metadata[index]
 
         if str_keys is None:
-            str_keys = [bytes.decode(key) for key
+            str_keys = [self._decode_attr(key) for key
                         in str_metadata.attrs['keys']]
         if float_keys is None:
-            float_keys = [bytes.decode(key) for key
+            float_keys = [self._decode_attr(key) for key
                           in float_metadata.attrs['keys']]
 
         if str_table.ndim!=float_table.ndim:
@@ -448,8 +505,7 @@ class HDF5Base:
 
         return get_dicts_recursive(0, str_table, float_table)
 
-    @staticmethod
-    def _read_dataset_to_dicts(data, name, index=None, keys=None):
+    def _read_dataset_to_dicts(self, data, name, index=None, keys=None):
         """
         Read data from a dataset into a dictionary for convenience.
 
@@ -488,7 +544,7 @@ class HDF5Base:
             table = dataset[index]
 
         if keys is None:
-            keys = [bytes.decode(key) for key in dataset.attrs['keys']]
+            keys = [self._decode_attr(key) for key in dataset.attrs['keys']]
 
         ndim = table.ndim
         key_dim = -1
@@ -534,8 +590,7 @@ class HDF5Base:
         return {key: group in file and file[group].size>0
                 for key, group in locations.items()}
 
-    @staticmethod
-    def _get_keys_dict(file, group):
+    def _get_keys_dict(self, file, group):
         """
         Get a dictionary of key names and their corresponding columns.
 
@@ -558,8 +613,8 @@ class HDF5Base:
 
         """
         if group in file and "keys" in file[group].attrs.keys():
-            return {str(key, "utf-8"): i for i, key in
-                    enumerate(file[group].attrs["keys"])}
+            return {self._decode_attr(key): i
+                    for i, key in enumerate(file[group].attrs["keys"])}
         else:
             return {}
 
@@ -688,7 +743,7 @@ class EventIterator(HDF5Base):
         self._bool_dict = self._get_bool_dict(self._object, self._locations)
 
         self._index_keys = [
-            str(key, "utf-8")
+            self._decode_attr(key)
             for key in self._object[self._locations["indices"]].attrs["keys"]
         ]
 
@@ -1748,7 +1803,10 @@ class HDF5Writer(BaseWriter, HDF5Base):
         self._is_open = False
 
         # Set file version
-        HDF5Base.__init__(self, 1, 0)
+        if H5PY_V2_STRINGS:
+            HDF5Base.__init__(self, 1, 0)
+        else:
+            HDF5Base.__init__(self, 1, 1)
         self._data_locs = self._dataset_locations()
 
         if write_antenna_triggers and not write_triggers:
@@ -2077,11 +2135,12 @@ class HDF5Writer(BaseWriter, HDF5Base):
             )
             data.dims[0].label = "antennas"
             data.dims[1].label = "attributes"
-            data.attrs['keys'] = [
-                b"position_x", b"position_y", b"position_z",
-                b"z_axis_x", b"z_axis_y", b"z_axis_z",
-                b"x_axis_x", b"x_axis_y", b"x_axis_z"
+            keys = [
+                "position_x", "position_y", "position_z",
+                "z_axis_x", "z_axis_y", "z_axis_z",
+                "x_axis_x", "x_axis_y", "x_axis_z"
             ]
+            data.attrs['keys'] = [self._encode_attr(key) for key in keys]
             data.resize(len(data.attrs['keys']), axis=1)
 
         elif name==self._data_locs['mc_triggers']:
@@ -2102,7 +2161,8 @@ class HDF5Writer(BaseWriter, HDF5Base):
             data.dims[0].label = "events"
             data.dims[1].label = "antennas"
             data.dims[2].label = "attributes"
-            data.attrs['keys'] = [b"frequency", b"amplitude", b"phase"]
+            keys = ["frequency", "amplitude", "phase"]
+            data.attrs['keys'] = [self._encode_attr(key) for key in keys]
             data.resize(len(data.attrs['keys']), axis=2)
 
         else:
@@ -2324,26 +2384,24 @@ class HDF5Writer(BaseWriter, HDF5Base):
 
                 if val_type=="string":
                     for j, match in enumerate(str_data.attrs['keys']):
-                        if bytes.decode(match)==key:
+                        if self._decode_attr(match)==key:
                             break
                     else:
                         # If no key matched, add key and resize dataset
                         j = len(str_data.attrs['keys'])
-                        str_data.attrs['keys'] = np.append(
-                            str_data.attrs['keys'], str.encode(key)
-                        )
+                        str_data.attrs['keys'] = (list(str_data.attrs['keys'])
+                                                  + [self._encode_attr(key)])
                         str_data.resize(j+1, axis=data_axis)
                     write_value(val, str_data, j, i, index)
                 elif val_type=="float":
                     for j, match in enumerate(float_data.attrs['keys']):
-                        if bytes.decode(match)==key:
+                        if self._decode_attr(match)==key:
                             break
                     else:
                         # If no key matched, add key and resize dataset
                         j = len(float_data.attrs['keys'])
-                        float_data.attrs['keys'] = np.append(
-                            float_data.attrs['keys'], str.encode(key)
-                        )
+                        float_data.attrs['keys'] = (list(float_data.attrs['keys'])
+                                                    + [self._encode_attr(key)])
                         float_data.resize(j+1, axis=data_axis)
                     write_value(val, float_data, j, i, index)
                 else:
@@ -2379,12 +2437,11 @@ class HDF5Writer(BaseWriter, HDF5Base):
         # Don't write indices if the matching dataset doesn't exist
         if full_name not in self._file:
             return
-        encoded_name = str.encode(full_name)
+        encoded_name = self._encode_attr(full_name)
         # Add column for full_name if it doesn't exist
         if (len(indices.attrs['keys'])==0 or
                 encoded_name not in indices.attrs['keys']):
-            indices.attrs['keys'] = np.append(indices.attrs['keys'],
-                                              str.encode(full_name))
+            indices.attrs['keys'] = list(indices.attrs['keys']) + [encoded_name]
             indices.resize(indices.shape[1]+1, axis=1)
         for i, key in enumerate(indices.attrs['keys']):
             if key==encoded_name:
@@ -2428,7 +2485,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
         for i, antenna in enumerate(detector):
             antenna_metadata = antenna._metadata
             for j, key in enumerate(data.attrs['keys']):
-                data[i, j] = antenna_metadata.pop(bytes.decode(key))
+                data[i, j] = antenna_metadata.pop(self._decode_attr(key))
             antenna_metadatas.append(antenna_metadata)
         self._write_metadata(self._data_locs['antennas_meta'],
                              antenna_metadatas)
@@ -2565,17 +2622,16 @@ class HDF5Writer(BaseWriter, HDF5Base):
             if extra_triggers:
                 extra_keys.extend(other_triggered.keys())
             for key in extra_keys:
-                if str.encode(key) not in list(extra_data.attrs['keys']):
-                    extra_data.attrs['keys'] = np.append(
-                        extra_data.attrs['keys'], str.encode(key)
-                    )
+                if self._encode_attr(key) not in list(extra_data.attrs['keys']):
+                    extra_data.attrs['keys'] = (list(extra_data.attrs['keys'])
+                                                + [self._encode_attr(key)])
                     extra_data.resize(extra_data.shape[1]+1, axis=1)
 
             # Store individual antenna triggers
             if include_antennas:
                 for i, ant in enumerate(self._detector):
                     for k, match in enumerate(extra_data.attrs['keys']):
-                        if "antenna_"+str(i)==bytes.decode(match):
+                        if "antenna_"+str(i)==self._decode_attr(match):
                             for j, wave in enumerate(ant.all_waveforms):
                                 extra_data[start_index+j, i] = ant.trigger(wave)
 
@@ -2583,7 +2639,7 @@ class HDF5Writer(BaseWriter, HDF5Base):
             if extra_triggers:
                 for key, val in other_triggered.items():
                     for k, match in enumerate(extra_data.attrs['keys']):
-                        if key==bytes.decode(match):
+                        if key==self._decode_attr(match):
                             if isinstance(val, bool):
                                 for j in range(max_waves):
                                     extra_data[start_index+j, k] = val
