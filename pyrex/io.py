@@ -237,6 +237,36 @@ class HDF5Base:
         else:
             return attribute
 
+    def _decode_string_data(self, data):
+        """
+        Convert data from a dataset of string values to `str`.
+
+        Parameters
+        ----------
+        data : [array of] bytes or str
+            Data pulled directly from the dataset.
+
+        Returns
+        -------
+        str
+            Data in the `str` type.
+
+        Notes
+        -----
+        If the file was written using h5py versions below 3.0.0 (file version
+        1.0), this function simply passes along the data since it is already
+        a `str` value. If written using h5py versions above 3.0.0 (file
+        version 1.1+), this function decodes the byte-typed string to `str`.
+
+        """
+        if self._file_version_major==1 and self._file_version_minor==0:
+            return data
+        else:
+            if isinstance(data, np.ndarray):
+                return np.array([bytes.decode(b) for b in data.flat]).reshape(data.shape)
+            else:
+                return bytes.decode(data)
+
     def _dataset_locations(self):
         """
         Get the file locations of datasets and metadata groups.
@@ -440,7 +470,7 @@ class HDF5Base:
             if dimension==key_dim%ndim:
                 meta_dict = {}
                 for j, key in enumerate(str_keys):
-                    meta_dict[key] = str_data[j]
+                    meta_dict[key] = self._decode_string_data(str_data[j])
                 for j, key in enumerate(float_keys):
                     meta_dict[key] = float_data[j]
                 return meta_dict
@@ -900,7 +930,10 @@ class EventIterator(HDF5Base):
                 return data
 
         if attribute is None:
-            return data
+            if isinstance(data, tuple):
+                return data[0], self._decode_string_data(data[1])
+            else:
+                return data
         elif isinstance(attribute, str):
             if isinstance(data, tuple):
                 if attribute in self._keys[name+"_float"]:
@@ -908,7 +941,7 @@ class EventIterator(HDF5Base):
                     return data[0][:, index]
                 elif attribute in self._keys[name+"_str"]:
                     index = self._keys[name+"_str"][attribute]
-                    return data[1][:, index]
+                    return self._decode_string_data(data[1][:, index])
                 else:
                     raise ValueError("Unrecognized attribute '"+attribute+"'")
             else:
@@ -1033,10 +1066,12 @@ class EventIterator(HDF5Base):
                     groups = ["particles_meta_float", "particles_meta_str"]
                     datasets = [float_data, str_data]
                     dic = {}
-                    for grp, data in zip(groups, datasets):
-                        for key, value in self._keys[grp].items():
-                            if "interaction" in key:
-                                dic[key] = data[:, value]
+                    for key, value in self._keys["particles_meta_float"].items():
+                        if "interaction" in key:
+                            dic[key] = float_data[:, value]
+                    for key, value in self._keys["particles_meta_str"].items():
+                        if "interaction" in key:
+                            dic[key] = self._decode_string_data(str_data[:, value])
                     return dic
                 else:
                     raise ValueError("This value is not supported yet")
@@ -1046,7 +1081,7 @@ class EventIterator(HDF5Base):
                     return float_data[:, index]
                 elif attribute in self._keys["particles_meta_str"]:
                     index = self._keys["particles_meta_str"][attribute]
-                    return str_data[:, index]
+                    return self._decode_string_data(str_data[:, index])
                 else:
                     raise ValueError("Unrecognized particle attribute '"+
                                      attribute+"'")
@@ -1120,7 +1155,7 @@ class EventIterator(HDF5Base):
                     return float_data[:, :, index]
                 elif attribute in self._keys["rays_meta_str"]:
                     index = self._keys["rays_meta_str"][attribute]
-                    return str_data[:, :, index]
+                    return self._decode_string_data(str_data[:, :, index])
                 else:
                     raise ValueError("Unrecognized particle attribute '"+
                                      attribute+"'")
