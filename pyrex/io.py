@@ -633,7 +633,7 @@ class EventIterator(HDF5Base):
     is_nubar
 
     """
-    def __init__(self, hdf5_file, slice_range=10,
+    def __init__(self, hdf5_file, slice_range=None,
                  start_event=None, stop_event=None, step=None):
         self._object = hdf5_file
         HDF5Base.__init__(self, self._object.attrs["version_major"],
@@ -772,7 +772,9 @@ class EventIterator(HDF5Base):
                 self._data[key] = []
                 tmp_indices = self._object[self._locations['indices']][slc, index]
                 tmp_start = np.min(tmp_indices[:, 0])
-                tmp_end_idx = np.argmax(tmp_indices[:, 0])
+                # If multiple events have the same max index, the last one is
+                # the one we want (but using argmax would give the first)
+                tmp_end_idx = np.where(tmp_indices[:, 0]==np.max(tmp_indices[:, 0]))[0][-1]
                 tmp_end = tmp_indices[tmp_end_idx][0] + tmp_indices[tmp_end_idx][1]
                 tmp = self._object[val][tmp_start:tmp_end]
                 start = 0
