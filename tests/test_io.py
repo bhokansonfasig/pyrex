@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrex.io import HDF5Base, HDF5Reader, HDF5Writer, EventIterator, File
+from pyrex.io import HDF5Base, HDF5Reader, HDF5Writer, EventIterator, File, H5PY_V2_STRINGS
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.particle import Particle, Event
@@ -12,18 +12,21 @@ import h5py
 import numpy as np
 
 
+FILE_VERSION_MAJOR = 1
+FILE_VERSION_MINOR = int(not H5PY_V2_STRINGS)
+
 
 @pytest.fixture
 def h5base():
     """Fixture for forming basic HDF5Base object"""
-    return HDF5Base(1, 0)
+    return HDF5Base(FILE_VERSION_MAJOR, FILE_VERSION_MINOR)
 
 class TestHDF5Base:
     """Tests for HDF5Base class"""
     def test_creation(self, h5base):
         """Test initialization of HDF5Base object"""
-        assert h5base._file_version_major == 1
-        assert h5base._file_version_minor == 0
+        assert h5base._file_version_major == FILE_VERSION_MAJOR
+        assert h5base._file_version_minor == FILE_VERSION_MINOR
 
     def test_dataset_locations(self, h5base):
         """Test the dataset locations of an HDF5Base object"""
@@ -84,24 +87,24 @@ class TestHDF5Base:
         tmpfile.create_group('metadata_group')
         str_dataset = tmpfile.create_dataset(
             'metadata_group/str',
-            data=[[str.encode(x)] for x in metadata['color']]
+            data=[[h5base._encode_attr(x)] for x in metadata['color']]
         )
-        str_dataset.attrs['keys'] = [str.encode('color')]
+        str_dataset.attrs['keys'] = [h5base._encode_attr('color')]
         float_dataset = tmpfile.create_dataset(
             'metadata_group/float',
             data=np.array([metadata['number'], metadata['zero']]).T
         )
-        float_dataset.attrs['keys'] = [str.encode('number'), str.encode('zero')]
+        float_dataset.attrs['keys'] = [h5base._encode_attr('number'), h5base._encode_attr('zero')]
         read = h5base._read_metadata_to_dicts(tmpfile, 'metadata_group')
         for i, row in enumerate(read):
-            assert row['color'] == str.encode(metadata['color'][i])
+            assert row['color'] == h5base._decode_string_data(str.encode(metadata['color'][i]))
             assert row['number'] == metadata['number'][i]
             assert row['zero'] == metadata['zero'][i]
         read = h5base._read_metadata_to_dicts(tmpfile, 'metadata_group',
                                               str_keys=['COLOR'],
                                               float_keys=['NUMBER', 'ZERO'])
         for i, row in enumerate(read):
-            assert row['COLOR'] == str.encode(metadata['color'][i])
+            assert row['COLOR'] == h5base._decode_string_data(str.encode(metadata['color'][i]))
             assert row['NUMBER'] == metadata['number'][i]
             assert row['ZERO'] == metadata['zero'][i]
 
@@ -114,7 +117,7 @@ class TestHDF5Base:
             'float_data',
             data=np.array([numbers, zeros]).T
         )
-        dataset.attrs['keys'] = [str.encode('number'), str.encode('zero')]
+        dataset.attrs['keys'] = [h5base._encode_attr('number'), h5base._encode_attr('zero')]
         read = h5base._read_dataset_to_dicts(tmpfile, 'float_data')
         for i, row in enumerate(read):
             assert row['number'] == numbers[i]
@@ -171,14 +174,14 @@ class TestHDF5Base:
         tmpfile.create_group('metadata_group')
         str_dataset = tmpfile.create_dataset(
             'metadata_group/str',
-            data=[[str.encode(x)] for x in metadata['color']]
+            data=[[h5base._encode_attr(x)] for x in metadata['color']]
         )
-        str_dataset.attrs['keys'] = [str.encode('color')]
+        str_dataset.attrs['keys'] = [h5base._encode_attr('color')]
         float_dataset = tmpfile.create_dataset(
             'metadata_group/float',
             data=np.array([metadata['number'], metadata['zero']]).T
         )
-        float_dataset.attrs['keys'] = [str.encode('number'), str.encode('zero')]
+        float_dataset.attrs['keys'] = [h5base._encode_attr('number'), h5base._encode_attr('zero')]
         assert h5base._get_keys_dict(tmpfile, 'metadata_group') == {}
         str_keys = h5base._get_keys_dict(tmpfile, 'metadata_group/str')
         assert str_keys['color'] == 0
@@ -208,8 +211,8 @@ class TestHDF5Writer:
     """Tests for HDF5Writer class"""
     def test_creation(self, h5writer, tmpdir):
         """Test initialization of HDF5Writer object"""
-        assert h5writer._file_version_major == 1
-        assert h5writer._file_version_minor == 0
+        assert h5writer._file_version_major == FILE_VERSION_MAJOR
+        assert h5writer._file_version_minor == FILE_VERSION_MINOR
         assert h5writer.filename == str(tmpdir.join('test_output.h5'))
 
     def test_open_close(self, h5writer):
@@ -317,7 +320,7 @@ class TestHDF5Writer:
         assert h5writer['particles_meta']['float'].shape[0] == 1
         assert h5writer['particles_meta'].attrs['total_thrown'] == 1
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/monte_carlo_data/particles')])
+                              [h5writer._encode_attr('/monte_carlo_data/particles')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]]])
         event2 = Event(Particle(particle_id=Particle.Type.electron_antineutrino,
                                 vertex=[0, 0, -100], direction=[0, 0, -1],
@@ -327,7 +330,7 @@ class TestHDF5Writer:
         assert h5writer['particles_meta']['float'].shape[0] == 2
         assert h5writer['particles_meta'].attrs['total_thrown'] == 6
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/monte_carlo_data/particles')])
+                              [h5writer._encode_attr('/monte_carlo_data/particles')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]], [[1, 1]]])
         h5writer.close()
 
@@ -348,19 +351,19 @@ class TestHDF5Writer:
         assert h5writer['triggers'].shape[0] == 1
         assert np.array_equal(h5writer['triggers'][:], [True])
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/data/triggers')])
+                              [h5writer._encode_attr('/data/triggers')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]]])
         h5writer.add(event=None, triggered=False)
         assert h5writer['triggers'].shape[0] == 2
         assert np.array_equal(h5writer['triggers'][:], [True, False])
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/data/triggers')])
+                              [h5writer._encode_attr('/data/triggers')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]], [[1, 1]]])
         h5writer.add(event=None, triggered={'global': True})
         assert h5writer['triggers'].shape[0] == 3
         assert np.array_equal(h5writer['triggers'][:], [True, False, True])
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/data/triggers')])
+                              [h5writer._encode_attr('/data/triggers')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]], [[1, 1]], [[2, 1]]])
         h5writer.close()
 
@@ -388,27 +391,27 @@ class TestHDF5Writer:
         assert h5writer['mc_triggers'].shape[0] == 1
         assert h5writer['mc_triggers'].shape[1] == len(detector)
         assert np.array_equal(h5writer['mc_triggers'].attrs['keys'],
-                              [str.encode('antenna_0'),
-                               str.encode('antenna_1')])
+                              [h5writer._encode_attr('antenna_0'),
+                               h5writer._encode_attr('antenna_1')])
         assert np.array_equal(h5writer['mc_triggers'][:], [[True, True]])
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/data/triggers'),
-                               str.encode('/monte_carlo_data/triggers')])
+                              [h5writer._encode_attr('/data/triggers'),
+                               h5writer._encode_attr('/monte_carlo_data/triggers')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1], [0, 1]]])
         detector[0].signals.append(Signal([2e-9, 3e-9], [1, 0]))
         h5writer.add(event=None, triggered={'global': False, 'extra': True})
         assert h5writer['mc_triggers'].shape[0] == 3
         assert h5writer['mc_triggers'].shape[1] == len(detector)+1
         assert np.array_equal(h5writer['mc_triggers'].attrs['keys'],
-                              [str.encode('antenna_0'),
-                               str.encode('antenna_1'),
-                               str.encode('extra')])
+                              [h5writer._encode_attr('antenna_0'),
+                               h5writer._encode_attr('antenna_1'),
+                               h5writer._encode_attr('extra')])
         assert np.array_equal(h5writer['mc_triggers'][:],
                               [[True, True, False], [True, True, True],
                                [True, False, True]])
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/data/triggers'),
-                               str.encode('/monte_carlo_data/triggers')])
+                              [h5writer._encode_attr('/data/triggers'),
+                               h5writer._encode_attr('/monte_carlo_data/triggers')])
         assert np.array_equal(h5writer['indices'][:],
                               [[[0, 1], [0, 1]], [[1, 1], [1, 2]]])
         h5writer.close()
@@ -437,13 +440,13 @@ class TestHDF5Writer:
         assert h5writer['rays_meta']['float'].shape[0] == 2
         assert h5writer['rays_meta']['float'].shape[1] == len(detector)
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/monte_carlo_data/rays')])
+                              [h5writer._encode_attr('/monte_carlo_data/rays')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 2]]])
         h5writer.add(event=None, ray_paths=rays, polarizations=polarizations)
         assert h5writer['rays_meta']['float'].shape[0] == 4
         assert h5writer['rays_meta']['float'].shape[1] == len(detector)
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/monte_carlo_data/rays')])
+                              [h5writer._encode_attr('/monte_carlo_data/rays')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 2]], [[2, 2]]])
         h5writer.close()
 
@@ -476,13 +479,13 @@ class TestHDF5Writer:
         assert h5writer['noise'].shape[0] == 1
         assert h5writer['noise'].shape[1] == len(detector)
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/monte_carlo_data/noise')])
+                              [h5writer._encode_attr('/monte_carlo_data/noise')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]]])
         h5writer.add(event=None)
         assert h5writer['noise'].shape[0] == 2
         assert h5writer['noise'].shape[1] == len(detector)
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/monte_carlo_data/noise')])
+                              [h5writer._encode_attr('/monte_carlo_data/noise')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]], [[1, 1]]])
         h5writer.close()
 
@@ -509,7 +512,7 @@ class TestHDF5Writer:
         assert h5writer['waveforms'].shape[0] == 1
         assert h5writer['waveforms'].shape[1] == len(detector)
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/data/waveforms')])
+                              [h5writer._encode_attr('/data/waveforms')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]]])
         detector[0].signals.append(Signal([2e-9, 3e-9], [1, 0]))
         h5writer.add(event=None)
@@ -517,7 +520,7 @@ class TestHDF5Writer:
         assert h5writer['waveforms'].shape[0] == 3
         assert h5writer['waveforms'].shape[1] == len(detector)
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/data/waveforms')])
+                              [h5writer._encode_attr('/data/waveforms')])
         assert np.array_equal(h5writer['indices'][:], [[[0, 1]], [[1, 2]]])
         h5writer.close()
 
@@ -600,12 +603,15 @@ class TestHDF5Writer:
         h5writer.create_analysis_metadataset('new_metadata')
         h5writer.add_analysis_metadata('new_metadata',
                                        {'color': 'red', 'number': 1, 'zero': 0})
-        assert np.array_equal(h5writer['new_metadata']['str'][:], ['red'])
+        if h5writer._file_version_major==1 and h5writer._file_version_minor==0:
+            assert np.array_equal(h5writer['new_metadata']['str'][:], ['red'])
+        else:
+            assert np.array_equal(h5writer['new_metadata']['str'][:], [str.encode('red')])
         assert np.array_equal(h5writer['new_metadata']['str'].attrs['keys'],
-                              [str.encode('color')])
+                              [h5writer._encode_attr('color')])
         assert np.array_equal(h5writer['new_metadata']['float'][:], [1, 0])
         assert np.array_equal(h5writer['new_metadata']['float'].attrs['keys'],
-                              [str.encode('number'), str.encode('zero')])
+                              [h5writer._encode_attr('number'), h5writer._encode_attr('zero')])
         h5writer.close()
 
     def test_add_analysis_indices(self, h5writer):
@@ -616,7 +622,7 @@ class TestHDF5Writer:
         h5writer.add_analysis_indices('new_dataset', 0, 0, 1)
         h5writer.add_analysis_indices('new_dataset', 1, 1, 2)
         assert np.array_equal(h5writer['indices'].attrs['keys'],
-                              [str.encode('/monte_carlo_data/analysis/new_dataset')])
+                              [h5writer._encode_attr('/monte_carlo_data/analysis/new_dataset')])
         assert np.array_equal(h5writer['indices'][:],
                               [[[0, 1]], [[1, 2]]])
         h5writer.close()
@@ -629,14 +635,14 @@ class TestHDF5Writer:
         str_key_idx = len(h5writer['file_meta']['str'].attrs['keys'])
         float_key_idx = len(h5writer['file_meta']['float'].attrs['keys'])
         h5writer.add_file_metadata({'color': 'red', 'number': 1, 'zero': 0})
-        assert (h5writer['file_meta']['str'].attrs['keys'][str_key_idx] ==
-                str.encode('color'))
-        assert h5writer['file_meta']['str'][str_key_idx] == 'red'
-        assert (h5writer['file_meta']['float'].attrs['keys'][float_key_idx] ==
-                str.encode('number'))
+        assert h5writer._decode_attr(h5writer['file_meta']['str'].attrs['keys'][str_key_idx]) == 'color'
+        if h5writer._file_version_major==1 and h5writer._file_version_minor==0:
+            assert h5writer['file_meta']['str'][str_key_idx] == 'red'
+        else:
+            assert h5writer['file_meta']['str'][str_key_idx] == str.encode('red')
+        assert h5writer._decode_attr(h5writer['file_meta']['float'].attrs['keys'][float_key_idx]) == 'number'
         assert h5writer['file_meta']['float'][float_key_idx] == 1
-        assert (h5writer['file_meta']['float'].attrs['keys'][float_key_idx+1] ==
-                str.encode('zero'))
+        assert h5writer._decode_attr(h5writer['file_meta']['float'].attrs['keys'][float_key_idx+1]) == 'zero'
         assert h5writer['file_meta']['float'][float_key_idx+1] == 0
         h5writer.close()
 
@@ -733,8 +739,8 @@ class TestHDF5Reader:
         assert not h5reader.is_open
         h5reader.open()
         assert h5reader.is_open
-        assert h5reader._file_version_major == 1
-        assert h5reader._file_version_minor == 0
+        assert h5reader._file_version_major == FILE_VERSION_MAJOR
+        assert h5reader._file_version_minor == FILE_VERSION_MINOR
         h5reader.close()
         assert not h5reader.is_open
 
@@ -799,7 +805,7 @@ class TestHDF5Reader:
             for j, col in enumerate(row):
                 for k, element in enumerate(col):
                     assert np.array_equal(element, expected[i][j][k])
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, IndexError)):
             h5reader.get_waveforms(event_id=2)
         waves = h5reader.get_waveforms(antenna_id=0)
         expected = [[np.array([0, 1e-9, 2e-9]), np.array([0, 1, 2])]]
@@ -831,9 +837,10 @@ class TestHDF5Reader:
         with pytest.raises(IOError):
             h5reader.file_metadata
         h5reader.open()
-        assert h5reader.file_metadata['file_version'] == '1.0'
-        assert h5reader.file_metadata['file_version_major'] == 1
-        assert h5reader.file_metadata['file_version_minor'] == 0
+        file_version_expected = str(FILE_VERSION_MAJOR)+"."+str(FILE_VERSION_MINOR)
+        assert h5reader.file_metadata['file_version'] == file_version_expected
+        assert h5reader.file_metadata['file_version_major'] == FILE_VERSION_MAJOR
+        assert h5reader.file_metadata['file_version_minor'] == FILE_VERSION_MINOR
         h5reader.close()
 
     def test_total_events_thrown(self, h5reader):
