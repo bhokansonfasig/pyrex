@@ -156,57 +156,6 @@ class BaseWriter:
         raise NotImplementedError
 
 
-# class BaseRebuilder:
-#     def __init__(self, filename):
-#         pass
-
-#     def __enter__(self):
-#         self.open()
-#         return self
-
-#     def __exit__(self, type, value, traceback):
-#         self.close()
-
-#     def open(self):
-#         self._detector = None
-#         raise NotImplementedError
-
-#     def close(self):
-#         raise NotImplementedError
-
-#     @property
-#     def is_open(self):
-#         raise NotImplementedError
-
-#     def __iter__(self):
-#         self._iter_counter = -1
-#         return self
-
-#     def __next__(self):
-#         self._iter_counter += 1
-#         if self._iter_counter < len(self):
-#             return self[self._iter_counter]
-#         else:
-#             raise StopIteration
-
-#     def __len__(self):
-#         raise NotImplementedError
-
-#     def __getitem__(self, key):
-#         event = self.rebuild_event(key)
-#         self.rebuild_waveforms(key)
-#         return event, self._detector
-
-#     def rebuild_event(self, index):
-#         raise NotImplementedError
-
-#     def rebuild_detector(self):
-#         raise NotImplementedError
-
-#     def rebuild_waveforms(self, index):
-#         raise NotImplementedError
-
-
 
 class HDF5Base:
     """
