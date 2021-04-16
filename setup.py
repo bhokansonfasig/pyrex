@@ -31,9 +31,9 @@ setup(
                 'pyrex.custom.layered_ice',],
     python_requires = '>= 3.6',
     install_requires = [
-        'numpy>=1.13',
-        'scipy>=0.19',
-        'h5py>=2.7',
+        'numpy>=1.17',
+        'scipy>=1.4',
+        'h5py>=3.0',
     ],
     setup_requires = ['pytest-runner'],
     tests_require = ['pytest'],
