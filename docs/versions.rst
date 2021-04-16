@@ -3,6 +3,79 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.10.0
+==============
+
+.. rubric:: New Features
+
+* Added a cut in the :class:`EventKernel` to skip the simulation of events with observation angles larger than a given value away from the Cherenkov angle.
+
+* Added a cut in the :class:`EventKernel` to skip the simulation of events with weight(s) below a given value.
+
+* Added an option to interpolate attenuation calculations to speed up ray tracing steps.
+
+* Added a toggle in event generators to opt in/out of using the secondary interaction approximations.
+
+* Added the ability to toggle generators between the expected neutrino ratios from astrophysical or cosmogenic origins.
+
+* Added :attr:`volume` and :attr:`solid_angle` properties to generator objects.
+
+* Earth model moved into :data:`earth`, an instance of the new :class:`PREM` class.
+
+* Added the :class:`CoreMantleCrustModel` class to replicate the Earth model used in AraSim.
+
+* Added :mod:`pyrex.custom.ara.stations` which implements the layouts of the deployed ARA stations in :class:`Detector` subclasses.
+
+* New HDF5 file version 1.1 which changes how string data is handled due to changes in the :mod:`h5py` package.
+
+* Added the :meth:`File.get_data` method to read arbitrary datasets from files.
+
+.. rubric:: Changes
+
+* Minimum versions of dependencies increased (:mod:numpy>=1.17, :mod:scipy>=1.4, :mod:h5py>=3.0).
+
+* Added support for Askaryan model observed directly at the Cherenkov angle.
+
+* Implemented alternative form factor for hadronic interactions in Askaryan model.
+
+* Askaryan models now inherit from :class:`FunctionSignal`, improving the accuracy of their values after the application of multiple filters.
+
+* Added optional buffers to the start and end of :class:`FunctionSignal` times.
+
+* Changed the default times array of the :class:`EventKernel` to be symmetric about zero.
+
+* Implemented extrapolation of attenuation data in :class:`ArasimIce` to match the implementation in AraSim.
+
+* All physical constants now pulled from :mod:`scipy.constants` rather than hard-coded.
+
+* Removed the previously deprecated classes: :class:`IceModel`, :class:`ShadowGenerator`, and :class:`NumpyFileGenerator`.
+
+* Renamed :class:`ARVZAskaryanSignal` to :class:`ARZAskaryanSignal` to properly match the paper authors.
+
+.. rubric:: Bug Fixes
+
+* Fixed the relative timing of Askaryan pulses inside vs outside of the Cherenkov cone.
+
+* Fixed a numerical error in attenuation calculation in deep ice with slowly changing index of refraction.
+
+* Fixed an error in the indirect ray launch angle minimization in deep ice.
+
+* Improved the slant depth calculation in the Earth models to use the proper endpoint in the ice rather than (0, 0).
+
+* Fixed the calculation of the :class:`ThermalNoise` rms value based on a proper antenna system connected to ground.
+
+.. rubric:: Performance Improvements
+
+* :class:`FunctionSignal` values are now lazily evaluated, including delayed application of filters.
+
+* Improved performance of Askaryan signal calculation by shifting the relevant portion of the convolution rather than calculating and truncating a larger convolution.
+
+* Default :class:`ThermalNoise` class now uses a faster FFT-based calculation. The old behavior was moved to the :class:`FullThermalNoise` class.
+
+* File readers improved to read data in chunks rather than line-by-line.
+
+
+
 Version 1.9.0
 =============
 
