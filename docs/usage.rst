@@ -70,13 +70,14 @@ The :class:`Signal` class provides many convenience attributes for dealing with 
                                                    d=my_signal.dt)
     my_signal.envelope == np.abs(scipy.signal.hilbert(my_signal.values))
 
-The :class:`Signal` class also provides functions for manipulating the signal. The :meth:`Signal.resample` method will resample the times and values arrays to the given number of points (with the same endpoints)::
+The :class:`Signal` class also provides methods for manipulating the signal. The :meth:`Signal.resample` method will resample the times and values arrays to the given number of points (with the same endpoints). This method operates "in-place" on the signal, but we can use the :meth:``Signal.copy`` method to make a duplicate object first so that further uses of the original signal object are unaffected::
 
-    my_signal.resample(1001)
-    len(my_signal.times) == len(my_signal.values) == 1001
-    my_signal.times[0] == 0
-    my_signal.times[-1] == 10
-    plt.plot(my_signal.times, my_signal.values)
+    signal_copy = my_signal.copy()
+    signal_copy.resample(1001)
+    len(signal_copy.times) == len(signal_copy.values) == 1001
+    signal_copy.times[0] == 0
+    signal_copy.times[-1] == 10
+    plt.plot(signal_copy.times, signal_copy.values)
     plt.show()
 
 .. image:: _static/example_outputs/signal_3.png
@@ -91,6 +92,14 @@ The :meth:`Signal.with_times` method will interpolate/extrapolate the signal's v
     plt.show()
 
 .. image:: _static/example_outputs/signal_4.png
+
+The :meth:`Signal.shift` method will shift the signal in time by a specified value (in seconds)::
+
+    my_signal.shift(2)
+    plt.plot(my_signal.times, my_signal.values)
+    plt.show()
+
+.. image:: _static/example_outputs/signal_5.png
 
 The :meth:`Signal.filter_frequencies` method will apply a frequency-domain filter to the values array based on the passed frequency response function. In cases where the filter is designed for only positive frequencies (as below) the filtered frequency may exhibit strange behavior, including potentially having an imaginary part. To resolve that issue, pass ``force_real=True`` to the :meth:`Signal.filter_frequencies` method which will extrapolate the given filter to negative frequencies and ensure a real-valued filtered signal. ::
 
@@ -110,7 +119,7 @@ The :meth:`Signal.filter_frequencies` method will apply a frequency-domain filte
     plt.legend()
     plt.show()
 
-.. image:: _static/example_outputs/signal_5.png
+.. image:: _static/example_outputs/signal_6.png
 
 
 A number of classes which inherit from the :class:`Signal` class are included in PyREx: :class:`EmptySignal`, :class:`FunctionSignal`, :class:`AskaryanSignal`, and :class:`ThermalNoise`. :class:`EmptySignal` is simply a signal whose values are all zero::
@@ -120,7 +129,7 @@ A number of classes which inherit from the :class:`Signal` class are included in
     plt.plot(empty.times, empty.values)
     plt.show()
 
-.. image:: _static/example_outputs/signal_6.png
+.. image:: _static/example_outputs/signal_7.png
 
 :class:`FunctionSignal` takes a function of time and creates a signal based on that function::
 
@@ -134,7 +143,7 @@ A number of classes which inherit from the :class:`Signal` class are included in
     plt.plot(square_signal.times, square_signal.values)
     plt.show()
 
-.. image:: _static/example_outputs/signal_7.png
+.. image:: _static/example_outputs/signal_8.png
 
 Additionally, :class:`FunctionSignal` leverages its knowledge of the function to more accurately interpolate and extrapolate values for the :meth:`Signal.with_times` method::
 
@@ -145,7 +154,7 @@ Additionally, :class:`FunctionSignal` leverages its knowledge of the function to
     plt.legend()
     plt.show()
 
-.. image:: _static/example_outputs/signal_8.png
+.. image:: _static/example_outputs/signal_9.png
 
 :class:`AskaryanSignal` produces an Askaryan pulse (in V/m) on a time array resulting from a given neutrino observed at a given angle from the shower axis and at a given distance from the shower vertex. For more about using the :class:`Particle` class, see :ref:`particle-generation`. ::
 
@@ -155,7 +164,7 @@ Additionally, :class:`FunctionSignal` leverages its knowledge of the function to
                               energy=neutrino_energy)
     neutrino.interaction.em_frac = 1
     neutrino.interaction.had_frac = 0
-    observation_angle = 45 * np.pi/180 # radians
+    observation_angle = 65 * np.pi/180 # radians
     observation_distance = 2000 # meters
     askaryan = pyrex.AskaryanSignal(times=time_array, particle=neutrino,
                                     viewing_angle=observation_angle,
@@ -164,7 +173,7 @@ Additionally, :class:`FunctionSignal` leverages its knowledge of the function to
     plt.plot(askaryan.times, askaryan.values)
     plt.show()
 
-.. image:: _static/example_outputs/signal_9.png
+.. image:: _static/example_outputs/signal_10.png
 
 :class:`ThermalNoise` produces Rayleigh noise (in V) at a given temperature and resistance which has been passed through a bandpass filter of the given frequency range::
 
@@ -179,9 +188,9 @@ Additionally, :class:`FunctionSignal` leverages its knowledge of the function to
     plt.plot(noise.times, noise.values)
     plt.show()
 
-.. image:: _static/example_outputs/signal_10.png
+.. image:: _static/example_outputs/signal_11.png
 
-Note that since :class:`ThermalNoise` inherits from :class:`FunctionSignal`, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, unless a larger number of frequencies is requested on initialization. ::
+Note that since :class:`ThermalNoise` inherits from :class:`FunctionSignal`, it can be extrapolated nicely to new times. It may be highly periodic outside of its original time range however, but this can be tuned using the :attr:`uniqueness_factor` parameter. ::
 
     short_noise = pyrex.ThermalNoise(times=time_array, temperature=noise_temp,
                                      resistance=system_resistance,
@@ -191,10 +200,11 @@ Note that since :class:`ThermalNoise` inherits from :class:`FunctionSignal`, it 
     plt.plot(short_noise.times, short_noise.values)
     plt.show()
     plt.plot(long_noise.times, long_noise.values)
+    plt.axvline(40e-9, ls=':', c='k')
     plt.show()
 
-.. image:: _static/example_outputs/signal_11.png
 .. image:: _static/example_outputs/signal_12.png
+.. image:: _static/example_outputs/signal_13.png
 
 
 
@@ -233,10 +243,16 @@ The :class:`Antenna` class defines an :meth:`Antenna.trigger` method which is al
 
 The :class:`Antenna` class also defines an :meth:`Antenna.receive` method which takes a :class:`Signal` object and processes the signal according to the antenna's attributes (:attr:`efficiency`, :attr:`antenna_factor`, :attr:`response`, :attr:`directional_gain`, and :attr:`polarization_gain` as described above). To use the :meth:`Antenna.receive` method, simply pass it the :class:`Signal` object the antenna sees, and the :class:`Antenna` class will handle the rest. You can also optionally specify the direction of travel of the signal (used in the :meth:`Antenna.directional_gain` calculation) and the polarization direction of the signal (used in the :meth:`Antenna.polarization_gain` calculation). If either of these is unspecified, the corresponding gain will simply be set to ``1``. ::
 
-    incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), np.sin,
-                                             value_type=pyrex.Signal.Type.voltage)
-    incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), np.sin,
-                                             value_type=pyrex.Signal.Type.voltage)
+    def limited_sin(times, min_time, max_time):
+        values = np.zeros(len(times))
+        in_range = (times>=min_time) & (times<max_time)
+        values[in_range] = np.sin(times[in_range])
+        return values
+
+    incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), lambda t: limited_sin(t,0,2*np.pi),
+                                            value_type=pyrex.Signal.Type.voltage)
+    incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), lambda t: limited_sin(t,4*np.pi,6*np.pi),
+                                            value_type=pyrex.Signal.Type.voltage)
     basic_antenna.receive(incoming_signal_1)
     basic_antenna.receive(incoming_signal_2, direction=[0,0,1], polarization=[1,0,0])
     basic_antenna.is_hit == True
@@ -259,7 +275,7 @@ Beyond :attr:`Antenna.waveforms`, the :class:`Antenna` object also provides meth
     plt.legend()
     plt.show()
 
-    basic_antenna.is_hit_during(np.linspace(0, 200e-9)) == True
+    basic_antenna.is_hit_during(np.linspace(0,6)) == True
 
 .. image:: _static/example_outputs/antenna_3.png
 
@@ -330,13 +346,15 @@ PyREx also defines :class:`DipoleAntenna`, a subclass of :class:`Antenna` which 
     position = (0, 0, -100)
     center_frequency = 250e6 # Hz
     bandwidth = 300e6 # Hz
+    temperature = 300 # K
     resistance = 100 # ohm
     antenna_length = 3e8/center_frequency/2 # m
     polarization_direction = (0, 0, 1)
     trigger_threshold = 1e-5 # V
     dipole = pyrex.DipoleAntenna(name=antenna_identifier,position=position,
                                  center_frequency=center_frequency,
-                                 bandwidth=bandwidth, resistance=resistance,
+                                 bandwidth=bandwidth,
+                                 temperature=temperature, resistance=resistance,
                                  effective_height=antenna_length,
                                  orientation=polarization_direction,
                                  trigger_threshold=trigger_threshold)
@@ -380,9 +398,15 @@ Objects of this class can then, for the most part, be interacted with as though 
 
     basic_antenna_system.trigger(pyrex.Signal([0],[0])) == True
 
-    incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), np.sin,
+    def limited_sin(times, min_time, max_time):
+        values = np.zeros(len(times))
+        in_range = (times>=min_time) & (times<max_time)
+        values[in_range] = np.sin(times[in_range])
+        return values
+
+    incoming_signal_1 = pyrex.FunctionSignal(np.linspace(0,2*np.pi), lambda t: limited_sin(t,0,2*np.pi),
                                              value_type=pyrex.Signal.Type.voltage)
-    incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), np.sin,
+    incoming_signal_2 = pyrex.FunctionSignal(np.linspace(4*np.pi,6*np.pi), lambda t: limited_sin(t,4*np.pi,6*np.pi),
                                              value_type=pyrex.Signal.Type.voltage)
     basic_antenna_system.receive(incoming_signal_1)
     basic_antenna_system.receive(incoming_signal_2, direction=[0,0,1],
@@ -403,7 +427,7 @@ Objects of this class can then, for the most part, be interacted with as though 
     plt.legend()
     plt.show()
 
-    basic_antenna_system.is_hit_during(np.linspace(0, 200e-9)) == True
+    basic_antenna_system.is_hit_during(np.linspace(0,6)) == True
 
     basic_antenna_system.clear()
     basic_antenna_system.is_hit == False
@@ -477,7 +501,7 @@ For convenience, objects derived from the :class:`Detector` class can be added i
 Ice and Earth Models
 ====================
 
-PyREx provides an ice model object :data:`ice`, which is an instance of whichever ice model class is preferred (currently :class:`pyrex.ice_model.AntarcticIce`). The :data:`ice` object provides methods for calculating characteristics of the ice at different depths and frequencies outlined below::
+PyREx provides an ice model object :data:`ice`, which is an instance of whichever ice model class is preferred (currently :class:`pyrex.ice_model.AntarcticIce`). The :data:`ice` object provides a number of (hopefully self-explanatory) methods for calculating characteristics of the ice at different depths and frequencies as below::
 
     depth = -1000 # m
     pyrex.ice.temperature(depth)
@@ -486,16 +510,14 @@ PyREx provides an ice model object :data:`ice`, which is an instance of whicheve
     frequency = 1e8 # Hz
     pyrex.ice.attenuation_length(depth, frequency)
 
-PyREx also provides two functions related to its earth model: :func:`prem_density` and :func:`slant_depth`. :func:`prem_density` calculates the density in grams per cubic centimeter of the earth at a given radius::
+PyREx also provides an Earth model object :data:`earth`, which is similarly an instance of whichever Earth model class is preferred (currently :class:`pyrex.earth_model.PREM`). This model provides two methods: :func:`density` and :func:`slant_depth`. :func:`density` calculates the density in grams per cubic centimeter of the Earth at a given radius, and :func:`slant_depth` calculates the material thickness in grams per square centimeter of a chord cutting through the Earth in a given direction, starting from a given point::
 
     radius = 6360000 # m
-    pyrex.prem_density(radius)
-
-:func:`slant_depth` calculates the material thickness in grams per square centimeter of a chord cutting through the earth at a given nadir angle, starting from a given depth::
-
-    nadir_angle = 60 * np.pi/180 # radians
-    depth = 1000 # m
-    pyrex.slant_depth(nadir_angle, depth)
+    pyrex.earth.density(radius)
+    angle = 60 * np.pi/180 # radians
+    direction = (np.sin(angle), 0, -np.cos(angle))
+    endpoint = (0, 0, -1000) # m
+    pyrex.earth.slant_depth(endpoint, direction)
 
 
 
@@ -585,11 +607,13 @@ PyREx also includes a number of classes for generating random neutrinos in vario
     volume_radius = 1000 # m
     volume_depth = 500 # m
     flavor_ratio = (1, 1, 1) # even distribution of neutrino flavors
+    source = 'astrophysical' # could also be cosmogenic, changes neutrino:antineutrino ratios
     my_generator = pyrex.CylindricalGenerator(dr=volume_radius,
                                               dz=volume_depth,
                                               energy=particle_energy,
                                               shadow=False,
-                                              flavor_ratio=flavor_ratio)
+                                              flavor_ratio=flavor_ratio,
+                                              source=source)
     my_generator.create_event()
 
 The :meth:`create_event` method of the generator returns an :class:`Event` object, which contains a tree of :class:`Particle` objects representing the event. Currently this tree will only contain a single neutrino, but could be expanded in the future in order to describe more exotic events. The neutrino is available as the only element in the list :attr:`Event.roots`. It can also be accessed by iterating the :class:`Event` object.
@@ -605,7 +629,7 @@ Lastly, PyREx includes :class:`ListGenerator` and :class:`FileGenerator` classes
 Full Simulation
 ===============
 
-PyREx provides the :class:`EventKernel` class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The :class:`EventKernel` is designed to be modular and can use a specific ice model, ray tracer, and signal times as specified in optional arguments (the defaults are explicitly specified below)::
+PyREx provides the :class:`EventKernel` class to control a basic simulation including the creation of neutrinos and their respective signals, the propagation of their pulses to the antennas, and the triggering of the antennas. The :class:`EventKernel` is designed to be modular and can use a specific ice model, ray tracer, output file writer, and signal times array as specified in optional arguments, along with some basic parameters used to speed up the simulation (the defaults are explicitly specified below)::
 
     particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
     detector = []
@@ -613,15 +637,18 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
         detector.append(
             pyrex.DipoleAntenna(name="antenna_"+str(i), position=(0, 0, z),
                                 center_frequency=250e6, bandwidth=300e6,
-                                resistance=0, effective_height=0.6,
+                                temperature=300, resistance=0, effective_height=0.6,
                                 trigger_threshold=1e-4, noisy=False)
         )
     kernel = pyrex.EventKernel(generator=particle_generator,
                                antennas=detector,
                                ice_model=pyrex.ice,
                                ray_tracer=pyrex.RayTracer,
-                               signal_times=np.linspace(-20e-9, 80e-9, 2000,
-                                                        endpoint=False))
+                               signal_times=np.linspace(-50e-9, 50e-9, 2000,
+                                                        endpoint=False),
+                               event_writer=None, triggers=None,
+                               offcone_max=40, weight_min=None,
+                               attenuation_interpolation=0.1)
 
     triggered = False
     while not triggered:
@@ -651,6 +678,7 @@ PyREx provides the :class:`EventKernel` class to control a basic simulation incl
             plt.title(antenna.name + " - waveform "+str(i))
 
 .. image:: _static/example_outputs/full_sim_1.png
+.. image:: _static/example_outputs/full_sim_2.png
 
 
 
@@ -669,8 +697,8 @@ The most straightforward way to write data files is to pass a :class:`File` obje
         detector.append(
             pyrex.DipoleAntenna(name="antenna_"+str(i), position=(0, 0, z),
                                 center_frequency=250e6, bandwidth=300e6,
-                                resistance=0, effective_height=0.6,
-                                trigger_threshold=1e-4, noisy=False)
+                                temperature=300, resistance=0, effective_height=0.6,
+                                trigger_threshold=1e-8, noisy=False)
         )
 
     def global_trigger_condition(det):
@@ -691,7 +719,7 @@ The most straightforward way to write data files is to pass a :class:`File` obje
         "ant1": lambda det: det[1].is_hit
     }
 
-    with pyrex.File('my_data_file.h5', 'x') as f:
+    with pyrex.File('my_data_file.h5', 'w') as f:
         kernel = pyrex.EventKernel(generator=particle_generator,
                                    antennas=detector,
                                    event_writer=f,
@@ -701,6 +729,7 @@ The most straightforward way to write data files is to pass a :class:`File` obje
             for antenna in detector:
                 antenna.clear()
             event, triggered = kernel.event()
+            print(triggered)
 
 If you want to manually write the data file, then the :meth:`File.set_detector` and :meth:`File.add` methods are necessary. :meth:`File.set_detector` associates the given antennas with the file object (and writes their data) and :meth:`File.add` adds the data from the given event to the file. Here we also manually open and close the file object with :meth:`File.open` and :meth:`File.close`, and add some metadata to the file with :meth:`File.add_file_metadata`::
 
@@ -784,20 +813,22 @@ HDF5 files opened in read-only mode can also be iterated over, which allows acce
         for event in f:
             print(event.is_neutrino, event.is_nubar, event.flavor)
             print(event.triggered, event.get_triggered_components())
+        print()
 
-        for event in f[1:5:2]:
+        for event in f[2:6:2]:
             print(event.get_particle_info('particle_name'),
                   event.get_particle_info('vertex'))
             print(np.degrees(event.get_rays_info('receiving_angle')))
+        print()
 
-        print(f[3].get_rays_info('tof'))
+        print(f[4].get_rays_info('tof'))
 
         # No waveform data was stored above, so this will fail if run
-        # wfs = f[3].get_waveforms(antenna_id=2)
+        # wfs = f[4].get_waveforms(antenna_id=2)
 
 
 
 More Examples
 =============
 
-For more code examples, see the :ref:`example-code` section and the python notebooks in the examples directory.
+For more code examples, see the :ref:`example-code` section and the python notebooks and scripts in the examples directory.
