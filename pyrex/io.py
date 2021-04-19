@@ -1028,8 +1028,13 @@ class EventIterator(HDF5Base):
         # Possibly add distance and radius to custom_values
         self._confirm_iterating()
 
-        if (not self._bool_dict["particles_meta_float"] and
-                not self._bool_dict["particles_meta_str"]):
+        try:
+            data_saved = (self._bool_dict["particles_meta_float"]
+                          or self._bool_dict["particles_meta_str"])
+        except KeyError:
+            data_saved = self._bool_dict["particles_meta"]
+
+        if not data_saved:
             raise ValueError("Particle data was not saved in this file")
 
         float_data, str_data = self._get_event_data("particles_meta")
@@ -1112,8 +1117,13 @@ class EventIterator(HDF5Base):
                          "received_direction"]
         self._confirm_iterating()
 
-        if (not self._bool_dict["rays_meta_float"] and
-                not self._bool_dict["rays_meta_str"]):
+        try:
+            data_saved = (self._bool_dict["rays_meta_float"]
+                          or self._bool_dict["rays_meta_str"])
+        except KeyError:
+            data_saved = self._bool_dict["rays_meta"]
+
+        if not data_saved:
             raise ValueError("Ray data was not saved in this file")
 
         float_data, str_data = self._get_event_data("rays_meta")
