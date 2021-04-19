@@ -1,5 +1,5 @@
-Earth Model (:mod:`pyrex.earth_model`)
-======================================
+Earth Models (:mod:`pyrex.earth_model`)
+=======================================
 
 .. currentmodule:: pyrex.earth_model
 
@@ -9,5 +9,5 @@ Earth Model (:mod:`pyrex.earth_model`)
     :toctree: ../docstrings
     :nosignatures:
 
-    prem_density
-    slant_depth
+    PREM
+    CoreMantleCrustModel
