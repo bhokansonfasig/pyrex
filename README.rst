@@ -21,7 +21,7 @@ Requirements
 ------------
 
 PyREx requires python version 3.6+ as well as numpy version 1.17+, scipy version 1.4+, and h5py version 3.0+.
-After installing python from https://www.python.org/downloads/, the required packages can be installed with ``pip`` as follows, or they will be installed automatically by simply installing pyrex as specified in the next section.
+After installing python from https://www.python.org/downloads/, the required packages can be installed with ``pip`` as follows, or they will be installed automatically by simply installing PyREx as specified in the next section.
 
 .. code-block:: shell
 
@@ -70,7 +70,7 @@ Used by IREX sub-package for some complex front-end circuits. Not needed for def
 Examples
 ========
 
-For examples of how to use PyREx, see the `usage page <https://bhokansonfasig.github.io/pyrex/build/html/usage.html>`_ and the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the python notebooks in the `examples <https://github.com/bhokansonfasig/pyrex/tree/master/examples>`_ directory.
+For examples of how to use PyREx, see the `usage page <https://bhokansonfasig.github.io/pyrex/build/html/usage.html>`_ and the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the python notebooks and scripts in the `examples <https://github.com/bhokansonfasig/pyrex/tree/master/examples>`_ directory.
 
 
 Contributing
