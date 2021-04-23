@@ -955,9 +955,12 @@ class LPDA(ARIANNAAntennaSystem):
     trigger_window : float
         Time window (ns) for the trigger condition.
     z_axis : array_like, optional
-        Vector direction of the z-axis of the antenna.
+        Vector direction of the z-axis of the antenna. The z-axis runs along
+        the central "spine" of the antenna, with the positive direction
+        pointing towards the longer "tines".
     x_axis : array_like, optional
-        Vector direction of the x-axis of the antenna.
+        Vector direction of the x-axis of the antenna. The x-axis runs parallel
+        to the "tines" of the antenna.
     amplification : float, optional
         Amplification to be applied to the signal pre-clipping.
     amplifier_clipping : float, optional
