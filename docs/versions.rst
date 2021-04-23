@@ -32,7 +32,7 @@ Version 1.10.0
 
 .. rubric:: Changes
 
-* Minimum versions of dependencies increased (:mod:numpy>=1.17, :mod:scipy>=1.4, :mod:h5py>=3.0).
+* Minimum versions of dependencies increased (:mod:`numpy`>=1.17, :mod:`scipy`>=1.4, :mod:`h5py`>=3.0).
 
 * Added support for Askaryan model observed directly at the Cherenkov angle.
 
