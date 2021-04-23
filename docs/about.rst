@@ -53,11 +53,12 @@ Finally, we want to pass these into the :class:`EventKernel` and produce an even
 Now the signals which triggered each antenna can be accessed by each antenna's :attr:`waveforms` parameter::
 
     import matplotlib.pyplot as plt
-    for ant in kernel.ant_array:
+    for ant in kernel.antennas:
         for wave in ant.waveforms:
-            plt.figure()
             plt.plot(wave.times, wave.values)
             plt.show()
+
+Note that it may take a few attempts before an event is generated which produces a visible signal on the antennas!
 
 
 Units
