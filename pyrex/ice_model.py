@@ -759,7 +759,7 @@ class GreenlandIce(AntarcticIce):
 
         References
         ----------
-        .. [2] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
+        .. [1] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
             Attenuation in Ice at Summit Station, Greenland." Journal of
             Glaciology **61**, no. 229, 1005-1011 (2015).
 
