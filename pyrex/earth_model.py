@@ -112,8 +112,8 @@ class PREM:
         Returns
         -------
         float
-            Column density (g/cm^2) along the chord starting from `depth` and
-            passing through the Earth at `angle`.
+            Column density (g/cm^2) along the chord starting at `endpoint` and
+            passing through the Earth at the given `direction`.
 
         See Also
         --------
