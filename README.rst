@@ -90,4 +90,4 @@ License
 
 `MIT License <https://github.com/bhokansonfasig/pyrex/blob/master/LICENSE>`_
 
-Copyright (c) 2019 Ben Hokanson-Fasig
+Copyright (c) 2021 Ben Hokanson-Fasig

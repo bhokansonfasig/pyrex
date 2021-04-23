@@ -26,7 +26,7 @@ __author__ = "Ben Hokanson-Fasig"
 
 __author_email__ = "fasig@icecube.wisc.edu"
 
-__copyright__ = "2019, Benjamin Hokanson-Fasig"
+__copyright__ = "2021, Ben Hokanson-Fasig"
 
 __license__ = "MIT"
 
