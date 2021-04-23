@@ -103,7 +103,22 @@ The next step is to document all changes in the new release in the version histo
 
     git log master..release-X.Y.Z --oneline --no-merges
 
-Once the documentation is up to date with all the changes (including updating any places in the usage or the examples which may have become outdated), do some bug testing and be sure that all code tests are passing. Then when you're sure the release is ready you can merge the release branch into the ``master`` and ``develop`` branches with
+Once the documentation is up to date with all the changes (including updating any places in the usage or the examples which may have become outdated), it can be rebuilt using basic ``make`` commands run from the ``docs`` directory:
+
+.. code-block:: shell
+
+    cd docs
+    make clean
+    make html
+    make latexpdf
+
+It is also a good idea to do some final bug testing and be sure that all code tests are passing before releasing. The full set of tests can be run with
+
+.. code-block:: shell
+
+    python setup.py test
+
+Once everything is done and the release is ready, you can merge the release branch into the ``master`` and ``develop`` branches with
 
 .. code-block:: shell
 
