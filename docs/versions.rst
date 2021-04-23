@@ -72,7 +72,7 @@ Version 1.10.0
 
 * Default :class:`ThermalNoise` class now uses a faster FFT-based calculation. The old behavior was moved to the :class:`FullThermalNoise` class.
 
-* File readers improved to read data in chunks rather than line-by-line.
+* HDF5 file reader improved to read data in chunks rather than line-by-line.
 
 
 
