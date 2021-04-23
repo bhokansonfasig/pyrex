@@ -13,3 +13,7 @@ This section includes a number of more complete code examples for performing var
 .. include:: examples/effective_area.rst
 
 .. include:: examples/examine_event.rst
+
+.. include:: examples/distributed_simulation.rst
+
+.. include:: examples/combining_simulations.rst
