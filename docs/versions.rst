@@ -432,7 +432,7 @@ Version 1.1.2
 
 * Change :meth:`Antenna.make_noise` to use a single master noise object and use :meth:`ThermalNoise.with_times` to calculate noise at different times.
 
-    * To ensure noise is not obviously periodic (for <100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.
+  * To ensure noise is not obviously periodic (for <100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.
 
 
 
@@ -454,17 +454,17 @@ Version 1.1.0
 
 * Added :meth:`Antenna.directional_gain` and :meth:`Antenna.polarization_gain` methods to base :class:`Antenna`.
 
-    * :meth:`Antenna.receive` method should no longer be overwritten in most cases.
+  * :meth:`Antenna.receive` method should no longer be overwritten in most cases.
 
-    * :class:`Antenna` now has orientation defined by :attr:`z_axis` and :class:`x_axis`.
+  * :class:`Antenna` now has orientation defined by :attr:`z_axis` and :class:`x_axis`.
 
-    * :attr:`antenna_factor` and :attr:`efficiency` attributes added to :class:`Antenna` for more flexibility.
+  * :attr:`antenna_factor` and :attr:`efficiency` attributes added to :class:`Antenna` for more flexibility.
 
 * Added :attr:`value_type` attribute to :class:`Signal` class and derived classes.
 
-    * Current value types are :attr:`ValueTypes.undefined`, :attr:`ValueTypes.voltage`, :attr:`ValueTypes.field`, and :attr:`ValueTypes.power`.
+  * Current value types are :attr:`ValueTypes.undefined`, :attr:`ValueTypes.voltage`, :attr:`ValueTypes.field`, and :attr:`ValueTypes.power`.
 
-    * :class:`Signal` objects now must have the same :attr:`value_type` to be added (though those with :attr:`ValueTypes.undefined` can be coerced).
+  * :class:`Signal` objects now must have the same :attr:`value_type` to be added (though those with :attr:`ValueTypes.undefined` can be coerced).
 
 
 .. rubric:: Changes
@@ -503,7 +503,7 @@ Version 1.0.2
 
 * Allow passing of numpy arrays of depths and frequencies into most :class:`IceModel` methods.
 
-    * :meth:`IceModel.gradient` must still be calculated at individual depths.
+  * :meth:`IceModel.gradient` must still be calculated at individual depths.
 
 * Added ability to specify RMS voltage of :class:`ThermalNoise` without providing temperature and resistance.
 
@@ -553,33 +553,33 @@ Version 1.0.0
 
 * Changed naming conventions to be more consistent, verbose, and "pythonic":
 
-    * :meth:`AntarcticIce.attenuationLength` becomes :meth:`AntarcticIce.attenuation_length`.
+  * :meth:`AntarcticIce.attenuationLength` becomes :meth:`AntarcticIce.attenuation_length`.
 
-    * In :mod:`pyrex.earth_model`, :const:`RE` becomes :const:`EARTH_RADIUS`.
+  * In :mod:`pyrex.earth_model`, :const:`RE` becomes :const:`EARTH_RADIUS`.
 
-    * In :mod:`pyrex.particle`, :class:`neutrino_interaction` becomes :class:`NeutrinoInteraction`.
+  * In :mod:`pyrex.particle`, :class:`neutrino_interaction` becomes :class:`NeutrinoInteraction`.
 
-    * In :mod:`pyrex.particle`, :const:`NA` becomes :const:`AVOGADRO_NUMBER`.
+  * In :mod:`pyrex.particle`, :const:`NA` becomes :const:`AVOGADRO_NUMBER`.
 
-    * :class:`particle` class becomes :class:`Particle` namedtuple.
+  * :class:`particle` class becomes :class:`Particle` namedtuple.
 
-    * :attr:`Particle.vtx` becomes :attr:`Particle.vertex`.
+  * :attr:`Particle.vtx` becomes :attr:`Particle.vertex`.
 
-    * :attr:`Particle.dir` becomes :attr:`Particle.direction`.
+  * :attr:`Particle.dir` becomes :attr:`Particle.direction`.
 
-    * :attr:`Particle.E` becomes :attr:`Particle.energy`.
+  * :attr:`Particle.E` becomes :attr:`Particle.energy`.
 
-    * In :mod:`pyrex.particle`, :func:`next_direction()` becomes :func:`random_direction()`.
+  * In :mod:`pyrex.particle`, :func:`next_direction()` becomes :func:`random_direction()`.
 
-    * :class:`shadow_generator` becomes :class:`ShadowGenerator`.
+  * :class:`shadow_generator` becomes :class:`ShadowGenerator`.
 
-    * :meth:`PathFinder.exists()` method becomes :attr:`PathFinder.exists` property.
+  * :meth:`PathFinder.exists()` method becomes :attr:`PathFinder.exists` property.
 
-    * :meth:`PathFinder.getEmittedRay()` method becomes :attr:`PathFinder.emitted_ray` property.
+  * :meth:`PathFinder.getEmittedRay()` method becomes :attr:`PathFinder.emitted_ray` property.
 
-    * :meth:`PathFinder.getPathLength()` method becomes :attr:`PathFinder.path_length` property.
+  * :meth:`PathFinder.getPathLength()` method becomes :attr:`PathFinder.path_length` property.
 
-    * :meth:`PathFinder.propagateRay()` split into :meth:`PathFinder.time_of_flight()` (with corresponding :attr:`PathFinder.tof` property) and :meth:`PathFinder.attenuation()`.
+  * :meth:`PathFinder.propagateRay()` split into :meth:`PathFinder.time_of_flight()` (with corresponding :attr:`PathFinder.tof` property) and :meth:`PathFinder.attenuation()`.
 
 
 
