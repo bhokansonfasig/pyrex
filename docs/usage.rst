@@ -5,7 +5,7 @@ This section describes in detail how to use a majority of the functions and clas
 
     import numpy as np
     import matplotlib.pyplot as plt
-    import scipy.fftpack
+    import scipy.fft
     import scipy.signal
     import pyrex
 
@@ -65,8 +65,8 @@ While there are no specified units for :attr:`Signal.values`, there is the optio
 The :class:`Signal` class provides many convenience attributes for dealing with signals::
 
     my_signal.dt == my_signal.times[1] - my_signal.times[0]
-    my_signal.spectrum == scipy.fftpack.fft(my_signal.values)
-    my_signal.frequencies == scipy.fftpack.fftfreq(n=len(my_signal.values),
+    my_signal.spectrum == scipy.fft.fft(my_signal.values)
+    my_signal.frequencies == scipy.fft.fftfreq(n=len(my_signal.values),
                                                    d=my_signal.dt)
     my_signal.envelope == np.abs(scipy.signal.hilbert(my_signal.values))
 
