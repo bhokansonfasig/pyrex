@@ -120,7 +120,7 @@ class PREM:
         PREM.density : Calculates the Earth's density at a given radius.
 
         """
-        # Convert to Earth-centric coordiante system (e.g. center of the Earth
+        # Convert to Earth-centric coordinate system (e.g. center of the Earth
         # is at (0, 0, 0))
         endpoint = np.array([endpoint[0], endpoint[1],
                              endpoint[2]+self.earth_radius])
