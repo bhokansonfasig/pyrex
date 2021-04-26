@@ -1,7 +1,9 @@
 Contributing to PyREx
 *********************
 
-PyREx is currently being maintained by `Ben Hokanson-Fasig <fasig@icecube.wisc.edu>`_. Any direct contributions to the code base should be made through GitHub as described in the following sections, and will be reviewed by the maintainer or another approved reviewer. Note that contributions are also possible less formally through the creation of custom plug-ins, as described in :ref:`custom-package`.
+PyREx was previously maintained by `Ben Hokanson-Fasig <bhokansonfasig@gmail.com>`_, but this version is no longer being actively maintained. Future updates to PyREx are planned to take place in a fork at https://github.com/abigailbishop/pyrex.
+
+Any direct contributions to the code base should be made through GitHub as described in the following sections, and will be reviewed by the maintainer or another approved reviewer. Note that contributions are also possible less formally through the creation of custom plug-ins, as described in :ref:`custom-package`.
 
 
 Branching Model
