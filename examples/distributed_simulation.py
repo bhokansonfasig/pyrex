@@ -1,8 +1,6 @@
 import argparse
 import datetime
-import h5py
 import logging
-import os.path
 import numpy as np
 
 import pyrex
