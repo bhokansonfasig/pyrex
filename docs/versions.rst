@@ -34,7 +34,7 @@ Version 1.10.0
 
 * Minimum versions of dependencies increased (:mod:`numpy`>=1.17, :mod:`scipy`>=1.4, :mod:`h5py`>=3.0).
 
-* Added support for Askaryan model observed directly at the Cherenkov angle.
+* Added support for Askaryan signals observed directly at the Cherenkov angle.
 
 * Implemented alternative form factor for hadronic interactions in Askaryan model.
 
@@ -56,7 +56,7 @@ Version 1.10.0
 
 * Fixed the relative timing of Askaryan pulses inside vs outside of the Cherenkov cone.
 
-* Fixed a numerical error in attenuation calculation in deep ice with slowly changing index of refraction.
+* Fixed a numerical error in the attenuation calculation in deep ice with slowly changing index of refraction.
 
 * Fixed an error in the indirect ray launch angle minimization in deep ice.
 
