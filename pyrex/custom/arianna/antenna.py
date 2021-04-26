@@ -485,10 +485,11 @@ class ARIANNAAntenna(Antenna):
             Incoming ``Signal`` object to process.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal as it reaches
-            the antenna. If ``None`` no directional response will be applied.
+            the antenna (in the global coordinate frame). If ``None`` no
+            directional response will be applied.
         polarization : array_like, optional
-            Vector denoting the signal's polarization direction. If ``None``
-            no polarization gain will be applied.
+            Vector denoting the signal's polarization direction (in the global
+            coordinate frame). If ``None`` no polarization gain will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -569,11 +570,13 @@ class ARIANNAAntenna(Antenna):
             times.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal(s) as they
-            reach the antenna. If ``None`` no directional gain will be applied.
+            reach the antenna (in the global coordinate frame). If ``None`` no
+            directional gain will be applied.
         polarization : array_like, optional
-            Vector(s) denoting the signal's polarization direction. Number of
-            vectors should match the number of elements in `signal` argument.
-            If ``None`` no polarization gain will be applied.
+            Vector(s) denoting the signal's polarization direction (in the
+            global coordinate frame). Number of vectors should match the number
+            of elements in `signal` argument. If ``None`` no polarization gain
+            will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -911,11 +914,13 @@ class ARIANNAAntennaSystem(AntennaSystem):
             times.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal(s) as they
-            reach the antenna. If ``None`` no directional gain will be applied.
+            reach the antenna (in the global coordinate frame). If ``None`` no
+            directional gain will be applied.
         polarization : array_like, optional
-            Vector(s) denoting the signal's polarization direction. Number of
-            vectors should match the number of elements in `signal` argument.
-            If ``None`` no polarization gain will be applied.
+            Vector(s) denoting the signal's polarization direction (in the
+            global coordinate frame). Number of vectors should match the number
+            of elements in `signal` argument. If ``None`` no polarization gain
+            will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -955,9 +960,12 @@ class LPDA(ARIANNAAntennaSystem):
     trigger_window : float
         Time window (ns) for the trigger condition.
     z_axis : array_like, optional
-        Vector direction of the z-axis of the antenna.
+        Vector direction of the z-axis of the antenna. The z-axis runs along
+        the central "spine" of the antenna, with the positive direction
+        pointing towards the longer "tines".
     x_axis : array_like, optional
-        Vector direction of the x-axis of the antenna.
+        Vector direction of the x-axis of the antenna. The x-axis runs parallel
+        to the "tines" of the antenna.
     amplification : float, optional
         Amplification to be applied to the signal pre-clipping.
     amplifier_clipping : float, optional

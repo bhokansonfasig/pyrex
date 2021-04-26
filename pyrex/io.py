@@ -1028,8 +1028,13 @@ class EventIterator(HDF5Base):
         # Possibly add distance and radius to custom_values
         self._confirm_iterating()
 
-        if (not self._bool_dict["particles_meta_float"] and
-                not self._bool_dict["particles_meta_str"]):
+        try:
+            data_saved = (self._bool_dict["particles_meta_float"]
+                          or self._bool_dict["particles_meta_str"])
+        except KeyError:
+            data_saved = self._bool_dict["particles_meta"]
+
+        if not data_saved:
             raise ValueError("Particle data was not saved in this file")
 
         float_data, str_data = self._get_event_data("particles_meta")
@@ -1112,8 +1117,13 @@ class EventIterator(HDF5Base):
                          "received_direction"]
         self._confirm_iterating()
 
-        if (not self._bool_dict["rays_meta_float"] and
-                not self._bool_dict["rays_meta_str"]):
+        try:
+            data_saved = (self._bool_dict["rays_meta_float"]
+                          or self._bool_dict["rays_meta_str"])
+        except KeyError:
+            data_saved = self._bool_dict["rays_meta"]
+
+        if not data_saved:
             raise ValueError("Ray data was not saved in this file")
 
         float_data, str_data = self._get_event_data("rays_meta")
@@ -1499,9 +1509,6 @@ class HDF5Reader(BaseReader, HDF5Base):
         self._event_indices_key = self._get_keys_dict(self._file,
                                                       self._locations["indices"])
 
-        if self._bool_dict["waveforms"]:
-            self._event_data = self._file[self._locations["waveforms"]]
-
     def close(self):
         """
         Close the hdf5 file.
@@ -1620,19 +1627,21 @@ class HDF5Reader(BaseReader, HDF5Base):
             raise ValueError("Antenna Id provided is greater than the number "+
                              "of antennas in detector")
 
+        wf_data = self._file[self._locations["waveforms"]]
+
         wf_index = self._convert_ray_value(waveform_type)
         if wf_index is None:
-            return self._event_data[event_id, antenna_id]
+            return wf_data[event_id, antenna_id]
         elif isinstance(wf_index, int):
             start = event_id.start
             stop = event_id.stop
             if start is None:
                 start = 0
             if stop is None:
-                stop = self._event_data.shape[0]
+                stop = wf_data.shape[0]
             if wf_index>=stop-start:
                 raise ValueError("Invalid waveform index ("+str(wf_index)+")")
-            return self._event_data[start+wf_index, antenna_id]
+            return wf_data[start+wf_index, antenna_id]
         else:
             raise ValueError("The parameter 'waveform_type' should either be "+
                              "an integer or a string")

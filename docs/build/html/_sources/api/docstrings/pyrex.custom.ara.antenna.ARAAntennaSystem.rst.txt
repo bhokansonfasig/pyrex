@@ -1,4 +1,4 @@
-pyrex.custom.ara.antenna.ARAAntennaSystem
+﻿pyrex.custom.ara.antenna.ARAAntennaSystem
 =========================================
 
 .. currentmodule:: pyrex.custom.ara.antenna

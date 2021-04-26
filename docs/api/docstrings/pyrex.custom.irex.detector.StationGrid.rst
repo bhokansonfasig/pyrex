@@ -1,4 +1,4 @@
-pyrex.custom.irex.detector.StationGrid
+﻿pyrex.custom.irex.detector.StationGrid
 ======================================
 
 .. currentmodule:: pyrex.custom.irex.detector

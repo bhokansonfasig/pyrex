@@ -15,7 +15,7 @@ The easiest way to get the PyREx package is using ``pip`` as follows:
 
     pip install git+https://github.com/bhokansonfasig/pyrex#egg=pyrex
 
-PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+, which should be automatically installed when installing via ``pip``.
+PyREx requires python version 3.6+ as well as numpy version 1.17+, scipy version 1.4+, and h5py version 3.0+, which should be automatically installed when installing via ``pip``.
 
 Alternatively, you can download the code from https://github.com/bhokansonfasig/pyrex/ and then either include the ``pyrex`` directory (the one containing the python modules) in your ``PYTHON_PATH``, or just copy the ``pyrex`` directory into your working directory.
 PyREx is not currently available on PyPI, so a simple ``pip install pyrex`` will not have the intended effect.
@@ -32,7 +32,7 @@ First, import the package::
 
     import pyrex
 
-Then, create a particle generator object that will produce random particles in a cylinder with radius and depth of 1 km and with a fixed energy of 100 PeV::
+Then, create a particle generator object that will produce random neutrino interactions in a cylinder with radius and depth of 1 km and with a fixed energy of 100 PeV::
 
     particle_generator = pyrex.CylindricalGenerator(dr=1000, dz=1000, energy=1e8)
 
@@ -50,14 +50,15 @@ Finally, we want to pass these into the :class:`EventKernel` and produce an even
                                antennas=antenna_array)
     kernel.event()
 
-Now the signals received by each antenna can be accessed by their :attr:`waveforms` parameter::
+Now the signals which triggered each antenna can be accessed by each antenna's :attr:`waveforms` parameter::
 
     import matplotlib.pyplot as plt
-    for ant in kernel.ant_array:
+    for ant in kernel.antennas:
         for wave in ant.waveforms:
-            plt.figure()
             plt.plot(wave.times, wave.values)
             plt.show()
+
+Note that it may take a few attempts before an event is generated which produces a visible signal on the antennas!
 
 
 Units

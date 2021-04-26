@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.HexagonalGrid &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.custom.ara.HexagonalGrid &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,16 +23,15 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../../index.html" >
     <link rel="up" title="Askaryan Radio Array (pyrex.custom.ara)" href="../custom-ara.html" >
-    <link rel="next" title="Custom Antennas (pyrex.custom.ara.antenna)" href="../custom-ara/antenna.html" >
-    <link rel="prev" title="pyrex.custom.ara.AlbrechtStation" href="pyrex.custom.ara.AlbrechtStation.html" > 
+    <link rel="next" title="pyrex.custom.ara.ARA01" href="pyrex.custom.ara.ARA01.html" >
+    <link rel="prev" title="pyrex.custom.ara.PhasedArrayStation" href="pyrex.custom.ara.PhasedArrayStation.html" > 
   </head>
   <body>
 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
           <li class="active"><a href="../custom-ara.html" accesskey="U">Askaryan Radio Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li> 
@@ -71,11 +70,11 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="../custom-ara/antenna.html" title="Custom Antennas (pyrex.custom.ara.antenna)"
+        <a href="pyrex.custom.ara.ARA01.html" title="pyrex.custom.ara.ARA01"
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="pyrex.custom.ara.AlbrechtStation.html" title="pyrex.custom.ara.AlbrechtStation"
+        <a href="pyrex.custom.ara.PhasedArrayStation.html" title="pyrex.custom.ara.PhasedArrayStation"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -93,9 +92,9 @@
             
   <div class="section" id="pyrex-custom-ara-hexagonalgrid">
 <h1>pyrex.custom.ara.HexagonalGrid<a class="headerlink" href="#pyrex-custom-ara-hexagonalgrid" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.custom.ara.HexagonalGrid">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.custom.ara.</code><code class="sig-name descname">HexagonalGrid</code><span class="sig-paren">(</span><em class="sig-param">stations=1</em>, <em class="sig-param">station_separation=2000</em>, <em class="sig-param">station_type=&lt;class 'pyrex.custom.ara.detector.RegularStation'&gt;</em>, <em class="sig-param">**station_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.HexagonalGrid" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.custom.ara.</span></code><code class="sig-name descname"><span class="pre">HexagonalGrid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">stations=1</span></em>, <em class="sig-param"><span class="pre">station_separation=2000</span></em>, <em class="sig-param"><span class="pre">station_type=&lt;class</span> <span class="pre">'pyrex.custom.ara.detector.RegularStation'&gt;</span></em>, <em class="sig-param"><span class="pre">**station_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.HexagonalGrid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hexagonal grid of stations or strings.</p>
 <p>Sets the positions of stations by spiralling outward in a hexagonal grid.
 Supports any station type (including string types) and passes extra keyword
@@ -118,7 +117,7 @@ the <em class="xref py py-obj">station_type</em> class.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>ValueError</strong></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
+<dt>ValueError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
 above the ice surface.</p>
 </dd>
 </dl>
@@ -193,7 +192,7 @@ behavior is ill-defined). Defaults to <code class="docutils literal notranslate"
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -262,10 +261,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

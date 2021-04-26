@@ -1,4 +1,4 @@
-pyrex.custom.ara.detector.convert\_hex\_coords
+﻿pyrex.custom.ara.detector.convert\_hex\_coords
 ==============================================
 
 .. currentmodule:: pyrex.custom.ara.detector

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ray_tracing.BasicRayTracePath.propagate &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.ray_tracing.BasicRayTracePath.propagate &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -51,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -80,9 +79,9 @@
             
   <div class="section" id="pyrex-ray-tracing-basicraytracepath-propagate">
 <h1>pyrex.ray_tracing.BasicRayTracePath.propagate<a class="headerlink" href="#pyrex-ray-tracing-basicraytracepath-propagate" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="py method">
 <dt id="pyrex.ray_tracing.BasicRayTracePath.propagate">
-<code class="sig-prename descclassname">BasicRayTracePath.</code><code class="sig-name descname">propagate</code><span class="sig-paren">(</span><em class="sig-param">signal=None</em>, <em class="sig-param">polarization=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.propagate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">BasicRayTracePath.</span></code><code class="sig-name descname"><span class="pre">propagate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attenuation_interpolation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ray_tracing.BasicRayTracePath.propagate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Propagate the signal with optional polarization along the ray path.</p>
 <p>Applies the frequency-dependent signal attenuation along the ray path
 and shifts the times according to the ray time of flight. Additionally
@@ -94,15 +93,20 @@ provides the s and p polarization directions.</p>
 </dd>
 <dt><strong>polarization</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector representing the linear polarization of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">signal</span></code>.</p>
 </dd>
+<dt><strong>attenuation_interpolation: float, optional</strong></dt><dd><p>Logarithmic (base 10) interpolation step to be used for
+interpolating attenuation along the ray path. If <em class="xref py py-obj">None</em>, no
+interpolation is applied and the attenuation is pre-calculated at
+the expected signal frequencies.</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>tuple of Signal</strong></dt><dd><p>Tuple of <code class="docutils literal notranslate"><span class="pre">Signal</span></code> objects representing the s and p polarizations
+<dt>tuple of Signal</dt><dd><p>Tuple of <code class="docutils literal notranslate"><span class="pre">Signal</span></code> objects representing the s and p polarizations
 of the original <code class="xref py py-obj docutils literal notranslate"><span class="pre">signal</span></code> attenuated along the ray path. Only
 returned if <code class="xref py py-obj docutils literal notranslate"><span class="pre">signal</span></code> was not <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
-<dt><strong>tuple of ndarray</strong></dt><dd><p>Tuple of polarization vectors representing the s and p polarization
+<dt>tuple of ndarray</dt><dd><p>Tuple of polarization vectors representing the s and p polarization
 directions of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">signal</span></code> at the end of the ray path. Only
 returned if <em class="xref py py-obj">polarization</em> was not <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
@@ -131,7 +135,7 @@ returned if <em class="xref py py-obj">polarization</em> was not <code class="do
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -195,10 +199,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

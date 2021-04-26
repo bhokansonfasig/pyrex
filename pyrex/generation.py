@@ -56,7 +56,7 @@ class Generator:
         calls.
     shadow : bool
         Whether Earth shadowing effects will be used to reject events.
-    ratio : ndarary
+    ratio : ndarray
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
     source : Generator.SourceType
@@ -422,7 +422,7 @@ class CylindricalGenerator(Generator):
         calls.
     shadow : bool
         Whether Earth shadowing effects will be used to reject events.
-    ratio : ndarary
+    ratio : ndarray
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
     source : Generator.SourceType
@@ -616,7 +616,7 @@ class RectangularGenerator(Generator):
         calls.
     shadow : bool
         Whether Earth shadowing effects will be used to reject events.
-    ratio : ndarary
+    ratio : ndarray
         (Normalized) flavor ratio of neutrinos to be generated. Of the form
         [electron, muon, tau] neutrino fractions.
     source : Generator.SourceType

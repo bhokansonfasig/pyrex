@@ -29,8 +29,7 @@ PyREx Package Imports
     AntennaSystem
     Detector
     ice
-    prem_density
-    slant_depth
+    earth
     NeutrinoInteraction
     Particle
     Event

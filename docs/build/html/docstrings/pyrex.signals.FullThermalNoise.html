@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.signals.FullThermalNoise &mdash; PyREx 1.10.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.10.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
+    <link rel="up" title="Signal Processing (pyrex.signals)" href="../api/signals.html" >
+    <link rel="next" title="pyrex.signals.FFTThermalNoise" href="pyrex.signals.FFTThermalNoise.html" >
+    <link rel="prev" title="pyrex.signals.GaussianNoise" href="pyrex.signals.GaussianNoise.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../api/signals.html" accesskey="U">Signal Processing (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.signals</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.signals.FFTThermalNoise.html" title="pyrex.signals.FFTThermalNoise"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.signals.GaussianNoise.html" title="pyrex.signals.GaussianNoise"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-signals-fullthermalnoise">
+<h1>pyrex.signals.FullThermalNoise<a class="headerlink" href="#pyrex-signals-fullthermalnoise" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pyrex.signals.FullThermalNoise">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.signals.</span></code><code class="sig-name descname"><span class="pre">FullThermalNoise</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_band</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_amplitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rms_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniqueness_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.signals.FullThermalNoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for thermal Rayleigh noise signals using exact functions.</p>
+<p>The Rayleigh thermal noise is calculated in a given frequency band with
+rayleigh-distributed or otherwise specified amplitudes and random phase.
+Values are calculated using a sum of cosine functions and then scaled to a
+provided or calculated RMS voltage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>times</strong><span class="classifier">array_like</span></dt><dd><p>1D array of times (s) for which the signal is defined.</p>
+</dd>
+<dt><strong>f_band</strong><span class="classifier">array_like</span></dt><dd><p>Array of two elements denoting the frequency band (Hz) of the noise.
+The first element should be smaller than the second.</p>
+</dd>
+<dt><strong>f_amplitude</strong><span class="classifier">float or function, optional</span></dt><dd><p>The frequency-domain amplitude of the noise. If <code class="docutils literal notranslate"><span class="pre">float</span></code>, then all
+frequencies will have the same amplitude. If <code class="docutils literal notranslate"><span class="pre">function</span></code>, then the
+function is evaluated at each frequency to determine its amplitude.
+By default, uses Rayleigh-distributed amplitudes.</p>
+</dd>
+<dt><strong>rms_voltage</strong><span class="classifier">float, optional</span></dt><dd><p>The RMS voltage (V) of the noise. If specified, this value will be used
+instead of the RMS voltage calculated from the values of <em class="xref py py-obj">temperature</em>
+and <em class="xref py py-obj">resistance</em>.</p>
+</dd>
+<dt><strong>temperature</strong><span class="classifier">float, optional</span></dt><dd><p>The thermal noise temperature (K). Used in combination with the value
+of <em class="xref py py-obj">resistance</em> to calculate the RMS voltage of the noise.</p>
+</dd>
+<dt><strong>resistance</strong><span class="classifier">float, optional</span></dt><dd><p>The resistance (ohm) for the noise. Used in combination with the value
+of <em class="xref py py-obj">temperature</em> to calculate the RMS voltage of the noise.</p>
+</dd>
+<dt><strong>uniqueness_factor</strong><span class="classifier">int, optional</span></dt><dd><p>The number of unique waveform traces that can be expected from this
+noise signal. This factor multiplies the length of the total trace to
+be calculated.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the RMS voltage cannot be calculated (i.e. <em class="xref py py-obj">rms_voltage</em> or both
+<em class="xref py py-obj">temperature</em> and <em class="xref py py-obj">resistance</em> are <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Since this class inherits from <code class="docutils literal notranslate"><span class="pre">FunctionSignal</span></code>, its <code class="docutils literal notranslate"><span class="pre">with_times</span></code>
+method will properly extrapolate noise outside of the provided times. Be
+warned however that outside of the original signal times the noise signal
+will be periodic. Since the default number of frequencies used is based on
+the FFT bin size of <em class="xref py py-obj">times</em>, the default period of the noise signal is
+actually the length of <em class="xref py py-obj">times</em>. As a result if you are planning on
+extrapolating the noise signal, increasing the <em class="xref py py-obj">uniqueness_factor</em> in order
+to increase the number of frequencies used is strongly recommended.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.signals.FunctionSignal.html#pyrex.signals.FunctionSignal" title="pyrex.signals.FunctionSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionSignal</span></code></a></dt><dd><p>Class for signals generated by a function.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.FFTThermalNoise.html#pyrex.signals.FFTThermalNoise" title="pyrex.signals.FFTThermalNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FFTThermalNoise</span></code></a></dt><dd><p>Class for thermal Rayleigh noise signals using the FFT.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Calculation of the noise signal is based on the Rayleigh noise model used
+by ANITA <a class="reference internal" href="#r1190b09e425f-1" id="id1">[1]</a>. Modifications have been made to the default to make the
+frequency-domain amplitudes Rayleigh-distributed, under the suggestion that
+this makes for more realistic noise traces.</p>
+<p>The calculation of signal values is done using a sum of cosine functions.
+This method has the advantage that interpolated values (at times not given
+in the initial time trace) can be calculated exactly rather than linearly
+interpolated. The disadvantage is that this method is then slower than
+using an FFT-based strategy.</p>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r1190b09e425f-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>A. Connolly et al, ANITA Note #76, “Thermal Noise Studies: Toward A
+Time-Domain Model of the ANITA Trigger.”
+<a class="reference external" href="https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps">https://www.phys.hawaii.edu/elog/anita_notes/060228_110754/noise_simulation.ps</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>times, values</strong><span class="classifier">ndarray</span></dt><dd><p>1D arrays of times (s) and corresponding values which define the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.FullThermalNoise.value_type.html#pyrex.signals.FullThermalNoise.value_type" title="pyrex.signals.FullThermalNoise.value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_type</span></code></a><span class="classifier">Signal.Type.voltage</span></dt><dd><p>Type of signal, representing the units of the values.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code><span class="classifier">Enum</span></dt><dd><p>Enum containing possible types (units) for signal values.</p>
+</dd>
+<dt><strong>function</strong><span class="classifier">function</span></dt><dd><p>Function to evaluate the signal values at given time(s).</p>
+</dd>
+<dt><strong>f_min</strong><span class="classifier">float</span></dt><dd><p>Minimum frequency of the noise frequency band.</p>
+</dd>
+<dt><strong>f_max</strong><span class="classifier">float</span></dt><dd><p>Maximum frequency of the noise frequency band.</p>
+</dd>
+<dt><strong>freqs, amps, phases</strong><span class="classifier">ndarray</span></dt><dd><p>The frequencies used to define the noise signal and their corresponding
+amplitudes and phases.</p>
+</dd>
+<dt><strong>rms</strong><span class="classifier">float</span></dt><dd><p>The RMS value of the noise signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.FullThermalNoise.dt.html#pyrex.signals.FullThermalNoise.dt" title="pyrex.signals.FullThermalNoise.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></dt><dd><p>The time spacing of the <em class="xref py py-obj">times</em> array, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if invalid.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.FullThermalNoise.frequencies.html#pyrex.signals.FullThermalNoise.frequencies" title="pyrex.signals.FullThermalNoise.frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></a></dt><dd><p>The FFT frequencies of the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.FullThermalNoise.spectrum.html#pyrex.signals.FullThermalNoise.spectrum" title="pyrex.signals.FullThermalNoise.spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spectrum</span></code></a></dt><dd><p>The FFT complex spectrum values of the signal.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.signals.FullThermalNoise.envelope.html#pyrex.signals.FullThermalNoise.envelope" title="pyrex.signals.FullThermalNoise.envelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">envelope</span></code></a></dt><dd><p>The envelope of the signal by Hilbert transform.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code>(value)</p></td>
+<td><p>Enum containing possible types (units) for signal values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.signals.FullThermalNoise.copy.html#pyrex.signals.FullThermalNoise.copy" title="pyrex.signals.FullThermalNoise.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Get a copy of the <code class="docutils literal notranslate"><span class="pre">FunctionSignal</span></code> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.signals.FullThermalNoise.filter_frequencies.html#pyrex.signals.FullThermalNoise.filter_frequencies" title="pyrex.signals.FullThermalNoise.filter_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_frequencies</span></code></a>(freq_response[, force_real])</p></td>
+<td><p>Apply the given frequency response function to the signal, in-place.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.signals.FullThermalNoise.resample.html#pyrex.signals.FullThermalNoise.resample" title="pyrex.signals.FullThermalNoise.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(n)</p></td>
+<td><p>Resamples the signal into n points in the same time range, in-place.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.signals.FullThermalNoise.set_buffers.html#pyrex.signals.FullThermalNoise.set_buffers" title="pyrex.signals.FullThermalNoise.set_buffers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_buffers</span></code></a>([leading, trailing, force])</p></td>
+<td><p>Set leading and trailing buffers used in calculation of signal values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.signals.FullThermalNoise.shift.html#pyrex.signals.FullThermalNoise.shift" title="pyrex.signals.FullThermalNoise.shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shift</span></code></a>(dt)</p></td>
+<td><p>Shifts the signal values in time by <a class="reference internal" href="pyrex.signals.FullThermalNoise.dt.html#pyrex.signals.FullThermalNoise.dt" title="pyrex.signals.FullThermalNoise.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.signals.FullThermalNoise.with_times.html#pyrex.signals.FullThermalNoise.with_times" title="pyrex.signals.FullThermalNoise.with_times"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_times</span></code></a>(new_times)</p></td>
+<td><p>Returns a representation of this signal over a different times array.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.10.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

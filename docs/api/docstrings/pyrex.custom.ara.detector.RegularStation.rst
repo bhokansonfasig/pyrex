@@ -1,4 +1,4 @@
-pyrex.custom.ara.detector.RegularStation
+﻿pyrex.custom.ara.detector.RegularStation
 ========================================
 
 .. currentmodule:: pyrex.custom.ara.detector

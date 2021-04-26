@@ -7,7 +7,7 @@ __modulename__ = "pyrex"
 
 __fullname__ = "PyREx"
 
-__version__ = "1.9.0"
+__version__ = "1.10.0"
 
 __long_description__ = """
 A Python package for simulation of neutrinos and radio antennas in ice.
@@ -26,7 +26,7 @@ __author__ = "Ben Hokanson-Fasig"
 
 __author_email__ = "fasig@icecube.wisc.edu"
 
-__copyright__ = "2019, Benjamin Hokanson-Fasig"
+__copyright__ = "2021, Ben Hokanson-Fasig"
 
 __license__ = "MIT"
 

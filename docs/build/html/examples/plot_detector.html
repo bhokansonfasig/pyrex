@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Plot Detector Geometry &mdash; PyREx 1.9.0 documentation</title>
+    <title>Plot Detector Geometry &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,15 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
+    <link rel="up" title="Example Code" href="../examples.html" >
+    <link rel="next" title="Askaryan Frequency Content" href="frequency_content.html" >
+    <link rel="prev" title="Example Code" href="../examples.html" > 
   </head>
   <body>
 
@@ -51,8 +53,9 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
-	 
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
+	
+          <li class="active"><a href="../examples.html" accesskey="U">Example Code</a></li> 
     </ul>
               
               
@@ -64,6 +67,14 @@
       <li class="active">
         <a href="../py-modindex.html" title="Python Module Index"
            >modules</a>
+      </li>
+      <li class="active">
+        <a href="frequency_content.html" title="Askaryan Frequency Content"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="../examples.html" title="Example Code"
+           accesskey="P">previous</a>
       </li>
     </ul>
               
@@ -80,35 +91,26 @@
             
   <div class="section" id="plot-detector-geometry">
 <h1>Plot Detector Geometry<a class="headerlink" href="#plot-detector-geometry" title="Permalink to this headline">¶</a></h1>
-<p>In this example we will make a few simple plots of the geometry of a detector object, handy for presentations or for visualizing your work. This code can be run from the Plot Detector notebook in the examples directory.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<p>In this example we will make a few simple plots of the geometry of a detector object, handy for presentations or for visualizing your work. This code can be run from the <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/blob/master/examples/plot_detector.py">plot_detector.py</a> script in the examples directory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
-<span class="kn">import</span> <span class="nn">pyrex.custom.irex</span> <span class="kn">as</span> <span class="nn">irex</span>
+<span class="kn">import</span> <span class="nn">pyrex.custom.ara</span> <span class="k">as</span> <span class="nn">ara</span>
 
 <span class="c1"># First we need to initialize the detector object and build its antennas.</span>
-<span class="c1"># For this example we&#39;ll just use a basic station geometry. Since we won&#39;t be</span>
-<span class="c1"># throwing any particles at it, the arguments of the antennas are largely</span>
-<span class="c1"># unimportant, but we will set up the antennas to alternatingly be oriented</span>
-<span class="c1"># vertically or horizontally.</span>
-<span class="n">detector</span> <span class="o">=</span> <span class="n">irex</span><span class="o">.</span><span class="n">StationGrid</span><span class="p">(</span><span class="n">stations</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">station_type</span><span class="o">=</span><span class="n">irex</span><span class="o">.</span><span class="n">RegularStation</span><span class="p">,</span>
-                            <span class="n">antennas_per_string</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">antenna_separation</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">alternating_orientation</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">antenna</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">index</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">trigger_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                        <span class="n">orientation_scheme</span><span class="o">=</span><span class="n">alternating_orientation</span><span class="p">)</span>
+<span class="c1"># For this example we&#39;ll just use the original ARA geometry.</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">ara</span><span class="o">.</span><span class="n">HexagonalGrid</span><span class="p">(</span><span class="n">stations</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">station_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">RegularStation</span><span class="p">,</span>
+                             <span class="n">antennas_per_string</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                             <span class="n">antenna_separation</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="c1"># Since we won&#39;t be doing any event simulation, the arguments of the antennas</span>
+<span class="c1"># (threshold and noise) are largely unimportant</span>
+<span class="n">detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">power_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="c1"># Let&#39;s also define a function which will highlight certain antennas in red.</span>
-<span class="c1"># This one will highlight all antennas which are oriented horizontally.</span>
-<span class="k">def</span> <span class="nf">highlight</span><span class="p">(</span><span class="n">antenna_system</span><span class="p">):</span>
-    <span class="c1"># Since the antennas in our detector are technically AntennaSystems,</span>
-    <span class="c1"># to access the orientation we need to get the antenna object</span>
-    <span class="c1"># which is a member of the AntennaSystem</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">antenna_system</span><span class="o">.</span><span class="n">antenna</span><span class="o">.</span><span class="n">z_axis</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="c1"># This one will highlight all Hpol antennas.</span>
+<span class="k">def</span> <span class="nf">highlight</span><span class="p">(</span><span class="n">antenna</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">antenna</span><span class="p">,</span> <span class="n">ara</span><span class="o">.</span><span class="n">HpolAntenna</span><span class="p">)</span>
 
 <span class="c1"># For our first plot, let&#39;s make a 3-D image of the whole detector.</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
@@ -130,7 +132,7 @@
 
 <span class="c1"># Now let&#39;s plot the detector in a couple different 2-D angles.</span>
 <span class="c1"># First, a top-down view of the entire detector.</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 
 <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
 <span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
@@ -143,35 +145,39 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Detector Geometry (Top View)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y-position&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c1"># Next, let&#39;s take an x-z view of a single station. Let&#39;s also add in some</span>
 <span class="c1"># string graphics by drawing lines from bottom antennas to the top of the ice.</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 
-<span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">detector</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">station</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
-        <span class="n">lowest_antenna</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span>
-                                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ant</span><span class="p">:</span> <span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
-                 <span class="p">[</span><span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">station</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">subsets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">station</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
+    <span class="n">lowest_antenna</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span>
+                            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ant</span><span class="p">:</span> <span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                <span class="p">[</span><span class="n">lowest_antenna</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
-<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">station</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">station</span> <span class="k">if</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Horizontal&quot;</span><span class="p">)</span>
 
-<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
-<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">station</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ant</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">station</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">highlight</span><span class="p">(</span><span class="n">ant</span><span class="p">)]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Vertical&quot;</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Single-Station Geometry (Side View)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x-position&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;z-position&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="../_images/plot_detector_1.png" src="../_images/plot_detector_1.png" />
+<img alt="../_images/plot_detector_2.png" src="../_images/plot_detector_2.png" />
+<img alt="../_images/plot_detector_3.png" src="../_images/plot_detector_3.png" />
 </div>
 
 
@@ -185,7 +191,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -213,11 +219,14 @@ Version 1.9.0</p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Example Code</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../examples.html#examples">Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">PyREx API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
@@ -249,10 +258,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

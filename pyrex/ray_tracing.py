@@ -902,8 +902,8 @@ class SpecializedRayTracePath(BasicRayTracePath):
         Indefinite z-integral for calculating path length.
 
         Calculates the indefinite z-integral of sec(arcsin(beta/n(z))), which
-        between two z values gives the radial distance of the direct path
-        between the z values.
+        between two z values gives the path length of the direct path between
+        the z values.
 
         Parameters
         ----------
@@ -937,7 +937,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
         Indefinite z-integral for calculating time of flight.
 
         Calculates the indefinite z-integral of n(z)/c*sec(arcsin(beta/n(z))),
-        which between two z values gives the radial distance of the direct path
+        which between two z values gives the time of flight of the direct path
         between the z values.
 
         Parameters
@@ -1385,7 +1385,7 @@ class BasicRayTracer(LazyMutableClass):
                 / d_angle) - brent_arg
 
 
-    def _get_launch_angle(self, r_function, min_angle=0, max_angle=90):
+    def _get_launch_angle(self, r_function, min_angle=0, max_angle=np.pi/2):
         """
         Calculates the launch angle for a ray with the given r_function.
 
@@ -1460,7 +1460,7 @@ class BasicRayTracer(LazyMutableClass):
         """
         Launch angle (radians) of the second indirect ray.
 
-        The first indirect ray is the indirect ray where the launch angle is
+        The second indirect ray is the indirect ray where the launch angle is
         less than the peak angle.
 
         """

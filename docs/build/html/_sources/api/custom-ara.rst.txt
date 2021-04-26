@@ -19,8 +19,13 @@ Default Package Imports
     ARAString
     PhasedArrayString
     RegularStation
-    AlbrechtStation
+    PhasedArrayStation
     HexagonalGrid
+    ARA01
+    ARA02
+    ARA03
+    ARA04
+    ARA05
 
 
 Individual Module APIs
@@ -31,3 +36,4 @@ Individual Module APIs
 
     custom-ara/antenna
     custom-ara/detector
+    custom-ara/stations

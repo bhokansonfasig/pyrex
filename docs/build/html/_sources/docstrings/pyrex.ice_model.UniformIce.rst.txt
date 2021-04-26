@@ -1,4 +1,4 @@
-pyrex.ice\_model.UniformIce
+﻿pyrex.ice\_model.UniformIce
 ===========================
 
 .. currentmodule:: pyrex.ice_model

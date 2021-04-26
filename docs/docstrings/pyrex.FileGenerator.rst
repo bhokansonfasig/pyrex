@@ -1,4 +1,4 @@
-pyrex.FileGenerator
+﻿pyrex.FileGenerator
 ===================
 
 .. currentmodule:: pyrex

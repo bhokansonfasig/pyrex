@@ -1,4 +1,4 @@
-pyrex.custom.arianna.antenna.\_read\_response\_data
+﻿pyrex.custom.arianna.antenna.\_read\_response\_data
 ===================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna

@@ -1,4 +1,4 @@
-pyrex.askaryan.ZHSAskaryanSignal
+﻿pyrex.askaryan.ZHSAskaryanSignal
 ================================
 
 .. currentmodule:: pyrex.askaryan
@@ -11,8 +11,11 @@ pyrex.askaryan.ZHSAskaryanSignal
       .. autosummary::
          :toctree:
       
+         ZHSAskaryanSignal.copy
          ZHSAskaryanSignal.filter_frequencies
          ZHSAskaryanSignal.resample
+         ZHSAskaryanSignal.set_buffers
+         ZHSAskaryanSignal.shift
          ZHSAskaryanSignal.with_times
 
 
@@ -28,4 +31,5 @@ pyrex.askaryan.ZHSAskaryanSignal
          ZHSAskaryanSignal.frequencies
          ZHSAskaryanSignal.spectrum
          ZHSAskaryanSignal.value_type
+         ZHSAskaryanSignal.values
 

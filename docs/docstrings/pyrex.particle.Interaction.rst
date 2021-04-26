@@ -1,4 +1,4 @@
-pyrex.particle.Interaction
+﻿pyrex.particle.Interaction
 ==========================
 
 .. currentmodule:: pyrex.particle

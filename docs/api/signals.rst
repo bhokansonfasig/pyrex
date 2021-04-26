@@ -13,4 +13,6 @@ Signal Processing (:mod:`pyrex.signals`)
     EmptySignal
     FunctionSignal
     GaussianNoise
+    FullThermalNoise
+    FFTThermalNoise
     ThermalNoise

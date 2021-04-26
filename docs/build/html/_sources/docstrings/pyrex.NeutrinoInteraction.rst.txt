@@ -1,4 +1,4 @@
-pyrex.NeutrinoInteraction
+﻿pyrex.NeutrinoInteraction
 =========================
 
 .. currentmodule:: pyrex
@@ -24,6 +24,7 @@ pyrex.NeutrinoInteraction
          :toctree:
       
          NeutrinoInteraction.cross_section
+         NeutrinoInteraction.include_secondaries
          NeutrinoInteraction.interaction_length
          NeutrinoInteraction.kind
          NeutrinoInteraction.total_cross_section

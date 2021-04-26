@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.irex.detector.CoxeterStation &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.custom.irex.detector.CoxeterStation &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../../index.html" >
     <link rel="up" title="Custom Detectors (pyrex.custom.irex.detector)" href="../custom-irex/detector.html" >
     <link rel="next" title="pyrex.custom.irex.detector.StationGrid" href="pyrex.custom.irex.detector.StationGrid.html" >
     <link rel="prev" title="pyrex.custom.irex.detector.RegularStation" href="pyrex.custom.irex.detector.RegularStation.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
           <li class="active"><a href="../custom-irex.html" >IceCube Radio Extension (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.irex</span></code>)</a></li>
@@ -94,9 +93,9 @@
             
   <div class="section" id="pyrex-custom-irex-detector-coxeterstation">
 <h1>pyrex.custom.irex.detector.CoxeterStation<a class="headerlink" href="#pyrex-custom-irex-detector-coxeterstation" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.custom.irex.detector.CoxeterStation">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.custom.irex.detector.</code><code class="sig-name descname">CoxeterStation</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">strings_per_station=4</em>, <em class="sig-param">station_diameter=50</em>, <em class="sig-param">string_type=&lt;class 'pyrex.custom.irex.detector.IREXString'&gt;</em>, <em class="sig-param">**string_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.custom.irex.detector.</span></code><code class="sig-name descname"><span class="pre">CoxeterStation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">strings_per_station=4</span></em>, <em class="sig-param"><span class="pre">station_diameter=50</span></em>, <em class="sig-param"><span class="pre">string_type=&lt;class</span> <span class="pre">'pyrex.custom.irex.detector.IREXString'&gt;</span></em>, <em class="sig-param"><span class="pre">**string_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.irex.detector.CoxeterStation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Station geometry with center string and the rest evenly spaced radially.</p>
 <p>Sets the positions of strings around the station based on the parameters.
 Supports any string type and passes extra keyword arguments on to the
@@ -125,7 +124,7 @@ the <em class="xref py py-obj">string_type</em> class.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>ValueError</strong></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
+<dt>ValueError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
 above the ice surface.</p>
 </dd>
 </dl>
@@ -197,7 +196,7 @@ behavior is ill-defined). Defaults to <code class="docutils literal notranslate"
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -266,10 +265,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

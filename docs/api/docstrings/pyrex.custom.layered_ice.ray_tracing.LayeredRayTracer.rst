@@ -1,4 +1,4 @@
-pyrex.custom.layered\_ice.ray\_tracing.LayeredRayTracer
+﻿pyrex.custom.layered\_ice.ray\_tracing.LayeredRayTracer
 =======================================================
 
 .. currentmodule:: pyrex.custom.layered_ice.ray_tracing

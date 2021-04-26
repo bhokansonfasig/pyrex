@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.generation.Generator &mdash; PyREx 1.10.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.10.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
+    <link rel="up" title="Event Generators (pyrex.generation)" href="../api/generation.html" >
+    <link rel="next" title="pyrex.generation.CylindricalGenerator" href="pyrex.generation.CylindricalGenerator.html" >
+    <link rel="prev" title="Event Generators (pyrex.generation)" href="../api/generation.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
+	
+          <li class="active"><a href="../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../api/generation.html" accesskey="U">Event Generators (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.generation</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.generation.CylindricalGenerator.html" title="pyrex.generation.CylindricalGenerator"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="../api/generation.html" title="Event Generators (pyrex.generation)"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-generation-generator">
+<h1>pyrex.generation.Generator<a class="headerlink" href="#pyrex-generation-generator" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pyrex.generation.Generator">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.generation.</span></code><code class="sig-name descname"><span class="pre">Generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">energy</span></em>, <em class="sig-param"><span class="pre">shadow=False</span></em>, <em class="sig-param"><span class="pre">flavor_ratio=(1</span></em>, <em class="sig-param"><span class="pre">1</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">source='cosmogenic'</span></em>, <em class="sig-param"><span class="pre">interaction_model=&lt;class</span> <span class="pre">'pyrex.particle.CTWInteraction'&gt;</span></em>, <em class="sig-param"><span class="pre">earth_model=&lt;pyrex.earth_model.PREM</span> <span class="pre">object&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.Generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for neutrino generators.</p>
+<p>Provides methods for generating neutrino attributes except for neutrino
+vertex, which should be provided by child classes to generate neutrinos
+in specific volumes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>energy</strong><span class="classifier">float or function</span></dt><dd><p>Energy (GeV) of the neutrinos. If <code class="docutils literal notranslate"><span class="pre">float</span></code>, all neutrinos have the
+same constant energy. If <code class="docutils literal notranslate"><span class="pre">function</span></code>, neutrinos are generated with the
+energy returned by successive function calls.</p>
+</dd>
+<dt><strong>shadow</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether Earth shadowing effects should be used to reject events. If
+<code class="docutils literal notranslate"><span class="pre">True</span></code> then neutrinos which don’t survive transit through the Earth
+will be skipped when creating events. If <code class="docutils literal notranslate"><span class="pre">False</span></code> then all events are
+allowed and assigned a weight to scale their probability of occurrence.</p>
+</dd>
+<dt><strong>flavor_ratio</strong><span class="classifier">array_like, optional</span></dt><dd><p>Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
+tau] neutrino fractions.</p>
+</dd>
+<dt><strong>source</strong><span class="classifier">optional</span></dt><dd><p>Source type of neutrinos to be generated. Used in the determination of
+per-flavor neutrino/antineutrino fractions.</p>
+</dd>
+<dt><strong>interaction_model</strong><span class="classifier">optional</span></dt><dd><p>Class to use to describe interactions of the generated particles.
+Should inherit from (or behave like) the base <code class="docutils literal notranslate"><span class="pre">Interaction</span></code> class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.particle.Interaction.html#pyrex.particle.Interaction" title="pyrex.particle.Interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.particle.Interaction</span></code></a></dt><dd><p>Base class for describing neutrino interaction attributes.</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>count</strong><span class="classifier">int</span></dt><dd><p>Number of neutrinos produced by the generator, including those not
+returned due to Earth shadowing or other effects.</p>
+</dd>
+<dt><strong>get_energy</strong><span class="classifier">function</span></dt><dd><p>Function returning energy (GeV) of the neutrinos by successive function
+calls.</p>
+</dd>
+<dt><strong>shadow</strong><span class="classifier">bool</span></dt><dd><p>Whether Earth shadowing effects will be used to reject events.</p>
+</dd>
+<dt><strong>ratio</strong><span class="classifier">ndarray</span></dt><dd><p>(Normalized) flavor ratio of neutrinos to be generated. Of the form
+[electron, muon, tau] neutrino fractions.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.generation.Generator.source.html#pyrex.generation.Generator.source" title="pyrex.generation.Generator.source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source</span></code></a><span class="classifier">Generator.SourceType</span></dt><dd><p>Value of the source type.</p>
+</dd>
+<dt><strong>interaction_model</strong><span class="classifier">Interaction</span></dt><dd><p>Class to use to describe interactions of the generated particles.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.generation.Generator.volume.html#pyrex.generation.Generator.volume" title="pyrex.generation.Generator.volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">volume</span></code></a></dt><dd><p>Generation volume (m^3) in which event vertices are produced.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.generation.Generator.solid_angle.html#pyrex.generation.Generator.solid_angle" title="pyrex.generation.Generator.solid_angle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solid_angle</span></code></a></dt><dd><p>Generation solid angle (sr) in which event directions are produced.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceType</span></code>(value)</p></td>
+<td><p>Enum containing possible sources for neutrinos.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.generation.Generator.create_event.html#pyrex.generation.Generator.create_event" title="pyrex.generation.Generator.create_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_event</span></code></a>()</p></td>
+<td><p>Generate a neutrino event in the ice volume.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.generation.Generator.get_direction.html#pyrex.generation.Generator.get_direction" title="pyrex.generation.Generator.get_direction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_direction</span></code></a>()</p></td>
+<td><p>Get the direction of the next particle to be generated.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.generation.Generator.get_exit_points.html#pyrex.generation.Generator.get_exit_points" title="pyrex.generation.Generator.get_exit_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_exit_points</span></code></a>(particle)</p></td>
+<td><p>Get the intersections of the particle path with the ice volume edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.generation.Generator.get_particle_type.html#pyrex.generation.Generator.get_particle_type" title="pyrex.generation.Generator.get_particle_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_particle_type</span></code></a>()</p></td>
+<td><p>Get the particle type of the next particle to be generated.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.generation.Generator.get_vertex.html#pyrex.generation.Generator.get_vertex" title="pyrex.generation.Generator.get_vertex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vertex</span></code></a>()</p></td>
+<td><p>Get the vertex of the next particle to be generated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.generation.Generator.get_weights.html#pyrex.generation.Generator.get_weights" title="pyrex.generation.Generator.get_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_weights</span></code></a>(particle)</p></td>
+<td><p>Get the weighting factors to be applied to the particle.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.10.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

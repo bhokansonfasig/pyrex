@@ -13,5 +13,5 @@ Custom Detectors (:mod:`pyrex.custom.ara.detector`)
     ARAString
     PhasedArrayString
     RegularStation
-    AlbrechtStation
+    PhasedArrayStation
     HexagonalGrid

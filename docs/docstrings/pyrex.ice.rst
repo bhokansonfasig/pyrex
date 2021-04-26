@@ -1,4 +1,4 @@
-pyrex.ice
+﻿pyrex.ice
 =========
 
 .. currentmodule:: pyrex

@@ -1,4 +1,4 @@
-pyrex.particle.GQRSInteraction
+﻿pyrex.particle.GQRSInteraction
 ==============================
 
 .. currentmodule:: pyrex.particle
@@ -24,6 +24,7 @@ pyrex.particle.GQRSInteraction
          :toctree:
       
          GQRSInteraction.cross_section
+         GQRSInteraction.include_secondaries
          GQRSInteraction.interaction_length
          GQRSInteraction.kind
          GQRSInteraction.total_cross_section

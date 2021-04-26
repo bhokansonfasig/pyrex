@@ -11,5 +11,5 @@ Askaryan Models (:mod:`pyrex.askaryan`)
 
     ZHSAskaryanSignal
     AVZAskaryanSignal
-    ARVZAskaryanSignal
+    ARZAskaryanSignal
     AskaryanSignal

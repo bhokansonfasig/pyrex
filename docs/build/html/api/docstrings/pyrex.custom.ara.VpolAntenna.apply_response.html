@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.VpolAntenna.apply_response &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.custom.ara.VpolAntenna.apply_response &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -51,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -80,9 +79,9 @@
             
   <div class="section" id="pyrex-custom-ara-vpolantenna-apply-response">
 <h1>pyrex.custom.ara.VpolAntenna.apply_response<a class="headerlink" href="#pyrex-custom-ara-vpolantenna-apply-response" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="py method">
 <dt id="pyrex.custom.ara.VpolAntenna.apply_response">
-<code class="sig-prename descclassname">VpolAntenna.</code><code class="sig-name descname">apply_response</code><span class="sig-paren">(</span><em class="sig-param">signal</em>, <em class="sig-param">direction=None</em>, <em class="sig-param">polarization=None</em>, <em class="sig-param">force_real=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.VpolAntenna.apply_response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">VpolAntenna.</span></code><code class="sig-name descname"><span class="pre">apply_response</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_real</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.VpolAntenna.apply_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the complete antenna response for an incoming signal.</p>
 <p>Processes the incoming signal by passing the call along to the
 <code class="docutils literal notranslate"><span class="pre">antenna</span></code> object.</p>
@@ -92,10 +91,11 @@
 <dt><strong>signal</strong><span class="classifier">Signal</span></dt><dd><p>Incoming <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object to process.</p>
 </dd>
 <dt><strong>direction</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector denoting the direction of travel of the signal as it reaches
-the antenna. If <code class="docutils literal notranslate"><span class="pre">None</span></code> no directional response will be applied.</p>
+the antenna (in the global coordinate frame). If <code class="docutils literal notranslate"><span class="pre">None</span></code> no
+directional response will be applied.</p>
 </dd>
-<dt><strong>polarization</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector denoting the signal’s polarization direction. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
-no polarization gain will be applied.</p>
+<dt><strong>polarization</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector denoting the signal’s polarization direction (in the global
+coordinate frame). If <code class="docutils literal notranslate"><span class="pre">None</span></code> no polarization gain will be applied.</p>
 </dd>
 <dt><strong>force_real</strong><span class="classifier">boolean, optional</span></dt><dd><p>Whether or not the frequency response should be redefined in the
 negative-frequency domain to keep the values of the filtered signal
@@ -105,14 +105,14 @@ real.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>Signal</strong></dt><dd><p>Processed <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object after the complete antenna response has
+<dt>Signal</dt><dd><p>Processed <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object after the complete antenna response has
 been applied. Should have a <code class="docutils literal notranslate"><span class="pre">value_type</span></code> of <code class="docutils literal notranslate"><span class="pre">voltage</span></code>.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>ValueError</strong></dt><dd><p>If the given <code class="xref py py-obj docutils literal notranslate"><span class="pre">signal</span></code> does not have a <code class="docutils literal notranslate"><span class="pre">value_type</span></code> of <code class="docutils literal notranslate"><span class="pre">voltage</span></code>
+<dt>ValueError</dt><dd><p>If the given <code class="xref py py-obj docutils literal notranslate"><span class="pre">signal</span></code> does not have a <code class="docutils literal notranslate"><span class="pre">value_type</span></code> of <code class="docutils literal notranslate"><span class="pre">voltage</span></code>
 or <code class="docutils literal notranslate"><span class="pre">field</span></code>.</p>
 </dd>
 </dl>
@@ -140,7 +140,7 @@ or <code class="docutils literal notranslate"><span class="pre">field</span></co
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -204,10 +204,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

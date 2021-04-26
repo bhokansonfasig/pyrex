@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.arianna.antenna.LPDA &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.custom.arianna.antenna.LPDA &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../../index.html" >
     <link rel="up" title="Custom Antennas (pyrex.custom.arianna.antenna)" href="../custom-arianna/antenna.html" >
     <link rel="next" title="IceCube Radio Extension (pyrex.custom.irex)" href="../custom-irex.html" >
     <link rel="prev" title="pyrex.custom.arianna.antenna.ARIANNAAntennaSystem" href="pyrex.custom.arianna.antenna.ARIANNAAntennaSystem.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../../api.html" >PyREx API</a></li>
           <li class="active"><a href="../custom-arianna.html" >Antarctic Ross Ice-Shelf Antenna Neutrino Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.arianna</span></code>)</a></li>
@@ -94,9 +93,9 @@
             
   <div class="section" id="pyrex-custom-arianna-antenna-lpda">
 <h1>pyrex.custom.arianna.antenna.LPDA<a class="headerlink" href="#pyrex-custom-arianna-antenna-lpda" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.custom.arianna.antenna.LPDA">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.custom.arianna.antenna.</code><code class="sig-name descname">LPDA</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">position</em>, <em class="sig-param">threshold</em>, <em class="sig-param">trigger_window=5e-09</em>, <em class="sig-param">z_axis=(0</em>, <em class="sig-param">0</em>, <em class="sig-param">1)</em>, <em class="sig-param">x_axis=(1</em>, <em class="sig-param">0</em>, <em class="sig-param">0)</em>, <em class="sig-param">amplification=1</em>, <em class="sig-param">amplifier_clipping=1</em>, <em class="sig-param">noisy=True</em>, <em class="sig-param">unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.arianna.antenna.LPDA" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.custom.arianna.antenna.</span></code><code class="sig-name descname"><span class="pre">LPDA</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplification</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplifier_clipping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_noise_waveforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.arianna.antenna.LPDA" title="Permalink to this definition">¶</a></dt>
 <dd><p>ARIANNA LPDA antenna system.</p>
 <p>Applies as the front end a filter representing the ARIANNA amplifier and
 signal clipping.</p>
@@ -111,9 +110,12 @@ signal clipping.</p>
 </dd>
 <dt><strong>trigger_window</strong><span class="classifier">float</span></dt><dd><p>Time window (ns) for the trigger condition.</p>
 </dd>
-<dt><strong>z_axis</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the z-axis of the antenna.</p>
+<dt><strong>z_axis</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the z-axis of the antenna. The z-axis runs along
+the central “spine” of the antenna, with the positive direction
+pointing towards the longer “tines”.</p>
 </dd>
-<dt><strong>x_axis</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the x-axis of the antenna.</p>
+<dt><strong>x_axis</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the x-axis of the antenna. The x-axis runs parallel
+to the “tines” of the antenna.</p>
 </dd>
 <dt><strong>amplification</strong><span class="classifier">float, optional</span></dt><dd><p>Amplification to be applied to the signal pre-clipping.</p>
 </dd>
@@ -226,7 +228,7 @@ and negative values).</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -295,10 +297,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

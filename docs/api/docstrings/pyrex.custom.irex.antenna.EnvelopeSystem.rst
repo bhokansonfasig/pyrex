@@ -1,4 +1,4 @@
-pyrex.custom.irex.antenna.EnvelopeSystem
+﻿pyrex.custom.irex.antenna.EnvelopeSystem
 ========================================
 
 .. currentmodule:: pyrex.custom.irex.antenna

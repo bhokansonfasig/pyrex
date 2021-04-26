@@ -1,4 +1,4 @@
-pyrex.custom.irex.detector.CoxeterStation
+﻿pyrex.custom.irex.detector.CoxeterStation
 =========================================
 
 .. currentmodule:: pyrex.custom.irex.detector
