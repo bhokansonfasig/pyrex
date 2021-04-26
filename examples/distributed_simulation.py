@@ -1,3 +1,5 @@
+"""A script for simulating effective volumes of ARA stations"""
+
 import argparse
 import datetime
 import logging

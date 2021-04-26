@@ -1,3 +1,5 @@
+"""A script for combining the outputs of multiple effective volume simulations"""
+
 import argparse
 import os, os.path
 import re
