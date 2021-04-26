@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.io.HDF5Reader &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.io.HDF5Reader &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="Data File I/O (pyrex.io)" href="../api/io.html" >
     <link rel="next" title="pyrex.io.HDF5Writer" href="pyrex.io.HDF5Writer.html" >
     <link rel="prev" title="pyrex.io.File" href="pyrex.io.File.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/io.html" accesskey="U">Data File I/O (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.io</span></code>)</a></li> 
@@ -93,9 +92,9 @@
             
   <div class="section" id="pyrex-io-hdf5reader">
 <h1>pyrex.io.HDF5Reader<a class="headerlink" href="#pyrex-io-hdf5reader" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.io.HDF5Reader">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.io.</code><code class="sig-name descname">HDF5Reader</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">slice_range=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Reader" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.io.</span></code><code class="sig-name descname"><span class="pre">HDF5Reader</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.HDF5Reader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for reading data from an hdf5 file.</p>
 <p>Works as a context manager and allows for reading simulation/real data or
 analysis-level data from the given file.</p>
@@ -105,9 +104,9 @@ analysis-level data from the given file.</p>
 <dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>File name to open in read mode.</p>
 </dd>
 <dt><strong>slice_range</strong><span class="classifier">int, optional</span></dt><dd><p>Number of events to include in each slice when iterating the file.
-Increasing this value should result in an improvement in speed, while
-decreasing this value should result in an improvement in memory
-consumption.</p>
+Loads the entire file at once by default. For large files specifying
+a value will result in the file being read in chunks, allowing for
+reduced memory consumption at the cost of some speed.</p>
 </dd>
 </dl>
 </dd>
@@ -166,7 +165,7 @@ consumption.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -235,10 +234,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

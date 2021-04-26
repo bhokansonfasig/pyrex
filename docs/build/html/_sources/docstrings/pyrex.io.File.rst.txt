@@ -1,4 +1,4 @@
-pyrex.io.File
+﻿pyrex.io.File
 =============
 
 .. currentmodule:: pyrex.io

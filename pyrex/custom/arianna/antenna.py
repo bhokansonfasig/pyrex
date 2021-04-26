@@ -10,13 +10,13 @@ import os.path
 import pickle
 import tarfile
 import numpy as np
+import scipy.constants
 import scipy.interpolate
 from pyrex.internal_functions import (normalize, complex_bilinear_interp,
                                       complex_interp)
 from pyrex.signals import Signal
 from pyrex.antenna import Antenna
 from pyrex.detector import AntennaSystem
-from pyrex.ice_model import ice
 
 logger = logging.getLogger(__name__)
 
@@ -157,7 +157,8 @@ def _read_response_data(filename):
             for k, phi in enumerate(sorted(phis)):
                 # gain, phase = data[(freq, theta, phi)]
                 # response[i, j, k] = gain * np.exp(1j*phase)
-                heff_factor = 3e8/freq * (1+s_params[freq]) * 50/377j
+                heff_factor = (scipy.constants.c/freq * (1+s_params[freq])
+                               * 50/377j)
                 E_theta, E_phi = data[(freq, theta, phi)]
                 theta_response[i, j, k] = E_theta * heff_factor
                 phi_response[i, j, k] = E_phi * heff_factor
@@ -213,8 +214,8 @@ def _read_response_pickle(filename):
     # If there is no pickle file, read the response data using the
     # _read_response_data function, and then make a pickle file
     if not os.path.isfile(filename+".pkl"):
-        logger.warn("Antenna model file "+filename+".pkl not found. "+
-                    "Generating a new file now")
+        logger.warning("Antenna model file %s.pkl not found. "+
+                       "Generating a new file now", filename)
         heff_data = _read_response_data(filename)
         with open(filename+".pkl", 'wb') as f:
             pickle.dump(heff_data, f)
@@ -323,9 +324,12 @@ class ARIANNAAntenna(Antenna):
         Frequency (Hz) at the center of the antenna's frequency range.
     bandwidth : float
         Bandwidth (Hz) of the antenna.
+    temperature : float
+        The noise temperature (K) of the antenna. Used in combination with
+        `resistance` to calculate the RMS voltage of the antenna noise.
     resistance : float
-        The noise resistance (ohm) of the antenna. Used to calculate the RMS
-        voltage of the antenna noise.
+        The noise resistance (ohm) of the antenna. Used in combination with
+        `temperature` to calculate the RMS voltage of the antenna noise.
     z_axis : array_like, optional
         Vector direction of the z-axis of the antenna.
     x_axis : array_like, optional
@@ -381,8 +385,8 @@ class ARIANNAAntenna(Antenna):
 
     """
     def __init__(self, response_data, position, center_frequency, bandwidth,
-                 resistance, z_axis=(0,0,1), x_axis=(1,0,0), efficiency=1,
-                 noisy=True, unique_noise_waveforms=10):
+                 temperature, resistance, z_axis=(0,0,1), x_axis=(1,0,0),
+                 efficiency=1, noisy=True, unique_noise_waveforms=10):
         # Parse the response data
         self._theta_response = response_data[0]
         self._phi_response = response_data[1]
@@ -396,8 +400,8 @@ class ARIANNAAntenna(Antenna):
 
         super().__init__(position=position, z_axis=z_axis, x_axis=x_axis,
                          efficiency=efficiency, freq_range=(f_low, f_high),
-                         temperature=ice.temperature(position[2]),
-                         resistance=resistance, noisy=noisy,
+                         temperature=temperature, resistance=resistance,
+                         noisy=noisy,
                          unique_noise_waveforms=unique_noise_waveforms)
 
     def directional_gain(self, theta, phi):
@@ -481,10 +485,11 @@ class ARIANNAAntenna(Antenna):
             Incoming ``Signal`` object to process.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal as it reaches
-            the antenna. If ``None`` no directional response will be applied.
+            the antenna (in the global coordinate frame). If ``None`` no
+            directional response will be applied.
         polarization : array_like, optional
-            Vector denoting the signal's polarization direction. If ``None``
-            no polarization gain will be applied.
+            Vector denoting the signal's polarization direction (in the global
+            coordinate frame). If ``None`` no polarization gain will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -508,8 +513,9 @@ class ARIANNAAntenna(Antenna):
         pyrex.Signal : Base class for time-domain signals.
 
         """
-        copy = Signal(signal.times, signal.values, value_type=Signal.Type.voltage)
-        copy.filter_frequencies(self.frequency_response, force_real=force_real)
+        new_signal = signal.copy()
+        new_signal.value_type = Signal.Type.voltage
+        freq_response = self.frequency_response
 
         if direction is not None and polarization is not None:
             # Calculate theta and phi relative to the orientation
@@ -521,11 +527,15 @@ class ARIANNAAntenna(Antenna):
             ant_pol = np.dot(transformation, normalize(polarization))
             # Calculate directional response as a function of frequency
             directive_response = self.directional_response(theta, phi, ant_pol)
-            copy.filter_frequencies(directive_response, force_real=force_real)
+            freq_response = lambda f: (self.frequency_response(f)
+                                       * directive_response(f))
 
         elif (direction is not None and polarization is None
               or direction is None and polarization is not None):
             raise ValueError("Direction and polarization must be specified together")
+
+        # Apply (combined) frequency response
+        new_signal.filter_frequencies(freq_response, force_real=force_real)
 
         signal_factor = self.efficiency
 
@@ -537,9 +547,9 @@ class ARIANNAAntenna(Antenna):
             raise ValueError("Signal's value type must be either "
                              +"voltage or field. Given "+str(signal.value_type))
 
-        copy *= signal_factor
+        new_signal *= signal_factor
 
-        return copy
+        return new_signal
 
     # Redefine receive method to use force_real as True by default
     def receive(self, signal, direction=None, polarization=None,
@@ -560,11 +570,13 @@ class ARIANNAAntenna(Antenna):
             times.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal(s) as they
-            reach the antenna. If ``None`` no directional gain will be applied.
+            reach the antenna (in the global coordinate frame). If ``None`` no
+            directional gain will be applied.
         polarization : array_like, optional
-            Vector(s) denoting the signal's polarization direction. Number of
-            vectors should match the number of elements in `signal` argument.
-            If ``None`` no polarization gain will be applied.
+            Vector(s) denoting the signal's polarization direction (in the
+            global coordinate frame). Number of vectors should match the number
+            of elements in `signal` argument. If ``None`` no polarization gain
+            will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -702,8 +714,9 @@ class ARIANNAAntennaSystem(AntennaSystem):
         return meta
 
     def setup_antenna(self, center_frequency=350e6, bandwidth=600e6,
-                      resistance=16.5, z_axis=(0,0,1), x_axis=(1,0,0),
-                      efficiency=1, noisy=True, unique_noise_waveforms=10,
+                      temperature=300, resistance=50, z_axis=(0,0,1),
+                      x_axis=(1,0,0), efficiency=1, noisy=True,
+                      unique_noise_waveforms=10,
                       response_data=None, response_freqs=None, **kwargs):
         """
         Setup the antenna by passing along its init arguments.
@@ -725,9 +738,12 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Frequency (Hz) at the center of the antenna's frequency range.
         bandwidth : float, optional
             Bandwidth (Hz) of the antenna.
+        temperature : float, optional
+            The noise temperature (K) of the antenna. Used in combination with
+            `resistance` to calculate the RMS voltage of the antenna noise.
         resistance : float, optional
-            The noise resistance (ohm) of the antenna. Used to calculate the
-            RMS voltage of the antenna noise.
+            The noise resistance (ohm) of the antenna. Used in combination with
+            `temperature` to calculate the RMS voltage of the antenna noise.
         z_axis : array_like, optional
             Vector direction of the z-axis of the antenna.
         x_axis : array_like, optional
@@ -742,15 +758,13 @@ class ARIANNAAntennaSystem(AntennaSystem):
 
         """
         # ARIANNA expects a noise rms of about 11 microvolts (before amps).
-        # This is satisfied for most ice temperatures by using an effective
-        # resistance of ~16.5 Ohm
-        # Additionally, the bandwidth of the antenna is set slightly larger
-        # than the nominal bandwidth of the true ARA antenna system (700 MHz),
-        # but the extra frequencies should be killed by the front-end filter
+        # This is mostly satisfied by using the a noise temperature of 300 K,
+        # along with a 50 ohm resistance
         super().setup_antenna(response_data=response_data,
                               position=self.position,
                               center_frequency=center_frequency,
                               bandwidth=bandwidth,
+                              temperature=temperature,
                               resistance=resistance,
                               z_axis=z_axis,
                               x_axis=x_axis,
@@ -800,14 +814,17 @@ class ARIANNAAntennaSystem(AntennaSystem):
             Signal processed by the antenna front end.
 
         """
-        copy = Signal(signal.times, signal.values)
-        copy.filter_frequencies(self.interpolate_filter,
-                                force_real=True)
-        clipped_values = np.clip(copy.values * self.amplification,
-                                 a_min=-self.amplifier_clipping,
-                                 a_max=self.amplifier_clipping)
-        return Signal(signal.times, clipped_values,
-                      value_type=signal.value_type)
+        base_signal = signal.copy()
+        base_signal.filter_frequencies(self.interpolate_filter,
+                                       force_real=True)
+        base_signal *= self.amplification
+        clip_values = lambda times: np.clip(
+            base_signal.with_times(times).values,
+            a_min=-self.amplifier_clipping,
+            a_max=self.amplifier_clipping
+        )
+        return FunctionSignal(signal.times, clip_values,
+                              value_type=signal.value_type)
 
     def trigger(self, signal):
         """
@@ -834,13 +851,26 @@ class ARIANNAAntennaSystem(AntennaSystem):
         """
         if self._noise_mean is None or self._noise_std is None:
             # Prepare for antenna trigger by finding mean and standard
-            # deviation of a long noise waveform (1 microsecond) passed through
-            # the front-end
-            long_noise = self.antenna.make_noise(np.linspace(0, 1e-6, 10001))
+            # deviation of the full noise waveform passed through the front-end
+            if len(self.antenna.signals)>0:
+                times = self.antenna.signals[0].times
+            else:
+                times = signal.times
+            n = len(times)
+            dt = times[1]-times[0]
+            duration = times[-1]-times[0] + dt
+            full_times = np.linspace(0, duration*self.antenna.unique_noises,
+                                     n*self.antenna.unique_noises)
+            if self.antenna._noise_master is None:
+                # Make sure the noise_master has the appropriate length
+                # (automatically gets set to N*len(times) the first time it is
+                # called, so make sure the first `times` is not the expanded
+                # array but the single-signal array)
+                self.antenna.make_noise(times)
+            long_noise = self.antenna.make_noise(full_times)
             processed_noise = self.front_end(long_noise)
             self._noise_mean = np.mean(processed_noise.values)
-            self._noise_std = np.sqrt(np.mean((processed_noise.values
-                                               -self._noise_mean)**2))
+            self._noise_std = np.std(processed_noise.values)
 
         low_trigger = (self._noise_mean -
                        self._noise_std*np.abs(self.threshold))
@@ -884,11 +914,13 @@ class ARIANNAAntennaSystem(AntennaSystem):
             times.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal(s) as they
-            reach the antenna. If ``None`` no directional gain will be applied.
+            reach the antenna (in the global coordinate frame). If ``None`` no
+            directional gain will be applied.
         polarization : array_like, optional
-            Vector(s) denoting the signal's polarization direction. Number of
-            vectors should match the number of elements in `signal` argument.
-            If ``None`` no polarization gain will be applied.
+            Vector(s) denoting the signal's polarization direction (in the
+            global coordinate frame). Number of vectors should match the number
+            of elements in `signal` argument. If ``None`` no polarization gain
+            will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -928,9 +960,12 @@ class LPDA(ARIANNAAntennaSystem):
     trigger_window : float
         Time window (ns) for the trigger condition.
     z_axis : array_like, optional
-        Vector direction of the z-axis of the antenna.
+        Vector direction of the z-axis of the antenna. The z-axis runs along
+        the central "spine" of the antenna, with the positive direction
+        pointing towards the longer "tines".
     x_axis : array_like, optional
-        Vector direction of the x-axis of the antenna.
+        Vector direction of the x-axis of the antenna. The x-axis runs parallel
+        to the "tines" of the antenna.
     amplification : float, optional
         Amplification to be applied to the signal pre-clipping.
     amplifier_clipping : float, optional

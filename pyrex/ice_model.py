@@ -8,6 +8,8 @@ plus a model for ice with uniform index of refraction.
 
 import logging
 import numpy as np
+import scipy.constants
+import scipy.interpolate
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +18,8 @@ class AntarcticIce:
     """
     Class describing the ice at the south pole.
 
-    For convenience, consists of static methods and class methods, so creating
-    an instance of the class may not be necessary. In all methods, the depth
-    z should be given as a negative value if it is below the surface of the
-    ice.
+    In all methods, the depth z should be given as a negative value if it is
+    below the surface of the ice.
 
     Parameters
     ----------
@@ -232,7 +232,7 @@ class AntarcticIce:
         """
         z_km = -0.001 * z
         c_temp = -51.07 + z_km*(2.677 + z_km*(-0.01591 + z_km*1.83415))
-        return c_temp + 273.15
+        return c_temp + scipy.constants.zero_Celsius
 
     @staticmethod
     def _atten_coeffs(t, f):
@@ -276,7 +276,7 @@ class AntarcticIce:
         # Based on the code from Besson, et.al.
         # but simplified significantly since w1=0
 
-        t_C = t - 273.15
+        t_C = t - scipy.constants.zero_Celsius
         w0 = np.log(1e-4)
         # w1 = 0
         w2 = np.log(3.16)
@@ -525,10 +525,8 @@ class ArasimIce(AntarcticIce):
     """
     Class describing the ice at the south pole.
 
-    Designed to match ice model used in AraSim. For convenience, consists of
-    static methods and class methods, so creating an instance of the class may
-    not be necessary. In all methods, the depth z should be given as a negative
-    value if it is below the surface of the ice.
+    Designed to match the ice model used in AraSim. In all methods, the depth z
+    should be given as a negative value if it is below the surface of the ice.
 
     Parameters
     ----------
@@ -588,7 +586,7 @@ class ArasimIce(AntarcticIce):
         """
         Calculates attenuation lengths for given depths and frequencies.
 
-        Attenuation length not actually frequency dependent. According to
+        Attenuation lengths not actually frequency dependent. According to
         AraSim the attenuation lengths are for 300 MHz.
 
         Parameters
@@ -613,7 +611,11 @@ class ArasimIce(AntarcticIce):
         corresponds to a single frequency.
 
         """
-        lengths = np.interp(-z, self.atten_depths, self.atten_lengths)
+        interp = scipy.interpolate.interp1d(self.atten_depths,
+                                            self.atten_lengths,
+                                            fill_value="extrapolate",
+                                            assume_sorted=True)
+        lengths = interp(-z)
 
         if isinstance(z, np.ndarray) and isinstance(f, np.ndarray):
             # z and f are both arrays, so return 2-D array where each
@@ -636,10 +638,8 @@ class GreenlandIce(AntarcticIce):
     """
     Class describing the ice at Summit Station in Greenland.
 
-    For convenience, consists of static methods and class methods, so creating
-    an instance of the class may not be necessary. In all methods, the depth
-    z should be given as a negative value if it is below the surface of the
-    ice.
+    In all methods, the depth z should be given as a negative value if it is
+    below the surface of the ice.
 
     Parameters
     ----------
@@ -726,7 +726,7 @@ class GreenlandIce(AntarcticIce):
         """
         z_km = -0.001 * z
         c_temp = -31.771 + z_km*(-0.32485 + z_km*(6.7427 + z_km*(-11.471 + z_km*(5.9122 - 0.84945*z_km))))
-        return c_temp + 273.15
+        return c_temp + scipy.constants.zero_Celsius
 
     def attenuation_length(self, z, f):
         """
@@ -759,14 +759,14 @@ class GreenlandIce(AntarcticIce):
 
         References
         ----------
-        .. [2] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
+        .. [1] J. Avva et al, "An in Situ Measurement of the Radio-Frequency
             Attenuation in Ice at Summit Station, Greenland." Journal of
             Glaciology **61**, no. 229, 1005-1011 (2015).
 
         """
         # Temperature at the relevant depths
         t = self.temperature(z)
-        t_C = t - 273.15
+        t_C = t - scipy.constants.zero_Celsius
 
         # Parameterization of attenuation length at 75 MHz based on the ice
         # temperature profile

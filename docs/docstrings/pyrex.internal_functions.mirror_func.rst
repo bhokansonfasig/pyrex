@@ -1,4 +1,4 @@
-pyrex.internal\_functions.mirror\_func
+﻿pyrex.internal\_functions.mirror\_func
 ======================================
 
 .. currentmodule:: pyrex.internal_functions

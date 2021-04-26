@@ -1,4 +1,4 @@
-pyrex.custom.irex.antenna.DipoleTester
+﻿pyrex.custom.irex.antenna.DipoleTester
 ======================================
 
 .. currentmodule:: pyrex.custom.irex.antenna

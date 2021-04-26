@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.RectangularGenerator &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.RectangularGenerator &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.ListGenerator" href="pyrex.ListGenerator.html" >
     <link rel="prev" title="pyrex.CylindricalGenerator" href="pyrex.CylindricalGenerator.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -92,9 +91,9 @@
             
   <div class="section" id="pyrex-rectangulargenerator">
 <h1>pyrex.RectangularGenerator<a class="headerlink" href="#pyrex-rectangulargenerator" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.RectangularGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.</code><code class="sig-name descname">RectangularGenerator</code><span class="sig-paren">(</span><em class="sig-param">dx</em>, <em class="sig-param">dy</em>, <em class="sig-param">dz</em>, <em class="sig-param">energy</em>, <em class="sig-param">shadow=False</em>, <em class="sig-param">flavor_ratio=(1</em>, <em class="sig-param">1</em>, <em class="sig-param">1)</em>, <em class="sig-param">interaction_model=&lt;class 'pyrex.particle.CTWInteraction'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.RectangularGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.</span></code><code class="sig-name descname"><span class="pre">RectangularGenerator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dx</span></em>, <em class="sig-param"><span class="pre">dy</span></em>, <em class="sig-param"><span class="pre">dz</span></em>, <em class="sig-param"><span class="pre">energy</span></em>, <em class="sig-param"><span class="pre">shadow=False</span></em>, <em class="sig-param"><span class="pre">flavor_ratio=(1</span></em>, <em class="sig-param"><span class="pre">1</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">source='cosmogenic'</span></em>, <em class="sig-param"><span class="pre">interaction_model=&lt;class</span> <span class="pre">'pyrex.particle.CTWInteraction'&gt;</span></em>, <em class="sig-param"><span class="pre">earth_model=&lt;pyrex.earth_model.PREM</span> <span class="pre">object&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.RectangularGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to generate neutrino vertices in a rectangular ice volume.</p>
 <p>Generates neutrinos in a box with given width, length, and height.</p>
 <dl class="field-list simple">
@@ -120,6 +119,9 @@ allowed and assigned a weight to scale their probability of occurrence.</p>
 </dd>
 <dt><strong>flavor_ratio</strong><span class="classifier">array_like, optional</span></dt><dd><p>Flavor ratio of neutrinos to be generated. Of the form [electron, muon,
 tau] neutrino fractions.</p>
+</dd>
+<dt><strong>source</strong><span class="classifier">optional</span></dt><dd><p>Source type of neutrinos to be generated. Used in the determination of
+per-flavor neutrino/antineutrino fractions.</p>
 </dd>
 <dt><strong>interaction_model</strong><span class="classifier">optional</span></dt><dd><p>Class to use to describe interactions of the generated particles.
 Should inherit from (or behave like) the base <code class="docutils literal notranslate"><span class="pre">Interaction</span></code> class.</p>
@@ -154,10 +156,16 @@ calls.</p>
 </dd>
 <dt><strong>shadow</strong><span class="classifier">bool</span></dt><dd><p>Whether Earth shadowing effects will be used to reject events.</p>
 </dd>
-<dt><strong>ratio</strong><span class="classifier">ndarary</span></dt><dd><p>(Normalized) flavor ratio of neutrinos to be generated. Of the form
+<dt><strong>ratio</strong><span class="classifier">ndarray</span></dt><dd><p>(Normalized) flavor ratio of neutrinos to be generated. Of the form
 [electron, muon, tau] neutrino fractions.</p>
 </dd>
+<dt><a class="reference internal" href="pyrex.RectangularGenerator.source.html#pyrex.RectangularGenerator.source" title="pyrex.RectangularGenerator.source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source</span></code></a><span class="classifier">Generator.SourceType</span></dt><dd><p>Value of the source type.</p>
+</dd>
 <dt><strong>interaction_model</strong><span class="classifier">Interaction</span></dt><dd><p>Class to use to describe interactions of the generated particles.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.RectangularGenerator.volume.html#pyrex.RectangularGenerator.volume" title="pyrex.RectangularGenerator.volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">volume</span></code></a></dt><dd><p>Generation volume (m^3) in which event vertices are produced.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.RectangularGenerator.solid_angle.html#pyrex.RectangularGenerator.solid_angle" title="pyrex.RectangularGenerator.solid_angle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solid_angle</span></code></a></dt><dd><p>Generation solid angle (sr) in which event directions are produced.</p>
 </dd>
 </dl>
 </dd>
@@ -169,22 +177,25 @@ calls.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.create_event.html#pyrex.RectangularGenerator.create_event" title="pyrex.RectangularGenerator.create_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_event</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceType</span></code>(value)</p></td>
+<td><p>Enum containing possible sources for neutrinos.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.create_event.html#pyrex.RectangularGenerator.create_event" title="pyrex.RectangularGenerator.create_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_event</span></code></a>()</p></td>
 <td><p>Generate a neutrino event in the ice volume.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_direction.html#pyrex.RectangularGenerator.get_direction" title="pyrex.RectangularGenerator.get_direction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_direction</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_direction.html#pyrex.RectangularGenerator.get_direction" title="pyrex.RectangularGenerator.get_direction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_direction</span></code></a>()</p></td>
 <td><p>Get the direction of the next particle to be generated.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_exit_points.html#pyrex.RectangularGenerator.get_exit_points" title="pyrex.RectangularGenerator.get_exit_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_exit_points</span></code></a>(particle)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_exit_points.html#pyrex.RectangularGenerator.get_exit_points" title="pyrex.RectangularGenerator.get_exit_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_exit_points</span></code></a>(particle)</p></td>
 <td><p>Get the intersections of the particle path with the ice volume edges.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_particle_type.html#pyrex.RectangularGenerator.get_particle_type" title="pyrex.RectangularGenerator.get_particle_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_particle_type</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_particle_type.html#pyrex.RectangularGenerator.get_particle_type" title="pyrex.RectangularGenerator.get_particle_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_particle_type</span></code></a>()</p></td>
 <td><p>Get the particle type of the next particle to be generated.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_vertex.html#pyrex.RectangularGenerator.get_vertex" title="pyrex.RectangularGenerator.get_vertex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vertex</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_vertex.html#pyrex.RectangularGenerator.get_vertex" title="pyrex.RectangularGenerator.get_vertex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vertex</span></code></a>()</p></td>
 <td><p>Get the vertex of the next particle to be generated.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_weights.html#pyrex.RectangularGenerator.get_weights" title="pyrex.RectangularGenerator.get_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_weights</span></code></a>(particle)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.RectangularGenerator.get_weights.html#pyrex.RectangularGenerator.get_weights" title="pyrex.RectangularGenerator.get_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_weights</span></code></a>(particle)</p></td>
 <td><p>Get the weighting factors to be applied to the particle.</p></td>
 </tr>
 </tbody>
@@ -204,7 +215,7 @@ calls.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -273,10 +284,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

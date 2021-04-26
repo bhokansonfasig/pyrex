@@ -10,9 +10,10 @@ returning information about propagation along their respective path.
 
 import logging
 import numpy as np
+import scipy.constants
+import scipy.fft
 import scipy.optimize
 from pyrex.internal_functions import normalize, LazyMutableClass, lazy_property
-from pyrex.signals import Signal
 from pyrex.ice_model import AntarcticIce, UniformIce, ice
 
 logger = logging.getLogger(__name__)
@@ -262,8 +263,8 @@ class BasicRayTracePath(LazyMutableClass):
     @lazy_property
     def tof(self):
         """Time of flight (s) along the ray path."""
-        return self.z_integral(lambda z: self.ice.index(z) / 3e8 /
-                               np.cos(self.theta(z)))
+        return self.z_integral(lambda z: self.ice.index(z) / scipy.constants.c
+                               / np.cos(self.theta(z)))
 
     @lazy_property
     def fresnel(self):
@@ -317,14 +318,12 @@ class BasicRayTracePath(LazyMutableClass):
         def integrand(z):
             partial_integrand = 1 / np.cos(self.theta(z))
             alen = self.ice.attenuation_length(z, fa)
-            if alen.ndim<2:
-                return np.vstack(partial_integrand / alen)
-            else:
-                return np.vstack(partial_integrand) / alen
+            return (partial_integrand / alen.T).T
 
         return np.exp(-np.abs(self.z_integral(integrand)))
 
-    def propagate(self, signal=None, polarization=None):
+    def propagate(self, signal=None, polarization=None,
+                  attenuation_interpolation=None):
         """
         Propagate the signal with optional polarization along the ray path.
 
@@ -338,6 +337,11 @@ class BasicRayTracePath(LazyMutableClass):
             ``Signal`` object to propagate.
         polarization : array_like, optional
             Vector representing the linear polarization of the `signal`.
+        attenuation_interpolation: float, optional
+            Logarithmic (base 10) interpolation step to be used for
+            interpolating attenuation along the ray path. If `None`, no
+            interpolation is applied and the attenuation is pre-calculated at
+            the expected signal frequencies.
 
         Returns
         -------
@@ -360,10 +364,26 @@ class BasicRayTracePath(LazyMutableClass):
                 return
 
             else:
-                copy = Signal(signal.times+self.tof, signal.values,
-                              value_type=signal.value_type)
-                copy.filter_frequencies(self.attenuation)
-                return copy
+                new_signal = signal.copy()
+                new_signal.shift(self.tof)
+                # Pre-calculate attenuation at the designated frequencies to
+                # save on heavy computation time of the attenuation method
+                freqs = scipy.fft.fftfreq(2*len(signal.times), d=signal.dt)
+                if attenuation_interpolation is None:
+                    freqs.sort()
+                else:
+                    logf_min = np.log10(np.min(freqs[freqs>0]))
+                    logf_max = np.log10(np.max(freqs))
+                    n_steps = int((logf_max - logf_min)
+                                  / attenuation_interpolation)
+                    if (logf_max-logf_min)%attenuation_interpolation:
+                        n_steps += 1
+                    logf = np.logspace(logf_min, logf_max, n_steps+1)
+                    freqs = np.concatenate((-np.flipud(logf), [0], logf))
+                atten_vals = self.attenuation(freqs)
+                attenuation = lambda f: np.interp(f, freqs, atten_vals)
+                new_signal.filter_frequencies(attenuation)
+                return new_signal
 
         else:
             # Unit vectors perpendicular and parallel to plane of incidence
@@ -383,13 +403,28 @@ class BasicRayTracePath(LazyMutableClass):
                 pol_p = np.dot(polarization, u_p0)
                 # Fresnel reflectances of s and p components
                 r_s, r_p = self.fresnel
+                # Pre-calculate attenuation at the designated frequencies to
+                # save on heavy computation time of the attenuation method
+                freqs = scipy.fft.fftfreq(2*len(signal.times), d=signal.dt)
+                if attenuation_interpolation is None:
+                    freqs.sort()
+                else:
+                    logf_min = np.log10(np.min(freqs[freqs>0]))
+                    logf_max = np.log10(np.max(freqs))
+                    n_steps = int((logf_max - logf_min)
+                                  / attenuation_interpolation)
+                    if (logf_max-logf_min)%attenuation_interpolation:
+                        n_steps += 1
+                    logf = np.logspace(logf_min, logf_max, n_steps+1)
+                    freqs = np.concatenate((-np.flipud(logf), [0], logf))
+                atten_vals = self.attenuation(freqs)
                 # Apply fresnel s and p coefficients in addition to attenuation
-                attenuation_s = lambda freqs: self.attenuation(freqs) * r_s
-                attenuation_p = lambda freqs: self.attenuation(freqs) * r_p
-                signal_s = Signal(signal.times+self.tof, signal.values*pol_s,
-                                  value_type=signal.value_type)
-                signal_p = Signal(signal.times+self.tof, signal.values*pol_p,
-                                  value_type=signal.value_type)
+                attenuation_s = lambda f: np.interp(f, freqs, atten_vals) * r_s
+                attenuation_p = lambda f: np.interp(f, freqs, atten_vals) * r_p
+                signal_s = signal * pol_s
+                signal_p = signal * pol_p
+                signal_s.shift(self.tof)
+                signal_p.shift(self.tof)
                 signal_s.filter_frequencies(attenuation_s, force_real=True)
                 signal_p.filter_frequencies(attenuation_p, force_real=True)
                 return (signal_s, signal_p), (u_s0, u_p1)
@@ -542,6 +577,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
 
     @staticmethod
     def _z_int_uniform_correction(z0, z1, z_uniform, beta, ice, integrand,
+                                  integrand_kwargs={}, numerical=False, dz=None,
                                   derivative_special_case=False):
         """
         Function to perform a z-integration with a uniform ice correction.
@@ -565,6 +601,16 @@ class SpecializedRayTracePath(BasicRayTracePath):
         integrand : function
             Function returning the values of the integrand at a given array of
             values for the depth z.
+        integrand_kwargs : dict, optional
+            A dictionary of keyword arguments to be passed into the `integrand`
+            function.
+        numerical : boolean, optional
+            Whether to use the numerical integral instead of an analytic one.
+            If ``False`` the analytic integral is calculated. If ``True`` the
+            numerical integral is calculated.
+        dz : float, optional
+            The z-step to use for numerical integration. Only needed when
+            `numerical` is ``True``.
         derivative_special_case : boolean, optional
             Boolean controlling whether the special case of doing the distance
             integral beta derivative should be used.
@@ -576,15 +622,50 @@ class SpecializedRayTracePath(BasicRayTracePath):
         """
         # Suppress numpy RuntimeWarnings
         with np.errstate(divide='ignore', invalid='ignore'):
-            int_z0 = integrand(z0, beta, ice, deep=z0<z_uniform)
-            int_z1 = integrand(z1, beta, ice, deep=z1<z_uniform)
+            if numerical:
+                if dz is None:
+                    raise ValueError("Argument dz must be specified for "+
+                                     "numerical integrals")
+                if (z0<z_uniform)==(z1<z_uniform):
+                    # z0 and z1 on same side of z_uniform
+                    n_zs = int(np.abs(z1-z0)/dz)
+                    if n_zs<10:
+                        n_zs = 10
+                    zs = np.linspace(z0, z1, n_zs+1)
+                    return integrand(zs, beta=beta, ice=ice, deep=z0<z_uniform,
+                                     **integrand_kwargs)
+                else:
+                    n_zs_1 = int(np.abs(z_uniform-z0)/dz)
+                    if n_zs_1<10:
+                        n_zs_1 = 10
+                    zs_1 = np.linspace(z0, z_uniform, n_zs_1+1)
+                    n_zs_2 = int(np.abs(z1-z_uniform)/dz)
+                    if n_zs_2<10:
+                        n_zs_2 = 10
+                    zs_2 = np.linspace(z_uniform, z1, n_zs_2+1)
+                    return (integrand(zs_1, beta=beta, ice=ice,
+                                      deep=z0<z_uniform,
+                                      **integrand_kwargs) +
+                            integrand(zs_2, beta=beta, ice=ice,
+                                      deep=z1<z_uniform,
+                                      **integrand_kwargs))
+
+            # Analytic integrals
+            int_z0 = integrand(z0, beta, ice, deep=z0<z_uniform,
+                                **integrand_kwargs)
+            int_z1 = integrand(z1, beta, ice, deep=z1<z_uniform,
+                                **integrand_kwargs)
             if not derivative_special_case:
                 if (z0<z_uniform)==(z1<z_uniform):
                     # z0 and z1 on same side of z_uniform
                     return int_z1 - int_z0
                 else:
-                    int_diff = (integrand(z_uniform, beta, ice, deep=True) -
-                                integrand(z_uniform, beta, ice, deep=False))
+                    int_diff = (
+                        integrand(z_uniform, beta, ice, deep=True,
+                                  **integrand_kwargs) -
+                        integrand(z_uniform, beta, ice, deep=False,
+                                  **integrand_kwargs)
+                    )
                     if z0<z1:
                         # z0 below z_uniform, z1 above z_uniform
                         return int_z1 - int_z0 + int_diff
@@ -600,8 +681,12 @@ class SpecializedRayTracePath(BasicRayTracePath):
                     # All on same side of z_uniform
                     return int_z0 + int_z1
                 else:
-                    int_diff = (integrand(z_uniform, beta, ice, deep=True) -
-                                integrand(z_uniform, beta, ice, deep=False))
+                    int_diff = (
+                        integrand(z_uniform, beta, ice, deep=True,
+                                  **integrand_kwargs) -
+                        integrand(z_uniform, beta, ice, deep=False,
+                                  **integrand_kwargs)
+                    )
                     if (z0<z_uniform)==(z1<z_uniform):
                         # z0 and z1 below z_uniform, but z_turn above
                         return int_z0 + int_z1 - 2*int_diff
@@ -611,7 +696,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
 
 
 
-    def z_integral(self, integrand, numerical=False, x_func=lambda x: x):
+    def z_integral(self, integrand, integrand_kwargs={}, numerical=False):
         """
         Calculate the integral of the given integrand.
 
@@ -623,13 +708,13 @@ class SpecializedRayTracePath(BasicRayTracePath):
         integrand : function
             Function returning the values of the integrand at a given array of
             values for the depth z.
+        integrand_kwargs : dict, optional
+            A dictionary of keyword arguments to be passed into the `integrand`
+            function.
         numerical : boolean, optional
             Whether to use the numerical integral instead of an analytic one.
             If ``False`` the analytic integral is calculated. If ``True`` the
             numerical integral is calculated.
-        x_func : function, optional
-            A function returning x values corresponding to given z values. By
-            default just matches the z values.
 
         Returns
         -------
@@ -643,40 +728,27 @@ class SpecializedRayTracePath(BasicRayTracePath):
             integrations.
 
         """
-        if not numerical:
-            if not self.valid_ice_model:
-                raise TypeError("Ice model must inherit methods from "+
-                                "pyrex.AntarcticIce")
-            if self.direct:
-                return self._z_int_uniform_correction(self.z0, self.z1,
-                                                      self.z_uniform,
-                                                      self.beta, self.ice,
-                                                      integrand)
-            else:
-                int_1 = self._z_int_uniform_correction(self.z0, self.z_turn,
-                                                       self.z_uniform,
-                                                       self.beta, self.ice,
-                                                       integrand)
-                int_2 = self._z_int_uniform_correction(self.z1, self.z_turn,
-                                                       self.z_uniform,
-                                                       self.beta, self.ice,
-                                                       integrand)
-                return int_1 + int_2
+        if not self.valid_ice_model:
+            raise TypeError("Ice model must inherit methods from "+
+                            "pyrex.AntarcticIce")
+        if self.direct:
+            return self._z_int_uniform_correction(self.z0, self.z1,
+                                                  self.z_uniform,
+                                                  self.beta, self.ice,
+                                                  integrand, integrand_kwargs,
+                                                  numerical, self.dz)
         else:
-            if self.direct:
-                n_zs = int(np.abs(self.z1-self.z0)/self.dz)
-                zs = np.linspace(self.z0, self.z1, n_zs+1)
-                # zs = self._log_scale_zs(self.z0, self.z1)
-                return np.trapz(integrand(zs), x=x_func(zs), axis=0)
-            else:
-                n_zs_1 = int(np.abs(self.z_turn-self.z0)/self.dz)
-                zs_1 = np.linspace(self.z0, self.z_turn, n_zs_1+1)
-                n_zs_2 = int(np.abs(self.z_turn-self.z1)/self.dz)
-                zs_2 = np.linspace(self.z1, self.z_turn, n_zs_2+1)
-                # zs_1 = self._log_scale_zs(self.z0, self.z_turn)
-                # zs_2 = self._log_scale_zs(self.z1, self.z_turn)
-                return (np.trapz(integrand(zs_1), x=x_func(zs_1), axis=0) +
-                        np.trapz(integrand(zs_2), x=x_func(zs_2), axis=0))
+            int_1 = self._z_int_uniform_correction(self.z0, self.z_turn,
+                                                   self.z_uniform,
+                                                   self.beta, self.ice,
+                                                   integrand, integrand_kwargs,
+                                                   numerical, self.dz)
+            int_2 = self._z_int_uniform_correction(self.z1, self.z_turn,
+                                                   self.z_uniform,
+                                                   self.beta, self.ice,
+                                                   integrand, integrand_kwargs,
+                                                   numerical, self.dz)
+            return int_1 + int_2
 
     @staticmethod
     def _int_terms(z, beta, ice):
@@ -785,7 +857,6 @@ class SpecializedRayTracePath(BasicRayTracePath):
         """
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         z_turn = np.log((ice.n0-beta)/ice.k)/ice.a
-        # print("z_turn:", z_turn)
         if deep:
             if z_turn<ice.valid_range[1]:
                 return ((np.log((ice.n0-beta)/ice.k)/ice.a - z -
@@ -831,8 +902,8 @@ class SpecializedRayTracePath(BasicRayTracePath):
         Indefinite z-integral for calculating path length.
 
         Calculates the indefinite z-integral of sec(arcsin(beta/n(z))), which
-        between two z values gives the radial distance of the direct path
-        between the z values.
+        between two z values gives the path length of the direct path between
+        the z values.
 
         Parameters
         ----------
@@ -866,7 +937,7 @@ class SpecializedRayTracePath(BasicRayTracePath):
         Indefinite z-integral for calculating time of flight.
 
         Calculates the indefinite z-integral of n(z)/c*sec(arcsin(beta/n(z))),
-        which between two z values gives the radial distance of the direct path
+        which between two z values gives the time of flight of the direct path
         between the z values.
 
         Parameters
@@ -888,13 +959,62 @@ class SpecializedRayTracePath(BasicRayTracePath):
         """
         alpha, n_z, gamma, log_1, log_2 = cls._int_terms(z, beta, ice)
         if deep:
-            return ice.n0*(n_z+ice.n0*(ice.a*z-1)) / (ice.a*np.sqrt(alpha)*3e8)
+            return (ice.n0*(n_z+ice.n0*(ice.a*z-1))
+                    / (ice.a*np.sqrt(alpha)*scipy.constants.c))
         else:
             return np.where(np.isclose(beta, 0, atol=cls.beta_tolerance),
-                            ((n_z-ice.n0)/ice.a + ice.n0*z) / 3e8,
+                            ((n_z-ice.n0)/ice.a + ice.n0*z) / scipy.constants.c,
                             (((np.sqrt(gamma) + ice.n0*np.log(log_2) +
                                ice.n0**2*np.log(log_1)/np.sqrt(alpha))/ice.a) -
-                             z*ice.n0**2/np.sqrt(alpha)) / 3e8)
+                             z*ice.n0**2/np.sqrt(alpha)) / scipy.constants.c)
+
+    @classmethod
+    def _attenuation_integral_def(cls, zs, f, beta, ice, deep=False):
+        """
+        Definite z-integral for calculating attenuation.
+
+        Calculates the definite z-integral of sec(arcsin(beta/n(z)))/A(z,f),
+        which between two z values gives the path length over attenuation length
+        of the direct path between the z values.
+
+        Parameters
+        ----------
+        zs : array_like
+            (Negative-valued) depths (m) in the ice.
+        f : array_like
+            Frequencies (Hz) at which to calculate signal attenuation.
+        beta : float
+            ``beta`` value of the ray path.
+        ice
+            Ice model to be used for ray tracing.
+        deep : boolean, optional
+            Whether or not the integral is calculated in deep (uniform) ice.
+
+        Returns
+        -------
+        array_like
+            The value of the definite integral along `zs`.
+
+        """
+        fa = np.abs(f)
+
+        if deep or np.isclose(beta, 0, atol=cls.beta_tolerance):
+            int_var = zs
+            partial_integrand = 1 / np.cos(np.arcsin(beta/ice.index(zs)))
+        else:
+            # When approaching z_turn, the usual integrand approaches infinity.
+            # In that case make the change of variables below to fix it.
+            # The assumption now is that z_turn is always above z_uniform,
+            # which is valid for most realistic detector configurations.
+            int_var = np.sqrt(1 - (beta/ice.index(zs))**2)
+            partial_integrand = (ice.index(zs)**3 / beta**2 /
+                                 (-ice.k*ice.a*np.exp(ice.a*zs)))
+
+        alen = ice.attenuation_length(zs, fa)
+        integrand = (partial_integrand / alen.T).T
+
+        return np.trapz(integrand, x=int_var, axis=0)
+
 
     @lazy_property
     def path_length(self):
@@ -925,37 +1045,11 @@ class SpecializedRayTracePath(BasicRayTracePath):
             Attenuation factors for the signal at the frequencies `f`.
 
         """
-        fa = np.abs(f)
-
-        def xi(z):
-            return np.sqrt(1 - (self.beta/self.ice.index(z))**2)
-
-        def xi_integrand(z):
-            partial_integrand = (self.ice.index(z)**3 / self.beta**2 /
-                                 (-self.ice.k*self.ice.a*np.exp(self.ice.a*z)))
-            alen = self.ice.attenuation_length(z, fa)
-            if alen.ndim<2:
-                return np.vstack(partial_integrand / alen)
-            else:
-                return np.vstack(partial_integrand) / alen
-
-        def z_integrand(z):
-            partial_integrand = 1 / np.cos(np.arcsin(self.beta /
-                                                     self.ice.index(z)))
-            alen = self.ice.attenuation_length(z, fa)
-            if alen.ndim<2:
-                return np.vstack(partial_integrand / alen)
-            else:
-                return np.vstack(partial_integrand) / alen
-
-        # If beta close to zero, just do the regular integral
-        if np.isclose(self.beta, 0, atol=self.beta_tolerance):
-            return np.exp(-np.abs(self.z_integral(z_integrand,
-                                                  numerical=True)))
-        # Otherwise, do xi integral designed to avoid singularity at z_turn
-        else:
-            return np.exp(-np.abs(self.z_integral(xi_integrand,
-                                                  numerical=True, x_func=xi)))
+        return np.exp(-np.abs(self.z_integral(
+            self._attenuation_integral_def,
+            integrand_kwargs={'f': f},
+            numerical=True
+        )))
 
     @lazy_property
     def coordinates(self):
@@ -1291,7 +1385,7 @@ class BasicRayTracer(LazyMutableClass):
                 / d_angle) - brent_arg
 
 
-    def _get_launch_angle(self, r_function, min_angle=0, max_angle=90):
+    def _get_launch_angle(self, r_function, min_angle=0, max_angle=np.pi/2):
         """
         Calculates the launch angle for a ray with the given r_function.
 
@@ -1366,7 +1460,7 @@ class BasicRayTracer(LazyMutableClass):
         """
         Launch angle (radians) of the second indirect ray.
 
-        The first indirect ray is the indirect ray where the launch angle is
+        The second indirect ray is the indirect ray where the launch angle is
         less than the peak angle.
 
         """
@@ -1504,8 +1598,7 @@ class SpecializedRayTracer(BasicRayTracer):
     @lazy_property
     def direct_r_max(self):
         """Maximum r value of direct ray solutions."""
-        z_turn = self.ice.depth_with_index(self.n0 * np.sin(self.max_angle))
-        return self._direct_r(self.max_angle, force_z1=z_turn)
+        return self._direct_r(self.max_angle)
 
     def _r_distance(self, theta, z0, z1):
         """
@@ -1594,7 +1687,7 @@ class SpecializedRayTracer(BasicRayTracer):
             z1 = self.z1
         return self._r_distance(angle, self.z0, z1) - brent_arg
 
-    def _indirect_r(self, angle, brent_arg=0):
+    def _indirect_r(self, angle, brent_arg=0, link_range=1e-6):
         """
         Calculate the r distance of the indirect ray for a given launch angle.
 
@@ -1605,6 +1698,10 @@ class SpecializedRayTracer(BasicRayTracer):
         brent_arg : float, optional
             Argument to subtract from the return value. Used for the brentq
             root finder to find a value other than zero.
+        link_range : float, optional
+            Angular range from `max_angle` over which the indirect ray distance
+            is adjusted so that it linearly approaches the maximum direct ray
+            distance at `max_angle`.
 
         Returns
         -------
@@ -1613,8 +1710,17 @@ class SpecializedRayTracer(BasicRayTracer):
 
         """
         z_turn = self.ice.depth_with_index(self.n0 * np.sin(angle))
-        return (self._r_distance(angle, self.z0, z_turn) +
-                self._r_distance(angle, self.z1, z_turn)) - brent_arg
+        link_angle = self.max_angle - link_range
+        if angle>link_angle:
+            link_dist = (self._r_distance(link_angle, self.z0, z_turn) +
+                         self._r_distance(link_angle, self.z1, z_turn))
+            slope = (link_dist - self.direct_r_max) / link_range
+            dist = self.direct_r_max + slope * (self.max_angle - angle)
+            return dist - brent_arg
+        else:
+            dist = (self._r_distance(angle, self.z0, z_turn) +
+                    self._r_distance(angle, self.z1, z_turn))
+            return dist - brent_arg
 
     def _indirect_r_prime(self, angle, brent_arg=0):
         """
@@ -1817,7 +1923,7 @@ class UniformRayTracePath(LazyMutableClass):
     @lazy_property
     def tof(self):
         """Time of flight (s) along the ray path."""
-        return self.n0 * self.path_length / 3e8
+        return self.n0 * self.path_length / scipy.constants.c
 
     @lazy_property
     def fresnel(self):
@@ -1934,10 +2040,10 @@ class UniformRayTracePath(LazyMutableClass):
                 return
 
             else:
-                copy = Signal(signal.times+self.tof, signal.values,
-                              value_type=signal.value_type)
-                copy.filter_frequencies(self.attenuation)
-                return copy
+                new_signal = signal.copy()
+                new_signal.shift(self.tof)
+                new_signal.filter_frequencies(self.attenuation)
+                return new_signal
 
         else:
             # Unit vectors perpendicular and parallel to plane of incidence
@@ -1960,10 +2066,10 @@ class UniformRayTracePath(LazyMutableClass):
                 # Apply fresnel s and p coefficients in addition to attenuation
                 attenuation_s = lambda freqs: self.attenuation(freqs) * r_s
                 attenuation_p = lambda freqs: self.attenuation(freqs) * r_p
-                signal_s = Signal(signal.times+self.tof, signal.values*pol_s,
-                                  value_type=signal.value_type)
-                signal_p = Signal(signal.times+self.tof, signal.values*pol_p,
-                                  value_type=signal.value_type)
+                signal_s = signal * pol_s
+                signal_p = signal * pol_p
+                signal_s.shift(self.tof)
+                signal_p.shift(self.tof)
                 signal_s.filter_frequencies(attenuation_s, force_real=True)
                 signal_p.filter_frequencies(attenuation_p, force_real=True)
                 return (signal_s, signal_p), (u_s0, u_p1)

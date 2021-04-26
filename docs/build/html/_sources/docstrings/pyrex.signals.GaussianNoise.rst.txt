@@ -1,4 +1,4 @@
-pyrex.signals.GaussianNoise
+﻿pyrex.signals.GaussianNoise
 ===========================
 
 .. currentmodule:: pyrex.signals
@@ -11,8 +11,10 @@ pyrex.signals.GaussianNoise
       .. autosummary::
          :toctree:
       
+         GaussianNoise.copy
          GaussianNoise.filter_frequencies
          GaussianNoise.resample
+         GaussianNoise.shift
          GaussianNoise.with_times
 
 

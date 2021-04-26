@@ -1,4 +1,4 @@
-pyrex.custom.ara.HexagonalGrid
+﻿pyrex.custom.ara.HexagonalGrid
 ==============================
 
 .. currentmodule:: pyrex.custom.ara

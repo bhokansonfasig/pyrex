@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Custom Sub-Package &mdash; PyREx 1.9.0 documentation</title>
+    <title>Custom Sub-Package &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/searchtools.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="index.html" >
     <link rel="next" title="Example Code" href="examples.html" >
     <link rel="prev" title="How to Use PyREx" href="usage.html" > 
   </head>
@@ -53,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -215,7 +214,7 @@ The first place searched is the <code class="docutils literal notranslate"><span
 </div>
 <div class="section" id="particle-generator">
 <h3>Particle Generator<a class="headerlink" href="#particle-generator" title="Permalink to this headline">¶</a></h3>
-<p>The particle generator classes are quite flexible. The only requirement is that they possess an <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_event()</span></code> method which returns a <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> object consisting of at least one <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a>. The <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGenerator</span></code> class provides a solid foundation for basic uniform generators in a volume, requiring only implementation of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_vertex()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_exit_points()</span></code> methods for the specific volume at a minimum.</p>
+<p>The particle generator classes are quite flexible. The only requirement is that they possess an <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_event()</span></code> method which returns a <a class="reference internal" href="docstrings/pyrex.Event.html#pyrex.Event" title="pyrex.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> object consisting of at least one <a class="reference internal" href="docstrings/pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Particle</span></code></a>. The <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code> base class provides a solid foundation for basic uniform generators in a volume, requiring only implementation of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_vertex()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_exit_points()</span></code> methods for the specific volume at a minimum.</p>
 </div>
 </div>
 </div>
@@ -231,7 +230,7 @@ The first place searched is the <code class="docutils literal notranslate"><span
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -298,10 +297,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

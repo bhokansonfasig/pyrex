@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pyrex.custom.ara.detector.PhasedArrayStation &mdash; PyREx 1.10.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.10.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" >
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../../index.html" >
+    <link rel="up" title="Custom Detectors (pyrex.custom.ara.detector)" href="../custom-ara/detector.html" >
+    <link rel="next" title="pyrex.custom.ara.detector.HexagonalGrid" href="pyrex.custom.ara.detector.HexagonalGrid.html" >
+    <link rel="prev" title="pyrex.custom.ara.detector.RegularStation" href="pyrex.custom.ara.detector.RegularStation.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">PyREx 1.10.0 documentation</a></li>
+	
+          <li class="active"><a href="../../api.html" >PyREx API</a></li>
+          <li class="active"><a href="../custom-ara.html" >Askaryan Radio Array (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara</span></code>)</a></li>
+          <li class="active"><a href="../custom-ara/detector.html" accesskey="U">Custom Detectors (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.custom.ara.detector</span></code>)</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.custom.ara.detector.HexagonalGrid.html" title="pyrex.custom.ara.detector.HexagonalGrid"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="pyrex.custom.ara.detector.RegularStation.html" title="pyrex.custom.ara.detector.RegularStation"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="pyrex-custom-ara-detector-phasedarraystation">
+<h1>pyrex.custom.ara.detector.PhasedArrayStation<a class="headerlink" href="#pyrex-custom-ara-detector-phasedarraystation" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pyrex.custom.ara.detector.PhasedArrayStation">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.custom.ara.detector.</span></code><code class="sig-name descname"><span class="pre">PhasedArrayStation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">phased_antennas=10</span></em>, <em class="sig-param"><span class="pre">phased_separation=1</span></em>, <em class="sig-param"><span class="pre">phased_lowest=-180</span></em>, <em class="sig-param"><span class="pre">phased_antenna_type=&lt;class</span> <span class="pre">'pyrex.custom.ara.antenna.VpolAntenna'&gt;</span></em>, <em class="sig-param"><span class="pre">outrigger_strings_per_station=4</span></em>, <em class="sig-param"><span class="pre">outrigger_string_type=&lt;class</span> <span class="pre">'pyrex.custom.ara.detector.ARAString'&gt;</span></em>, <em class="sig-param"><span class="pre">**outrigger_string_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.detector.PhasedArrayStation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station geometry with center phased array string and regular outer strings.</p>
+<p>Sets the positions of strings around the station based on the parameters.
+Supports any string type and passes extra keyword arguments on to the
+string class. Once the antennas have been built with <a class="reference internal" href="pyrex.custom.ara.detector.PhasedArrayStation.build_antennas.html#pyrex.custom.ara.detector.PhasedArrayStation.build_antennas" title="pyrex.custom.ara.detector.PhasedArrayStation.build_antennas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_antennas</span></code></a>,
+the object can be directly iterated over to iterate over the antennas (as
+if the object were just a list of the antennas).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">float</span></dt><dd><p>Cartesian x-position (m) of the station.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">float</span></dt><dd><p>Cartesian y-position (m) of the station.</p>
+</dd>
+<dt><strong>phased_antennas</strong><span class="classifier">float, optional</span></dt><dd><p>Total number of antennas to be placed on the phased array string.</p>
+</dd>
+<dt><strong>phased_separation</strong><span class="classifier">float or list of float, optional</span></dt><dd><p>Antenna separation (m) for the phased array antennas.</p>
+</dd>
+<dt><strong>phased_lowest</strong><span class="classifier">float, optional</span></dt><dd><p>The Cartesian z-position (m) of the lowest antenna on the phased array.</p>
+</dd>
+<dt><strong>phased_antenna_type</strong><span class="classifier">optional</span></dt><dd><p>The class to be used to create the phased array antenna objects.</p>
+</dd>
+<dt><strong>station_diameter</strong><span class="classifier">float, optional</span></dt><dd><p>Diameter (m) of the circle around which outrigger strings are
+placed.</p>
+</dd>
+<dt><strong>outrigger_strings_per_station</strong><span class="classifier">float, optional</span></dt><dd><p>Number of outrigger strings to be placed evenly around the station.</p>
+</dd>
+<dt><strong>outrigger_string_type</strong><span class="classifier">optional</span></dt><dd><p>Class to be used for creating outrigger string objects for
+<em class="xref py py-obj">subsets</em>.</p>
+</dd>
+<dt><strong>**outrigger_string_kwargs</strong></dt><dd><p>Keyword arguments to be passed on to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of
+the <em class="xref py py-obj">outrigger_string_type</em> class. The default values for
+<code class="docutils literal notranslate"><span class="pre">antennas_per_string</span></code>, <code class="docutils literal notranslate"><span class="pre">antenna_separation</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">lowest_antenna</span></code> are altered for this station geometry.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ValueError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">test_antenna_positions</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and an antenna is found to be
+above the ice surface.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="pyrex.custom.ara.HpolAntenna.html#pyrex.custom.ara.HpolAntenna" title="pyrex.custom.ara.HpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.HpolAntenna</span></code></a></dt><dd><p>ARA Hpol (“quad-slot”) antenna system with front-end processing.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.VpolAntenna.html#pyrex.custom.ara.VpolAntenna" title="pyrex.custom.ara.VpolAntenna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.custom.ara.VpolAntenna</span></code></a></dt><dd><p>ARA Vpol (“bicone” or “birdcage”) antenna system with front-end processing.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.detector.ARAString.html#pyrex.custom.ara.detector.ARAString" title="pyrex.custom.ara.detector.ARAString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARAString</span></code></a></dt><dd><p>String of ARA Hpol and Vpol antennas.</p>
+</dd>
+<dt><a class="reference internal" href="pyrex.custom.ara.detector.PhasedArrayString.html#pyrex.custom.ara.detector.PhasedArrayString" title="pyrex.custom.ara.detector.PhasedArrayString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhasedArrayString</span></code></a></dt><dd><p>Phased string of closely-packed antennas.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This class is designed to have string-like objects (which are subclasses of
+<code class="docutils literal notranslate"><span class="pre">Detector</span></code>) as its <em class="xref py py-obj">subsets</em>. Then whenever an object of this class is
+iterated, all the antennas of its strings will be yielded as in a 1D list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>antenna_positions</strong><span class="classifier">list</span></dt><dd><p>List (potentially with sub-lists) of the positions of the antennas
+generated by the <a class="reference internal" href="pyrex.custom.ara.detector.PhasedArrayStation.set_positions.html#pyrex.custom.ara.detector.PhasedArrayStation.set_positions" title="pyrex.custom.ara.detector.PhasedArrayStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_positions</span></code></a> method.</p>
+</dd>
+<dt><strong>subsets</strong><span class="classifier">list</span></dt><dd><p>List of the antenna or detector objects which make up the detector.</p>
+</dd>
+<dt><strong>test_antenna_positions</strong><span class="classifier">boolean</span></dt><dd><p>Class attribute for whether or not an error should be raised if antenna
+positions are found above the surface of the ice (where simulation
+behavior is ill-defined). Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.ara.detector.PhasedArrayStation.build_antennas.html#pyrex.custom.ara.detector.PhasedArrayStation.build_antennas" title="pyrex.custom.ara.detector.PhasedArrayStation.build_antennas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_antennas</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Creates antenna objects at the set antenna positions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.ara.detector.PhasedArrayStation.clear.html#pyrex.custom.ara.detector.PhasedArrayStation.clear" title="pyrex.custom.ara.detector.PhasedArrayStation.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([reset_noise])</p></td>
+<td><p>Reset the detector to an empty state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.custom.ara.detector.PhasedArrayStation.set_positions.html#pyrex.custom.ara.detector.PhasedArrayStation.set_positions" title="pyrex.custom.ara.detector.PhasedArrayStation.set_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_positions</span></code></a>(x, y[, phased_antennas, …])</p></td>
+<td><p>Generates antenna positions around the station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.custom.ara.detector.PhasedArrayStation.triggered.html#pyrex.custom.ara.detector.PhasedArrayStation.triggered" title="pyrex.custom.ara.detector.PhasedArrayStation.triggered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triggered</span></code></a>(beam_threshold[, …])</p></td>
+<td><p>Check if the station is triggered based on its current state.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.10.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">PyREx API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#pyrex-package-imports">PyREx Package Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#individual-module-apis">Individual Module APIs</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../api.html#included-custom-sub-packages">Included Custom Sub-Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

@@ -12,7 +12,7 @@ setup(
     description = about["__description__"],
     long_description = about["__long_description__"],
     classifiers = [
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
         "License :: OSI Approved :: MIT License",
@@ -31,16 +31,16 @@ setup(
                 'pyrex.custom.layered_ice',],
     python_requires = '>= 3.6',
     install_requires = [
-        'numpy>=1.13',
-        'scipy>=0.19',
-        'h5py>=2.7',
+        'numpy>=1.17',
+        'scipy>=1.4',
+        'h5py>=3.0',
     ],
     setup_requires = ['pytest-runner'],
     tests_require = ['pytest'],
     package_data = {
         '': ['README.rst', 'LICENSE', 'PyREx Documentation.pdf'],
         'pyrex': ['data/secondary/*/*.vec'],
-        'pyrex.custom.ara': ['data/*.txt'],
+        'pyrex.custom.ara': ['data/*.txt', 'data/*.sqlite'],
         'pyrex.custom.arianna': ['data/*.txt', 'data/*.csv', 'data/*.tar.gz']
     },
 )

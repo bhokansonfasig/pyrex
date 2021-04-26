@@ -1,4 +1,4 @@
-pyrex.Particle
+﻿pyrex.Particle
 ==============
 
 .. currentmodule:: pyrex

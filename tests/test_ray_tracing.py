@@ -413,12 +413,13 @@ class TestSpecializedRayTracePath:
     def test_tof(self, ray_tracer, ray_tracer2, ray_tracer3, rel=1e-6):
         """Test tof attribute of paths from ray_tracer"""
         expected = [
-            2.685822600e-6, 3.597199594e-6,
-            6.589329842e-6, 6.697733819e-6,
-            7.751050988e-6, 9.911285710e-6
+            2.687681956e-6, 3.599689884e-6,
+            6.593891540e-6, 6.702370564e-6,
+            7.756416929e-6, 9.918147150e-6
         ]
         for i, path in enumerate(ray_tracer.solutions+ray_tracer2.solutions
                                  +ray_tracer3.solutions):
+            print(i)
             assert path.tof == pytest.approx(expected[i], rel=rel)
 
     @pytest.mark.parametrize("frequency", [1e3, 1e4 ,1e5, 1e6, 1e7, 1e8, 1e9])
@@ -427,30 +428,30 @@ class TestSpecializedRayTracePath:
         """Test of attenuation method of paths from ray_tracer"""
         expected = {
             1e3: [0.99692576, 0.99582895,
-                  0.99323083, 0.99245785,
+                  0.99267936, 0.99245785,
                   0.98666489, 0.98422668],
             1e4: [0.99319069, 0.99076314,
-                  0.98503289, 0.98332263,
+                  0.98381875, 0.98332263,
                   0.97105187, 0.96572717],
             1e5: [0.98495202, 0.97960811,
-                  0.96707259, 0.96332895,
-                  0.93773650, 0.92634760],
+                  0.96442748, 0.96332895,
+                  0.93773784, 0.92634887],
             1e6: [0.96691269, 0.95528893,
-                  0.92835846, 0.92035656,
-                  0.86874487, 0.84547125],
+                  0.92272900, 0.92035656,
+                  0.86874756, 0.84547376],
             1e7: [0.92805250, 0.90343250,
-                  0.84785425, 0.83163028,
-                  0.73490827, 0.69187035],
+                  0.83647913, 0.83163028,
+                  0.73491319, 0.69187480],
             1e8: [0.84730443, 0.79814316,
-                  0.69319606, 0.66394042,
-                  0.50949582, 0.44555170],
+                  0.67271197, 0.66394042,
+                  0.50950321, 0.44555791],
             1e9: [0.69232598, 0.60618071,
-                  0.44326432, 0.40259517,
-                  0.22842816, 0.16955822]
+                  0.41469964, 0.40259517,
+                  0.22843533, 0.16956334]
         }
         for i, path in enumerate(ray_tracer.solutions+ray_tracer2.solutions
                                  +ray_tracer3.solutions):
-            assert (path.attenuation(frequency)[0] ==
+            assert (path.attenuation(frequency) ==
                     pytest.approx(expected[frequency][i], rel=rel))
 
 

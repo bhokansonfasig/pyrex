@@ -90,4 +90,4 @@ The :meth:`choose_interaction` method should return a value from :class:`Interac
 Particle Generator
 ------------------
 
-The particle generator classes are quite flexible. The only requirement is that they possess an :meth:`create_event` method which returns a :class:`Event` object consisting of at least one :class:`Particle`. The :class:`BaseGenerator` class provides a solid foundation for basic uniform generators in a volume, requiring only implementation of the :meth:`get_vertex` and :meth:`get_exit_points` methods for the specific volume at a minimum.
+The particle generator classes are quite flexible. The only requirement is that they possess an :meth:`create_event` method which returns a :class:`Event` object consisting of at least one :class:`Particle`. The :class:`Generator` base class provides a solid foundation for basic uniform generators in a volume, requiring only implementation of the :meth:`get_vertex` and :meth:`get_exit_points` methods for the specific volume at a minimum.

@@ -2,11 +2,14 @@
 
 import pytest
 
+from config import SEED
+
 from pyrex.antenna import Antenna, DipoleAntenna
 from pyrex.signals import Signal
 from pyrex.ice_model import ice
 
 import numpy as np
+import scipy.constants
 
 
 
@@ -53,16 +56,34 @@ class TestAntenna:
         with pytest.raises(ValueError):
             antenna.set_orientation(z_axis=[2,0,0], x_axis=[1,1,0])
 
-    def test_is_hit(self, antenna):
-        """Test that is_hit is true when there is a signal and false otherwise"""
-        assert not antenna.is_hit
-        antenna.signals.append(Signal([0],[0]))
-        assert antenna.is_hit
+    def test_is_hit(self, triggerable_antenna):
+        """Test that is_hit is true when there is a triggering signal and false otherwise"""
+        assert not triggerable_antenna.is_hit
+        triggerable_antenna.signals.append(Signal([0, 1], [0, 0]))
+        assert not triggerable_antenna.is_hit
+        triggerable_antenna.signals.append(Signal([0, 1], [0, 2]))
+        assert triggerable_antenna.is_hit
 
     def test_is_hit_not_writable(self, antenna):
         """Test that is_hit cannot be assigned to"""
         with pytest.raises(AttributeError):
             antenna.is_hit = True
+
+    def test_is_hit_mc_truth(self, triggerable_antenna):
+        """Test that is_hit_mc_truth appropriately rejects noise triggers"""
+        assert not triggerable_antenna.is_hit_mc_truth
+        triggerable_antenna.signals.append(Signal([0, 1], [0, 0]))
+        assert not triggerable_antenna.is_hit_mc_truth
+        triggerable_antenna.signals.append(Signal([0, 1], [0, 2]))
+        assert triggerable_antenna.is_hit_mc_truth
+        np.random.seed(SEED)
+        noisy_antenna = Antenna(position=[0,0,-200], freq_range=[500e6, 750e6],
+                                noise_rms=100)
+        assert not noisy_antenna.is_hit_mc_truth
+        noisy_antenna.signals.append(Signal([0, 1e-9], [0, 0]))
+        assert not noisy_antenna.is_hit_mc_truth
+        noisy_antenna.signals.append(Signal([0, 1e-9], [0, 2]))
+        assert not noisy_antenna.is_hit_mc_truth
 
     def test_is_hit_during(self, triggerable_antenna):
         """Test that is_hit_during works as expected"""
@@ -139,7 +160,7 @@ class TestAntenna:
 
     def test_noises_not_recalculated(self, antenna):
         """Test that noise signals aren't recalculated every time"""
-        antenna.signals.append(Signal([0],[1]))
+        antenna.signals.append(Signal([0,1e-9],[1,1]))
         waveforms1 = antenna.waveforms
         noise_master_1 = antenna._noise_master
         waveforms2 = antenna.waveforms
@@ -150,7 +171,7 @@ class TestAntenna:
         """Test that signals which don't trigger don't appear in waveforms,
         but do appear in all_waveforms"""
         antenna.trigger = lambda signal: False
-        antenna.signals.append(Signal([0],[1]))
+        antenna.signals.append(Signal([0,1e-9],[1,1]))
         assert antenna.is_hit == False
         assert antenna.waveforms == []
         assert antenna.all_waveforms != []
@@ -198,7 +219,7 @@ def dipole():
     """Fixture for forming basic DipoleAntenna object"""
     return DipoleAntenna(name="ant", position=[0,0,-250],
                          center_frequency=250e6, bandwidth=300e6,
-                         resistance=100, orientation=[0,0,1],
+                         temperature=300, resistance=100, orientation=[0,0,1],
                          trigger_threshold=75e-6)
 
 
@@ -210,10 +231,11 @@ class TestDipoleAntenna:
         assert np.array_equal(dipole.position, [0,0,-250])
         assert np.array_equal(dipole.z_axis, [0,0,1])
         assert dipole.x_axis[2] == 0
-        assert dipole.antenna_factor == 2 * 250e6 / 3e8
+        assert dipole.antenna_factor == pytest.approx(2 * 250e6
+                                                      / scipy.constants.c)
         assert dipole.efficiency == 1
         assert np.array_equal(dipole.freq_range, [100e6, 400e6])
-        assert dipole.temperature == pytest.approx(ice.temperature(-250))
+        assert dipole.temperature == 300
         assert dipole.resistance == 100
         assert dipole.threshold == 75e-6
         assert dipole.noisy
@@ -251,6 +273,6 @@ class TestDipoleAntenna:
     def test_trigger(self, dipole):
         dipole.noisy = False
         assert not dipole.is_hit
-        dipole.signals.append(Signal([0], [dipole.threshold*1.01]))
+        dipole.signals.append(Signal([0,1e-9], [0,dipole.threshold*1.01]))
         assert dipole.is_hit
 

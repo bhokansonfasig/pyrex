@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.EmptySignal &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.EmptySignal &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.FunctionSignal" href="pyrex.FunctionSignal.html" >
     <link rel="prev" title="pyrex.Signal" href="pyrex.Signal.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -92,9 +91,9 @@
             
   <div class="section" id="pyrex-emptysignal">
 <h1>pyrex.EmptySignal<a class="headerlink" href="#pyrex-emptysignal" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.EmptySignal">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.</code><code class="sig-name descname">EmptySignal</code><span class="sig-paren">(</span><em class="sig-param">times</em>, <em class="sig-param">value_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EmptySignal" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.</span></code><code class="sig-name descname"><span class="pre">EmptySignal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EmptySignal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for signal with zero amplitude (all values = 0).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -141,14 +140,20 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code>(value)</p></td>
 <td><p>Enum containing possible types (units) for signal values.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.EmptySignal.filter_frequencies.html#pyrex.EmptySignal.filter_frequencies" title="pyrex.EmptySignal.filter_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_frequencies</span></code></a>(freq_response[, force_real])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.EmptySignal.copy.html#pyrex.EmptySignal.copy" title="pyrex.EmptySignal.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Get a copy of the <code class="docutils literal notranslate"><span class="pre">EmptySignal</span></code> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.EmptySignal.filter_frequencies.html#pyrex.EmptySignal.filter_frequencies" title="pyrex.EmptySignal.filter_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_frequencies</span></code></a>(freq_response[, force_real])</p></td>
 <td><p>Apply the given frequency response function to the signal, in-place.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.EmptySignal.resample.html#pyrex.EmptySignal.resample" title="pyrex.EmptySignal.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(n)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.EmptySignal.resample.html#pyrex.EmptySignal.resample" title="pyrex.EmptySignal.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(n)</p></td>
 <td><p>Resamples the signal into n points in the same time range, in-place.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.EmptySignal.shift.html#pyrex.EmptySignal.shift" title="pyrex.EmptySignal.shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shift</span></code></a>(dt)</p></td>
+<td><p>Shifts the signal values in time by <a class="reference internal" href="pyrex.EmptySignal.dt.html#pyrex.EmptySignal.dt" title="pyrex.EmptySignal.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="pyrex.EmptySignal.with_times.html#pyrex.EmptySignal.with_times" title="pyrex.EmptySignal.with_times"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_times</span></code></a>(new_times)</p></td>
 <td><p>Returns a representation of this signal over a different times array.</p></td>
@@ -170,7 +175,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -239,10 +244,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

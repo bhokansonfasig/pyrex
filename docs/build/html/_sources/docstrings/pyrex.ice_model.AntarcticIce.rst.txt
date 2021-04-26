@@ -1,4 +1,4 @@
-pyrex.ice\_model.AntarcticIce
+﻿pyrex.ice\_model.AntarcticIce
 =============================
 
 .. currentmodule:: pyrex.ice_model

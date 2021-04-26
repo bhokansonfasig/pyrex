@@ -1,4 +1,4 @@
-pyrex.signals.EmptySignal
+﻿pyrex.signals.EmptySignal
 =========================
 
 .. currentmodule:: pyrex.signals
@@ -11,8 +11,10 @@ pyrex.signals.EmptySignal
       .. autosummary::
          :toctree:
       
+         EmptySignal.copy
          EmptySignal.filter_frequencies
          EmptySignal.resample
+         EmptySignal.shift
          EmptySignal.with_times
 
 

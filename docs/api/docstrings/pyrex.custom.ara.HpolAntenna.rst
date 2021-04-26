@@ -1,4 +1,4 @@
-pyrex.custom.ara.HpolAntenna
+﻿pyrex.custom.ara.HpolAntenna
 ============================
 
 .. currentmodule:: pyrex.custom.ara

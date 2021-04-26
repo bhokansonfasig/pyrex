@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.ice_model.GreenlandIce &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.ice_model.GreenlandIce &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="Ice Models (pyrex.ice_model)" href="../api/ice_model.html" >
     <link rel="next" title="Ray Tracers (pyrex.ray_tracing)" href="../api/ray_tracing.html" >
     <link rel="prev" title="pyrex.ice_model.ArasimIce" href="pyrex.ice_model.ArasimIce.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/ice_model.html" accesskey="U">Ice Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.ice_model</span></code>)</a></li> 
@@ -93,14 +92,12 @@
             
   <div class="section" id="pyrex-ice-model-greenlandice">
 <h1>pyrex.ice_model.GreenlandIce<a class="headerlink" href="#pyrex-ice-model-greenlandice" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.ice_model.GreenlandIce">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.ice_model.</code><code class="sig-name descname">GreenlandIce</code><span class="sig-paren">(</span><em class="sig-param">n0=1.775</em>, <em class="sig-param">k=0.448</em>, <em class="sig-param">a=0.0247</em>, <em class="sig-param">valid_range=(-3000</em>, <em class="sig-param">0)</em>, <em class="sig-param">index_above=1</em>, <em class="sig-param">index_below=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.GreenlandIce" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.ice_model.</span></code><code class="sig-name descname"><span class="pre">GreenlandIce</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.775</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.448</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0247</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(-</span> <span class="pre">3000,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_above</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_below</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.ice_model.GreenlandIce" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class describing the ice at Summit Station in Greenland.</p>
-<p>For convenience, consists of static methods and class methods, so creating
-an instance of the class may not be necessary. In all methods, the depth
-z should be given as a negative value if it is below the surface of the
-ice.</p>
+<p>In all methods, the depth z should be given as a negative value if it is
+below the surface of the ice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -133,13 +130,13 @@ The temperature and attenuation length parameterizations are also based on
 parameterizations defined for Summit Station <a class="reference internal" href="#r4263524edcb5-2" id="id2">[2]</a>.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="r4263524edcb5-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id3">2</a>)</span></dt>
+<dt class="label" id="r4263524edcb5-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>C. Deaconu et al, “Measurements and modeling of near-surface radio
 propagation in glacial ice and implications for neutrino experiments.”
 Physical Review D <strong>98</strong>, 043010 (2018). <a class="reference external" href="https://arxiv.org/abs/1805.12576">arXiv:1805.12576</a>
 <a class="reference external" href="https://dx.doi.org/10.1103/PhysRevD.98.043010">DOI:10.1103/PhysRevD.98.043010</a></p>
 </dd>
-<dt class="label" id="r4263524edcb5-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id4">2</a>)</span></dt>
+<dt class="label" id="r4263524edcb5-2"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p>J. Avva et al, “An in Situ Measurement of the Radio-Frequency
 Attenuation in Ice at Summit Station, Greenland.” Journal of Glaciology
 <strong>61</strong>, no. 229, 1005-1011 (2015). <a class="reference external" href="https://dx.doi.org/10.3189/2015JoG15J057">DOI:10.3189/2015JoG15J057</a></p>
@@ -203,7 +200,7 @@ the second.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -272,10 +269,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

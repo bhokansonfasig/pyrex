@@ -1,4 +1,4 @@
-pyrex.custom.ara.ARAString
+﻿pyrex.custom.ara.ARAString
 ==========================
 
 .. currentmodule:: pyrex.custom.ara

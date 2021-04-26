@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.Antenna.make_noise &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.Antenna.make_noise &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -51,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -80,9 +79,9 @@
             
   <div class="section" id="pyrex-antenna-make-noise">
 <h1>pyrex.Antenna.make_noise<a class="headerlink" href="#pyrex-antenna-make-noise" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="py method">
 <dt id="pyrex.Antenna.make_noise">
-<code class="sig-prename descclassname">Antenna.</code><code class="sig-name descname">make_noise</code><span class="sig-paren">(</span><em class="sig-param">times</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.make_noise" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">Antenna.</span></code><code class="sig-name descname"><span class="pre">make_noise</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.Antenna.make_noise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a noise signal over the given times.</p>
 <p>In order to add noise to signal to produce the waveforms of the
 antenna, this function is used to create the noise values at specific
@@ -96,13 +95,13 @@ times. Makes use of the antenna’s noise-related attributes.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>ThermalNoise</strong></dt><dd><p>Noise values during the <em class="xref py py-obj">times</em> array.</p>
+<dt>ThermalNoise</dt><dd><p>Noise values during the <em class="xref py py-obj">times</em> array.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>ValueError</strong></dt><dd><p>If not enough noise-related attributes are defined for the antenna.</p>
+<dt>ValueError</dt><dd><p>If not enough noise-related attributes are defined for the antenna.</p>
 </dd>
 </dl>
 </dd>
@@ -122,7 +121,7 @@ times. Makes use of the antenna’s noise-related attributes.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -186,10 +185,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

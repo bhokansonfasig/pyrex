@@ -1,4 +1,4 @@
-pyrex.custom.arianna.antenna.ARIANNAAntenna
+﻿pyrex.custom.arianna.antenna.ARIANNAAntenna
 ===========================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna

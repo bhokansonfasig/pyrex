@@ -1,4 +1,4 @@
-pyrex.RayTracer
+﻿pyrex.RayTracer
 ===============
 
 .. currentmodule:: pyrex

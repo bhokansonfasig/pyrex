@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.RayTracePath.z_integral &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.RayTracePath.z_integral &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -51,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -80,9 +79,9 @@
             
   <div class="section" id="pyrex-raytracepath-z-integral">
 <h1>pyrex.RayTracePath.z_integral<a class="headerlink" href="#pyrex-raytracepath-z-integral" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="py method">
 <dt id="pyrex.RayTracePath.z_integral">
-<code class="sig-prename descclassname">RayTracePath.</code><code class="sig-name descname">z_integral</code><span class="sig-paren">(</span><em class="sig-param">integrand</em>, <em class="sig-param">numerical=False</em>, <em class="sig-param">x_func=&lt;function SpecializedRayTracePath.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.RayTracePath.z_integral" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">RayTracePath.</span></code><code class="sig-name descname"><span class="pre">z_integral</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integrand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integrand_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.RayTracePath.z_integral" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the integral of the given integrand.</p>
 <p>For the integrand as a function of z, the analytic or numerical
 integral is calculated along the ray path.</p>
@@ -92,24 +91,24 @@ integral is calculated along the ray path.</p>
 <dt><strong>integrand</strong><span class="classifier">function</span></dt><dd><p>Function returning the values of the integrand at a given array of
 values for the depth z.</p>
 </dd>
+<dt><strong>integrand_kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>A dictionary of keyword arguments to be passed into the <em class="xref py py-obj">integrand</em>
+function.</p>
+</dd>
 <dt><strong>numerical</strong><span class="classifier">boolean, optional</span></dt><dd><p>Whether to use the numerical integral instead of an analytic one.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code> the analytic integral is calculated. If <code class="docutils literal notranslate"><span class="pre">True</span></code> the
 numerical integral is calculated.</p>
-</dd>
-<dt><strong>x_func</strong><span class="classifier">function, optional</span></dt><dd><p>A function returning x values corresponding to given z values. By
-default just matches the z values.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>float</strong></dt><dd><p>The value of the integral along the ray path.</p>
+<dt>float</dt><dd><p>The value of the integral along the ray path.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>TypeError</strong></dt><dd><p>If the ice model is not valid for the specialized analytic
+<dt>TypeError</dt><dd><p>If the ice model is not valid for the specialized analytic
 integrations.</p>
 </dd>
 </dl>
@@ -130,7 +129,7 @@ integrations.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -194,10 +193,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

@@ -1,4 +1,4 @@
-pyrex.RayTracePath
+﻿pyrex.RayTracePath
 ==================
 
 .. currentmodule:: pyrex

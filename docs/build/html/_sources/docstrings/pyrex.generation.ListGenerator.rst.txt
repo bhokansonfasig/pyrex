@@ -1,4 +1,4 @@
-pyrex.generation.ListGenerator
+﻿pyrex.generation.ListGenerator
 ==============================
 
 .. currentmodule:: pyrex.generation

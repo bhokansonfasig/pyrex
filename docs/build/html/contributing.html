@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Contributing to PyREx &mdash; PyREx 1.9.0 documentation</title>
+    <title>Contributing to PyREx &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,15 +23,14 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/searchtools.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="index.html" >
     <link rel="next" title="PyREx API" href="api.html" >
-    <link rel="prev" title="Example Code" href="examples.html" > 
+    <link rel="prev" title="Combine Effective Volume Simulations" href="examples/combining_simulations.html" > 
   </head>
   <body>
 
@@ -53,7 +52,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -72,7 +71,7 @@
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="examples.html" title="Example Code"
+        <a href="examples/combining_simulations.html" title="Combine Effective Volume Simulations"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -90,7 +89,8 @@
             
   <div class="section" id="contributing-to-pyrex">
 <h1>Contributing to PyREx<a class="headerlink" href="#contributing-to-pyrex" title="Permalink to this headline">¶</a></h1>
-<p>PyREx is currently being maintained by <a class="reference external" href="mailto:fasig&#37;&#52;&#48;icecube&#46;wisc&#46;edu">Ben Hokanson-Fasig</a>. Any direct contributions to the code base should be made through GitHub as described in the following sections, and will be reviewed by the maintainer or another approved reviewer. Note that contributions are also possible less formally through the creation of custom plug-ins, as described in <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a>.</p>
+<p>PyREx was previously maintained by <a class="reference external" href="mailto:bhokansonfasig&#37;&#52;&#48;gmail&#46;com">Ben Hokanson-Fasig</a>, but this version is no longer being actively maintained. Future updates to PyREx are planned to take place in a fork at <a class="reference external" href="https://github.com/abigailbishop/pyrex">https://github.com/abigailbishop/pyrex</a>.</p>
+<p>Any direct contributions to the code base should be made through GitHub as described in the following sections, and will be reviewed by the maintainer or another approved reviewer. Note that contributions are also possible less formally through the creation of custom plug-ins, as described in <a class="reference internal" href="customize.html#custom-package"><span class="std std-ref">Custom Sub-Package</span></a>.</p>
 <div class="section" id="branching-model">
 <h2>Branching Model<a class="headerlink" href="#branching-model" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-right" style="width: 43%">
@@ -160,7 +160,18 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git log master..release-X.Y.Z --oneline --no-merges
 </pre></div>
 </div>
-<p>Once the documentation is up to date with all the changes (including updating any places in the usage or the examples which may have become outdated), do some bug testing and be sure that all code tests are passing. Then when you’re sure the release is ready you can merge the release branch into the <code class="docutils literal notranslate"><span class="pre">master</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches with</p>
+<p>Once the documentation is up to date with all the changes (including updating any places in the usage or the examples which may have become outdated), it can be rebuilt using basic <code class="docutils literal notranslate"><span class="pre">make</span></code> commands run from the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> docs
+make clean
+make html
+make latexpdf
+</pre></div>
+</div>
+<p>It is also a good idea to do some final bug testing and be sure that all code tests are passing before releasing. The full set of tests can be run with</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python setup.py <span class="nb">test</span>
+</pre></div>
+</div>
+<p>Once everything is done and the release is ready, you can merge the release branch into the <code class="docutils literal notranslate"><span class="pre">master</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches with</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./release.sh merge X.Y.Z
 </pre></div>
 </div>
@@ -182,7 +193,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -252,10 +263,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

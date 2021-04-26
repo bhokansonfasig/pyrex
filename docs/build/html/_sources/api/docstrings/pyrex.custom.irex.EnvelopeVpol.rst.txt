@@ -1,4 +1,4 @@
-pyrex.custom.irex.EnvelopeVpol
+﻿pyrex.custom.irex.EnvelopeVpol
 ==============================
 
 .. currentmodule:: pyrex.custom.irex
