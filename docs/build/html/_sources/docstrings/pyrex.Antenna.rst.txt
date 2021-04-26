@@ -1,4 +1,4 @@
-pyrex.Antenna
+﻿pyrex.Antenna
 =============
 
 .. currentmodule:: pyrex

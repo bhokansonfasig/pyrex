@@ -1,4 +1,4 @@
-pyrex.internal\_functions.LazyMutableClass
+﻿pyrex.internal\_functions.LazyMutableClass
 ==========================================
 
 .. currentmodule:: pyrex.internal_functions

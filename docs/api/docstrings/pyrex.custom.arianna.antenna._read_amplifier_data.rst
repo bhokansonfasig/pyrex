@@ -1,4 +1,4 @@
-pyrex.custom.arianna.antenna.\_read\_amplifier\_data
+﻿pyrex.custom.arianna.antenna.\_read\_amplifier\_data
 ====================================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna

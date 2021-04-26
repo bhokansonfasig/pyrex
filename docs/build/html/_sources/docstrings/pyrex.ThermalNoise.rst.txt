@@ -1,4 +1,4 @@
-pyrex.ThermalNoise
+﻿pyrex.ThermalNoise
 ==================
 
 .. currentmodule:: pyrex
@@ -11,8 +11,11 @@ pyrex.ThermalNoise
       .. autosummary::
          :toctree:
       
+         ThermalNoise.copy
          ThermalNoise.filter_frequencies
          ThermalNoise.resample
+         ThermalNoise.set_buffers
+         ThermalNoise.shift
          ThermalNoise.with_times
 
 
@@ -28,4 +31,5 @@ pyrex.ThermalNoise
          ThermalNoise.frequencies
          ThermalNoise.spectrum
          ThermalNoise.value_type
+         ThermalNoise.values
 

@@ -1,4 +1,4 @@
-pyrex.ray\_tracing.RayTracePath
+﻿pyrex.ray\_tracing.RayTracePath
 ===============================
 
 .. currentmodule:: pyrex.ray_tracing

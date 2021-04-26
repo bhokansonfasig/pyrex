@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.io.EventIterator &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.io.EventIterator &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="Data File I/O (pyrex.io)" href="../api/io.html" >
     <link rel="next" title="Askaryan Radio Array (pyrex.custom.ara)" href="../api/custom-ara.html" >
     <link rel="prev" title="pyrex.io.HDF5Writer" href="pyrex.io.HDF5Writer.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/io.html" accesskey="U">Data File I/O (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.io</span></code>)</a></li> 
@@ -93,9 +92,9 @@
             
   <div class="section" id="pyrex-io-eventiterator">
 <h1>pyrex.io.EventIterator<a class="headerlink" href="#pyrex-io-eventiterator" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.io.EventIterator">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.io.</code><code class="sig-name descname">EventIterator</code><span class="sig-paren">(</span><em class="sig-param">hdf5_file</em>, <em class="sig-param">slice_range=10</em>, <em class="sig-param">start_event=None</em>, <em class="sig-param">stop_event=None</em>, <em class="sig-param">step=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.EventIterator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.io.</span></code><code class="sig-name descname"><span class="pre">EventIterator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hdf5_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.io.EventIterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for iterating over event data from an hdf5 file.</p>
 <p>Stores data for a chunk of events according to the <em class="xref py py-obj">slice_range</em>.
 Increasing the <em class="xref py py-obj">slice_range</em> should result in an improvement in speed,
@@ -138,16 +137,19 @@ not be included in the iteration).</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_particle_info.html#pyrex.io.EventIterator.get_particle_info" title="pyrex.io.EventIterator.get_particle_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_particle_info</span></code></a>([attribute])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_data.html#pyrex.io.EventIterator.get_data" title="pyrex.io.EventIterator.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>(dataset[, attribute])</p></td>
+<td><p>Get data from a given dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_particle_info.html#pyrex.io.EventIterator.get_particle_info" title="pyrex.io.EventIterator.get_particle_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_particle_info</span></code></a>([attribute])</p></td>
 <td><p>Get particle data for the event.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_rays_info.html#pyrex.io.EventIterator.get_rays_info" title="pyrex.io.EventIterator.get_rays_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rays_info</span></code></a>([attribute])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_rays_info.html#pyrex.io.EventIterator.get_rays_info" title="pyrex.io.EventIterator.get_rays_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rays_info</span></code></a>([attribute])</p></td>
 <td><p>Get ray path data for the event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_triggered_components.html#pyrex.io.EventIterator.get_triggered_components" title="pyrex.io.EventIterator.get_triggered_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_triggered_components</span></code></a>([ray])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_triggered_components.html#pyrex.io.EventIterator.get_triggered_components" title="pyrex.io.EventIterator.get_triggered_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_triggered_components</span></code></a>([ray])</p></td>
 <td><p>Get the components of the detector triggered by the event.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_waveforms.html#pyrex.io.EventIterator.get_waveforms" title="pyrex.io.EventIterator.get_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_waveforms</span></code></a>([antenna_id, waveform_type])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.io.EventIterator.get_waveforms.html#pyrex.io.EventIterator.get_waveforms" title="pyrex.io.EventIterator.get_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_waveforms</span></code></a>([antenna_id, waveform_type])</p></td>
 <td><p>Get waveform data for the event.</p></td>
 </tr>
 </tbody>
@@ -167,7 +169,7 @@ not be included in the iteration).</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -236,10 +238,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

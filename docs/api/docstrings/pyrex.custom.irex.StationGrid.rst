@@ -1,4 +1,4 @@
-pyrex.custom.irex.StationGrid
+﻿pyrex.custom.irex.StationGrid
 =============================
 
 .. currentmodule:: pyrex.custom.irex

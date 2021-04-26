@@ -1,4 +1,4 @@
-pyrex.internal\_functions.get\_from\_enum
+﻿pyrex.internal\_functions.get\_from\_enum
 =========================================
 
 .. currentmodule:: pyrex.internal_functions

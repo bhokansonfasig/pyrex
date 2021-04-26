@@ -1,4 +1,4 @@
-pyrex.io.HDF5Reader
+﻿pyrex.io.HDF5Reader
 ===================
 
 .. currentmodule:: pyrex.io

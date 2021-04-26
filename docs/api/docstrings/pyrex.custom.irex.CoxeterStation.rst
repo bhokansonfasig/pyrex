@@ -1,4 +1,4 @@
-pyrex.custom.irex.CoxeterStation
+﻿pyrex.custom.irex.CoxeterStation
 ================================
 
 .. currentmodule:: pyrex.custom.irex

@@ -1,4 +1,4 @@
-pyrex.particle.CTWInteraction
+﻿pyrex.particle.CTWInteraction
 =============================
 
 .. currentmodule:: pyrex.particle
@@ -24,6 +24,7 @@ pyrex.particle.CTWInteraction
          :toctree:
       
          CTWInteraction.cross_section
+         CTWInteraction.include_secondaries
          CTWInteraction.interaction_length
          CTWInteraction.kind
          CTWInteraction.total_cross_section

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.RayTracer.angle_search &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.RayTracer.angle_search &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" > 
   </head>
   <body>
 
@@ -51,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -80,9 +79,9 @@
             
   <div class="section" id="pyrex-raytracer-angle-search">
 <h1>pyrex.RayTracer.angle_search<a class="headerlink" href="#pyrex-raytracer-angle-search" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="py method">
 <dt id="pyrex.RayTracer.angle_search">
-<em class="property">static </em><code class="sig-prename descclassname">RayTracer.</code><code class="sig-name descname">angle_search</code><span class="sig-paren">(</span><em class="sig-param">true_r</em>, <em class="sig-param">r_function</em>, <em class="sig-param">min_angle</em>, <em class="sig-param">max_angle</em>, <em class="sig-param">tolerance=1e-12</em>, <em class="sig-param">max_iterations=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.RayTracer.angle_search" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-prename descclassname"><span class="pre">RayTracer.</span></code><code class="sig-name descname"><span class="pre">angle_search</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.RayTracer.angle_search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the angle where <em class="xref py py-obj">r_function</em> (angle) == <em class="xref py py-obj">true_r</em>.</p>
 <p>Runs the brentq root-finding algorithm on <em class="xref py py-obj">r_function</em> with an offset
 of <em class="xref py py-obj">true_r</em> to find the angle at which they are equal.</p>
@@ -105,14 +104,14 @@ of <em class="xref py py-obj">true_r</em> to find the angle at which they are eq
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>float</strong></dt><dd><p>The launch angle which will satisfy the condition
+<dt>float</dt><dd><p>The launch angle which will satisfy the condition
 <em class="xref py py-obj">r_function</em> (angle) == <em class="xref py py-obj">true_r</em>.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>RuntimeError</strong></dt><dd><p>If the root finder doesn’t converge.</p>
+<dt>RuntimeError</dt><dd><p>If the root finder doesn’t converge.</p>
 </dd>
 </dl>
 </dd>
@@ -132,7 +131,7 @@ of <em class="xref py py-obj">true_r</em> to find the angle at which they are eq
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -196,10 +195,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

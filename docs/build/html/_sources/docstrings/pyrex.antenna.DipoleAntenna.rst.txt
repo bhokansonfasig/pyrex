@@ -1,4 +1,4 @@
-pyrex.antenna.DipoleAntenna
+﻿pyrex.antenna.DipoleAntenna
 ===========================
 
 .. currentmodule:: pyrex.antenna

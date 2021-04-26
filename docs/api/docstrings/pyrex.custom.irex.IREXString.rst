@@ -1,4 +1,4 @@
-pyrex.custom.irex.IREXString
+﻿pyrex.custom.irex.IREXString
 ============================
 
 .. currentmodule:: pyrex.custom.irex

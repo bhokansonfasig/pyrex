@@ -1,4 +1,4 @@
-pyrex.custom.irex.RegularStation
+﻿pyrex.custom.irex.RegularStation
 ================================
 
 .. currentmodule:: pyrex.custom.irex

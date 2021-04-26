@@ -1,4 +1,4 @@
-pyrex.signals.FunctionSignal
+﻿pyrex.signals.FunctionSignal
 ============================
 
 .. currentmodule:: pyrex.signals
@@ -11,8 +11,11 @@ pyrex.signals.FunctionSignal
       .. autosummary::
          :toctree:
       
+         FunctionSignal.copy
          FunctionSignal.filter_frequencies
          FunctionSignal.resample
+         FunctionSignal.set_buffers
+         FunctionSignal.shift
          FunctionSignal.with_times
 
 
@@ -28,4 +31,5 @@ pyrex.signals.FunctionSignal
          FunctionSignal.frequencies
          FunctionSignal.spectrum
          FunctionSignal.value_type
+         FunctionSignal.values
 

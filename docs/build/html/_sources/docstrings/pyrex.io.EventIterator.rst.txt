@@ -1,4 +1,4 @@
-pyrex.io.EventIterator
+﻿pyrex.io.EventIterator
 ======================
 
 .. currentmodule:: pyrex.io
@@ -11,6 +11,7 @@ pyrex.io.EventIterator
       .. autosummary::
          :toctree:
       
+         EventIterator.get_data
          EventIterator.get_particle_info
          EventIterator.get_rays_info
          EventIterator.get_triggered_components

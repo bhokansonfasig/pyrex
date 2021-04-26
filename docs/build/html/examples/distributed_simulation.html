@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Distributed Effective Volume Simulation &mdash; PyREx 1.10.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.10.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" >
+    <link rel="index" title="Index" href="../genindex.html" >
+    <link rel="search" title="Search" href="../search.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
+    <link rel="up" title="Example Code" href="../examples.html" >
+    <link rel="next" title="Combine Effective Volume Simulations" href="combining_simulations.html" >
+    <link rel="prev" title="Examine a Single Event" href="examine_event.html" > 
+  </head>
+  <body>
+
+<div class="container">
+  <div class="top-scipy-org-logo-header">
+    <a href="../index.html">
+      <img style="border: 0;" width="250" alt="PyREx" src="../_static/logo_white_transparent.png"></a>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
+	
+          <li class="active"><a href="../examples.html" accesskey="U">Example Code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="combining_simulations.html" title="Combine Effective Volume Simulations"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="examine_event.html" title="Examine a Single Event"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="distributed-effective-volume-simulation">
+<span id="example-distributed-sim"></span><h1>Distributed Effective Volume Simulation<a class="headerlink" href="#distributed-effective-volume-simulation" title="Permalink to this headline">¶</a></h1>
+<p>In this example we will illustrate how an effective volume simulation can be split across many jobs on a cluster that will each record their simulation in output files to be analyzed together after all the jobs are finished (as in the next example, <a class="reference internal" href="combining_simulations.html#example-combine-sim"><span class="std std-ref">Combine Effective Volume Simulations</span></a>). This code can be found in the <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/blob/master/examples/distributed_simulation.py">distributed_simulation.py</a> script in the examples directory. A typical set of arguments for the script might look like the following:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python distributed_simulation.py 1e9 <span class="m">2</span> --montecarlo -n <span class="m">10000</span> -o ara02_1e9_00.h5
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This script is intended to be run in many parallel instances across multiple jobs in a computing cluster in order to reach reasonable statistics at each energy. Once the jobs are run, more code would be necessary to combine and analyze the results. Such code is illustrated in the next example, <a class="reference internal" href="combining_simulations.html#example-combine-sim"><span class="std std-ref">Combine Effective Volume Simulations</span></a>.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;A script for simulating effective volumes of ARA stations&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">pyrex</span>
+<span class="kn">import</span> <span class="nn">pyrex.custom.ara</span> <span class="k">as</span> <span class="nn">ara</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;energy&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;neutrino energy (in GeV)&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;detector&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;detector selection from list in script&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--number&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of events to generate (default 10)&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--shadow&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;if present, Earth shadowing will remove events &quot;</span><span class="o">+</span>
+                          <span class="s2">&quot;rather than weighting their survival probability&quot;</span><span class="p">))</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--secondaries&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;if present, secondary interactions will be &quot;</span><span class="o">+</span>
+                          <span class="s2">&quot;considered&quot;</span><span class="p">))</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--noiseless&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;if present, noise not added to signal&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--montecarlo&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;if present, suppress noise triggers based on &quot;</span><span class="o">+</span>
+                          <span class="s2">&quot;MC truth&quot;</span><span class="p">))</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--output&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output file name&quot;</span><span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+
+<span class="c1"># Prepare the output file. In this case, we&#39;ll record the waveforms on the</span>
+<span class="c1"># antennas for any triggering events. This will create very large files,</span>
+<span class="c1"># so unless recording the waveforms is crucial, it would be better to change</span>
+<span class="c1"># write_waveforms to False.</span>
+<span class="n">outfile</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span>
+                     <span class="n">write_particles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">write_waveforms</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">write_triggers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">write_antenna_triggers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">write_rays</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">write_noise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">require_trigger</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;waveforms&#39;</span><span class="p">])</span>
+<span class="n">outfile</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+<span class="c1"># Add an additional metadata location in the output file for recording the</span>
+<span class="c1"># parameters used by this run of the simulation.</span>
+<span class="n">outfile</span><span class="o">.</span><span class="n">create_analysis_metadataset</span><span class="p">(</span><span class="s2">&quot;sim_parameters&quot;</span><span class="p">)</span>
+
+<span class="c1"># Dictionary for metadata from the script for the output file. This will be</span>
+<span class="c1"># written to the &quot;sim_parameters&quot; dataset once it is filled.</span>
+<span class="n">script_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="c1"># Set up detector and trigger, based on the script&#39;s argument values</span>
+<span class="k">def</span> <span class="nf">pol_trigger</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">ant_type</span><span class="p">,</span> <span class="n">require_mc_truth</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">require_mc_truth</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span>
+                   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ant</span><span class="p">,</span> <span class="n">ant_type</span><span class="p">)</span>
+                   <span class="ow">and</span> <span class="n">ant</span><span class="o">.</span><span class="n">is_hit_mc_truth</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">det</span>
+                   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ant</span><span class="p">,</span> <span class="n">ant_type</span><span class="p">)</span>
+                   <span class="ow">and</span> <span class="n">ant</span><span class="o">.</span><span class="n">is_hit</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">detector</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+    <span class="n">detector</span> <span class="o">=</span> <span class="n">ara</span><span class="o">.</span><span class="n">ARA02</span><span class="p">()</span>
+    <span class="n">detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">power_threshold</span><span class="o">=</span><span class="mf">6.46</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="ow">not</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">noiseless</span><span class="p">))</span>
+    <span class="n">is_triggered</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;global&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">detector</span><span class="p">:</span> <span class="n">detector</span><span class="o">.</span><span class="n">triggered</span><span class="p">(</span>
+            <span class="n">polarized_antenna_requirement</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">require_mc_truth</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">montecarlo</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;vpol&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">detector</span><span class="p">:</span> <span class="n">pol_trigger</span><span class="p">(</span>
+            <span class="n">det</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+            <span class="n">ant_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">VpolAntenna</span><span class="p">,</span>
+            <span class="n">require_mc_truth</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">montecarlo</span>
+        <span class="p">)</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;hpol&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">detector</span><span class="p">:</span> <span class="n">pol_trigger</span><span class="p">(</span>
+            <span class="n">det</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+            <span class="n">ant_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">HpolAntenna</span><span class="p">,</span>
+            <span class="n">require_mc_truth</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">montecarlo</span>
+        <span class="p">)</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;detector_description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ARA02 station in relative coordinates&quot;</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;trigger_requirement&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;3/8 tunnel diode triggers in either polarization&quot;</span>
+
+<span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">detector</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+    <span class="n">detector</span> <span class="o">=</span> <span class="n">ara</span><span class="o">.</span><span class="n">ARA03</span><span class="p">()</span>
+    <span class="n">detector</span><span class="o">.</span><span class="n">build_antennas</span><span class="p">(</span><span class="n">power_threshold</span><span class="o">=</span><span class="mf">6.46</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="ow">not</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">noiseless</span><span class="p">))</span>
+    <span class="n">is_triggered</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;global&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">detector</span><span class="p">:</span> <span class="n">detector</span><span class="o">.</span><span class="n">triggered</span><span class="p">(</span>
+            <span class="n">polarized_antenna_requirement</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">require_mc_truth</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">montecarlo</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;vpol&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">detector</span><span class="p">:</span> <span class="n">pol_trigger</span><span class="p">(</span>
+            <span class="n">det</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+            <span class="n">ant_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">VpolAntenna</span><span class="p">,</span>
+            <span class="n">require_mc_truth</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">montecarlo</span>
+        <span class="p">)</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;hpol&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">detector</span><span class="p">:</span> <span class="n">pol_trigger</span><span class="p">(</span>
+            <span class="n">det</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+            <span class="n">ant_type</span><span class="o">=</span><span class="n">ara</span><span class="o">.</span><span class="n">HpolAntenna</span><span class="p">,</span>
+            <span class="n">require_mc_truth</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">montecarlo</span>
+        <span class="p">)</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;detector_description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ARA03 station in relative coordinates&quot;</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;trigger_requirement&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;3/8 tunnel diode triggers in either polarization&quot;</span>
+
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid detector argument&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Set ice model (just use the default for now)</span>
+<span class="n">ice</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ice</span>
+
+<span class="c1"># Set earth model (just use the default for now)</span>
+<span class="n">earth</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">earth</span>
+
+
+<span class="c1"># Set neutrino generator with a radius which varies with energy, since higher</span>
+<span class="c1"># energy events can be seen from further away</span>
+<span class="k">if</span> <span class="mf">1e3</span><span class="o">&lt;=</span><span class="n">args</span><span class="o">.</span><span class="n">energy</span><span class="o">&lt;</span><span class="mf">1e8</span><span class="p">:</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="k">elif</span> <span class="mf">1e8</span><span class="o">&lt;=</span><span class="n">args</span><span class="o">.</span><span class="n">energy</span><span class="o">&lt;</span><span class="mf">1e9</span><span class="p">:</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">2500</span>
+<span class="k">elif</span> <span class="mf">1e9</span><span class="o">&lt;=</span><span class="n">args</span><span class="o">.</span><span class="n">energy</span><span class="o">&lt;</span><span class="mf">1e10</span><span class="p">:</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="k">elif</span> <span class="mf">1e10</span><span class="o">&lt;=</span><span class="n">args</span><span class="o">.</span><span class="n">energy</span><span class="p">:</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">CylindricalGenerator</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">2800</span><span class="p">,</span>
+                                        <span class="n">energy</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
+                                        <span class="n">shadow</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">shadow</span><span class="p">,</span>
+                                        <span class="n">earth_model</span><span class="o">=</span><span class="n">earth</span><span class="p">,</span>
+                                        <span class="n">source</span><span class="o">=</span><span class="s2">&quot;cosmogenic&quot;</span><span class="p">)</span>
+<span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;generator_size_r&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">dr</span>
+<span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;generator_size_z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">dz</span>
+
+
+<span class="c1"># Set secondary interactions</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="s1">&#39;interaction_model&#39;</span><span class="p">):</span>
+    <span class="n">generator</span><span class="o">.</span><span class="n">interaction_model</span><span class="o">.</span><span class="n">include_secondaries</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">secondaries</span>
+
+<span class="c1"># Additional metadata</span>
+<span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;monte_carlo_truth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">montecarlo</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;interaction_model_class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">generator</span><span class="o">.</span><span class="n">interaction_model</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;secondaries&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">interaction_model</span><span class="o">.</span><span class="n">include_secondaries</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;flavor_ratio_e&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">ratio</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;flavor_ratio_mu&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">ratio</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">script_metadata</span><span class="p">[</span><span class="s1">&#39;flavor_ratio_tau&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">ratio</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="c1"># Write script metadata to output file</span>
+<span class="n">outfile</span><span class="o">.</span><span class="n">add_analysis_metadata</span><span class="p">(</span><span class="s2">&quot;sim_parameters&quot;</span><span class="p">,</span> <span class="n">script_metadata</span><span class="p">)</span>
+
+<span class="c1"># Set signal model (just use the default for now)</span>
+<span class="n">signal_model</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span>
+
+<span class="c1"># Limit oncone angle range to reduce memory consumption. Any signals generated</span>
+<span class="c1"># within this angle of the Cherenkov cone will simply use the Askaryan signal</span>
+<span class="c1"># as it appears on the Cherenov cone, since calculations very close to the</span>
+<span class="c1"># cone consume drastically more memory than those further away.</span>
+<span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="o">.</span><span class="n">oncone_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">)</span>
+
+
+<span class="c1"># Prepare signal amplitude dataset. This dataset will provide extra information</span>
+<span class="c1"># which may be useful in characterizing events for analysis, especially if the</span>
+<span class="c1"># full waveforms are not recorded.</span>
+<span class="n">amp_dataset</span> <span class="o">=</span> <span class="n">outfile</span><span class="o">.</span><span class="n">create_analysis_dataset</span><span class="p">(</span>
+    <span class="s2">&quot;signal_amplitudes&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">detector</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">detector</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">amp_dataset</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;events&quot;</span>
+<span class="n">amp_dataset</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;antennas&quot;</span>
+<span class="n">amp_dataset</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;amplitudes&quot;</span>
+<span class="n">amp_dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;keys&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s2">&quot;signal&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;signal+noise&quot;</span><span class="p">]</span>
+
+<span class="c1"># Set up the simulation kernel. The cuts described in offcone_max and</span>
+<span class="c1"># weight_min will speed up the simulation without changing the results much.</span>
+<span class="c1"># Any signals that would be observed more than 40 degrees away from the</span>
+<span class="c1"># Cherenkov cone are skipped, since their signal will be too weak to trigger</span>
+<span class="c1"># the antennas. Any event with a survival weight (probability of traversing its</span>
+<span class="c1"># path through the Earth) less than 1e-5 will be skipped since it will</span>
+<span class="c1"># contribute negligibly to the overall effective volume.</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">EventKernel</span><span class="p">(</span>
+    <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span>
+    <span class="n">antennas</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+    <span class="n">ice_model</span><span class="o">=</span><span class="n">ice</span><span class="p">,</span>
+    <span class="n">event_writer</span><span class="o">=</span><span class="n">outfile</span><span class="p">,</span>
+    <span class="n">triggers</span><span class="o">=</span><span class="n">is_triggered</span><span class="p">,</span>
+    <span class="n">signal_model</span><span class="o">=</span><span class="n">signal_model</span><span class="p">,</span>
+    <span class="n">signal_times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">200e-9</span><span class="p">,</span> <span class="mf">200e-9</span><span class="p">,</span> <span class="mi">4001</span><span class="p">),</span>
+    <span class="n">offcone_max</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">weight_min</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Run the kernel over the specified number of events, with additional code for</span>
+<span class="c1"># recording the signal amplitudes on each antenna for each event.</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">number</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">detector</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">reset_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ant</span> <span class="ow">in</span> <span class="n">detector</span><span class="p">:</span>
+            <span class="n">ant</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">reset_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">event</span><span class="p">,</span> <span class="n">triggered</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">amp_dataset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">max_waves</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">amp_dataset</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">row</span><span class="o">+</span><span class="n">max_waves</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">ant</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">detector</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">wave</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ant</span><span class="o">.</span><span class="n">signals</span><span class="p">,</span> <span class="n">ant</span><span class="o">.</span><span class="n">all_waveforms</span><span class="p">)):</span>
+            <span class="n">amp_dataset</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="n">j</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+            <span class="n">amp_dataset</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="n">j</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">wave</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">add_analysis_indices</span><span class="p">(</span><span class="s2">&quot;signal_amplitudes&quot;</span><span class="p">,</span> <span class="n">global_index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                 <span class="n">start_index</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">max_waves</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="n">outfile</span><span class="o">.</span><span class="n">add_file_metadata</span><span class="p">({</span>
+    <span class="s2">&quot;kernel_completed&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-</span><span class="si">%d</span><span class="s1">-%m %H:%M:%S&#39;</span><span class="p">)</span>
+<span class="p">})</span>
+
+
+<span class="c1"># Analyze effective volume from this simulation, for the global detector trigger</span>
+<span class="c1"># as well as any additional triggers defined</span>
+<span class="k">with</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">reader</span><span class="p">:</span>
+    <span class="n">global_triggers</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="s1">&#39;mc_triggers&#39;</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+        <span class="n">other_triggers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">reader</span><span class="p">[</span><span class="s1">&#39;mc_triggers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">other_trigger_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="p">[</span><span class="s1">&#39;mc_triggers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;keys&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">other_triggers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">other_trigger_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_particle_info</span><span class="p">(</span><span class="s1">&#39;survival_weight&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">triggered</span><span class="p">:</span>
+            <span class="n">global_triggers</span> <span class="o">+=</span> <span class="n">weight</span>
+        <span class="k">if</span> <span class="n">other_trigger_keys</span><span class="o">!=</span><span class="p">[]:</span>
+            <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get_triggered_components</span><span class="p">():</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">other_trigger_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">component</span><span class="p">))</span>
+                <span class="n">other_triggers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">weight</span>
+
+<span class="n">triggers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="n">global_triggers</span><span class="p">],</span> <span class="n">other_triggers</span><span class="p">))</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="sa">b</span><span class="s2">&quot;global&quot;</span><span class="p">],</span> <span class="n">other_trigger_keys</span><span class="p">))</span>
+
+<span class="n">veff</span> <span class="o">=</span> <span class="n">triggers</span> <span class="o">/</span> <span class="n">generator</span><span class="o">.</span><span class="n">count</span> <span class="o">*</span> <span class="n">generator</span><span class="o">.</span><span class="n">volume</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">triggers</span><span class="p">)</span> <span class="o">/</span> <span class="n">generator</span><span class="o">.</span><span class="n">count</span> <span class="o">*</span> <span class="n">generator</span><span class="o">.</span><span class="n">volume</span>
+
+<span class="c1"># Write effective volume data to the output file</span>
+<span class="k">with</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;effective_volume&#39;</span> <span class="ow">in</span> <span class="n">writer</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">writer</span><span class="p">[</span><span class="s1">&#39;effective_volume&#39;</span><span class="p">]</span>
+    <span class="n">veff_dataset</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">create_analysis_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;effective_volume&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">veff</span><span class="p">),</span>
+                                                    <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">err</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">veff_dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;keys&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keys</span>
+    <span class="n">veff_dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;generation_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">volume</span>
+    <span class="n">veff_dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;total_events_thrown&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">count</span>
+
+<span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyREx</a></h1>
+
+
+
+<p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
+Version 1.10.0</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=bhokansonfasig&repo=pyrex&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+<h3>Quick search</h3>
+  <div class="searchformwrapper">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+  </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Example Code</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../examples.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">PyREx API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex">Source (GitHub)</a></li>
+    
+    <li class="toctree-l1"><a href="https://github.com/bhokansonfasig/pyrex/issues">Report an Issue</a></li>
+    
+</ul>
+
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

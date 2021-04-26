@@ -1,4 +1,4 @@
-pyrex.ice\_model.GreenlandIce
+﻿pyrex.ice\_model.GreenlandIce
 =============================
 
 .. currentmodule:: pyrex.ice_model

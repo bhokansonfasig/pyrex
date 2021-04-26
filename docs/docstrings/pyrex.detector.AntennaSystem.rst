@@ -1,4 +1,4 @@
-pyrex.detector.AntennaSystem
+﻿pyrex.detector.AntennaSystem
 ============================
 
 .. currentmodule:: pyrex.detector

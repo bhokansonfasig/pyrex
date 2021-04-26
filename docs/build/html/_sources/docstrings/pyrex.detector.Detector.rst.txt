@@ -1,4 +1,4 @@
-pyrex.detector.Detector
+﻿pyrex.detector.Detector
 =======================
 
 .. currentmodule:: pyrex.detector

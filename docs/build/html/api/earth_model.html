@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Earth Model (pyrex.earth_model) &mdash; PyREx 1.9.0 documentation</title>
+    <title>Earth Models (pyrex.earth_model) &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,15 +23,14 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
-    <link rel="next" title="pyrex.earth_model.prem_density" href="../docstrings/pyrex.earth_model.prem_density.html" >
+    <link rel="next" title="pyrex.earth_model.PREM" href="../docstrings/pyrex.earth_model.PREM.html" >
     <link rel="prev" title="pyrex.detector.CombinedDetector" href="../docstrings/pyrex.detector.CombinedDetector.html" > 
   </head>
   <body>
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -70,7 +69,7 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="../docstrings/pyrex.earth_model.prem_density.html" title="pyrex.earth_model.prem_density"
+        <a href="../docstrings/pyrex.earth_model.PREM.html" title="pyrex.earth_model.PREM"
            accesskey="N">next</a>
       </li>
       <li class="active">
@@ -91,22 +90,22 @@
           <div class="body" id="spc-section-body">
             
   <div class="section" id="module-pyrex.earth_model">
-<span id="earth-model-pyrex-earth-model"></span><h1>Earth Model (<a class="reference internal" href="#module-pyrex.earth_model" title="pyrex.earth_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.earth_model</span></code></a>)<a class="headerlink" href="#module-pyrex.earth_model" title="Permalink to this headline">¶</a></h1>
-<p>Module containing earth model functions.</p>
-<p>The earth model uses the Preliminary Earth Model (PREM) for density as a
-function of radius and a simple integrator for calculation of the slant
-depth along a straight path through the Earth.</p>
+<span id="earth-models-pyrex-earth-model"></span><h1>Earth Models (<a class="reference internal" href="#module-pyrex.earth_model" title="pyrex.earth_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.earth_model</span></code></a>)<a class="headerlink" href="#module-pyrex.earth_model" title="Permalink to this headline">¶</a></h1>
+<p>Module containing earth model classes.</p>
+<p>The earth models define density as a function of radius and provide a simple
+integrator for calculation of the column density along a straight path through
+the Earth.</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.earth_model.prem_density.html#pyrex.earth_model.prem_density" title="pyrex.earth_model.prem_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prem_density</span></code></a></p></td>
-<td><p>Calculates the Earth’s density at a given radius.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../docstrings/pyrex.earth_model.PREM.html#pyrex.earth_model.PREM" title="pyrex.earth_model.PREM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PREM</span></code></a></p></td>
+<td><p>Class describing the Earth’s density.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.earth_model.slant_depth.html#pyrex.earth_model.slant_depth" title="pyrex.earth_model.slant_depth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slant_depth</span></code></a></p></td>
-<td><p>Calculates the material thickness of a chord cutting through Earth.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../docstrings/pyrex.earth_model.CoreMantleCrustModel.html#pyrex.earth_model.CoreMantleCrustModel" title="pyrex.earth_model.CoreMantleCrustModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoreMantleCrustModel</span></code></a></p></td>
+<td><p>Class describing the Earth’s density.</p></td>
 </tr>
 </tbody>
 </table>
@@ -123,7 +122,7 @@ depth along a straight path through the Earth.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -192,10 +191,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

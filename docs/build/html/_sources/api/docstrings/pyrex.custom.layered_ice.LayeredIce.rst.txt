@@ -1,4 +1,4 @@
-pyrex.custom.layered\_ice.LayeredIce
+﻿pyrex.custom.layered\_ice.LayeredIce
 ====================================
 
 .. currentmodule:: pyrex.custom.layered_ice

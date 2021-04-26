@@ -1,4 +1,4 @@
-pyrex.custom.irex.antenna.EnvelopeHpol
+﻿pyrex.custom.irex.antenna.EnvelopeHpol
 ======================================
 
 .. currentmodule:: pyrex.custom.irex.antenna

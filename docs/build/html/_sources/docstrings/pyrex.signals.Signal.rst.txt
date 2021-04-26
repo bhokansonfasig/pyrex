@@ -1,4 +1,4 @@
-pyrex.signals.Signal
+﻿pyrex.signals.Signal
 ====================
 
 .. currentmodule:: pyrex.signals
@@ -11,8 +11,10 @@ pyrex.signals.Signal
       .. autosummary::
          :toctree:
       
+         Signal.copy
          Signal.filter_frequencies
          Signal.resample
+         Signal.shift
          Signal.with_times
 
 

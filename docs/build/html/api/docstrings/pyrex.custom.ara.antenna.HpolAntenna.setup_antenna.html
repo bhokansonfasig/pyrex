@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.custom.ara.antenna.HpolAntenna.setup_antenna &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.custom.ara.antenna.HpolAntenna.setup_antenna &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script type="text/javascript" src="../../_static/searchtools.js"></script>
     <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../../about.html" >
     <link rel="index" title="Index" href="../../genindex.html" >
     <link rel="search" title="Search" href="../../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../../index.html" > 
   </head>
   <body>
 
@@ -51,7 +50,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../../index.html">PyREx 1.10.0 documentation</a></li>
 	 
     </ul>
               
@@ -80,9 +79,9 @@
             
   <div class="section" id="pyrex-custom-ara-antenna-hpolantenna-setup-antenna">
 <h1>pyrex.custom.ara.antenna.HpolAntenna.setup_antenna<a class="headerlink" href="#pyrex-custom-ara-antenna-hpolantenna-setup-antenna" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
+<dl class="py method">
 <dt id="pyrex.custom.ara.antenna.HpolAntenna.setup_antenna">
-<code class="sig-prename descclassname">HpolAntenna.</code><code class="sig-name descname">setup_antenna</code><span class="sig-paren">(</span><em class="sig-param">response_data</em>, <em class="sig-param">center_frequency=500000000.0</em>, <em class="sig-param">bandwidth=800000000.0</em>, <em class="sig-param">resistance=16.8</em>, <em class="sig-param">orientation=(0</em>, <em class="sig-param">0</em>, <em class="sig-param">1)</em>, <em class="sig-param">efficiency=1</em>, <em class="sig-param">noisy=True</em>, <em class="sig-param">unique_noise_waveforms=10</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.antenna.HpolAntenna.setup_antenna" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">HpolAntenna.</span></code><code class="sig-name descname"><span class="pre">setup_antenna</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">800000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">325</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">efficiency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_noise_waveforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.custom.ara.antenna.HpolAntenna.setup_antenna" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the antenna by passing along its init arguments.</p>
 <p>Any arguments passed to this method are directly passed to the
 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> methods of the <code class="docutils literal notranslate"><span class="pre">antenna</span></code>’s class.</p>
@@ -101,8 +100,11 @@ and azimuth axes, respectively.</p>
 </dd>
 <dt><strong>bandwidth</strong><span class="classifier">float, optional</span></dt><dd><p>Bandwidth (Hz) of the antenna.</p>
 </dd>
-<dt><strong>resistance</strong><span class="classifier">float, optional</span></dt><dd><p>The noise resistance (ohm) of the antenna. Used to calculate the
-RMS voltage of the antenna noise.</p>
+<dt><strong>temperature</strong><span class="classifier">float, optional</span></dt><dd><p>The noise temperature (K) of the antenna. Used in combination with
+<em class="xref py py-obj">resistance</em> to calculate the RMS voltage of the antenna noise.</p>
+</dd>
+<dt><strong>resistance</strong><span class="classifier">float, optional</span></dt><dd><p>The noise resistance (ohm) of the antenna. Used in combination with
+<em class="xref py py-obj">temperature</em> to calculate the RMS voltage of the antenna noise.</p>
 </dd>
 <dt><strong>orientation</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the z-axis of the antenna.</p>
 </dd>
@@ -131,7 +133,7 @@ signal to have its own noise.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -195,10 +197,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

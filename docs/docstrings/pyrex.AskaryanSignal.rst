@@ -1,4 +1,4 @@
-pyrex.AskaryanSignal
+﻿pyrex.AskaryanSignal
 ====================
 
 .. currentmodule:: pyrex
@@ -11,12 +11,16 @@ pyrex.AskaryanSignal
       .. autosummary::
          :toctree:
       
-         AskaryanSignal.RAC
+         AskaryanSignal.copy
+         AskaryanSignal.em_shower_RAC
          AskaryanSignal.em_shower_profile
          AskaryanSignal.filter_frequencies
+         AskaryanSignal.had_shower_RAC
          AskaryanSignal.had_shower_profile
          AskaryanSignal.max_length
          AskaryanSignal.resample
+         AskaryanSignal.set_buffers
+         AskaryanSignal.shift
          AskaryanSignal.shower_signal
          AskaryanSignal.with_times
 
@@ -31,7 +35,9 @@ pyrex.AskaryanSignal
          AskaryanSignal.dt
          AskaryanSignal.envelope
          AskaryanSignal.frequencies
+         AskaryanSignal.oncone_range
          AskaryanSignal.spectrum
          AskaryanSignal.value_type
+         AskaryanSignal.values
          AskaryanSignal.vector_potential
 

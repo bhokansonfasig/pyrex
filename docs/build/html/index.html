@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>PyREx Documentation &mdash; PyREx 1.9.0 documentation</title>
+    <title>PyREx Documentation &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/searchtools.js"></script>
     <script type="text/javascript" src="_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="about.html" >
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="#" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="#" >
     <link rel="next" title="About PyREx" href="about.html" > 
   </head>
   <body>
@@ -102,11 +101,11 @@ As such, the package is designed to be highly modular so that it can easily be u
 <h3>Getting Started<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id7">
 <h4>Requirements<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
-<p>PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+.
-After installing python from <a class="reference external" href="https://www.python.org/downloads/">https://www.python.org/downloads/</a>, the required packages can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span></code> as follows, or they will be installed automatically by simply installing pyrex as specified in the next section.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install numpy&gt;<span class="o">=</span><span class="m">1</span>.13
-pip install scipy&gt;<span class="o">=</span><span class="m">0</span>.19
-pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
+<p>PyREx requires python version 3.6+ as well as numpy version 1.17+, scipy version 1.4+, and h5py version 3.0+.
+After installing python from <a class="reference external" href="https://www.python.org/downloads/">https://www.python.org/downloads/</a>, the required packages can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span></code> as follows, or they will be installed automatically by simply installing PyREx as specified in the next section.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install numpy&gt;<span class="o">=</span><span class="m">1</span>.17
+pip install scipy&gt;<span class="o">=</span><span class="m">1</span>.4
+pip install h5py&gt;<span class="o">=</span><span class="m">3</span>.0
 </pre></div>
 </div>
 </div>
@@ -123,12 +122,12 @@ pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
 <p>The following packages are not required for running PyREx by default, but may be useful or required for running some specific parts of the code:</p>
 <div class="section" id="id11">
 <h5><a class="reference external" href="https://matplotlib.org">matplotlib</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h5>
-<p>Recommended version: 2.1+</p>
+<p>Recommended version: 3.0+</p>
 <p>Used for creating plots in example code and auxiliary scripts.</p>
 </div>
 <div class="section" id="id14">
 <h5><a class="reference external" href="https://www.sphinx-doc.org">sphinx</a> and <a class="reference external" href="https://numpydoc.readthedocs.io">numpydoc</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h5>
-<p>Recommended version: 2.1+, 0.9+</p>
+<p>Recommended version: 3.0+, 1.0+</p>
 <p>Required for building documentation. Only needed by documentation maintainers and release handlers.</p>
 </div>
 <div class="section" id="id16">
@@ -140,7 +139,7 @@ pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
 </div>
 <div class="section" id="id17">
 <h3>Examples<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
-<p>For examples of how to use PyREx, see the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/usage.html">usage page</a> and the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/examples.html">examples page</a> in the documentation, or the python notebooks in the <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/tree/master/examples">examples</a> directory.</p>
+<p>For examples of how to use PyREx, see the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/usage.html">usage page</a> and the <a class="reference external" href="https://bhokansonfasig.github.io/pyrex/build/html/examples.html">examples page</a> in the documentation, or the python notebooks and scripts in the <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/tree/master/examples">examples</a> directory.</p>
 </div>
 <div class="section" id="id21">
 <h3>Contributing<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
@@ -155,7 +154,7 @@ pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
 <div class="section" id="id24">
 <h3>License<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://github.com/bhokansonfasig/pyrex/blob/master/LICENSE">MIT License</a></p>
-<p>Copyright (c) 2019 Ben Hokanson-Fasig</p>
+<p>Copyright (c) 2021 Ben Hokanson-Fasig</p>
 </div>
 </div>
 </div>
@@ -171,7 +170,7 @@ pip install h5py&gt;<span class="o">=</span><span class="m">2</span>.7
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -235,10 +234,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>
