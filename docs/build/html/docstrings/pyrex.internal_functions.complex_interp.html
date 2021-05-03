@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.complex_interp &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.internal_functions.complex_interp &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="next" title="pyrex.internal_functions.complex_bilinear_interp" href="pyrex.internal_functions.complex_bilinear_interp.html" >
     <link rel="prev" title="pyrex.internal_functions.flatten" href="pyrex.internal_functions.flatten.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
@@ -93,9 +92,9 @@
             
   <div class="section" id="pyrex-internal-functions-complex-interp">
 <h1>pyrex.internal_functions.complex_interp<a class="headerlink" href="#pyrex-internal-functions-complex-interp" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
+<dl class="py function">
 <dt id="pyrex.internal_functions.complex_interp">
-<code class="sig-prename descclassname">pyrex.internal_functions.</code><code class="sig-name descname">complex_interp</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">xp</em>, <em class="sig-param">fp</em>, <em class="sig-param">method='cartesian'</em>, <em class="sig-param">outer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.complex_interp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">pyrex.internal_functions.</span></code><code class="sig-name descname"><span class="pre">complex_interp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cartesian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.complex_interp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform interpolation on complex values.</p>
 <p>Calculates the linear interpolation of an array of complex values <em class="xref py py-obj">fp</em>.
 Interpolates in real and imaginary parts for the Cartesian method, and
@@ -129,7 +128,7 @@ retain their value at the closest edge of <em class="xref py py-obj">xp</em>.</p
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>ValueError</strong></dt><dd><p>If an unspecified interpolation method is given.
+<dt>ValueError</dt><dd><p>If an unspecified interpolation method is given.
 Or if <em class="xref py py-obj">xp</em> and <em class="xref py py-obj">fp</em> have different length.
 Or if <em class="xref py py-obj">xp</em> and <em class="xref py py-obj">fp</em> are not 1-D sequences.</p>
 </dd>
@@ -151,7 +150,7 @@ Or if <em class="xref py py-obj">xp</em> and <em class="xref py py-obj">fp</em> 
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -220,10 +219,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

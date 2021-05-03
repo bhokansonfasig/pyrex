@@ -1,4 +1,4 @@
-pyrex.internal\_functions.lazy\_property
+﻿pyrex.internal\_functions.lazy\_property
 ========================================
 
 .. currentmodule:: pyrex.internal_functions

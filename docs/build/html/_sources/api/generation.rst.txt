@@ -9,10 +9,8 @@ Event Generators (:mod:`pyrex.generation`)
     :toctree: ../docstrings
     :nosignatures:
 
-    BaseGenerator
+    Generator
     CylindricalGenerator
     RectangularGenerator
-    ShadowGenerator
     ListGenerator
-    NumpyFileGenerator
     FileGenerator

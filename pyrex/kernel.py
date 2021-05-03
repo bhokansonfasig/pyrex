@@ -104,7 +104,7 @@ class EventKernel:
     pyrex.RayTracer : Class for calculating the ray-trace solutions between
                       points.
     pyrex.AskaryanSignal : Class for generating Askaryan signals according to
-                           ARVZ parameterization.
+                           ARZ parameterization.
     pyrex.File : Class for reading or writing data files.
 
     Notes

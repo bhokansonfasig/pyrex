@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.DipoleAntenna &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.DipoleAntenna &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.AntennaSystem" href="pyrex.AntennaSystem.html" >
     <link rel="prev" title="pyrex.Antenna" href="pyrex.Antenna.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -92,9 +91,9 @@
             
   <div class="section" id="pyrex-dipoleantenna">
 <h1>pyrex.DipoleAntenna<a class="headerlink" href="#pyrex-dipoleantenna" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.DipoleAntenna">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.</code><code class="sig-name descname">DipoleAntenna</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">position</em>, <em class="sig-param">center_frequency</em>, <em class="sig-param">bandwidth</em>, <em class="sig-param">resistance</em>, <em class="sig-param">orientation=(0</em>, <em class="sig-param">0</em>, <em class="sig-param">1)</em>, <em class="sig-param">trigger_threshold=0</em>, <em class="sig-param">effective_height=None</em>, <em class="sig-param">noisy=True</em>, <em class="sig-param">unique_noise_waveforms=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.DipoleAntenna" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.</span></code><code class="sig-name descname"><span class="pre">DipoleAntenna</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effective_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_noise_waveforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.DipoleAntenna" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for half-wave dipole antennas.</p>
 <p>Stores the attributes of an antenna as well as handling receiving,
 processing, and storing signals and adding noise. Uses a first-order
@@ -111,8 +110,11 @@ trigger.</p>
 </dd>
 <dt><strong>bandwidth</strong><span class="classifier">float</span></dt><dd><p>Bandwidth (Hz) of the antenna.</p>
 </dd>
-<dt><strong>resistance</strong><span class="classifier">float</span></dt><dd><p>The noise resistance (ohm) of the antenna. Used to calculate the RMS
-voltage of the antenna noise.</p>
+<dt><strong>temperature</strong><span class="classifier">float</span></dt><dd><p>The noise temperature (K) of the antenna. Used in combination with
+<em class="xref py py-obj">resistance</em> to calculate the RMS voltage of the antenna noise.</p>
+</dd>
+<dt><strong>resistance</strong><span class="classifier">float</span></dt><dd><p>The noise resistance (ohm) of the antenna. Used in combination with
+<em class="xref py py-obj">temperature</em> to calculate the RMS voltage of the antenna noise.</p>
 </dd>
 <dt><strong>orientation</strong><span class="classifier">array_like, optional</span></dt><dd><p>Vector direction of the z-axis of the antenna.</p>
 </dd>
@@ -247,7 +249,7 @@ will be used instead of the RMS voltage calculated from the values of
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -316,10 +318,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

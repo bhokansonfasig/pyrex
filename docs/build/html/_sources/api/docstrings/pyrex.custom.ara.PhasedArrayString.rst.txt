@@ -1,4 +1,4 @@
-pyrex.custom.ara.PhasedArrayString
+﻿pyrex.custom.ara.PhasedArrayString
 ==================================
 
 .. currentmodule:: pyrex.custom.ara

@@ -1,4 +1,4 @@
-pyrex.ice\_model.ArasimIce
+﻿pyrex.ice\_model.ArasimIce
 ==========================
 
 .. currentmodule:: pyrex.ice_model

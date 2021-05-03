@@ -1,4 +1,4 @@
-pyrex.custom.ara.detector.ARAString
+﻿pyrex.custom.ara.detector.ARAString
 ===================================
 
 .. currentmodule:: pyrex.custom.ara.detector

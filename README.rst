@@ -20,14 +20,14 @@ Getting Started
 Requirements
 ------------
 
-PyREx requires python version 3.6+ as well as numpy version 1.13+, scipy version 0.19+, and h5py version 2.7+.
-After installing python from https://www.python.org/downloads/, the required packages can be installed with ``pip`` as follows, or they will be installed automatically by simply installing pyrex as specified in the next section.
+PyREx requires python version 3.6+ as well as numpy version 1.17+, scipy version 1.4+, and h5py version 3.0+.
+After installing python from https://www.python.org/downloads/, the required packages can be installed with ``pip`` as follows, or they will be installed automatically by simply installing PyREx as specified in the next section.
 
 .. code-block:: shell
 
-    pip install numpy>=1.13
-    pip install scipy>=0.19
-    pip install h5py>=2.7
+    pip install numpy>=1.17
+    pip install scipy>=1.4
+    pip install h5py>=3.0
 
 Installing
 ----------
@@ -48,14 +48,14 @@ The following packages are not required for running PyREx by default, but may be
 `matplotlib <https://matplotlib.org>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Recommended version: 2.1+
+Recommended version: 3.0+
 
 Used for creating plots in example code and auxiliary scripts.
 
 `sphinx <https://www.sphinx-doc.org>`_ and `numpydoc <https://numpydoc.readthedocs.io>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Recommended version: 2.1+, 0.9+
+Recommended version: 3.0+, 1.0+
 
 Required for building documentation. Only needed by documentation maintainers and release handlers.
 
@@ -70,7 +70,7 @@ Used by IREX sub-package for some complex front-end circuits. Not needed for def
 Examples
 ========
 
-For examples of how to use PyREx, see the `usage page <https://bhokansonfasig.github.io/pyrex/build/html/usage.html>`_ and the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the python notebooks in the `examples <https://github.com/bhokansonfasig/pyrex/tree/master/examples>`_ directory.
+For examples of how to use PyREx, see the `usage page <https://bhokansonfasig.github.io/pyrex/build/html/usage.html>`_ and the `examples page <https://bhokansonfasig.github.io/pyrex/build/html/examples.html>`_ in the documentation, or the python notebooks and scripts in the `examples <https://github.com/bhokansonfasig/pyrex/tree/master/examples>`_ directory.
 
 
 Contributing
@@ -90,4 +90,4 @@ License
 
 `MIT License <https://github.com/bhokansonfasig/pyrex/blob/master/LICENSE>`_
 
-Copyright (c) 2019 Ben Hokanson-Fasig
+Copyright (c) 2021 Ben Hokanson-Fasig

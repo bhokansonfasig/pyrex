@@ -938,7 +938,7 @@ class ARVZAskaryanSignal(ARZAskaryanSignal):
     """
     Class for generating Askaryan signals according to ARZ parameterization.
 
-    .. deprecated:: 2.0.0
+    .. deprecated:: 1.10.0
         `ARVZAskaryanSignal` has been renamed `ARZAskaryanSignal`.
 
     Stores the time-domain information for an Askaryan electric field (V/m)

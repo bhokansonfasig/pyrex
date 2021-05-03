@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.internal_functions.LazyMutableClass &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.internal_functions.LazyMutableClass &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="Helper Functions (pyrex.internal_functions)" href="../api/internal_functions.html" >
     <link rel="next" title="Signal Processing (pyrex.signals)" href="../api/signals.html" >
     <link rel="prev" title="pyrex.internal_functions.lazy_property" href="pyrex.internal_functions.lazy_property.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/internal_functions.html" accesskey="U">Helper Functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.internal_functions</span></code>)</a></li> 
@@ -93,9 +92,9 @@
             
   <div class="section" id="pyrex-internal-functions-lazymutableclass">
 <h1>pyrex.internal_functions.LazyMutableClass<a class="headerlink" href="#pyrex-internal-functions-lazymutableclass" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.internal_functions.LazyMutableClass">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.internal_functions.</code><code class="sig-name descname">LazyMutableClass</code><span class="sig-paren">(</span><em class="sig-param">static_attributes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.LazyMutableClass" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.internal_functions.</span></code><code class="sig-name descname"><span class="pre">LazyMutableClass</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">static_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.internal_functions.LazyMutableClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class with lazy properties which may depend on other class attributes.</p>
 <p>This class is intended as a base class for any class which desires lazy
 properties which depend on other attributes and thus may need to be
@@ -123,9 +122,9 @@ call.</p>
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="n">LazyMutableClass</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 <span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 <span class="gp">... </span>    <span class="nd">@lazy_property</span>
@@ -167,7 +166,7 @@ call.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -236,10 +235,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

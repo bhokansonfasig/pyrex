@@ -3,6 +3,79 @@ Version History
 
 .. currentmodule:: pyrex
 
+Version 1.10.0
+==============
+
+.. rubric:: New Features
+
+* Added a cut in the :class:`EventKernel` to skip the simulation of events with observation angles larger than a given value away from the Cherenkov angle.
+
+* Added a cut in the :class:`EventKernel` to skip the simulation of events with weight(s) below a given value.
+
+* Added an option to interpolate attenuation calculations to speed up ray tracing steps.
+
+* Added a toggle in event generators to opt in/out of using the secondary interaction approximations.
+
+* Added the ability to toggle generators between the expected neutrino ratios from astrophysical or cosmogenic origins.
+
+* Added :attr:`volume` and :attr:`solid_angle` properties to generator objects.
+
+* Earth model moved into :data:`earth`, an instance of the new :class:`PREM` class.
+
+* Added the :class:`CoreMantleCrustModel` class to replicate the Earth model used in AraSim.
+
+* Added :mod:`pyrex.custom.ara.stations` which implements the layouts of the deployed ARA stations in :class:`Detector` subclasses.
+
+* New HDF5 file version 1.1 which changes how string data is handled due to changes in the :mod:`h5py` package.
+
+* Added the :meth:`File.get_data` method to read arbitrary datasets from files.
+
+.. rubric:: Changes
+
+* Minimum versions of dependencies increased (:mod:`numpy`>=1.17, :mod:`scipy`>=1.4, :mod:`h5py`>=3.0).
+
+* Added support for Askaryan signals observed directly at the Cherenkov angle.
+
+* Implemented alternative form factor for hadronic interactions in Askaryan model.
+
+* Askaryan models now inherit from :class:`FunctionSignal`, improving the accuracy of their values after the application of multiple filters.
+
+* Added optional buffers to the start and end of :class:`FunctionSignal` times.
+
+* Changed the default times array of the :class:`EventKernel` to be symmetric about zero.
+
+* Implemented extrapolation of attenuation data in :class:`ArasimIce` to match the implementation in AraSim.
+
+* All physical constants now pulled from :mod:`scipy.constants` rather than hard-coded.
+
+* Removed the previously deprecated classes: :class:`IceModel`, :class:`ShadowGenerator`, and :class:`NumpyFileGenerator`.
+
+* Renamed :class:`ARVZAskaryanSignal` to :class:`ARZAskaryanSignal` to properly match the paper authors.
+
+.. rubric:: Bug Fixes
+
+* Fixed the relative timing of Askaryan pulses inside vs outside of the Cherenkov cone.
+
+* Fixed a numerical error in the attenuation calculation in deep ice with slowly changing index of refraction.
+
+* Fixed an error in the indirect ray launch angle minimization in deep ice.
+
+* Improved the slant depth calculation in the Earth models to use the proper endpoint in the ice rather than (0, 0).
+
+* Fixed the calculation of the :class:`ThermalNoise` rms value based on a proper antenna system connected to ground.
+
+.. rubric:: Performance Improvements
+
+* :class:`FunctionSignal` values are now lazily evaluated, including delayed application of filters.
+
+* Improved performance of Askaryan signal calculation by shifting the relevant portion of the convolution rather than calculating and truncating a larger convolution.
+
+* Default :class:`ThermalNoise` class now uses a faster FFT-based calculation. The old behavior was moved to the :class:`FullThermalNoise` class.
+
+* HDF5 file reader improved to read data in chunks rather than line-by-line.
+
+
+
 Version 1.9.0
 =============
 
@@ -359,7 +432,7 @@ Version 1.1.2
 
 * Change :meth:`Antenna.make_noise` to use a single master noise object and use :meth:`ThermalNoise.with_times` to calculate noise at different times.
 
-    * To ensure noise is not obviously periodic (for <100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.
+  * To ensure noise is not obviously periodic (for <100 signals), uses 100 times the recommended number of frequencies, which results in longer computation time for noise waveforms.
 
 
 
@@ -381,17 +454,17 @@ Version 1.1.0
 
 * Added :meth:`Antenna.directional_gain` and :meth:`Antenna.polarization_gain` methods to base :class:`Antenna`.
 
-    * :meth:`Antenna.receive` method should no longer be overwritten in most cases.
+  * :meth:`Antenna.receive` method should no longer be overwritten in most cases.
 
-    * :class:`Antenna` now has orientation defined by :attr:`z_axis` and :class:`x_axis`.
+  * :class:`Antenna` now has orientation defined by :attr:`z_axis` and :class:`x_axis`.
 
-    * :attr:`antenna_factor` and :attr:`efficiency` attributes added to :class:`Antenna` for more flexibility.
+  * :attr:`antenna_factor` and :attr:`efficiency` attributes added to :class:`Antenna` for more flexibility.
 
 * Added :attr:`value_type` attribute to :class:`Signal` class and derived classes.
 
-    * Current value types are :attr:`ValueTypes.undefined`, :attr:`ValueTypes.voltage`, :attr:`ValueTypes.field`, and :attr:`ValueTypes.power`.
+  * Current value types are :attr:`ValueTypes.undefined`, :attr:`ValueTypes.voltage`, :attr:`ValueTypes.field`, and :attr:`ValueTypes.power`.
 
-    * :class:`Signal` objects now must have the same :attr:`value_type` to be added (though those with :attr:`ValueTypes.undefined` can be coerced).
+  * :class:`Signal` objects now must have the same :attr:`value_type` to be added (though those with :attr:`ValueTypes.undefined` can be coerced).
 
 
 .. rubric:: Changes
@@ -430,7 +503,7 @@ Version 1.0.2
 
 * Allow passing of numpy arrays of depths and frequencies into most :class:`IceModel` methods.
 
-    * :meth:`IceModel.gradient` must still be calculated at individual depths.
+  * :meth:`IceModel.gradient` must still be calculated at individual depths.
 
 * Added ability to specify RMS voltage of :class:`ThermalNoise` without providing temperature and resistance.
 
@@ -480,33 +553,33 @@ Version 1.0.0
 
 * Changed naming conventions to be more consistent, verbose, and "pythonic":
 
-    * :meth:`AntarcticIce.attenuationLength` becomes :meth:`AntarcticIce.attenuation_length`.
+  * :meth:`AntarcticIce.attenuationLength` becomes :meth:`AntarcticIce.attenuation_length`.
 
-    * In :mod:`pyrex.earth_model`, :const:`RE` becomes :const:`EARTH_RADIUS`.
+  * In :mod:`pyrex.earth_model`, :const:`RE` becomes :const:`EARTH_RADIUS`.
 
-    * In :mod:`pyrex.particle`, :class:`neutrino_interaction` becomes :class:`NeutrinoInteraction`.
+  * In :mod:`pyrex.particle`, :class:`neutrino_interaction` becomes :class:`NeutrinoInteraction`.
 
-    * In :mod:`pyrex.particle`, :const:`NA` becomes :const:`AVOGADRO_NUMBER`.
+  * In :mod:`pyrex.particle`, :const:`NA` becomes :const:`AVOGADRO_NUMBER`.
 
-    * :class:`particle` class becomes :class:`Particle` namedtuple.
+  * :class:`particle` class becomes :class:`Particle` namedtuple.
 
-    * :attr:`Particle.vtx` becomes :attr:`Particle.vertex`.
+  * :attr:`Particle.vtx` becomes :attr:`Particle.vertex`.
 
-    * :attr:`Particle.dir` becomes :attr:`Particle.direction`.
+  * :attr:`Particle.dir` becomes :attr:`Particle.direction`.
 
-    * :attr:`Particle.E` becomes :attr:`Particle.energy`.
+  * :attr:`Particle.E` becomes :attr:`Particle.energy`.
 
-    * In :mod:`pyrex.particle`, :func:`next_direction()` becomes :func:`random_direction()`.
+  * In :mod:`pyrex.particle`, :func:`next_direction()` becomes :func:`random_direction()`.
 
-    * :class:`shadow_generator` becomes :class:`ShadowGenerator`.
+  * :class:`shadow_generator` becomes :class:`ShadowGenerator`.
 
-    * :meth:`PathFinder.exists()` method becomes :attr:`PathFinder.exists` property.
+  * :meth:`PathFinder.exists()` method becomes :attr:`PathFinder.exists` property.
 
-    * :meth:`PathFinder.getEmittedRay()` method becomes :attr:`PathFinder.emitted_ray` property.
+  * :meth:`PathFinder.getEmittedRay()` method becomes :attr:`PathFinder.emitted_ray` property.
 
-    * :meth:`PathFinder.getPathLength()` method becomes :attr:`PathFinder.path_length` property.
+  * :meth:`PathFinder.getPathLength()` method becomes :attr:`PathFinder.path_length` property.
 
-    * :meth:`PathFinder.propagateRay()` split into :meth:`PathFinder.time_of_flight()` (with corresponding :attr:`PathFinder.tof` property) and :meth:`PathFinder.attenuation()`.
+  * :meth:`PathFinder.propagateRay()` split into :meth:`PathFinder.time_of_flight()` (with corresponding :attr:`PathFinder.tof` property) and :meth:`PathFinder.attenuation()`.
 
 
 

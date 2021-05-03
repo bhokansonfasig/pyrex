@@ -1,4 +1,4 @@
-pyrex.custom.ara.antenna.\_read\_arasim\_antenna\_data
+﻿pyrex.custom.ara.antenna.\_read\_arasim\_antenna\_data
 ======================================================
 
 .. currentmodule:: pyrex.custom.ara.antenna

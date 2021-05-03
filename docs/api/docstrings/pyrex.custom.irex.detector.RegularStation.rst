@@ -1,4 +1,4 @@
-pyrex.custom.irex.detector.RegularStation
+﻿pyrex.custom.irex.detector.RegularStation
 =========================================
 
 .. currentmodule:: pyrex.custom.irex.detector

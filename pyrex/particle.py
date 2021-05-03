@@ -478,7 +478,7 @@ class GQRSInteraction(Interaction):
         if self.kind==self.Type.charged_current:
             lepton_energy = self.particle.energy * (1-self.inelasticity)
         elif self.kind==self.Type.neutral_current:
-            # No lepton energy, therefore no secondaries
+            # No outgoing lepton, therefore no secondaries
             # Just return primary fractions
             return em_frac, had_frac
         else:
@@ -494,6 +494,7 @@ class GQRSInteraction(Interaction):
         # Try some reasonable number of times to produce secondaries which
         # conserve energy
         while loop_counter<1000:
+            loop_counter += 1
             em_secondaries, had_secondaries = \
                 self._choose_secondary_fractions(lepton_energy, energy_index)
             # If the generated secondaries conserve energy, check whether the

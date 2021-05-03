@@ -1,4 +1,4 @@
-pyrex.custom.ara.detector.HexagonalGrid
+﻿pyrex.custom.ara.detector.HexagonalGrid
 =======================================
 
 .. currentmodule:: pyrex.custom.ara.detector

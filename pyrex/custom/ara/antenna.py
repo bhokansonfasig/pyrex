@@ -499,10 +499,11 @@ class ARAAntenna(Antenna):
             Incoming ``Signal`` object to process.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal as it reaches
-            the antenna. If ``None`` no directional response will be applied.
+            the antenna (in the global coordinate frame). If ``None`` no
+            directional response will be applied.
         polarization : array_like, optional
-            Vector denoting the signal's polarization direction. If ``None``
-            no polarization gain will be applied.
+            Vector denoting the signal's polarization direction (in the global
+            coordinate frame). If ``None`` no polarization gain will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -582,11 +583,13 @@ class ARAAntenna(Antenna):
             times.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal(s) as they
-            reach the antenna. If ``None`` no directional gain will be applied.
+            reach the antenna (in the global coordinate frame). If ``None`` no
+            directional gain will be applied.
         polarization : array_like, optional
-            Vector(s) denoting the signal's polarization direction. Number of
-            vectors should match the number of elements in `signal` argument.
-            If ``None`` no polarization gain will be applied.
+            Vector(s) denoting the signal's polarization direction (in the
+            global coordinate frame). Number of vectors should match the number
+            of elements in `signal` argument. If ``None`` no polarization gain
+            will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal
@@ -858,7 +861,7 @@ class ARAAntennaSystem(AntennaSystem):
         # Signal class will automatically only take the first part of conv,
         # which is what we want.
         # conv multiplied by dt so that the amplitude stays constant for
-        # varying dts (determined empirically, see ARVZAskaryanSignal comments)
+        # varying dts (determined empirically, see ARZAskaryanSignal comments)
         output = Signal(signal.times, conv*signal.dt,
                         value_type=Signal.Type.power)
         return output
@@ -988,11 +991,13 @@ class ARAAntennaSystem(AntennaSystem):
             times.
         direction : array_like, optional
             Vector denoting the direction of travel of the signal(s) as they
-            reach the antenna. If ``None`` no directional gain will be applied.
+            reach the antenna (in the global coordinate frame). If ``None`` no
+            directional gain will be applied.
         polarization : array_like, optional
-            Vector(s) denoting the signal's polarization direction. Number of
-            vectors should match the number of elements in `signal` argument.
-            If ``None`` no polarization gain will be applied.
+            Vector(s) denoting the signal's polarization direction (in the
+            global coordinate frame). Number of vectors should match the number
+            of elements in `signal` argument. If ``None`` no polarization gain
+            will be applied.
         force_real : boolean, optional
             Whether or not the frequency response should be redefined in the
             negative-frequency domain to keep the values of the filtered signal

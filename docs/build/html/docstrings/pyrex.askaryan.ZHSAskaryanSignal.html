@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.askaryan.ZHSAskaryanSignal &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.askaryan.ZHSAskaryanSignal &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="Askaryan Models (pyrex.askaryan)" href="../api/askaryan.html" >
     <link rel="next" title="pyrex.askaryan.AVZAskaryanSignal" href="pyrex.askaryan.AVZAskaryanSignal.html" >
     <link rel="prev" title="Askaryan Models (pyrex.askaryan)" href="../api/askaryan.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/askaryan.html" accesskey="U">Askaryan Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.askaryan</span></code>)</a></li> 
@@ -93,9 +92,9 @@
             
   <div class="section" id="pyrex-askaryan-zhsaskaryansignal">
 <h1>pyrex.askaryan.ZHSAskaryanSignal<a class="headerlink" href="#pyrex-askaryan-zhsaskaryansignal" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.askaryan.ZHSAskaryanSignal">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.askaryan.</code><code class="sig-name descname">ZHSAskaryanSignal</code><span class="sig-paren">(</span><em class="sig-param">times</em>, <em class="sig-param">particle</em>, <em class="sig-param">viewing_angle</em>, <em class="sig-param">viewing_distance=1</em>, <em class="sig-param">ice_model=&lt;pyrex.ice_model.AntarcticIce object&gt;</em>, <em class="sig-param">t0=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.askaryan.ZHSAskaryanSignal" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.askaryan.</span></code><code class="sig-name descname"><span class="pre">ZHSAskaryanSignal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">times</span></em>, <em class="sig-param"><span class="pre">particle</span></em>, <em class="sig-param"><span class="pre">viewing_angle</span></em>, <em class="sig-param"><span class="pre">viewing_distance=1</span></em>, <em class="sig-param"><span class="pre">ice_model=&lt;pyrex.ice_model.AntarcticIce</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">t0=0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.askaryan.ZHSAskaryanSignal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for generating Askaryan signals according to ZHS parameterization.</p>
 <p>Stores the time-domain information for an Askaryan electric field (V/m)
 produced by the electromagnetic shower initiated by a neutrino.</p>
@@ -123,7 +122,7 @@ medium.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>ValueError</strong></dt><dd><p>If the <em class="xref py py-obj">particle</em> object is not a neutrino or antineutrino with a
+<dt>ValueError</dt><dd><p>If the <em class="xref py py-obj">particle</em> object is not a neutrino or antineutrino with a
 charged-current or neutral-current interaction.</p>
 </dd>
 </dl>
@@ -132,7 +131,7 @@ charged-current or neutral-current interaction.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Signal</span></code></dt><dd><p>Base class for time-domain signals.</p>
+<dt><a class="reference internal" href="pyrex.FunctionSignal.html#pyrex.FunctionSignal" title="pyrex.FunctionSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.FunctionSignal</span></code></a></dt><dd><p>Class for signals generated by a function.</p>
 </dd>
 <dt><a class="reference internal" href="pyrex.Particle.html#pyrex.Particle" title="pyrex.Particle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.Particle</span></code></a></dt><dd><p>Class for storing particle attributes.</p>
 </dd>
@@ -144,7 +143,7 @@ Uses equations 20 and 21 to calculate the electric field close to the
 Cherenkov angle.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="r6e1f7891061f-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>)</span></dt>
+<dt class="label" id="r6e1f7891061f-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>E. Zas, F. Halzen, T. Stanev, “Electromagnetic pulses from
 high-energy showers: implications for neutrino detection”, Physical
 Review D <strong>45</strong>, 362-376 (1992). <a class="reference external" href="https://dx.doi.org/10.1103/PhysRevD.45.362">DOI:10.1103/PhysRevD.45.362</a></p>
@@ -180,16 +179,25 @@ Review D <strong>45</strong>, 362-376 (1992). <a class="reference external" href
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Type</span></code>(value)</p></td>
 <td><p>Enum containing possible types (units) for signal values.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.filter_frequencies.html#pyrex.askaryan.ZHSAskaryanSignal.filter_frequencies" title="pyrex.askaryan.ZHSAskaryanSignal.filter_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_frequencies</span></code></a>(freq_response[, force_real])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.copy.html#pyrex.askaryan.ZHSAskaryanSignal.copy" title="pyrex.askaryan.ZHSAskaryanSignal.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Get a copy of the <code class="docutils literal notranslate"><span class="pre">FunctionSignal</span></code> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.filter_frequencies.html#pyrex.askaryan.ZHSAskaryanSignal.filter_frequencies" title="pyrex.askaryan.ZHSAskaryanSignal.filter_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_frequencies</span></code></a>(freq_response[, force_real])</p></td>
 <td><p>Apply the given frequency response function to the signal, in-place.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.resample.html#pyrex.askaryan.ZHSAskaryanSignal.resample" title="pyrex.askaryan.ZHSAskaryanSignal.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(n)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.resample.html#pyrex.askaryan.ZHSAskaryanSignal.resample" title="pyrex.askaryan.ZHSAskaryanSignal.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(n)</p></td>
 <td><p>Resamples the signal into n points in the same time range, in-place.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.with_times.html#pyrex.askaryan.ZHSAskaryanSignal.with_times" title="pyrex.askaryan.ZHSAskaryanSignal.with_times"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_times</span></code></a>(new_times)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.set_buffers.html#pyrex.askaryan.ZHSAskaryanSignal.set_buffers" title="pyrex.askaryan.ZHSAskaryanSignal.set_buffers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_buffers</span></code></a>([leading, trailing, force])</p></td>
+<td><p>Set leading and trailing buffers used in calculation of signal values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.shift.html#pyrex.askaryan.ZHSAskaryanSignal.shift" title="pyrex.askaryan.ZHSAskaryanSignal.shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shift</span></code></a>(dt)</p></td>
+<td><p>Shifts the signal values in time by <a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.dt.html#pyrex.askaryan.ZHSAskaryanSignal.dt" title="pyrex.askaryan.ZHSAskaryanSignal.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyrex.askaryan.ZHSAskaryanSignal.with_times.html#pyrex.askaryan.ZHSAskaryanSignal.with_times" title="pyrex.askaryan.ZHSAskaryanSignal.with_times"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_times</span></code></a>(new_times)</p></td>
 <td><p>Returns a representation of this signal over a different times array.</p></td>
 </tr>
 </tbody>
@@ -209,7 +217,7 @@ Review D <strong>45</strong>, 362-376 (1992). <a class="reference external" href
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -278,10 +286,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

@@ -1,4 +1,4 @@
-pyrex.custom.arianna.LPDA
+﻿pyrex.custom.arianna.LPDA
 =========================
 
 .. currentmodule:: pyrex.custom.arianna

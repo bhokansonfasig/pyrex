@@ -1,4 +1,4 @@
-pyrex.kernel.EventKernel
+﻿pyrex.kernel.EventKernel
 ========================
 
 .. currentmodule:: pyrex.kernel

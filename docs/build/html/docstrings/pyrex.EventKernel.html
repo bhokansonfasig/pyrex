@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.EventKernel &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.EventKernel &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,12 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="PyREx API" href="../api.html" >
     <link rel="next" title="pyrex.File" href="pyrex.File.html" >
     <link rel="prev" title="pyrex.RayTracePath" href="pyrex.RayTracePath.html" > 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" accesskey="U">PyREx API</a></li> 
     </ul>
@@ -92,9 +91,9 @@
             
   <div class="section" id="pyrex-eventkernel">
 <h1>pyrex.EventKernel<a class="headerlink" href="#pyrex-eventkernel" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.EventKernel">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.</code><code class="sig-name descname">EventKernel</code><span class="sig-paren">(</span><em class="sig-param">generator</em>, <em class="sig-param">antennas</em>, <em class="sig-param">ice_model=&lt;pyrex.ice_model.AntarcticIce object&gt;</em>, <em class="sig-param">ray_tracer=&lt;class 'pyrex.ray_tracing.SpecializedRayTracer'&gt;</em>, <em class="sig-param">signal_model=&lt;class 'pyrex.askaryan.ARVZAskaryanSignal'&gt;</em>, <em class="sig-param">signal_times=array([-2.000e-08</em>, <em class="sig-param">-1.995e-08</em>, <em class="sig-param">-1.990e-08</em>, <em class="sig-param">...</em>, <em class="sig-param">7.985e-08</em>, <em class="sig-param">7.990e-08</em>, <em class="sig-param">7.995e-08])</em>, <em class="sig-param">event_writer=None</em>, <em class="sig-param">triggers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.</span></code><code class="sig-name descname"><span class="pre">EventKernel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">generator</span></em>, <em class="sig-param"><span class="pre">antennas</span></em>, <em class="sig-param"><span class="pre">ice_model=&lt;pyrex.ice_model.AntarcticIce</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">ray_tracer=&lt;class</span> <span class="pre">'pyrex.ray_tracing.SpecializedRayTracer'&gt;</span></em>, <em class="sig-param"><span class="pre">signal_model=&lt;class</span> <span class="pre">'pyrex.askaryan.ARZAskaryanSignal'&gt;</span></em>, <em class="sig-param"><span class="pre">signal_times=array([-5.000e-08</span></em>, <em class="sig-param"><span class="pre">-4.995e-08</span></em>, <em class="sig-param"><span class="pre">-4.990e-08</span></em>, <em class="sig-param"><span class="pre">...</span></em>, <em class="sig-param"><span class="pre">4.985e-08</span></em>, <em class="sig-param"><span class="pre">4.990e-08</span></em>, <em class="sig-param"><span class="pre">4.995e-08])</span></em>, <em class="sig-param"><span class="pre">event_writer=None</span></em>, <em class="sig-param"><span class="pre">triggers=None</span></em>, <em class="sig-param"><span class="pre">offcone_max=40</span></em>, <em class="sig-param"><span class="pre">weight_min=None</span></em>, <em class="sig-param"><span class="pre">attenuation_interpolation=0.1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.EventKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>High-level kernel for controlling event simulation.</p>
 <p>The kernel is responsible for handling the classes and objects which
 control the major simulation steps: particle creation, signal production,
@@ -124,6 +123,21 @@ to the antenna positions.</p>
 conditions of the detector. If a dictionary, must have a “global” key
 with its value representing the global detector trigger.</p>
 </dd>
+<dt><strong>offcone_max</strong><span class="classifier">float or None, optional</span></dt><dd><p>The maximum angle away from the Cherenkov angle to be simulated.
+Antennas which view an event with an angle larger than this angle will
+skip the calculation of the Askaryan signal and assume no significant
+signal is seen. If <em class="xref py py-obj">None</em>, no offcone cut is applied.</p>
+</dd>
+<dt><strong>weight_min</strong><span class="classifier">float or tuple or None, optional</span></dt><dd><p>The minimum particle weight(s) which should be simulated. If a float,
+particles with a total weight less than this value will be skipped. If
+a tuple, particles with a survival weight less than the first element
+of the tuple or with an interaction weight less than the second element
+of the tuple will be skipped. If <em class="xref py py-obj">None</em>, no minimum weight is applied.</p>
+</dd>
+<dt><strong>attenuation_interpolation</strong><span class="classifier">float or None, optional</span></dt><dd><p>The logarithmic (base 10) interpolation step size to be used for
+interpolating attenuation along the ray path. If <em class="xref py py-obj">None</em>, no
+interpolation of the attenuation is applied.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -138,7 +152,7 @@ with its value representing the global detector trigger.</p>
 </dd>
 <dt><a class="reference internal" href="pyrex.RayTracer.html#pyrex.RayTracer" title="pyrex.RayTracer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.RayTracer</span></code></a></dt><dd><p>Class for calculating the ray-trace solutions between points.</p>
 </dd>
-<dt><a class="reference internal" href="pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.AskaryanSignal</span></code></a></dt><dd><p>Class for generating Askaryan signals according to ARVZ parameterization.</p>
+<dt><a class="reference internal" href="pyrex.AskaryanSignal.html#pyrex.AskaryanSignal" title="pyrex.AskaryanSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.AskaryanSignal</span></code></a></dt><dd><p>Class for generating Askaryan signals according to ARZ parameterization.</p>
 </dd>
 <dt><a class="reference internal" href="pyrex.File.html#pyrex.File" title="pyrex.File"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyrex.File</span></code></a></dt><dd><p>Class for reading or writing data files.</p>
 </dd>
@@ -195,6 +209,13 @@ response and storing the resulting signals.</p>
 </dd>
 <dt><strong>triggers</strong></dt><dd><p>The trigger condition(s) of the detector.</p>
 </dd>
+<dt><strong>offcone_max</strong></dt><dd><p>The maximum angle away from the Cherenkov angle to be simulated.</p>
+</dd>
+<dt><strong>weight_min</strong></dt><dd><p>The minimum particle weight(s) which should be simulated.</p>
+</dd>
+<dt><strong>attenuation_interpolation</strong><span class="classifier">float or None, optional</span></dt><dd><p>The logarithmic (base 10) interpolation step size to be used for
+interpolating attenuation along the ray path.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -225,7 +246,7 @@ response and storing the resulting signals.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -294,10 +315,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

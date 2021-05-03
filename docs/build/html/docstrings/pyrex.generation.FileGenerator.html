@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>pyrex.generation.FileGenerator &mdash; PyREx 1.9.0 documentation</title>
+    <title>pyrex.generation.FileGenerator &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,16 +23,15 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" >
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
     <link rel="up" title="Event Generators (pyrex.generation)" href="../api/generation.html" >
     <link rel="next" title="Simulation Kernel (pyrex.kernel)" href="../api/kernel.html" >
-    <link rel="prev" title="pyrex.generation.NumpyFileGenerator" href="pyrex.generation.NumpyFileGenerator.html" > 
+    <link rel="prev" title="pyrex.generation.ListGenerator" href="pyrex.generation.ListGenerator.html" > 
   </head>
   <body>
 
@@ -54,7 +53,7 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
 	
           <li class="active"><a href="../api.html" >PyREx API</a></li>
           <li class="active"><a href="../api/generation.html" accesskey="U">Event Generators (<code class="xref py py-mod docutils literal notranslate"><span class="pre">pyrex.generation</span></code>)</a></li> 
@@ -75,7 +74,7 @@
            accesskey="N">next</a>
       </li>
       <li class="active">
-        <a href="pyrex.generation.NumpyFileGenerator.html" title="pyrex.generation.NumpyFileGenerator"
+        <a href="pyrex.generation.ListGenerator.html" title="pyrex.generation.ListGenerator"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -93,9 +92,9 @@
             
   <div class="section" id="pyrex-generation-filegenerator">
 <h1>pyrex.generation.FileGenerator<a class="headerlink" href="#pyrex-generation-filegenerator" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pyrex.generation.FileGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">pyrex.generation.</code><code class="sig-name descname">FileGenerator</code><span class="sig-paren">(</span><em class="sig-param">files</em>, <em class="sig-param">slice_range=100</em>, <em class="sig-param">interaction_model=&lt;class 'pyrex.particle.CTWInteraction'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.FileGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyrex.generation.</span></code><code class="sig-name descname"><span class="pre">FileGenerator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">files</span></em>, <em class="sig-param"><span class="pre">slice_range=100</span></em>, <em class="sig-param"><span class="pre">interaction_model=&lt;class</span> <span class="pre">'pyrex.particle.CTWInteraction'&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrex.generation.FileGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to generate neutrino events from simulation file(s).</p>
 <p>Generates neutrinos by pulling their attributes from a (list of) simulation
 output file(s). Designed to make reproducing simulations easier.</p>
@@ -169,7 +168,7 @@ ignored and they will all appear in the root level.</p>
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -238,10 +237,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>

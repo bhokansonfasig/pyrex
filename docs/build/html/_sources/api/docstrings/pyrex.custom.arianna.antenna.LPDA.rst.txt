@@ -1,4 +1,4 @@
-pyrex.custom.arianna.antenna.LPDA
+﻿pyrex.custom.arianna.antenna.LPDA
 =================================
 
 .. currentmodule:: pyrex.custom.arianna.antenna

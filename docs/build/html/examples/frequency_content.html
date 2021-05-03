@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Askaryan Frequency Content &mdash; PyREx 1.9.0 documentation</title>
+    <title>Askaryan Frequency Content &mdash; PyREx 1.10.0 documentation</title>
     
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0',
+        VERSION:     '1.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,15 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/searchtools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="author" title="About these documents" href="../about.html" >
     <link rel="index" title="Index" href="../genindex.html" >
     <link rel="search" title="Search" href="../search.html" >
-    <link rel="top" title="PyREx 1.9.0 documentation" href="../index.html" > 
+    <link rel="top" title="PyREx 1.10.0 documentation" href="../index.html" >
+    <link rel="up" title="Example Code" href="../examples.html" >
+    <link rel="next" title="Calculate Effective Area" href="effective_area.html" >
+    <link rel="prev" title="Plot Detector Geometry" href="plot_detector.html" > 
   </head>
   <body>
 
@@ -51,8 +53,9 @@
               
     <ul class="nav nav-pills pull-left">
 	
-        <li class="active"><a href="../index.html">PyREx 1.9.0 documentation</a></li>
-	 
+        <li class="active"><a href="../index.html">PyREx 1.10.0 documentation</a></li>
+	
+          <li class="active"><a href="../examples.html" accesskey="U">Example Code</a></li> 
     </ul>
               
               
@@ -64,6 +67,14 @@
       <li class="active">
         <a href="../py-modindex.html" title="Python Module Index"
            >modules</a>
+      </li>
+      <li class="active">
+        <a href="effective_area.html" title="Calculate Effective Area"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="plot_detector.html" title="Plot Detector Geometry"
+           accesskey="P">previous</a>
       </li>
     </ul>
               
@@ -80,16 +91,16 @@
             
   <div class="section" id="askaryan-frequency-content">
 <h1>Askaryan Frequency Content<a class="headerlink" href="#askaryan-frequency-content" title="Permalink to this headline">¶</a></h1>
-<p>In this example we explore how the frequency spectrum of an Askaryan pulse changes as a function of the off-cone angle (i.e. the angular distance between the Cherenkov angle and the observation angle). This code can be run from the Frequency Content notebook in the examples directory.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<p>In this example we explore how the frequency spectrum of an Askaryan pulse changes as a function of the off-cone angle (i.e. the angular distance between the Cherenkov angle and the observation angle). This code can be run from the <a class="reference external" href="https://github.com/bhokansonfasig/pyrex/blob/master/examples/frequency_content.py">frequency_content.py</a> script in the examples directory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pyrex</span>
 
 <span class="c1"># First, set up a neutrino source and find the index of refraction at its depth.</span>
 <span class="c1"># Then use that index of refraction to calculate the Cherenkov angle.</span>
 <span class="n">source</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">Particle</span><span class="p">(</span><span class="s2">&quot;nu_e&quot;</span><span class="p">,</span> <span class="n">vertex</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
                         <span class="n">energy</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
-<span class="n">n</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">IceModel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">vertex</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">ice</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">vertex</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">ch_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">n</span><span class="p">)</span>
 
 <span class="c1"># Now, for a range of dthetas, generate an Askaryan pulse dtheta away from the</span>
@@ -98,15 +109,18 @@
     <span class="n">n_pts</span> <span class="o">=</span> <span class="mi">10001</span>
     <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">20e-9</span><span class="p">,</span> <span class="mf">80e-9</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span>
                                  <span class="n">particle</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-                                 <span class="n">viewing_angle</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span>
+                                 <span class="n">viewing_angle</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">+</span><span class="n">dtheta</span><span class="p">,</span>
                                  <span class="n">viewing_distance</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="c1"># Convert from Hz to MHz</span>
-             <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Frequency Spectrum of Askaryan Pulse</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
-              <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">dtheta</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; Degrees Off-Cone&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency (MHz)&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span>
+             <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">Delta</span><span class="se">\\</span><span class="s2">theta = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">dtheta</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Frequency Spectrum of Askaryan Pulse</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
+          <span class="s2">&quot;For Different Off-Cone Angles&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency (MHz)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c1"># Actually, we probably really want to see the frequency content after the</span>
 <span class="c1"># signal has propagated through the ice a bit. So first set up the ray tracer</span>
@@ -123,22 +137,27 @@
     <span class="n">n_pts</span> <span class="o">=</span> <span class="mi">2048</span>
     <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyrex</span><span class="o">.</span><span class="n">AskaryanSignal</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">20e-9</span><span class="p">,</span> <span class="mf">80e-9</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span>
                                  <span class="n">particle</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-                                 <span class="n">viewing_angle</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">-</span><span class="n">dtheta</span><span class="p">,</span>
+                                 <span class="n">viewing_angle</span><span class="o">=</span><span class="n">ch_angle</span><span class="o">+</span><span class="n">dtheta</span><span class="p">,</span>
                                  <span class="n">viewing_distance</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">path_length</span><span class="p">)</span>
-    <span class="n">path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">pulse</span><span class="p">)</span>
+    <span class="n">pulse</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">pulse</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="c1"># Convert from Hz to MHz</span>
-             <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Frequency Spectrum of Askaryan Pulse</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
-              <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">dtheta</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot; Degrees Off-Cone&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency (MHz)&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">n_pts</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span>
+             <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="se">\\</span><span class="s2">Delta</span><span class="se">\\</span><span class="s2">theta = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">dtheta</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Frequency Spectrum of Askaryan Pulse</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
+          <span class="s2">&quot;After Ice Propagation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency (MHz)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c1"># You may notice the sharp cutoff in the frequency spectrum above 1 GHz.</span>
 <span class="c1"># This is due to the ice model, which defines the attenuation length in a</span>
 <span class="c1"># piecewise manner for frequencies above or below 1 GHz.</span>
 </pre></div>
 </div>
+<img alt="../_images/frequency_content_1.png" src="../_images/frequency_content_1.png" />
+<img alt="../_images/frequency_content_2.png" src="../_images/frequency_content_2.png" />
 </div>
 
 
@@ -152,7 +171,7 @@
 
 
 <p class="blurb">A Python package for simulation of neutrinos and radio antennas in ice.
-Version 1.9.0</p>
+Version 1.10.0</p>
 
 
 
@@ -180,11 +199,14 @@ Version 1.9.0</p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">How to Use PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../customize.html">Custom Sub-Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Code</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Example Code</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../examples.html#examples">Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyREx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">PyREx API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../versions.html">Version History</a></li>
@@ -216,10 +238,10 @@ Version 1.9.0</p>
     <div class="row-fluid">
     <ul class="inline pull-left">
       <li>
-        &copy; Copyright 2019, Benjamin Hokanson-Fasig.
+        &copy; Copyright 2021, Ben Hokanson-Fasig.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.5.4.
       </li>
     </ul>
     </div>
