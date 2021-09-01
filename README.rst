@@ -40,6 +40,14 @@ The easiest way to get the PyREx package is using ``pip`` as follows:
 
 Note that since PyREx is not currently available on PyPI, a simple ``pip install pyrex`` will not have the intended effect.
 
+If you wish to install PyREx to an arbitrary directory, instead of the local ``site-packages`` directory (e.g. if you're a dev and you want to prototype some changes), you can also install PyREx via cloning the repository and manually installing:
+
+.. code-block:: shell
+
+    cd [dir where you want source code to live]
+    git clone https://github.com/abigailbishop/pyrex.git .
+    python -m pip install --user --editable pyrex
+
 Optional Dependencies
 ---------------------
 
